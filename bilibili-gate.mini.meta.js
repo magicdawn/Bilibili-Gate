@@ -1,0 +1,41 @@
+// ==UserScript==
+// @name         Bilibili-Gate
+// @namespace    https://magicdawn.fun
+// @version      0.29.3
+// @author       magicdawn
+// @description  Bilibili 自定义首页
+// @license      MIT
+// @icon         https://www.bilibili.com/favicon.ico
+// @homepageURL  https://greasyfork.org/zh-CN/scripts/443530-bilibili-gate
+// @supportURL   https://github.com/magicdawn/bilibili-gate/issues
+// @downloadURL  https://github.com/magicdawn/bilibili-gate/raw/release/bilibili-gate.mini.user.js
+// @updateURL    https://github.com/magicdawn/bilibili-gate/raw/release/bilibili-gate.mini.meta.js
+// @match        https://www.bilibili.com/
+// @match        https://www.bilibili.com/?*
+// @match        https://www.bilibili.com/index.html
+// @match        https://www.bilibili.com/index.html?*
+// @match        https://www.bilibili.com/video/*
+// @match        https://www.bilibili.com/list/watchlater?*
+// @match        https://www.bilibili.com/bangumi/play/*
+// @match        https://space.bilibili.com/*
+// @require      https://registry.npmmirror.com/axios/0.27.2/files/dist/axios.min.js
+// @require      https://registry.npmmirror.com/react/18.3.1/files/umd/react.production.min.js
+// @require      https://registry.npmmirror.com/react-dom/18.3.1/files/umd/react-dom.production.min.js
+// @require      https://registry.npmmirror.com/ua-parser-js/1.0.39/files/dist/ua-parser.min.js
+// @require      https://registry.npmmirror.com/framer-motion/11.12.0/files/dist/framer-motion.js
+// @require      https://registry.npmmirror.com/localforage/1.10.0/files/dist/localforage.min.js
+// @connect      app.bilibili.com
+// @grant        GM.deleteValue
+// @grant        GM.getValue
+// @grant        GM.listValues
+// @grant        GM.openInTab
+// @grant        GM.registerMenuCommand
+// @grant        GM.setClipboard
+// @grant        GM.setValue
+// @grant        GM.xmlHttpRequest
+// @grant        GM_addStyle
+// @grant        GM_download
+// @grant        unsafeWindow
+// @grant        window.focus
+// @run-at       document-end
+// ==/UserScript==
