@@ -235,13 +235,27 @@ export default defineConfig(({ command, mode }) => ({
           // can't resolve
           // 'resize-observer-polyfill': 'ResizeObserver',
 
+          // 'react': cdn.npmmirror('React', 'umd/react.production.min.js'),
+          // 'react-dom': cdn.npmmirror('ReactDOM', 'umd/react-dom.production.min.js'),
+          'react': [
+            'React',
+            (version, name, importName) => `https://unpkg.com/react-umd/dist/react.umd.js`,
+          ],
+          'react-dom': [
+            'ReactDOM',
+            (version, name, importName) => `https://unpkg.com/react-umd/dist/react-dom.umd.js`,
+          ],
+          'react-dom/client': [
+            'ReactDOMClient',
+            (version, name, importName) =>
+              `https://unpkg.com/react-umd/dist/react-dom-client.umd.js`,
+          ],
+
           'axios': cdn.npmmirror('axios', 'dist/axios.min.js'),
           // 'axios-userscript-adapter': cdn.npmmirror(
           //   'axiosGmxhrAdapter',
           //   'dist/axiosGmxhrAdapter.min.js',
           // ),
-          'react': cdn.npmmirror('React', 'umd/react.production.min.js'),
-          'react-dom': cdn.npmmirror('ReactDOM', 'umd/react-dom.production.min.js'),
           'ua-parser-js': cdn.npmmirror('UAParser', 'dist/ua-parser.min.js'),
           'framer-motion': cdn.npmmirror('Motion', 'dist/framer-motion.js'),
           'localforage': cdn.npmmirror('localforage', 'dist/localforage.min.js'),
