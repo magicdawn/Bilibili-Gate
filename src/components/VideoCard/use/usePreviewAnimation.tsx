@@ -35,7 +35,7 @@ export function usePreviewAnimation({
   tryFetchVideoData: () => Promise<void>
   videoDataBox: RefStateBox<VideoData | null>
   autoPreviewWhenHover: boolean
-  videoPreviewWrapperRef: RefObject<HTMLElement>
+  videoPreviewWrapperRef: RefObject<HTMLElement | null>
 }) {
   const hasVideoData = useMemoizedFn(() => {
     const data = videoDataBox.value?.videoshotJson.data
@@ -300,7 +300,7 @@ function useAnimationController({
     animationController.reset()
   })
 
-  const resumeImplRef = useRef<() => void>()
+  const resumeImplRef = useRef<() => void>(undefined)
   const pausedBox = useRefStateBox(false)
 
   const animationController = {

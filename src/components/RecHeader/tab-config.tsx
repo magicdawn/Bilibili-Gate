@@ -15,11 +15,11 @@ import toast from '$utility/toast'
 import type { CssProp } from '$utility/type'
 import { css } from '@emotion/react'
 import { size } from 'polished'
-import { cloneElement, type ReactElement } from 'react'
+import { cloneElement, type ComponentProps, type ReactElement } from 'react'
 import { ETab } from './tab-enum'
 
 export type TabConfigItem = {
-  icon: ReactElement
+  icon: ReactElement<ComponentProps<'svg'>>
   label: string
   desc: string
   swr?: boolean // stale while revalidate
@@ -112,8 +112,15 @@ export function TabIcon({
   active?: boolean
 }) {
   const { icon } = TabConfig[tabKey]
+
+  const iconProps = icon.props as {
+    css?: CssProp
+    width?: string | number
+    height?: string | number
+  }
+
   const newCssProp = [
-    icon.props.css as CssProp,
+    iconProps.css,
     moreCss,
     ml && C.ml(ml),
     mr && C.mr(mr),
@@ -123,9 +130,10 @@ export function TabIcon({
     .flat()
     .filter(Boolean)
   const cloned = cloneElement(icon, {
+    // @ts-ignore
     css: newCssProp,
-    width: _size ? size(_size).width : icon.props.width,
-    height: _size ? size(_size).height : icon.props.height,
+    width: _size ? (size(_size).width as string | number) : icon.props.width,
+    height: _size ? (size(_size).height as string | number) : icon.props.height,
     active: tabKey === ETab.Live ? active : undefined, // 否则 warn: svg recived boolean props
   })
   return cloned

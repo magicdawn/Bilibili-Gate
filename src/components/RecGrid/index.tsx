@@ -147,7 +147,7 @@ const RecGridInner = memo(function ({
 
   useImperativeHandle(handlersRef, () => ({ refresh }), [refresh])
 
-  const goOutAt = useRef<number | undefined>()
+  const goOutAt = useRef<number>(undefined)
   useEventListener(
     'visibilitychange',
     (e) => {
@@ -249,7 +249,7 @@ const RecGridInner = memo(function ({
   const usingItems = itemsBox.state
 
   // .video-grid
-  const containerRef = useRef<HTMLDivElement | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const getScrollerRect = useMemoizedFn(() => {
     // use window
