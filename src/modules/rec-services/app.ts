@@ -8,16 +8,8 @@ import { getHasLogined } from '$utility/cookie'
 import { randomInt, shuffle, uniqBy } from 'es-toolkit'
 import { times } from 'es-toolkit/compat'
 import { BaseTabService, type IService } from './_base'
-import {
-  DynamicFeedRecService,
-  getDynamicFeedServiceConfig,
-  type DynamicFeedServiceConfig,
-} from './dynamic-feed'
-import {
-  DF_SELECTED_KEY_ALL,
-  DynamicFeedVideoMinDuration,
-  DynamicFeedVideoType,
-} from './dynamic-feed/store'
+import { DynamicFeedRecService, getDynamicFeedServiceConfig } from './dynamic-feed'
+import { createDfStore } from './dynamic-feed/store'
 import { FavRecService, getFavServiceConfig, type FavServiceConfig } from './fav'
 import { FavItemsOrder } from './fav/fav-enum'
 import { WatchlaterRecService } from './watchlater'
@@ -61,28 +53,15 @@ export class AppRecService extends BaseTabService<RecItemType> {
     let favService: IService
     let watchlaterService: IService
     {
-      const config = Object.assign(getDynamicFeedServiceConfig(), {
-        upMid: undefined,
-        followGroupTagId: undefined,
-        searchText: undefined,
-        dynamicFeedVideoType: DynamicFeedVideoType.All,
-        hideChargeOnlyVideos: true,
-        filterMinDuration: DynamicFeedVideoMinDuration.All,
-        filterMinDurationValue: 0,
-        selectedKey: DF_SELECTED_KEY_ALL,
-        viewingAll: true,
-        viewingSomeUp: false,
-        viewingSomeGroup: false,
+      const store = createDfStore()
+      store.upMid = undefined
+      store.selectedFollowGroupTagId = undefined
+      const config = getDynamicFeedServiceConfig(store)
+      Object.assign(config, {
         showLiveInDynamicFeed: true,
         whenViewAllEnableHideSomeContents: false,
-        whenViewAllHideIds: new Set(),
-        advancedSearch: false,
         searchCacheEnabled: false,
-        forceUseMergeTime: false,
-        startingOffset: undefined,
-        minId: undefined,
-        minTs: undefined,
-      } satisfies DynamicFeedServiceConfig)
+      } satisfies Partial<typeof config>)
       dynamicFeedService = new DynamicFeedRecService(config)
     }
     {

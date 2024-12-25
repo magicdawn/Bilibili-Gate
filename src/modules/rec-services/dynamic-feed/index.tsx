@@ -29,13 +29,14 @@ import {
   QUERY_DYNAMIC_MIN_TS,
   QUERY_DYNAMIC_OFFSET,
   QUERY_DYNAMIC_UP_MID,
+  type DynamicFeedStore,
 } from './store'
 import { DynamicFeedUsageInfo } from './usage-info'
 
 export type DynamicFeedServiceConfig = ReturnType<typeof getDynamicFeedServiceConfig>
 
-export function getDynamicFeedServiceConfig() {
-  const snap = snapshot(dfStore)
+export function getDynamicFeedServiceConfig(usingDfStore: DynamicFeedStore = dfStore) {
+  const snap = snapshot(usingDfStore)
   return {
     /**
      * from dfStore

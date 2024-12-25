@@ -88,67 +88,71 @@ export type DynamicFeedStoreSelectedKey =
   | `${typeof DF_SELECTED_KEY_PREFIX_UP}${UpMidType}`
   | `${typeof DF_SELECTED_KEY_PREFIX_GROUP}${number}`
 
+const hideChargeOnlyVideosForKeysSet = (
+  await proxySetWithGmStorage<string>('dynamic-feed:hide-charge-only-videos-for-keys')
+).set
+
 /**
  * df expand to `dynamic-feed`
  */
+export type DynamicFeedStore = ReturnType<typeof createDfStore>
+export const dfStore = createDfStore()
+export function createDfStore() {
+  return proxy({
+    upMid: upMidInitial as UpMidType | undefined,
+    upName: upNameInitial as string | undefined,
+    upFace: undefined as string | undefined,
+    upList: [] as DynamicPortalUp[],
+    upListUpdatedAt: 0,
 
-export type DynamicFeedStore = typeof dfStore
-export const dfStore = proxy({
-  upMid: upMidInitial as UpMidType | undefined,
-  upName: upNameInitial as string | undefined,
-  upFace: undefined as string | undefined,
-  upList: [] as DynamicPortalUp[],
-  upListUpdatedAt: 0,
+    followGroups: [] as FollowGroup[],
+    followGroupsUpdatedAt: 0,
+    selectedFollowGroupTagId: undefined as number | undefined,
+    get selectedFollowGroup(): FollowGroup | undefined {
+      if (typeof this.selectedFollowGroupTagId !== 'number') return
+      return this.followGroups.find((x) => x.tagid === this.selectedFollowGroupTagId)
+    },
 
-  followGroups: [] as FollowGroup[],
-  followGroupsUpdatedAt: 0,
-  selectedFollowGroupTagId: undefined as number | undefined,
-  get selectedFollowGroup(): FollowGroup | undefined {
-    if (typeof this.selectedFollowGroupTagId !== 'number') return
-    return this.followGroups.find((x) => x.tagid === this.selectedFollowGroupTagId)
-  },
+    dynamicFeedVideoType: DynamicFeedVideoType.All,
+    searchText: (QUERY_DYNAMIC_SEARCH_TEXT ?? undefined) as string | undefined,
 
-  dynamicFeedVideoType: DynamicFeedVideoType.All,
-  searchText: (QUERY_DYNAMIC_SEARCH_TEXT ?? undefined) as string | undefined,
+    // 选择状态
+    get viewingAll(): boolean {
+      return this.selectedKey === DF_SELECTED_KEY_ALL
+    },
+    get viewingSomeUp(): boolean {
+      return !!this.upMid
+    },
+    get viewingSomeGroup(): boolean {
+      return typeof this.selectedFollowGroupTagId === 'number'
+    },
 
-  // 选择状态
-  get viewingAll(): boolean {
-    return this.selectedKey === DF_SELECTED_KEY_ALL
-  },
-  get viewingSomeUp(): boolean {
-    return !!this.upMid
-  },
-  get viewingSomeGroup(): boolean {
-    return typeof this.selectedFollowGroupTagId === 'number'
-  },
+    // 筛选 UP & 分组 select 控件的 key
+    get selectedKey(): DynamicFeedStoreSelectedKey {
+      if (this.upMid) return `${DF_SELECTED_KEY_PREFIX_UP}${this.upMid}`
+      if (this.selectedFollowGroup)
+        return `${DF_SELECTED_KEY_PREFIX_GROUP}${this.selectedFollowGroup.tagid}`
+      return DF_SELECTED_KEY_ALL
+    },
 
-  // 筛选 UP & 分组 select 控件的 key
-  get selectedKey(): DynamicFeedStoreSelectedKey {
-    if (this.upMid) return `${DF_SELECTED_KEY_PREFIX_UP}${this.upMid}`
-    if (this.selectedFollowGroup)
-      return `${DF_SELECTED_KEY_PREFIX_GROUP}${this.selectedFollowGroup.tagid}`
-    return DF_SELECTED_KEY_ALL
-  },
+    hideChargeOnlyVideosForKeysSet,
 
-  hideChargeOnlyVideosForKeysSet: (
-    await proxySetWithGmStorage<string>('dynamic-feed:hide-charge-only-videos-for-keys')
-  ).set,
+    get hideChargeOnlyVideos() {
+      return this.hideChargeOnlyVideosForKeysSet.has(this.selectedKey)
+    },
 
-  get hideChargeOnlyVideos() {
-    return this.hideChargeOnlyVideosForKeysSet.has(this.selectedKey)
-  },
+    filterMinDuration: DynamicFeedVideoMinDuration.All,
+    get filterMinDurationValue() {
+      return DynamicFeedVideoMinDurationConfig[this.filterMinDuration].duration
+    },
 
-  filterMinDuration: DynamicFeedVideoMinDuration.All,
-  get filterMinDurationValue() {
-    return DynamicFeedVideoMinDurationConfig[this.filterMinDuration].duration
-  },
-
-  /**
-   * methods
-   */
-  updateUpList,
-  updateFollowGroups,
-})
+    /**
+     * methods
+     */
+    updateUpList,
+    updateFollowGroups,
+  })
+}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type FollowGroupInfo = Record<number, {}>
