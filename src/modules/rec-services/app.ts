@@ -13,6 +13,7 @@ import { createDfStore } from './dynamic-feed/store'
 import { FavRecService, getFavServiceConfig, type FavServiceConfig } from './fav'
 import { FavItemsOrder } from './fav/fav-enum'
 import { WatchlaterRecService } from './watchlater'
+import { WatchlaterItemsOrder } from './watchlater/watchlater-enum'
 
 type AppRecServiceConfig = ReturnType<typeof getAppRecServiceConfig>
 
@@ -75,7 +76,7 @@ export class AppRecService extends BaseTabService<RecItemType> {
       favService = new FavRecService(config)
     }
     {
-      watchlaterService = new WatchlaterRecService(false)
+      watchlaterService = new WatchlaterRecService(WatchlaterItemsOrder.AddTimeDesc, false)
     }
     this.otherTabServices = [dynamicFeedService, favService, watchlaterService]
 

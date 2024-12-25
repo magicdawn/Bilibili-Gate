@@ -40,11 +40,16 @@ export class WatchlaterRecService extends BaseTabService<WatchlaterItemExtend | 
   static PAGE_SIZE = 10
 
   private innerService: NormalOrderService | ShuffleOrderService
-  constructor(useShuffle: boolean, prevShuffleBvidIndexMap?: BvidIndexMap) {
+  constructor(
+    order: WatchlaterItemsOrder,
+    addSeparator: boolean,
+    prevShuffleBvidIndexMap?: BvidIndexMap,
+  ) {
     super(WatchlaterRecService.PAGE_SIZE)
-    this.innerService = useShuffle
-      ? new ShuffleOrderService(prevShuffleBvidIndexMap)
-      : new NormalOrderService(settings.watchlaterItemsOrder, settings.watchlaterAddSeparator)
+    this.innerService =
+      order === WatchlaterItemsOrder.Shuffle
+        ? new ShuffleOrderService(prevShuffleBvidIndexMap)
+        : new NormalOrderService(order, addSeparator)
   }
 
   override get hasMoreExceptQueue() {
