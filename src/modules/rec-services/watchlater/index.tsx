@@ -1,6 +1,5 @@
 import { type ItemsSeparator, type WatchlaterItemExtend } from '$define'
 import { EApiType } from '$define/index.shared'
-import { settings } from '$modules/settings'
 import { getHasLogined, getUid } from '$utility/cookie'
 import { whenIdle } from '$utility/dom'
 import toast from '$utility/toast'
@@ -48,7 +47,7 @@ export class WatchlaterRecService extends BaseTabService<WatchlaterItemExtend | 
     super(WatchlaterRecService.PAGE_SIZE)
     this.innerService =
       order === WatchlaterItemsOrder.Shuffle
-        ? new ShuffleOrderService(prevShuffleBvidIndexMap)
+        ? new ShuffleOrderService(addSeparator, prevShuffleBvidIndexMap)
         : new NormalOrderService(order, addSeparator)
   }
 
@@ -125,7 +124,6 @@ function showApiRequestError(err: string) {
 export type BvidIndexMap = Map<string, number>
 
 class ShuffleOrderService implements IService {
-  addSeparator = settings.watchlaterAddSeparator
   hasMore = true
 
   loaded = false
@@ -134,7 +132,10 @@ class ShuffleOrderService implements IService {
   // shuffle related
   keepOrder: boolean
   prevBvidIndexMap?: BvidIndexMap
-  constructor(prevBvidIndexMap?: BvidIndexMap) {
+  constructor(
+    private addSeparator: boolean,
+    prevBvidIndexMap?: BvidIndexMap,
+  ) {
     if (prevBvidIndexMap?.size) {
       this.keepOrder = true
       this.prevBvidIndexMap = prevBvidIndexMap
