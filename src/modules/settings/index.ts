@@ -44,19 +44,6 @@ export const initialSettings = {
   },
 
   /**
-   * 查看更多, aka ModalFeed
-   */
-
-  // 自动查看更多
-  showModalFeedOnLoad: false,
-
-  // "查看更多" 按钮
-  showModalFeedEntry: false,
-
-  // ModalFeed.全屏
-  modalFeedFullScreen: false,
-
-  /**
    * Video Card
    */
 

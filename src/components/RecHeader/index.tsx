@@ -19,7 +19,7 @@ import { useSnapshot } from 'valtio'
 import { AccessKeyManage } from '../AccessKeyManage'
 import { RefreshButton } from './RefreshButton'
 import { headerState } from './index.shared'
-import { showModalFeed, showModalSettings } from './modals'
+import { showModalSettings } from './modals'
 import { VideoSourceTab, useCurrentDisplayingTabKeys } from './tab'
 import { ETab } from './tab-enum'
 
@@ -47,8 +47,8 @@ export const RecHeader = forwardRef<
     rightSlot?: ReactNode
   }
 >(function RecHeader({ onRefresh, refreshing, leftSlot, rightSlot }, ref) {
-  const { accessKey, pureRecommend, showModalFeedEntry, style } = useSettingsSnapshot()
-  const { modalFeedVisible, modalSettingsVisible } = useSnapshot(headerState)
+  const { accessKey, pureRecommend, style } = useSettingsSnapshot()
+  const { modalSettingsVisible } = useSnapshot(headerState)
 
   useKeyPress(
     ['shift.comma'],
@@ -182,23 +182,8 @@ export const RecHeader = forwardRef<
                 <RefreshButton
                   refreshing={refreshing}
                   onRefresh={onRefresh}
-                  refreshHotkeyEnabled={!(modalSettingsVisible || modalFeedVisible)}
+                  refreshHotkeyEnabled={!modalSettingsVisible}
                 />
-
-                {showModalFeedEntry && (
-                  <Button onClick={showModalFeed} className='gap-0'>
-                    <span>查看更多</span>
-                    <svg
-                      css={css`
-                        width: 12px;
-                        height: 12px;
-                        margin-left: 2px;
-                      `}
-                    >
-                      <use href='#widget-arrow'></use>
-                    </svg>
-                  </Button>
-                )}
               </Space>
             </div>
           </div>

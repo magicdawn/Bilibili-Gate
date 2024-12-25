@@ -1,7 +1,6 @@
 import { proxy, useSnapshot } from 'valtio'
 
 export const headerState = proxy({
-  modalFeedVisible: false,
   modalSettingsVisible: false,
 })
 
