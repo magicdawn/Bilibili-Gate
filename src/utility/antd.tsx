@@ -4,7 +4,7 @@
 
 import { $headerHeight } from '$header'
 import type { MenuProps } from 'antd'
-import { App, message as _message, notification as _notification } from 'antd'
+import { App, message, notification } from 'antd'
 import type {
   ConfigOptions as MessageConfigOptions,
   MessageInstance,
@@ -17,12 +17,12 @@ const messageConfig: MessageConfigOptions = {
   maxCount: 5,
   top: $headerHeight.get() - 4,
 }
-_message.config(messageConfig)
+message.config(messageConfig)
 
 export function UseApp() {
   const h = $headerHeight.use()
   return (
-    <App component={false} message={{ ...messageConfig, top: h - 4 }}>
+    <App component={'div'} message={{ ...messageConfig, top: h - 4 }}>
       <UseAppInner />
     </App>
   )
@@ -30,8 +30,8 @@ export function UseApp() {
 
 // 如果使用 message, notification 经常会自动从 antd import
 export let antStatic: ReturnType<typeof App.useApp>
-export let antMessage: MessageInstance = _message
-export let antNotification: NotificationInstance = _notification
+export let antMessage: MessageInstance = message
+export let antNotification: NotificationInstance = notification
 
 function UseAppInner() {
   antStatic = App.useApp()

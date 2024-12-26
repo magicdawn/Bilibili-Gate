@@ -17,6 +17,9 @@
     "source.fixAll.eslint": "explicit",
     "source.organizeImports": "explicit"
   },
+  "typescript.preferences.organizeImports": {
+    "typeOrder": "last"
+  },
 
   "typescript.tsserver.experimental.enableProjectDiagnostics": true,
 
