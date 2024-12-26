@@ -135,36 +135,27 @@ _\* 截图均为不带 access_key 匿名获取, 不代表作者喜好_
 
 可以基于个人喜好定制
 
-#### 主页推荐块 + 查看更多弹窗 (默认模式)
-
-![image](https://github.com/magicdawn/bilibili-gate/assets/4067115/a3c303c2-bff4-459b-9bd6-5527ef468386)
-
-- 推荐块作为一个「分区」存在，不影响首页其他地方
-  - 新版首页: 推荐下边, 作为第一个「分区」
-  - 内测首页: 在最顶部
-
-![image](https://github.com/magicdawn/bilibili-gate/assets/4067115/85b06340-257f-4811-b81d-ee3c2b9aa98f)
-
-- [x] 支持无限滚动, 加载更多
-- [x] 支持自动查看更多, 即打开 B 站首页自动弹出全屏弹窗.
-- [x] 支持快捷键
-
-#### 纯推荐模式
+#### 全屏模式
 
 ![image](https://github.com/magicdawn/bilibili-gate/assets/4067115/4fd66d66-4839-4403-a9e6-6cdd55f0b4a2)
 
 _\* 截图均为不带 access_key 匿名获取, 不代表作者喜好_
 
 - 该模式会去除首页其他所有内容, 仅保留推荐块,
-- 在设置中开启
-
-![image](https://github.com/magicdawn/bilibili-gate/assets/4067115/e6191158-2b43-42bf-9f12-f271206d9734)
-_\* 开关-第一项_
+- 默认开启, 之前版本称为 "纯推荐模式"
+- [x] 支持无限滚动, 加载更多
+- [x] 支持快捷键
 
 推荐操作栏有吸顶效果, 目前
 
 - 与 B 站首页自带顶栏兼容
 - 与 Bilibili-Evolved 的自定义顶栏兼容. (自定义顶栏: 全局固定 / 高度 可自由设置)
+
+#### 全屏模式:关
+
+主页推荐块, 在最顶部, 因历史原因存在.
+![image](https://github.com/magicdawn/bilibili-gate/assets/4067115/a3c303c2-bff4-459b-9bd6-5527ef468386)
+![image](https://github.com/magicdawn/bilibili-gate/assets/4067115/85b06340-257f-4811-b81d-ee3c2b9aa98f)
 
 ### 功能
 
@@ -173,7 +164,6 @@ _\* 开关-第一项_
 ![image](https://user-images.githubusercontent.com/4067115/182653003-e48befbe-c69a-4ccc-9bee-b4fe97149052.png)
 
 - 像手机一样的居中双列
-- 「查看更多」弹窗 & 纯推荐模式可用
 
 #### 稍候再看
 
@@ -189,7 +179,7 @@ _\* 开关-第一项_
 
 - 仅 APP 推荐 Tab, 获取 access_key 后可用
 
-#### 深色模式兼容
+#### 夜间模式兼容
 
 - 方案1: 使用 [Bilibili-Evolved](https://github.com/the1812/Bilibili-Evolved) 提供的深色模式切换, 这个脚本适配了 Evolved 的夜间模式.
 - 方案2: 使用 [Dark Reader](https://chromewebstore.google.com/detail/dark-reader/eimadpbcbfnmbkopoojfekhnkhdbieeh) 扩展: 无适配, 但基本可用.
@@ -241,7 +231,7 @@ _\* 开关-第一项_
 
 ### 快捷键说明
 
-#### 「查看更多」弹窗 & 纯推荐模式
+#### 全屏模式
 
 - [x] 方向键, 选择视频
 - [x] `Tab` / `Shift + Tab`, 选择视频
