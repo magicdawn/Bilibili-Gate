@@ -1,4 +1,5 @@
 import type { OnRefresh } from '$components/RecGrid/useRefresh'
+import { IconForRoll } from '$modules/icon/stat-icons'
 import { favStore } from '$modules/rec-services/fav/store'
 import { isHotTabUsingShuffle } from '$modules/rec-services/hot'
 import { WatchlaterItemsOrder } from '$modules/rec-services/watchlater/watchlater-enum'
@@ -66,7 +67,7 @@ export const RefreshButton = forwardRef<RefreshButtonActions, RefreshButtonProps
 
   const onClick: MouseEventHandler = useMemoizedFn((e?: MouseEvent) => {
     animate(scope.current, { rotate: [0, 360] }, { duration: 0.5, type: 'tween' })
-    return onRefresh?.()
+    onRefresh?.()
   })
 
   return (
@@ -83,16 +84,7 @@ export const RefreshButton = forwardRef<RefreshButtonActions, RefreshButtonProps
       ref={btn}
       onClick={onClick}
     >
-      <svg
-        ref={scope}
-        style={{
-          width: '11px',
-          height: '11px',
-          marginRight: 5,
-        }}
-      >
-        <use href='#widget-roll'></use>
-      </svg>
+      <IconForRoll ref={scope} className='size-14px mr-5px' />
       <span>{text}</span>
     </Button>
   )

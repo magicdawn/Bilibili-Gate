@@ -1,5 +1,7 @@
+import { IconForFav } from '$modules/icon'
+import { IconForStatDanmaku, IconForStatPlay } from '$modules/icon/stat-icons'
 import { formatCount } from '$utility/video'
-import type { ReactNode } from 'react'
+import type { ComponentProps, ComponentType, ReactNode } from 'react'
 import { STAT_NUMBER_FALLBACK } from './index.shared'
 
 export const AllowedStatItemFields = [
@@ -28,21 +30,22 @@ export function defineStatItems(items: StatItemType[]) {
 /**
  * how to render these stat items
  */
-export const StatFieldConfig: Record<
+export const StatFieldIconConfig: Record<
   StatItemField,
-  { svgHref?: string; svgScale?: number; render?: (props: { className?: string }) => ReactNode }
+  {
+    Component: ComponentType<ComponentProps<'svg'>>
+    size?: number
+    extraProps?: ComponentProps<'svg'>
+    moveTextDown?: boolean
+  }
 > = {
-  'play': { svgHref: '#widget-video-play-count' }, // or #widget-play-count,
-  'danmaku': { svgHref: '#widget-video-danmaku' },
-  'like': { svgHref: '#widget-agree' },
-  'bangumi:follow': { svgHref: '#widget-followed', svgScale: 1.3 },
-  'favorite': { svgHref: '#widget-favorite', svgScale: 0.9 },
-  'coin': { svgHref: '#widget-coin' },
-  'live:viewed-by': {
-    render({ className }) {
-      return <IconParkOutlinePreviewOpen className={className} />
-    },
-  },
+  'play': { Component: IconForStatPlay }, // or #widget-play-count,
+  'danmaku': { Component: IconForStatDanmaku },
+  'like': { Component: IconParkOutlineThumbsUp, size: 15 },
+  'bangumi:follow': { Component: IconTablerHeartFilled, size: 15 },
+  'favorite': { Component: IconForFav, size: 15 },
+  'coin': { Component: IconTablerCoinYen, size: 15 },
+  'live:viewed-by': { Component: IconParkOutlinePreviewOpen },
 }
 
 /**
@@ -59,7 +62,7 @@ export function getField(id: number) {
   return AppRecStatItemFieldMap[id] || AppRecStatItemFieldMap[1] // 不认识的图标id, 使用 play
 }
 
-export function StatItemDisplay({ field, value }: StatItemType) {
+export const StatItemDisplay = memo(function ({ field, value }: StatItemType) {
   const text = value
   const usingText = useMemo(() => {
     if (typeof text === 'number' || (text && /^\d+$/.test(text))) {
@@ -69,33 +72,26 @@ export function StatItemDisplay({ field, value }: StatItemType) {
     }
   }, [text])
 
+  const { Component, size, extraProps, moveTextDown = true } = StatFieldIconConfig[field]
   const svgClassName = 'bili-video-card__stats--icon'
   const icon: ReactNode = useMemo(() => {
-    const { svgHref, svgScale, render } = StatFieldConfig[field]
-    if (render) {
-      return render({ className: svgClassName })
+    const props: ComponentProps<'svg'> = {
+      ...extraProps,
+      className: clsx(svgClassName, extraProps?.className),
+      style: {
+        ...{ width: size, height: size },
+        ...extraProps?.style,
+      },
     }
-    if (svgHref) {
-      return (
-        <svg
-          className={svgClassName}
-          style={{ transform: svgScale ? `scale(${svgScale})` : undefined }}
-        >
-          <use href={svgHref}></use>
-        </svg>
-      )
-    }
+    return <Component {...props} />
   }, [field])
 
   return (
     <span className='bili-video-card__stats--item'>
       {icon}
-      <span
-        className='bili-video-card__stats--text'
-        style={{ lineHeight: 'calc(var(--icon-size) + 1px)' }}
-      >
+      <span className={clsx('bili-video-card__stats--text', moveTextDown && 'relative top-1px')}>
         {usingText}
       </span>
     </span>
   )
-}
+})

@@ -5,6 +5,9 @@ $z: 3;
   :global {
     .bili-video-card__stats--item {
       margin-right: 8px;
+      align-items: center;
+    }
+    .bili-video-card__stats--text {
     }
   }
 }

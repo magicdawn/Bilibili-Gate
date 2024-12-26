@@ -1,4 +1,3 @@
-import type { SVGProps } from 'react'
 import IconCuidaShuffleOutline from '~icons/cuida/shuffle-outline' // 这个不能自动 import 不知为何
 
 export const IconForDislike = IconPhThumbsDownDuotone
@@ -47,7 +46,7 @@ export function IconForLive({
   }
 }
 
-export function IconForWatchlater(props: SVGProps<SVGSVGElement>) {
+export function IconForWatchlater(props: ComponentProps<'svg'>) {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'

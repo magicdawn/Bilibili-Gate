@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion'
-import type { SVGProps } from 'react'
 
 /**
  * svg checked mark
@@ -20,7 +19,7 @@ export function IconAnimatedChecked({
 }: {
   size?: number
   useAnimation?: boolean
-} & SVGProps<SVGSVGElement>) {
+} & ComponentProps<'svg'>) {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'

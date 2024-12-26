@@ -1,5 +1,5 @@
 import { hasMarginLeft, hasSize } from '$utility/css'
-import type { ComponentType, ReactNode, SVGProps } from 'react'
+import type { ComponentType, ReactNode } from 'react'
 import IconParkOutlineTips from '~icons/icon-park-outline/tips'
 import { AntdTooltip } from './antd-custom'
 
@@ -14,8 +14,8 @@ export function HelpInfo({
 }: {
   children?: ReactNode // tooltip content
   tooltipProps?: Partial<ComponentProps<typeof AntdTooltip>>
-  IconComponent?: ComponentType<SVGProps<SVGSVGElement>>
-} & SVGProps<SVGSVGElement>) {
+  IconComponent?: ComponentType<ComponentProps<'svg'>>
+} & ComponentProps<'svg'>) {
   const [_hasSize, _hasMarginLeft] = useMemo(
     () => [hasSize(className), hasMarginLeft(className)],
     [className],
