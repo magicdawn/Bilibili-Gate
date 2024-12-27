@@ -99,6 +99,25 @@ export function TabPaneBasic() {
               </>
             }
           />
+
+          <CheckboxSettingItem
+            configPath={'showModalFeedOnLoad'}
+            label='自动「查看更多」'
+            tooltip='打开首页时自动打开「查看更多」弹窗'
+            extraAction={(val) => {
+              if (val) {
+                antMessage.success(
+                  '已开启自动「查看更多」: 下次打开首页时将自动打开「查看更多」弹窗',
+                )
+              }
+            }}
+          />
+
+          <CheckboxSettingItem
+            configPath={'showModalFeedEntry'}
+            label='「查看更多」按钮'
+            tooltip='是否展示「查看更多」按钮'
+          />
         </Space>
       </SettingsGroup>
 

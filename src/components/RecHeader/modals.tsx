@@ -1,8 +1,26 @@
-import { APP_CLS_ROOT } from '$common'
+import { APP_CLS_ROOT, IN_BILIBILI_HOMEPAGE } from '$common'
 import { AntdApp } from '$components/AntdApp'
+import { ModalFeed } from '$components/ModalFeed'
 import { ModalSettings } from '$components/ModalSettings'
+import { settings } from '$modules/settings'
 import { once } from 'es-toolkit'
 import { headerState, useHeaderState } from './index.shared'
+
+export function showModalFeed() {
+  renderOnce()
+  headerState.modalFeedVisible = true
+}
+export function hideModalFeed() {
+  headerState.modalFeedVisible = false
+}
+
+/**
+ * NOTE: side-effects
+ * showModalFeed on load
+ */
+if (IN_BILIBILI_HOMEPAGE && settings.showModalFeedOnLoad) {
+  setTimeout(showModalFeed)
+}
 
 export function showModalSettings() {
   renderOnce()
@@ -29,9 +47,10 @@ const renderOnce = once(function render() {
 })
 
 function ModalsContainer() {
-  const { modalSettingsVisible } = useHeaderState()
+  const { modalFeedVisible, modalSettingsVisible } = useHeaderState()
   return (
     <>
+      <ModalFeed show={modalFeedVisible} onHide={hideModalFeed} />
       <ModalSettings show={modalSettingsVisible} onHide={hideModalSettings} />
     </>
   )
