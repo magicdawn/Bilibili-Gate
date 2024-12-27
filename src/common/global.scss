@@ -30,12 +30,8 @@
   .bili-video-card a:not(.disable-hover):hover {
     color: var($app-color-primary-id) !important;
   }
-
-  .ant-btn > span:not(:only-child) {
-    // this is baseline, overwrite to `center` here
-    align-self: center;
-  }
 }
+
 @media (max-width: 1440px) {
   .#{$app-cls-root} {
     --back-top-right: 16px;
