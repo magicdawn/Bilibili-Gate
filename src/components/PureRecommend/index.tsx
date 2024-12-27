@@ -23,16 +23,18 @@ export function PureRecommend() {
     recHeaderRef.current?.scroll()
   })
 
-  const renderHeader = ({ refreshing, onRefresh, extraInfo }: RenderHeaderOptions) => {
-    return (
-      <RecHeader
-        ref={recHeaderRef}
-        refreshing={refreshing}
-        onRefresh={onRefresh}
-        leftSlot={extraInfo}
-      />
-    )
-  }
+  const renderHeader = useMemoizedFn(
+    ({ refreshing, onRefresh, extraInfo }: RenderHeaderOptions) => {
+      return (
+        <RecHeader
+          ref={recHeaderRef}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          leftSlot={extraInfo}
+        />
+      )
+    },
+  )
 
   return (
     <RecGrid

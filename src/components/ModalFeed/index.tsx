@@ -95,74 +95,76 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
     }
   })
 
-  const renderHeader = ({ refreshing, onRefresh, extraInfo }: RenderHeaderOptions) => {
-    return (
-      <OnRefreshContext.Provider value={onRefresh}>
-        <div
-          css={[
-            BaseModalStyle.modalHeader,
-            S.modalHeader,
-            css`
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              column-gap: 20px;
-            `,
-          ]}
-        >
+  const renderHeader = useMemoizedFn(
+    ({ refreshing, onRefresh, extraInfo }: RenderHeaderOptions) => {
+      return (
+        <OnRefreshContext.Provider value={onRefresh}>
           <div
-            className='left'
-            css={css`
-              flex-shrink: 1;
-              display: flex;
-              align-items: center;
-              flex-wrap: wrap;
-              row-gap: 4px;
-              column-gap: 15px;
-            `}
+            css={[
+              BaseModalStyle.modalHeader,
+              S.modalHeader,
+              css`
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                column-gap: 20px;
+              `,
+            ]}
           >
-            <VideoSourceTab onRefresh={onRefresh} />
-            {extraInfo}
-          </div>
-          <div
-            className='right'
-            css={css`
-              display: flex;
-              align-items: center;
-              flex-shrink: 0;
-            `}
-          >
-            {useNarrowMode ? null : useFullScreen ? (
-              <ModalFeedConfigChecks />
-            ) : (
-              <CollapseBtn initialOpen>
-                <ModalFeedConfigChecks />
-              </CollapseBtn>
-            )}
-
-            <RefreshButton
+            <div
+              className='left'
               css={css`
-                ${S.btnRefresh}
-                margin-left: 8px;
+                flex-shrink: 1;
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                row-gap: 4px;
+                column-gap: 15px;
               `}
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              refreshHotkeyEnabled={show}
-            />
+            >
+              <VideoSourceTab onRefresh={onRefresh} />
+              {extraInfo}
+            </div>
+            <div
+              className='right'
+              css={css`
+                display: flex;
+                align-items: center;
+                flex-shrink: 0;
+              `}
+            >
+              {useNarrowMode ? null : useFullScreen ? (
+                <ModalFeedConfigChecks />
+              ) : (
+                <CollapseBtn initialOpen>
+                  <ModalFeedConfigChecks />
+                </CollapseBtn>
+              )}
 
-            <ModalClose onClick={onHide} />
+              <RefreshButton
+                css={css`
+                  ${S.btnRefresh}
+                  margin-left: 8px;
+                `}
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                refreshHotkeyEnabled={show}
+              />
+
+              <ModalClose onClick={onHide} />
+            </div>
           </div>
-        </div>
-      </OnRefreshContext.Provider>
-    )
-  }
-  const renderContent = (content: ReactNode) => {
+        </OnRefreshContext.Provider>
+      )
+    },
+  )
+  const renderContent = useMemoizedFn((content: ReactNode) => {
     return (
       <div css={[BaseModalStyle.modalBody, S.modalBody]} ref={scrollerRef}>
         {content}
       </div>
     )
-  }
+  })
 
   return (
     <BaseModal
