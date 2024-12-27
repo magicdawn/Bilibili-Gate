@@ -1,7 +1,7 @@
 import { appClsDarkSelector } from '$common/css-vars-export.module.scss'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
-import type { RenderHeaderOptions } from '$components/RecGrid'
-import { RecGrid } from '$components/RecGrid'
+import type { HeaderState } from '$components/RecGrid'
+import { initHeaderState, RecGrid } from '$components/RecGrid'
 import { OnRefreshContext } from '$components/RecGrid/useRefresh'
 import { RefreshButton } from '$components/RecHeader/RefreshButton'
 import { VideoSourceTab } from '$components/RecHeader/tab'
@@ -95,76 +95,69 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
     }
   })
 
-  const renderHeader = useMemoizedFn(
-    ({ refreshing, onRefresh, extraInfo }: RenderHeaderOptions) => {
-      return (
-        <OnRefreshContext.Provider value={onRefresh}>
-          <div
-            css={[
-              BaseModalStyle.modalHeader,
-              S.modalHeader,
-              css`
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                column-gap: 20px;
-              `,
-            ]}
-          >
-            <div
-              className='left'
-              css={css`
-                flex-shrink: 1;
-                display: flex;
-                align-items: center;
-                flex-wrap: wrap;
-                row-gap: 4px;
-                column-gap: 15px;
-              `}
-            >
-              <VideoSourceTab onRefresh={onRefresh} />
-              {extraInfo}
-            </div>
-            <div
-              className='right'
-              css={css`
-                display: flex;
-                align-items: center;
-                flex-shrink: 0;
-              `}
-            >
-              {useNarrowMode ? null : useFullScreen ? (
-                <ModalFeedConfigChecks />
-              ) : (
-                <CollapseBtn initialOpen>
-                  <ModalFeedConfigChecks />
-                </CollapseBtn>
-              )}
-
-              <RefreshButton
-                css={css`
-                  ${S.btnRefresh}
-                  margin-left: 8px;
-                `}
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-                refreshHotkeyEnabled={show}
-              />
-
-              <ModalClose onClick={onHide} />
-            </div>
-          </div>
-        </OnRefreshContext.Provider>
-      )
-    },
-  )
-  const renderContent = useMemoizedFn((content: ReactNode) => {
+  const [headerState, setHeaderState] = useState<HeaderState>(initHeaderState)
+  const renderHeader = () => {
+    const { refreshing, onRefresh, extraInfo } = headerState
     return (
-      <div css={[BaseModalStyle.modalBody, S.modalBody]} ref={scrollerRef}>
-        {content}
-      </div>
+      <OnRefreshContext.Provider value={onRefresh}>
+        <div
+          css={[
+            BaseModalStyle.modalHeader,
+            S.modalHeader,
+            css`
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              column-gap: 20px;
+            `,
+          ]}
+        >
+          <div
+            className='left'
+            css={css`
+              flex-shrink: 1;
+              display: flex;
+              align-items: center;
+              flex-wrap: wrap;
+              row-gap: 4px;
+              column-gap: 15px;
+            `}
+          >
+            <VideoSourceTab onRefresh={onRefresh} />
+            {extraInfo}
+          </div>
+          <div
+            className='right'
+            css={css`
+              display: flex;
+              align-items: center;
+              flex-shrink: 0;
+            `}
+          >
+            {useNarrowMode ? null : useFullScreen ? (
+              <ModalFeedConfigChecks />
+            ) : (
+              <CollapseBtn initialOpen>
+                <ModalFeedConfigChecks />
+              </CollapseBtn>
+            )}
+
+            <RefreshButton
+              css={css`
+                ${S.btnRefresh}
+                margin-left: 8px;
+              `}
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              refreshHotkeyEnabled={show}
+            />
+
+            <ModalClose onClick={onHide} />
+          </div>
+        </div>
+      </OnRefreshContext.Provider>
     )
-  })
+  }
 
   return (
     <BaseModal
@@ -172,14 +165,16 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
       cssModalMask={S.modalMask(useNarrowMode)}
       cssModal={[S.modal(useNarrowMode, useFullScreen), modalBorderCss]}
     >
-      <RecGrid
-        renderHeader={renderHeader}
-        renderContent={renderContent}
-        shortcutEnabled={show}
-        onScrollToTop={onScrollToTop}
-        infiniteScrollUseWindow={false}
-        scrollerRef={scrollerRef}
-      />
+      {renderHeader()}
+      <div css={[BaseModalStyle.modalBody, S.modalBody]} ref={scrollerRef}>
+        <RecGrid
+          shortcutEnabled={show}
+          onScrollToTop={onScrollToTop}
+          infiniteScrollUseWindow={false}
+          scrollerRef={scrollerRef}
+          onSyncHeaderState={setHeaderState}
+        />
+      </div>
     </BaseModal>
   )
 })

@@ -29,7 +29,7 @@ import { css } from '@emotion/react'
 import { useEventListener, useLatest, usePrevious, useUnmountedRef } from 'ahooks'
 import { Divider } from 'antd'
 import type { AxiosError } from 'axios'
-import { cloneDeep, delay, isEqual } from 'es-toolkit'
+import { cloneDeep, delay, isEqual, noop } from 'es-toolkit'
 import mitt from 'mitt'
 import ms from 'ms'
 import type { ForwardedRef, ReactNode } from 'react'
@@ -44,23 +44,26 @@ import { ENABLE_VIRTUAL_GRID, gridComponents } from './virtuoso.config'
 
 const debug = baseDebug.extend('components:RecGrid')
 
-export type RenderHeaderOptions = {
+export type HeaderState = {
   refreshing: boolean
   onRefresh: OnRefresh
   extraInfo: ReactNode
 }
 
+export const initHeaderState = (): HeaderState => ({
+  refreshing: false,
+  onRefresh: noop,
+  extraInfo: null,
+})
+
 export type RecGridRef = { refresh: OnRefresh }
 export type RecGridProps = {
   className?: string
   shortcutEnabled: boolean
-
-  renderHeader?: (options: RenderHeaderOptions) => ReactNode // header depends on some state in RecGrid
-  renderContent?: (content: ReactNode) => ReactNode
-
   infiniteScrollUseWindow: boolean
   onScrollToTop?: () => void
   scrollerRef?: RefObject<HTMLElement | null>
+  onSyncHeaderState?: (options: HeaderState) => void
 }
 
 export const RecGrid = forwardRef<RecGridRef, RecGridProps>(function (props, ref) {
@@ -96,13 +99,10 @@ const RecGridInner = memo(function ({
   tab,
   handlersRef,
   servicesRegistry,
-
-  renderHeader,
-  renderContent,
-
   infiniteScrollUseWindow,
   onScrollToTop,
   scrollerRef,
+  onSyncHeaderState,
 }: RecGridProps & {
   tab: ETab
   direction?: 'left' | 'right' // how to get to current tab, moved left or right
@@ -115,12 +115,8 @@ const RecGridInner = memo(function ({
   const loadCompleteCountBox = useRefStateBox(0)
 
   const [extraInfo, setExtraInfo] = useState<ReactNode>(undefined)
-
   const updateExtraInfo = useMemoizedFn(() => {
-    if (unmountedRef.current) return
-    const service = servicesRegistry.value[tab]
-    if (!service) return
-    setExtraInfo(service.usageInfo)
+    setExtraInfo(servicesRegistry.value[tab]?.usageInfo)
   })
 
   const preAction = useMemoizedFn(() => {
@@ -157,6 +153,19 @@ const RecGridInner = memo(function ({
   })
 
   useImperativeHandle(handlersRef, () => ({ refresh }), [refresh])
+
+  const refreshing = refreshingBox.state
+  const hasMore = hasMoreBox.state
+
+  // sync to parent component
+  useEffect(() => {
+    if (unmountedRef.current) return
+    onSyncHeaderState?.({
+      refreshing,
+      onRefresh: refresh,
+      extraInfo,
+    })
+  }, [refreshing, refresh, extraInfo, onSyncHeaderState])
 
   const goOutAt = useRef<number | undefined>()
   useEventListener(
@@ -382,13 +391,6 @@ const RecGridInner = memo(function ({
   })
 
   /**
-   * state for render & useEffect deps
-   */
-
-  const refreshing = refreshingBox.state
-  const hasMore = hasMoreBox.state
-
-  /**
    * footer for infinite scroll
    */
   const { ref: footerRef, inView: __footerInView } = useInView({
@@ -462,7 +464,7 @@ const RecGridInner = memo(function ({
     gridChildren,
     gridSiblings,
   }: { gridChildren?: ReactNode; gridSiblings?: ReactNode } = {}) => {
-    const content = (
+    return (
       <div
         ref={containerRef}
         className={scopedClsNames.videoGridContainer}
@@ -473,13 +475,6 @@ const RecGridInner = memo(function ({
         <div className={gridClassName}>{gridChildren}</div>
         {gridSiblings}
       </div>
-    )
-
-    return (
-      <>
-        {renderHeader?.({ refreshing, onRefresh: refresh, extraInfo })}
-        {renderContent ? renderContent(content) : content}
-      </>
     )
   }
 

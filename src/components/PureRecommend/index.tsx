@@ -1,4 +1,4 @@
-import { RecGrid, type RenderHeaderOptions } from '$components/RecGrid'
+import { initHeaderState, RecGrid, type HeaderState } from '$components/RecGrid'
 import { RecHeader, type RecHeaderRef } from '$components/RecHeader'
 import { useHeaderState } from '$components/RecHeader/index.shared'
 import { useSettingsSnapshot } from '$modules/settings'
@@ -22,27 +22,23 @@ export function PureRecommend() {
   const onScrollToTop = useMemoizedFn(() => {
     recHeaderRef.current?.scroll()
   })
-
-  const renderHeader = useMemoizedFn(
-    ({ refreshing, onRefresh, extraInfo }: RenderHeaderOptions) => {
-      return (
-        <RecHeader
-          ref={recHeaderRef}
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          leftSlot={extraInfo}
-        />
-      )
-    },
-  )
+  const [headerState, setHeaderState] = useState<HeaderState>(initHeaderState)
 
   return (
-    <RecGrid
-      renderHeader={renderHeader}
-      css={[useNarrowMode && narrowStyle.grid]}
-      shortcutEnabled={!(modalFeedVisible || modalSettingsVisible)}
-      infiniteScrollUseWindow={true}
-      onScrollToTop={onScrollToTop}
-    />
+    <>
+      <RecHeader
+        ref={recHeaderRef}
+        refreshing={headerState.refreshing}
+        onRefresh={headerState.onRefresh}
+        leftSlot={headerState.extraInfo}
+      />
+      <RecGrid
+        css={[useNarrowMode && narrowStyle.grid]}
+        shortcutEnabled={!(modalFeedVisible || modalSettingsVisible)}
+        infiniteScrollUseWindow={true}
+        onScrollToTop={onScrollToTop}
+        onSyncHeaderState={setHeaderState}
+      />
+    </>
   )
 }
