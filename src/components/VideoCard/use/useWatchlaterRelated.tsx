@@ -97,11 +97,6 @@ export function useWatchlaterRelated({
     },
   )
 
-  // <use href={watchlaterAdded ? '#widget-watch-save' : '#widget-watch-later'} />
-  // <svg width={addSize} height={addSize}>
-  //   <use href={'#widget-watch-later'} />
-  // </svg>
-
   const addSize = 20
   const addedSize = 18
   const icon = (() => {

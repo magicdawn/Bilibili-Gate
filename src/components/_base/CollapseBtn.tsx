@@ -38,7 +38,7 @@ export const CollapseBtn = forwardRef<CollapseBtnRef, IProps>(function CollapseB
         }
       `}
     >
-      <svg
+      <IconParkOutlineRight
         css={[
           css`
             width: 13px;
@@ -50,9 +50,7 @@ export const CollapseBtn = forwardRef<CollapseBtnRef, IProps>(function CollapseB
               transform: rotateZ(0deg);
             `,
         ]}
-      >
-        <use href='#widget-arrow'></use>
-      </svg>
+      />
     </button>
   )
 

@@ -187,16 +187,8 @@ export const RecHeader = forwardRef<
 
                 {showModalFeedEntry && (
                   <Button onClick={showModalFeed} className='gap-0'>
-                    <span>查看更多</span>
-                    <svg
-                      css={css`
-                        width: 12px;
-                        height: 12px;
-                        margin-left: 2px;
-                      `}
-                    >
-                      <use href='#widget-arrow'></use>
-                    </svg>
+                    <span className='relative top-1px'>查看更多</span>
+                    <IconParkOutlineRight />
                   </Button>
                 )}
               </Space>

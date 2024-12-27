@@ -85,7 +85,7 @@ export const RefreshButton = forwardRef<RefreshButtonActions, RefreshButtonProps
       onClick={onClick}
     >
       <IconForRoll ref={scope} className='size-14px mr-5px' />
-      <span>{text}</span>
+      <span className='relative top-1px'>{text}</span>
     </Button>
   )
 })
