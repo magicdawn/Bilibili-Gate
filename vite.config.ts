@@ -237,19 +237,20 @@ export default defineConfig(({ command, mode }) => ({
 
           // 'react': cdn.npmmirror('React', 'umd/react.production.min.js'),
           // 'react-dom': cdn.npmmirror('ReactDOM', 'umd/react-dom.production.min.js'),
-          'react': [
-            'React',
-            (version, name, importName) => `https://unpkg.com/react-umd/dist/react.umd.js`,
-          ],
-          'react-dom': [
-            'ReactDOM',
-            (version, name, importName) => `https://unpkg.com/react-umd/dist/react-dom.umd.js`,
-          ],
-          'react-dom/client': [
-            'ReactDOMClient',
-            (version, name, importName) =>
-              `https://unpkg.com/react-umd/dist/react-dom-client.umd.js`,
-          ],
+          // 'react': [
+          //   'React',
+          //   (version, name, importName) => `https://unpkg.com/react-umd/dist/react.umd.js`,
+          // ],
+          // 'react-dom': [
+          //   'ReactDOM',
+          //   (version, name, importName) => `https://unpkg.com/react-umd/dist/react-dom.umd.js`,
+          // ],
+          // 'react-dom/client': [
+          //   'ReactDOMClient',
+          //   (version, name, importName) =>
+          //     `https://unpkg.com/react-umd/dist/react-dom-client.umd.js`,
+          // ],
+          // 'framer-motion': cdn.npmmirror('Motion', 'dist/framer-motion.js'),
 
           'axios': cdn.npmmirror('axios', 'dist/axios.min.js'),
           // 'axios-userscript-adapter': cdn.npmmirror(
@@ -257,7 +258,6 @@ export default defineConfig(({ command, mode }) => ({
           //   'dist/axiosGmxhrAdapter.min.js',
           // ),
           'ua-parser-js': cdn.npmmirror('UAParser', 'dist/ua-parser.min.js'),
-          'framer-motion': cdn.npmmirror('Motion', 'dist/framer-motion.js'),
           'localforage': cdn.npmmirror('localforage', 'dist/localforage.min.js'),
 
           // size:
@@ -304,12 +304,18 @@ export default defineConfig(({ command, mode }) => ({
  */
 
 function getBabelImportPlugins(command: ConfigEnv['command']): PluginOption[] {
+  return []
   return [
     command === 'build' &&
       minify &&
       importer({
         libraryName: 'antd',
-        libraryDirectory: 'es',
+        // libraryDirectory: 'es',
+        // transformToDefaultImport: false,
+        customName(name, file) {
+          if (name === 'unstable-set-render') return `antd/es/config-provider/UnstableContext`
+          return `antd/es/${name}`
+        },
       }),
 
     // command === 'build' &&

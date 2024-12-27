@@ -3,7 +3,7 @@ import { HelpInfo } from '$components/_base/HelpInfo'
 import { styled } from '$libs'
 import { defineAntMenus } from '$utility/antd'
 import { Button, Dropdown, type DropdownProps } from 'antd'
-import type { ElementRef, MouseEvent } from 'react'
+import type { ComponentRef, MouseEvent } from 'react'
 
 const clsMenuRoot = styled.createClass`
   .ant-dropdown &.ant-dropdown-menu .ant-dropdown-menu-item {
@@ -22,7 +22,7 @@ export type GenericOrderSwitcherProps<T extends string | number> = {
   listDisplayConfig: Record<T, { icon?: ReactNode; label?: ReactNode }>
   dropdownProps?: Partial<DropdownProps>
   extraHelpInfo?: ReactNode
-  $ref?: RefObject<ElementRef<'span'>>
+  $ref?: RefObject<ComponentRef<'span'> | null>
 }
 
 export const GenericOrderSwitcher = function <T extends string | number>({

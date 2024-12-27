@@ -11,7 +11,7 @@ import {
 import { usePopupContainer } from '$modules/rec-services/_base'
 import { GenericOrderSwitcher } from '$modules/rec-services/_shared/generic-order-switcher'
 import { delay } from 'es-toolkit'
-import type { ElementRef, ReactNode } from 'react'
+import type { ComponentRef, ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
 import { FavItemsOrder } from '../fav-enum'
 import { favStore, type FavSelectedKeyPrefix } from '../store'
@@ -104,7 +104,7 @@ export function useSavedOrder(selectedKey: string, savedOrderMap: Map<string, Fa
 
 export function FavItemsOrderSwitcher() {
   const onRefresh = useOnRefreshContext()
-  const { ref, getPopupContainer } = usePopupContainer<ElementRef<'span'>>()
+  const { ref, getPopupContainer } = usePopupContainer<ComponentRef<'span'>>()
 
   const { selectedKey, savedOrderMap } = useSnapshot(favStore)
   const value = useSavedOrder(selectedKey, savedOrderMap)

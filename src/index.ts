@@ -13,6 +13,9 @@
 // polyfills
 import 'core-js/proposals/explicit-resource-management' // useful, but current not used
 
+// patch
+import '@ant-design/v5-patch-for-react-19'
+
 // styles
 import '$common/global.scss'
 // css modules 与 emtion 混用, 先 import 作为 base 的 css modules
