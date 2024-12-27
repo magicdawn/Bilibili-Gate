@@ -35,7 +35,7 @@ const S = {
 }
 
 export type RecHeaderRef = {
-  scroll: () => void
+  scrollToTop: () => void
 }
 
 export const RecHeader = forwardRef<
@@ -61,7 +61,7 @@ export const RecHeader = forwardRef<
 
   const [stickyRef, sticky] = useSticky<HTMLDivElement>()
 
-  const scroll = useMemoizedFn(() => {
+  const scrollToTop = useMemoizedFn(() => {
     if (!pureRecommend) return
 
     const container = stickyRef.current?.parentElement
@@ -75,7 +75,7 @@ export const RecHeader = forwardRef<
       document.documentElement.scrollTop = yOffset - headerHeight + 2
     }
   })
-  useImperativeHandle(ref, () => ({ scroll }))
+  useImperativeHandle(ref, () => ({ scrollToTop }))
 
   const headerHeight = $headerHeight.use()
 

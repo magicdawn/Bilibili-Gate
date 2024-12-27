@@ -20,7 +20,7 @@ export function PureRecommend() {
 
   const recHeaderRef = useRef<RecHeaderRef>(null)
   const onScrollToTop = useMemoizedFn(() => {
-    recHeaderRef.current?.scroll()
+    recHeaderRef.current?.scrollToTop()
   })
   const [headerState, setHeaderState] = useState<HeaderState>(initHeaderState)
 
