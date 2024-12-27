@@ -33,19 +33,15 @@ export function useRefresh({
   servicesRegistry,
   debug,
   fetcher,
-
   preAction,
   postAction,
-  onUpdateRefreshing,
 }: {
   tab: ETab
   servicesRegistry: RefStateBox<Partial<ServiceMap>>
   debug: Debugger
   fetcher: (opts: FetcherOptions) => Promise<RecItemTypeOrSeparator[]>
-
   preAction?: () => void | Promise<void>
   postAction?: () => void | Promise<void>
-  onUpdateRefreshing?: (val: boolean) => void
 }) {
   const hasMoreBox = useRefStateBox(true)
   const itemsBox = useRefStateBox<RecItemTypeOrSeparator[]>([])
@@ -130,14 +126,9 @@ export function useRefresh({
       debug('refresh(): tab=%s [start]', tab)
     }
 
-    const updateRefreshing = (val: boolean) => {
-      refreshingBox.set(val)
-      onUpdateRefreshing?.(val)
-    }
-
     // refresh-state
     refreshTsBox.set(Date.now())
-    updateRefreshing(true)
+    refreshingBox.set(true)
     // refresh-result
     setError(undefined)
     itemsBox.set([])
@@ -145,7 +136,7 @@ export function useRefresh({
     // defer actions
     stack.defer(() => {
       // refreshing
-      updateRefreshing(false)
+      refreshingBox.set(false)
       // hasMore
       hasMoreBox.set(getServiceFromRegistry(servicesRegistry, tab).hasMore)
     })
@@ -157,7 +148,7 @@ export function useRefresh({
     setRefreshAbortController(_abortController)
 
     const onError = (err: any) => {
-      updateRefreshing(false)
+      refreshingBox.set(false)
       hasMoreBox.set(false)
       console.error(err)
       setError(err)

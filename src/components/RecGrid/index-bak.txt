@@ -111,3 +111,15 @@ import InfiniteScroll from 'react-infinite-scroller'
       </div>
     )
   }
+
+
+
+// h slide
+// initial={direction ? { opacity: 0, x: direction === 'right' ? '10vw' : '-10vw' } : false}
+// animate={{ opacity: 1, x: 0 }}
+// transition={{ bounce: false, duration: 0.3 }}
+
+// v slide
+// initial={direction ? { opacity: 0, y: -10 } : false}
+// animate={{ opacity: 1, y: 0 }}
+// transition={{ bounce: false, duration: 0.3 }}

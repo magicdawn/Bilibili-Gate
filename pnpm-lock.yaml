@@ -31,7 +31,7 @@ importers:
         version: 11.13.5
       '@emotion/react':
         specifier: ^11.13.5
-        version: 11.13.5(@types/react@18.3.14)(react@18.3.1)
+        version: 11.13.5(@types/react@18.3.18)(react@18.3.1)
       '@mgdn/bvid':
         specifier: ^0.3.0
         version: 0.3.0
@@ -121,7 +121,7 @@ importers:
         version: 1.0.39
       valtio:
         specifier: ^2.1.2
-        version: 2.1.2(@types/react@18.3.14)(react@18.3.1)
+        version: 2.1.2(@types/react@18.3.18)(react@18.3.1)
     devDependencies:
       '@babel/plugin-syntax-explicit-resource-management':
         specifier: ^7.25.9
@@ -169,14 +169,14 @@ importers:
         specifier: ^0.7.34
         version: 0.7.34
       '@types/node':
-        specifier: 22.10.2
+        specifier: ^22.10.2
         version: 22.10.2
       '@types/react':
-        specifier: 18.3.14
-        version: 18.3.14
+        specifier: ^18.3.18
+        version: 18.3.18
       '@types/react-dom':
-        specifier: 18.3.2
-        version: 18.3.2
+        specifier: ^18.3.5
+        version: 18.3.5(@types/react@18.3.18)
       '@types/ua-parser-js':
         specifier: ^0.7.39
         version: 0.7.39
@@ -1671,11 +1671,13 @@ packages:
   '@types/prop-types@15.7.5':
     resolution: {integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==}
 
-  '@types/react-dom@18.3.2':
-    resolution: {integrity: sha512-Fqp+rcvem9wEnGr3RY8dYNvSQ8PoLqjZ9HLgaPUOjJJD120uDyOxOjc/39M4Kddp9JQCxpGQbnhVQF0C0ncYVg==}
+  '@types/react-dom@18.3.5':
+    resolution: {integrity: sha512-P4t6saawp+b/dFrUr2cvkVsfvPguwsxtH6dNIYRllMsefqFzkZk5UIjzyDOv5g1dXIPdG4Sp1yCR4Z6RCUsG/Q==}
+    peerDependencies:
+      '@types/react': ^18.0.0
 
-  '@types/react@18.3.14':
-    resolution: {integrity: sha512-NzahNKvjNhVjuPBQ+2G7WlxstQ+47kXZNHlUvFakDViuIEfGY926GqhMueQFZ7woG+sPiQKlF36XfrIUVSUfFg==}
+  '@types/react@18.3.18':
+    resolution: {integrity: sha512-t4yC+vtgnkYjNSKlFx1jkAhH8LgTo2N/7Qvi83kdEaUtMDiwpbLAktKDaAMlRcJ5eSxZkH74eEGt1ky31d7kfQ==}
 
   '@types/ua-parser-js@0.7.39':
     resolution: {integrity: sha512-P/oDfpofrdtF5xw433SPALpdSchtJmY7nsJItf8h3KXqOslkbySh8zq4dSWXH2oTjRvJ5PczVEoCZPow6GicLg==}
@@ -5314,7 +5316,7 @@ snapshots:
 
   '@emotion/memoize@0.9.0': {}
 
-  '@emotion/react@11.13.5(@types/react@18.3.14)(react@18.3.1)':
+  '@emotion/react@11.13.5(@types/react@18.3.18)(react@18.3.1)':
     dependencies:
       '@babel/runtime': 7.26.0
       '@emotion/babel-plugin': 11.13.5
@@ -5326,7 +5328,7 @@ snapshots:
       hoist-non-react-statics: 3.3.2
       react: 18.3.1
     optionalDependencies:
-      '@types/react': 18.3.14
+      '@types/react': 18.3.18
     transitivePeerDependencies:
       - supports-color
 
@@ -6067,11 +6069,11 @@ snapshots:
 
   '@types/prop-types@15.7.5': {}
 
-  '@types/react-dom@18.3.2':
+  '@types/react-dom@18.3.5(@types/react@18.3.18)':
     dependencies:
-      '@types/react': 18.3.14
+      '@types/react': 18.3.18
 
-  '@types/react@18.3.14':
+  '@types/react@18.3.18':
     dependencies:
       '@types/prop-types': 15.7.5
       csstype: 3.1.3
@@ -9270,11 +9272,11 @@ snapshots:
 
   util-deprecate@1.0.2: {}
 
-  valtio@2.1.2(@types/react@18.3.14)(react@18.3.1):
+  valtio@2.1.2(@types/react@18.3.18)(react@18.3.1):
     dependencies:
       proxy-compare: 3.0.0
     optionalDependencies:
-      '@types/react': 18.3.14
+      '@types/react': 18.3.18
       react: 18.3.1
 
   varint@6.0.0: {}

@@ -1,8 +1,5 @@
-import type { RecGridRef } from '$components/RecGrid'
-import { RecGrid } from '$components/RecGrid'
-import type { OnRefresh } from '$components/RecGrid/useRefresh'
-import type { RecHeaderRef } from '$components/RecHeader'
-import { RecHeader } from '$components/RecHeader'
+import { RecGrid, type RenderHeaderOptions } from '$components/RecGrid'
+import { RecHeader, type RecHeaderRef } from '$components/RecHeader'
 import { useHeaderState } from '$components/RecHeader/index.shared'
 import { useSettingsSnapshot } from '$modules/settings'
 import { css } from '@emotion/react'
@@ -18,41 +15,32 @@ const narrowStyle = {
 export function PureRecommend() {
   // 窄屏模式
   const { useNarrowMode } = useSettingsSnapshot()
-
   // 是否已经打开 "查看更多" 即 ModalFeed
   const { modalFeedVisible, modalSettingsVisible } = useHeaderState()
 
-  const recHeader = useRef<RecHeaderRef>(null)
-  const recGrid = useRef<RecGridRef>(null)
-
-  const onRefresh: OnRefresh = useMemoizedFn((...args) => {
-    return recGrid.current?.refresh(...args)
-  })
+  const recHeaderRef = useRef<RecHeaderRef>(null)
   const onScrollToTop = useMemoizedFn(() => {
-    return recHeader.current?.scroll()
+    recHeaderRef.current?.scroll()
   })
 
-  const [refreshing, setRefreshing] = useState(false)
-
-  const [extraInfo, setExtraInfo] = useState<ReactNode>(null)
-
-  return (
-    <section data-area='推荐'>
+  const renderHeader = ({ refreshing, onRefresh, extraInfo }: RenderHeaderOptions) => {
+    return (
       <RecHeader
-        ref={recHeader}
+        ref={recHeaderRef}
         refreshing={refreshing}
         onRefresh={onRefresh}
         leftSlot={extraInfo}
       />
-      <RecGrid
-        ref={recGrid}
-        css={[useNarrowMode && narrowStyle.grid]}
-        shortcutEnabled={!(modalFeedVisible || modalSettingsVisible)}
-        infiniteScrollUseWindow={true}
-        onScrollToTop={onScrollToTop}
-        onUpdateRefreshing={setRefreshing}
-        onUpdateExtraInfo={setExtraInfo}
-      />
-    </section>
+    )
+  }
+
+  return (
+    <RecGrid
+      renderHeader={renderHeader}
+      css={[useNarrowMode && narrowStyle.grid]}
+      shortcutEnabled={!(modalFeedVisible || modalSettingsVisible)}
+      infiniteScrollUseWindow={true}
+      onScrollToTop={onScrollToTop}
+    />
   )
 }

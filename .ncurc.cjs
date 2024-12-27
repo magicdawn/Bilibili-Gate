@@ -7,4 +7,10 @@ module.exports = {
     // v1 is enough
     'ua-parser-js',
   ],
+  dep: [
+    'prod',
+    'dev',
+    'optional',
+    // 'packageManager'
+  ],
 }

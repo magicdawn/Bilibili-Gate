@@ -44,16 +44,25 @@ import { ENABLE_VIRTUAL_GRID, gridComponents } from './virtuoso.config'
 
 const debug = baseDebug.extend('components:RecGrid')
 
+export type RenderHeaderOptions = {
+  refreshing: boolean
+  onRefresh: OnRefresh
+  extraInfo: ReactNode
+}
+
 export type RecGridRef = { refresh: OnRefresh }
 export type RecGridProps = {
+  className?: string
   shortcutEnabled: boolean
+
+  renderHeader?: (options: RenderHeaderOptions) => ReactNode // header depends on some state in RecGrid
+  renderContent?: (content: ReactNode) => ReactNode
+
   infiniteScrollUseWindow: boolean
   onScrollToTop?: () => void
-  className?: string
   scrollerRef?: RefObject<HTMLElement | null>
-  onUpdateRefreshing: (val: boolean) => void
-  onUpdateExtraInfo?: (n?: ReactNode) => void
 }
+
 export const RecGrid = forwardRef<RecGridRef, RecGridProps>(function (props, ref) {
   const servicesRegistry = useRefStateBox<Partial<ServiceMap>>(() => ({}))
 
@@ -82,16 +91,18 @@ export const RecGrid = forwardRef<RecGridRef, RecGridProps>(function (props, ref
 })
 
 const RecGridInner = memo(function ({
-  infiniteScrollUseWindow,
   shortcutEnabled,
-  onScrollToTop,
   className,
-  scrollerRef,
-  onUpdateRefreshing,
-  onUpdateExtraInfo,
   tab,
   handlersRef,
   servicesRegistry,
+
+  renderHeader,
+  renderContent,
+
+  infiniteScrollUseWindow,
+  onScrollToTop,
+  scrollerRef,
 }: RecGridProps & {
   tab: ETab
   direction?: 'left' | 'right' // how to get to current tab, moved left or right
@@ -103,12 +114,13 @@ const RecGridInner = memo(function ({
   // 已加载完成的 load call count, 类似 page
   const loadCompleteCountBox = useRefStateBox(0)
 
+  const [extraInfo, setExtraInfo] = useState<ReactNode>(undefined)
+
   const updateExtraInfo = useMemoizedFn(() => {
     if (unmountedRef.current) return
     const service = servicesRegistry.value[tab]
     if (!service) return
-    onUpdateExtraInfo?.(service.usageInfo)
-    // onUpdateExtraInfo?.(<UsageInfo tab={tab} service={service} />)
+    setExtraInfo(service.usageInfo)
   })
 
   const preAction = useMemoizedFn(() => {
@@ -142,7 +154,6 @@ const RecGridInner = memo(function ({
     // actions
     preAction,
     postAction,
-    onUpdateRefreshing,
   })
 
   useImperativeHandle(handlersRef, () => ({ refresh }), [refresh])
@@ -447,21 +458,11 @@ const RecGridInner = memo(function ({
   }, [footer, containerRef, gridClassName])
 
   // 总是 render grid, getColumnCount 依赖 grid columns
-  const wrap = ({
+  const render = ({
     gridChildren,
     gridSiblings,
   }: { gridChildren?: ReactNode; gridSiblings?: ReactNode } = {}) => {
-    // h slide
-    // initial={direction ? { opacity: 0, x: direction === 'right' ? '10vw' : '-10vw' } : false}
-    // animate={{ opacity: 1, x: 0 }}
-    // transition={{ bounce: false, duration: 0.3 }}
-
-    // v slide
-    // initial={direction ? { opacity: 0, y: -10 } : false}
-    // animate={{ opacity: 1, y: 0 }}
-    // transition={{ bounce: false, duration: 0.3 }}
-
-    return (
+    const content = (
       <div
         ref={containerRef}
         className={scopedClsNames.videoGridContainer}
@@ -473,23 +474,30 @@ const RecGridInner = memo(function ({
         {gridSiblings}
       </div>
     )
+
+    return (
+      <>
+        {renderHeader?.({ refreshing, onRefresh: refresh, extraInfo })}
+        {renderContent ? renderContent(content) : content}
+      </>
+    )
   }
 
   // before mount
   if (beforeMount) {
-    return wrap()
+    return render()
   }
 
   // Shit happens!
   if (refreshError) {
     console.error('RecGrid.refresh error:', refreshError.stack || refreshError)
-    return wrap({ gridSiblings: <ErrorDetail tab={tab} err={refreshError} /> })
+    return render({ gridSiblings: <ErrorDetail tab={tab} err={refreshError} /> })
   }
 
   // skeleton loading
   if (refreshing && showSkeleton) {
     const cardCount = getGridRefreshCount()
-    return wrap({
+    return render({
       gridChildren: new Array(cardCount).fill(0).map((_, index) => {
         return <VideoCard key={index} loading={true} className={APP_CLS_CARD} tab={tab} />
       }),
@@ -564,7 +572,7 @@ const RecGridInner = memo(function ({
   }
 
   // plain dom
-  return wrap({
+  return render({
     gridChildren: usingItems.map((item) => renderItem(item)),
     gridSiblings: footer,
   })

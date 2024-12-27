@@ -1,8 +1,7 @@
 import { appClsDarkSelector } from '$common/css-vars-export.module.scss'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
-import type { RecGridRef } from '$components/RecGrid'
+import type { RenderHeaderOptions } from '$components/RecGrid'
 import { RecGrid } from '$components/RecGrid'
-import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import { OnRefreshContext } from '$components/RecGrid/useRefresh'
 import { RefreshButton } from '$components/RecHeader/RefreshButton'
 import { VideoSourceTab } from '$components/RecHeader/tab'
@@ -74,7 +73,6 @@ interface IProps {
 
 export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
   const scrollerRef = useRef<HTMLDivElement>(null)
-  const recGridRef = useRef<RecGridRef>(null)
 
   const {
     // 双列模式
@@ -91,26 +89,14 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
     `
   }, [useFullScreen])
 
-  const onRefresh: OnRefresh = useMemoizedFn((...args) => {
-    return recGridRef.current?.refresh(...args)
-  })
-
-  const [extraInfo, setExtraInfo] = useState<ReactNode>(null)
-
   const onScrollToTop = useMemoizedFn(() => {
     if (scrollerRef.current) {
       scrollerRef.current.scrollTop = 0
     }
   })
 
-  const [refreshing, setRefreshing] = useState(false)
-
-  return (
-    <BaseModal
-      {...{ show, onHide }}
-      cssModalMask={S.modalMask(useNarrowMode)}
-      cssModal={[S.modal(useNarrowMode, useFullScreen), modalBorderCss]}
-    >
+  const renderHeader = ({ refreshing, onRefresh, extraInfo }: RenderHeaderOptions) => {
+    return (
       <OnRefreshContext.Provider value={onRefresh}>
         <div
           css={[
@@ -167,19 +153,31 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
             <ModalClose onClick={onHide} />
           </div>
         </div>
-
-        <div css={[BaseModalStyle.modalBody, S.modalBody]} ref={scrollerRef}>
-          <RecGrid
-            ref={recGridRef}
-            shortcutEnabled={show}
-            onScrollToTop={onScrollToTop}
-            infiniteScrollUseWindow={false}
-            scrollerRef={scrollerRef}
-            onUpdateRefreshing={setRefreshing}
-            onUpdateExtraInfo={setExtraInfo}
-          />
-        </div>
       </OnRefreshContext.Provider>
+    )
+  }
+  const renderContent = (content: ReactNode) => {
+    return (
+      <div css={[BaseModalStyle.modalBody, S.modalBody]} ref={scrollerRef}>
+        {content}
+      </div>
+    )
+  }
+
+  return (
+    <BaseModal
+      {...{ show, onHide }}
+      cssModalMask={S.modalMask(useNarrowMode)}
+      cssModal={[S.modal(useNarrowMode, useFullScreen), modalBorderCss]}
+    >
+      <RecGrid
+        renderHeader={renderHeader}
+        renderContent={renderContent}
+        shortcutEnabled={show}
+        onScrollToTop={onScrollToTop}
+        infiniteScrollUseWindow={false}
+        scrollerRef={scrollerRef}
+      />
     </BaseModal>
   )
 })
