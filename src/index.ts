@@ -11,7 +11,8 @@
  */
 
 // polyfills
-import 'core-js/proposals/explicit-resource-management' // useful, but current not used
+// import 'core-js/proposals/explicit-resource-management'
+import './explicit-resource-management'
 
 // styles
 import '$common/global.scss'

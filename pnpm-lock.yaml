@@ -56,6 +56,9 @@ importers:
       core-js:
         specifier: ^3.39.0
         version: 3.39.0
+      core-js-pure:
+        specifier: ^3.39.0
+        version: 3.39.0
       dayjs:
         specifier: 1.11.13
         version: 1.11.13
@@ -2233,6 +2236,9 @@ packages:
 
   copy-to-clipboard@3.3.3:
     resolution: {integrity: sha512-2KV8NhB5JqC3ky0r9PMCAZKbUHSwtEo4CwCs0KXgruG43gX5PMqDEBbVU4OUzw2MuAWUfsuFmWvEKG5QRfSnJA==}
+
+  core-js-pure@3.39.0:
+    resolution: {integrity: sha512-7fEcWwKI4rJinnK+wLTezeg2smbFFdSBP6E2kQZNbnzM2s1rpKQ6aaRteZSSg7FLU3P0HGGVo/gbpfanU36urg==}
 
   core-js@3.39.0:
     resolution: {integrity: sha512-raM0ew0/jJUqkJ0E6e8UDtl+y/7ktFivgWvqw8dNSQeNWoSDLvQ1H/RN3aPXB9tBd4/FhyR4RDPGhsNIMsAn7g==}
@@ -6866,6 +6872,8 @@ snapshots:
   copy-to-clipboard@3.3.3:
     dependencies:
       toggle-selection: 1.0.6
+
+  core-js-pure@3.39.0: {}
 
   core-js@3.39.0: {}
 

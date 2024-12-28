@@ -2,6 +2,7 @@ import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
 import { TabConfig } from '$components/RecHeader/tab-config'
 import { ETab } from '$components/RecHeader/tab-enum'
 import type { RecItemTypeOrSeparator } from '$define'
+import { AsyncDisposableStack } from '$explicit-resource-management'
 import { getGridRefreshCount } from '$modules/rec-services'
 import {
   getDynamicFeedServiceConfig,

@@ -95,6 +95,7 @@
     "axios-userscript-adapter": "0",
     "clsx": "^2.1.1",
     "core-js": "^3.39.0",
+    "core-js-pure": "^3.39.0",
     "dayjs": "1.11.13",
     "debug": "^4.4.0",
     "es-toolkit": "^1.31.0",

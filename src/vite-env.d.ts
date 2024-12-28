@@ -33,3 +33,10 @@ declare module '*.css' {
 declare module '*.scss' {
   never
 }
+
+declare module 'core-js-pure/actual/disposable-stack' {
+  export default DisposableStack
+}
+declare module 'core-js-pure/actual/async-disposable-stack' {
+  export default AsyncDisposableStack
+}
