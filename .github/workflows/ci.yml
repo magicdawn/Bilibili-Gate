@@ -67,6 +67,11 @@ jobs:
 
       # build
       - run: pnpm build:real-build
+        env:
+          MINIFY: 'false'
+      - run: pnpm build:real-build
+        env:
+          MINIFY: 'true'
 
       # prepare
       - run: cp README.md CHANGELOG.md ./dist

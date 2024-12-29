@@ -41,12 +41,10 @@ jobs:
       # test
       - run: pnpm test
 
-      # build for greasyfork
+      # build
       - run: pnpm build:real-build
         env:
           MINIFY: 'false'
-
-      # build minified version
       - run: pnpm build:real-build
         env:
           MINIFY: 'true'

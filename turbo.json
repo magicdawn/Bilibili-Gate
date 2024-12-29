@@ -13,7 +13,7 @@
 
     "build:vite": {
       "dependsOn": ["build:scss"],
-      "env": ["RELEASE", "RELEASE_NIGHTLY", "MINIFY", "GHD_DESCRIBE"],
+      "env": ["RELEASE", "RELEASE_NIGHTLY", "MINIFY", "GHD_DESCRIBE", "CI", "KEEP_DIST"],
       "inputs": [
         "src/**/*.{ts,tsx}",
         "tsconfig.json",
@@ -25,7 +25,7 @@
     },
     "build:vite-raw": {
       "dependsOn": ["build:scss"],
-      "env": ["RELEASE", "RELEASE_NIGHTLY", "MINIFY", "GHD_DESCRIBE"],
+      "env": ["RELEASE", "RELEASE_NIGHTLY", "MINIFY", "GHD_DESCRIBE", "CI", "KEEP_DIST"],
       "inputs": [
         "src/**/*.{ts,tsx}",
         "tsconfig.json",

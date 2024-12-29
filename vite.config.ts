@@ -42,32 +42,38 @@ if (process.env.RELEASE) {
 }
 
 // minify
-let minify = true
-// via argv
-if (process.argv.includes('--minify')) minify = true
-if (process.argv.includes('--no-minify')) minify = false
+const minify = (() => {
+  // via argv
+  if (process.argv.includes('--minify')) return true
+  if (process.argv.includes('--no-minify')) return false
 
-// GreasyFork: default no minify
-if (process.env.RELEASE) minify = false
+  // env.MINIFY
+  if (process.env.MINIFY === 'false') return false
+  if (process.env.MINIFY === 'true') return true
 
-// env.MINIFY
-if (process.env.MINIFY === 'false') minify = false
-if (process.env.MINIFY === 'true') minify = true
+  // GreasyFork: default no minify
+  if (process.env.RELEASE) return false
+
+  return true
+})()
 
 const miniSuffix = minify ? '.mini' : ''
 const fileName = `${packageName}${miniSuffix}.user.js`
 const metaFileName = `${packageName}${miniSuffix}.meta.js`
+
+const branchBaseUrl = (branch: string) =>
+  `https://raw.githubusercontent.com/magicdawn/Bilibili-Gate/refs/heads/${branch}/`
 
 let downloadURL: string | undefined
 let updateURL: string | undefined
 if (isDev) {
   // noop
 } else if (process.env.RELEASE) {
-  const baseUrl = 'https://github.com/magicdawn/bilibili-gate/raw/release/'
+  const baseUrl = branchBaseUrl('release')
   downloadURL = `${baseUrl}${fileName}`
   updateURL = `${baseUrl}${metaFileName}`
 } else {
-  const baseUrl = 'https://github.com/magicdawn/bilibili-gate/raw/release-nightly/'
+  const baseUrl = branchBaseUrl('release-nightly')
   downloadURL = `${baseUrl}${fileName}`
   updateURL = `${baseUrl}${metaFileName}`
 }
@@ -112,7 +118,7 @@ export default defineConfig(({ command, mode }) => ({
   },
 
   build: {
-    emptyOutDir: process.env.RELEASE ? false : true,
+    emptyOutDir: process.env.CI || process.env.KEEP_DIST ? false : true,
     cssMinify: minify,
     minify: minify,
     // target defaults `modules`, = ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari14']
