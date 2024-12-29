@@ -506,7 +506,7 @@ const VideoCardInner = memo(function VideoCardInner({
         </div>
         {/* 时长 */}
         {/* 番剧没有 duration 字段 */}
-        <span className='bili-video-card__stats__duration relative top-1px'>
+        <span className='bili-video-card__stats__duration relative top-0.5px'>
           {isNormalVideo && durationStr}
         </span>
       </div>

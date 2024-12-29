@@ -89,7 +89,7 @@ export const StatItemDisplay = memo(function ({ field, value }: StatItemType) {
   return (
     <span className='bili-video-card__stats--item'>
       {icon}
-      <span className={clsx('bili-video-card__stats--text', moveTextDown && 'relative top-1px')}>
+      <span className={clsx('bili-video-card__stats--text', moveTextDown && 'relative top-0.5px')}>
         {usingText}
       </span>
     </span>
