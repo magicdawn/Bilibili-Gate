@@ -12,4 +12,4 @@
  */
 
 import './1.setup'
-export { AsyncDisposableStack, DisposableStack } from './2.export'
+export { AsyncDisposableStackPolyfill, DisposableStackPolyfill } from './2.export'

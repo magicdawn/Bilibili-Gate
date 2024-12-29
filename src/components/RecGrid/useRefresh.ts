@@ -2,7 +2,7 @@ import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
 import { TabConfig } from '$components/RecHeader/tab-config'
 import { ETab } from '$components/RecHeader/tab-enum'
 import type { RecItemTypeOrSeparator } from '$define'
-import { AsyncDisposableStack } from '$modules/polyfills/explicit-resource-management'
+import { AsyncDisposableStackPolyfill } from '$modules/polyfills/explicit-resource-management'
 import { getGridRefreshCount } from '$modules/rec-services'
 import {
   getDynamicFeedServiceConfig,
@@ -71,7 +71,7 @@ export function useRefresh({
 
   const refresh: OnRefresh = useMemoizedFn(async (reuse = false) => {
     const start = performance.now()
-    await using stack = new AsyncDisposableStack()
+    await using stack = new AsyncDisposableStackPolyfill()
 
     // when already in refreshing
     if (refreshingBox.value) {
