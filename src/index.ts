@@ -11,8 +11,7 @@
  */
 
 // polyfills
-// import 'core-js/proposals/explicit-resource-management'
-import './explicit-resource-management'
+import './modules/polyfills/explicit-resource-management'
 
 // styles
 import '$common/global.scss'
