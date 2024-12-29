@@ -563,6 +563,35 @@ const VideoCardInner = memo(function VideoCardInner({
     <VideoCardBottom item={item} cardData={cardData} handleVideoLinkClick={handleVideoLinkClick} />
   )
 
+  const extraContent = (
+    <>
+      {/* preview: follow-mouse or auto-preview */}
+      {/* {!!videoshotData?.image?.length && !!duration && (isHoveringAfterDelay || active) && (
+        <LargePreviewImage>
+          {autoPreviewWhenHover ? (
+            // auto-preview: start-by (hover | keyboard)
+            autoPreviewing && (
+              <PreviewImage
+                videoDuration={duration}
+                pvideo={videoshotData}
+                mouseEnterRelativeX={mouseEnterRelativeX}
+                progress={previewProgress}
+                t={previewT}
+              />
+            )
+          ) : (
+            // follow-mouse
+            <PreviewImage
+              videoDuration={duration}
+              pvideo={videoshotData}
+              mouseEnterRelativeX={mouseEnterRelativeX}
+            />
+          )}
+        </LargePreviewImage>
+      )} */}
+    </>
+  )
+
   function wrapDropdown(c: ReactNode) {
     return (
       <Dropdown
@@ -608,21 +637,26 @@ const VideoCardInner = memo(function VideoCardInner({
     )
   }
 
-  if (cardUseBorder) {
-    return wrapDropdown(
-      wrapCardWrapper(
+  const wrappedContent: ReactNode = cardUseBorder
+    ? wrapDropdown(
+        wrapCardWrapper(
+          <>
+            {coverContent}
+            {bottomContent}
+          </>,
+        ),
+      )
+    : wrapCardWrapper(
         <>
-          {coverContent}
+          {wrapDropdown(coverContent)}
           {bottomContent}
         </>,
-      ),
-    )
-  } else {
-    return wrapCardWrapper(
-      <>
-        {wrapDropdown(coverContent)}
-        {bottomContent}
-      </>,
-    )
-  }
+      )
+
+  return (
+    <>
+      {wrappedContent}
+      {extraContent}
+    </>
+  )
 })
