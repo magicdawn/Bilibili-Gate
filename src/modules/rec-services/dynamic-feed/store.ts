@@ -2,7 +2,7 @@ import { IN_BILIBILI_HOMEPAGE } from '$common'
 import { settings } from '$modules/settings'
 import { getUid } from '$utility/cookie'
 import { setPageTitle, whenIdle } from '$utility/dom'
-import { proxySetWithGmStorage, subscribeOnKeys } from '$utility/valtio'
+import { proxyMapWithGmStorage, proxySetWithGmStorage, subscribeOnKeys } from '$utility/valtio'
 import { delay } from 'es-toolkit'
 import ms from 'ms'
 import { proxy } from 'valtio'
@@ -92,6 +92,10 @@ const hideChargeOnlyVideosForKeysSet = (
   await proxySetWithGmStorage<string>('dynamic-feed:hide-charge-only-videos-for-keys')
 ).set
 
+const addSeparatorsMap = (
+  await proxyMapWithGmStorage<string, boolean>('dynamic-feed:add-separators')
+).map
+
 /**
  * df expand to `dynamic-feed`
  */
@@ -136,9 +140,14 @@ export function createDfStore() {
     },
 
     hideChargeOnlyVideosForKeysSet,
-
     get hideChargeOnlyVideos() {
       return this.hideChargeOnlyVideosForKeysSet.has(this.selectedKey)
+    },
+
+    addSeparatorsMap,
+    get addSeparators() {
+      // 按 selectedKey 区分是否有必要?
+      return this.addSeparatorsMap.get('global') ?? false
     },
 
     filterMinDuration: DynamicFeedVideoMinDuration.All,

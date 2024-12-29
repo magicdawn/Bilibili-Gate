@@ -1,14 +1,22 @@
 import { baseDebug } from '$common'
 import { CHARGE_ONLY_TEXT } from '$components/VideoCard/top-marks'
-import { type DynamicFeedItem, type DynamicFeedItemExtend, type LiveItemExtend } from '$define'
+import {
+  type DynamicFeedItem,
+  type DynamicFeedItemExtend,
+  type ItemsSeparator,
+  type LiveItemExtend,
+} from '$define'
 import { EApiType } from '$define/index.shared'
 import { settings } from '$modules/settings'
 import type { Nullable } from '$utility/type'
 import { parseDuration } from '$utility/video'
+import dayjs from 'dayjs'
 import pmap from 'promise.map'
+import type { ReactNode } from 'react'
 import { snapshot } from 'valtio'
 import { BaseTabService, QueueStrategy } from '../_base'
 import { LiveRecService } from '../live'
+import { ELiveStatus } from '../live/live-enum'
 import { fetchVideoDynamicFeeds } from './api'
 import {
   hasLocalDynamicFeedCache,
@@ -61,6 +69,7 @@ export function getDynamicFeedServiceConfig(usingDfStore: DynamicFeedStore = dfS
     viewingAll: snap.viewingAll,
     viewingSomeUp: snap.viewingSomeUp,
     viewingSomeGroup: snap.viewingSomeGroup,
+    addSeparators: snap.addSeparators,
 
     /**
      * from settings
@@ -97,7 +106,9 @@ function isValidNumber(str: Nullable<string>) {
 
 const debug = baseDebug.extend('modules:rec-services:dynamic-feed')
 
-export class DynamicFeedRecService extends BaseTabService<DynamicFeedItemExtend | LiveItemExtend> {
+type AllowedItemType = DynamicFeedItemExtend | LiveItemExtend | ItemsSeparator
+
+export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
   static PAGE_SIZE = 15
 
   override usageInfo = (<DynamicFeedUsageInfo />)
@@ -226,9 +237,14 @@ export class DynamicFeedRecService extends BaseTabService<DynamicFeedItemExtend 
     this.whenViewAllHideMidsLoaded = true
   }
 
-  private _queueForSearchCache: QueueStrategy<DynamicFeedItem> | undefined
-
   override async fetchMore(abortSignal: AbortSignal) {
+    const items = await this._fetchMore(abortSignal)
+    const itemsWithSeparators = this.handleAddSeparators(items)
+    return itemsWithSeparators
+  }
+
+  private _queueForSearchCache: QueueStrategy<DynamicFeedItem> | undefined
+  async _fetchMore(abortSignal: AbortSignal) {
     // live
     if (this.liveRecService?.hasMore) {
       const items = (await this.liveRecService.loadMore(abortSignal)) || []
@@ -454,4 +470,87 @@ export class DynamicFeedRecService extends BaseTabService<DynamicFeedItemExtend 
 
     return items
   }
+
+  private separatorsConfig: SeparatorsConfig = (() => {
+    return {
+      today: {
+        added: false,
+        content: '今日',
+        getInsertIndex: getTodaySeparatorInsertIndex,
+      },
+      earlier: {
+        added: false,
+        content: '更早',
+        getInsertIndex: insertIndexFinderViaPubTsRange(-Infinity, dayjs().startOf('day').unix()),
+      },
+    }
+  })()
+
+  handleAddSeparators(items: AllowedItemType[]) {
+    if (!this.config.addSeparators) return items
+    const ret = items
+
+    // today
+    {
+      const config = this.separatorsConfig.today
+      const { getInsertIndex, content, added } = config
+      if (!added) {
+        const idx = getInsertIndex(items)
+        if (idx !== -1) {
+          ret.splice(idx, 0, {
+            api: EApiType.Separator,
+            uniqId: 'dynamic-feed-separator-today',
+            content,
+          })
+          config.added = true
+        }
+      }
+    }
+
+    // earlier
+    {
+      const config = this.separatorsConfig.earlier
+      const { getInsertIndex, content, added } = config
+      if (!added) {
+        const idx = getInsertIndex(items)
+        if (idx !== -1) {
+          ret.splice(idx, 0, {
+            api: EApiType.Separator,
+            uniqId: 'dynamic-feed-separator-earlier',
+            content,
+          })
+          config.added = true
+        }
+      }
+    }
+
+    return ret
+  }
+}
+
+type SeparatorsConfig = Record<
+  'today' | 'earlier',
+  { added: boolean; content: ReactNode; getInsertIndex: (items: AllowedItemType[]) => number }
+>
+
+function insertIndexFinderViaPubTsRange(lower: number, upper: number) {
+  return (items: AllowedItemType[]) => {
+    return items.findIndex((x) => {
+      if (x.api !== EApiType.DynamicFeed) return false
+      const pubTs = x.modules.module_author.pub_ts
+      return pubTs >= lower && pubTs < upper
+    })
+  }
+}
+
+function getTodaySeparatorInsertIndex(items: AllowedItemType[]) {
+  const index = items.findIndex(
+    (x) => x.api === EApiType.Live && x.live_status === ELiveStatus.Streaming,
+  )
+  if (index !== -1) return index
+  const todayInsertIndexFinder = insertIndexFinderViaPubTsRange(
+    dayjs().startOf('day').unix(),
+    dayjs().endOf('day').unix(),
+  )
+  return todayInsertIndexFinder(items)
 }

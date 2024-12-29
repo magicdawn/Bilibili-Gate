@@ -30,6 +30,10 @@
   .bili-video-card a:not(.disable-hover):hover {
     color: var($app-color-primary-id) !important;
   }
+
+  .ant-btn > span.ant-btn-icon {
+    line-height: 0;
+  }
 }
 
 @media (max-width: 1440px) {

@@ -122,6 +122,8 @@ export function DynamicFeedUsageInfo() {
     filterMinDuration,
     searchText,
     hideChargeOnlyVideos,
+
+    addSeparators,
   } = useSnapshot(dfStore)
 
   const showPopoverBadge = useMemo(() => {
@@ -392,12 +394,13 @@ export function DynamicFeedUsageInfo() {
       )}
       <SearchCacheRelated />
 
-      {/* actions for up|group */}
-      {viewingSomeGroup && !!selectedFollowGroup && (
-        <div className={classes.popover.section}>
-          <div className={classes.popover.sectionTilte}>
-            分组
-            <HelpInfo>当前分组的一些操作~</HelpInfo>
+      <div className={classes.popover.section}>
+        <div className={classes.popover.sectionTilte}>
+          {viewingSomeGroup ? '分组' : viewingSomeUp ? 'UP' : '全部'}
+          <HelpInfo>
+            当前{viewingSomeGroup ? '分组' : viewingSomeUp ? 'UP' : '范围'}的一些操作~
+          </HelpInfo>
+          {viewingSomeGroup && selectedFollowGroup && (
             <span className='inline-flex items-center ml-15 font-size-14'>
               (
               <a
@@ -410,12 +413,26 @@ export function DynamicFeedUsageInfo() {
               </a>
               )
             </span>
-          </div>
-          <div>
-            <FollowGroupActions followGroup={selectedFollowGroup} onRefresh={onRefresh} />
-          </div>
+          )}
         </div>
-      )}
+        <div className='flex items-center flex-wrap gap-x-10 gap-y-6'>
+          {/* actions for up|group */}
+          {viewingSomeGroup && !!selectedFollowGroup && (
+            <FollowGroupActions followGroup={selectedFollowGroup} onRefresh={onRefresh} />
+          )}
+
+          <Checkbox
+            checked={addSeparators}
+            onChange={async (v) => {
+              dfStore.addSeparatorsMap.set('global', v.target.checked)
+              await delay(100)
+              onRefresh?.()
+            }}
+          >
+            <AntdTooltip title='添加今日/更早分割线'>添加分割线</AntdTooltip>
+          </Checkbox>
+        </div>
+      </div>
     </div>
   )
   const [popoverOpen, setPopoverOpen] = useState(
@@ -686,11 +703,11 @@ function FollowGroupActions({
   }
 
   return (
-    <div className='flex items-center flex-wrap gap-x-10 gap-y-6'>
+    <>
       {addTo_dynamicFeedWhenViewAllHideIds_checkbox}
       {forceMergeTimelineCheckbox}
       {clearMergeTimelineHeadCacheButton}
-    </div>
+    </>
   )
 }
 
