@@ -93,9 +93,6 @@ export function TabPaneRecTabsConfig() {
                   configPath='watchlaterAddSeparator'
                   label='添加分割线'
                   tooltip='添加「近期」「更早」分割线'
-                  css={css`
-                    margin-left: 20px !important;
-                  `}
                 />
               </Space>
             </div>
