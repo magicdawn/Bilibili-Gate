@@ -20,3 +20,8 @@ export const getVideoDetail = wrapWithIdbCache({
   tableName: 'video_detail',
   ttl: ms('3M'),
 })
+
+export async function getVideoCid(bvid: string) {
+  const detail = await getVideoDetail(bvid)
+  return detail.cid
+}

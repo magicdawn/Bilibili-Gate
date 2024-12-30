@@ -1,5 +1,7 @@
-import { HOST_APP, OPERATION_FAIL_MSG, appWarn } from '$common'
-import type { AppRecItem, DmJson, PvideoJson } from '$define'
+import { HOST_APP, OPERATION_FAIL_MSG, appLog, appWarn } from '$common'
+import type { AppRecItem, PvideoJson } from '$define'
+import { getVideoPlayUrl } from '$modules/bilibili/video/play-url'
+import { getVideoCid } from '$modules/bilibili/video/video-detail'
 import { settings } from '$modules/settings'
 import { gmrequest, isWebApiSuccess, request } from '$request'
 import { getCsrfToken } from '$utility/cookie'
@@ -45,27 +47,14 @@ export function isVideoshotJsonCacheable(json: PvideoJson) {
   }
 }
 
-// dm
-export async function dm(aid: string) {
-  // 暂时没有支持弹幕预览, 不调用该接口
-  return []
-
-  const res = await request.get('/x/v2/dm/ajax', { params: { aid } })
-  const json = res.data as DmJson
-
-  // TODO: process errors
-
-  return json.data
-}
-
 const cache = new QuickLRU<string, VideoData>({ maxSize: 1_0000 })
 
 export type VideoData = {
-  videoshotJson: PvideoJson
-  // dmJson?: DmJson
+  videoshotJson?: PvideoJson
+  playUrl?: string
 }
 
-export async function fetchVideoData(bvid: string): Promise<VideoData> {
+export async function fetchVideoData(bvid: string, cid?: number): Promise<VideoData> {
   // cache:lookup
   if (cache.has(bvid)) {
     const cached = cache.get(bvid)
@@ -84,10 +73,17 @@ export async function fetchVideoData(bvid: string): Promise<VideoData> {
     }
   } while (retryTimes < 3)
 
+  let playUrl: string | undefined
+  if (settings.videoCard.__internal.useLargePreview) {
+    cid ??= await getVideoCid(bvid)
+    playUrl = await getVideoPlayUrl(bvid, cid)
+    appLog('playUrl: bvid=%s cid=%s %s', bvid, cid, playUrl)
+  }
+
   // cache:save
   const cacheable = isVideoshotJsonCacheable(videoshotJson)
   if (cacheable) {
-    cache.set(bvid, { videoshotJson })
+    cache.set(bvid, { videoshotJson, playUrl })
   }
 
   const videoshotData = videoshotJson.data
@@ -102,7 +98,7 @@ export async function fetchVideoData(bvid: string): Promise<VideoData> {
     })()
   }
 
-  return { videoshotJson }
+  return { videoshotJson, playUrl }
 }
 
 /**

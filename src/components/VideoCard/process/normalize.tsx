@@ -57,6 +57,7 @@ export interface IVideoCardData {
   // video
   avid?: string
   bvid?: string
+  cid?: number
   goto: string
   href: string
 
@@ -158,6 +159,7 @@ function apiAndroidAppAdapter(item: AndroidAppRecItemExtend): IVideoCardData {
 
   const avid = item.param
   const bvid = BvCode.av2bv(Number(item.param))
+  const cid = item.player_args?.cid
 
   const href = (() => {
     // valid uri
@@ -192,6 +194,7 @@ function apiAndroidAppAdapter(item: AndroidAppRecItemExtend): IVideoCardData {
     // video
     avid,
     bvid,
+    cid,
     goto: item.goto,
     href,
     title: item.title,
@@ -262,6 +265,7 @@ function apiIpadAppAdapter(item: IpadAppRecItemExtend): IVideoCardData {
 
   const avid = item.param
   const bvid = item.bvid || BvCode.av2bv(Number(item.param))
+  const cid = item.player_args?.cid
 
   const href = (() => {
     // valid uri
@@ -313,6 +317,7 @@ function apiIpadAppAdapter(item: IpadAppRecItemExtend): IVideoCardData {
     // video
     avid,
     bvid,
+    cid,
     goto: item.goto,
     href,
     title: item.title,
@@ -347,6 +352,7 @@ function apiPcAdapter(item: PcRecItemExtend): IVideoCardData {
     // video
     avid: String(item.id),
     bvid: item.bvid,
+    cid: item.cid,
     goto: item.goto,
     href: item.goto === 'av' ? `/video/${item.bvid}/` : item.uri,
     title: item.title,
@@ -393,6 +399,7 @@ function apiDynamicAdapter(item: DynamicFeedItemExtend): IVideoCardData {
     // video
     avid: v.aid,
     bvid: v.bvid,
+    // cid: v.
     goto: 'av',
     href: `/video/${v.bvid}/`,
     title: v.title,
@@ -439,6 +446,7 @@ function apiWatchlaterAdapter(item: WatchlaterItemExtend): IVideoCardData {
     // video
     avid: String(item.aid),
     bvid: item.bvid,
+    cid: item.cid,
     goto: 'av',
     href: `https://www.bilibili.com/list/watchlater?bvid=${item.bvid}&oid=${item.aid}`,
     title,
@@ -510,6 +518,7 @@ function apiFavAdapter(item: FavItemExtend): IVideoCardData {
     // video
     avid: String(item.id),
     bvid: item.bvid,
+    // cid: item.
     goto: 'av',
     href: `/video/${item.bvid}/`,
     title: `【${belongsToTitle}】· ${item.title}`,
@@ -549,6 +558,7 @@ function apiPopularGeneralAdapter(item: PopularGeneralItemExtend): IVideoCardDat
     // video
     avid: String(item.aid),
     bvid: item.bvid,
+    cid: item.cid,
     goto: 'av',
     href: `/video/${item.bvid}/`,
     title: item.title,
@@ -583,6 +593,7 @@ function apiPopularWeeklyAdapter(item: PopularWeeklyItemExtend): IVideoCardData 
     // video
     avid: String(item.aid),
     bvid: item.bvid,
+    cid: item.cid,
     goto: 'av',
     href: `/video/${item.bvid}/`,
     title: item.title,
@@ -647,6 +658,7 @@ function apiRankingAdapter(item: RankingItemExtend): IVideoCardData {
     // video
     avid: String(item.aid),
     bvid: item.bvid,
+    cid: item.cid,
     goto: 'av',
     href: `/video/${item.bvid}/`,
     title: item.title,

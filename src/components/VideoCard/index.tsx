@@ -29,13 +29,14 @@ import { isFirefox, isSafari } from '$ua'
 import { antNotification } from '$utility/antd'
 import type { CssProp } from '$utility/type'
 import { css } from '@emotion/react'
-import { useLockFn } from 'ahooks'
+import { useHover, useLockFn } from 'ahooks'
 import { Dropdown } from 'antd'
-import type { CSSProperties, MouseEventHandler, ReactNode } from 'react'
+import type { ComponentRef, CSSProperties, MouseEventHandler, ReactNode } from 'react'
 import { videoCardBorderRadiusValue } from '../css-vars'
 import { useInNormalCardCss } from './card-border-css'
 import type { VideoData } from './card.service'
 import { fetchVideoData, isVideoshotDataValid } from './card.service'
+import { LargePreview } from './child-components/LargePreviewImage'
 import { SimplePregressBar } from './child-components/PreviewImage'
 import { VideoCardActionStyle } from './child-components/VideoCardActions'
 import { VideoCardBottom } from './child-components/VideoCardBottom'
@@ -170,6 +171,9 @@ const VideoCardInner = memo(function VideoCardInner({
     style: {
       videoCard: { useBorder: cardUseBorder, useBorderOnlyOnHover: cardUseBorderOnlyOnHover },
     },
+    videoCard: {
+      __internal: { useLargePreview },
+    },
   } = useSettingsSnapshot()
   const authed = !!accessKey
 
@@ -177,6 +181,7 @@ const VideoCardInner = memo(function VideoCardInner({
     // video
     avid,
     bvid,
+    cid,
     goto,
     href,
     title,
@@ -200,18 +205,17 @@ const VideoCardInner = memo(function VideoCardInner({
   }
 
   const videoDataBox = useRefStateBox<VideoData | null>(null)
-  const videoshotData = videoDataBox.state?.videoshotJson?.data
   const tryFetchVideoData = useLockFn(async () => {
     if (!bvid) return // no bvid
     if (!bvid.startsWith('BV')) return // bvid invalid
     if (goto !== 'av') return // scrrenshot only for video
     if (isVideoshotDataValid(videoDataBox.value?.videoshotJson?.data)) return // already fetched
 
-    const data = await fetchVideoData(bvid)
+    const data = await fetchVideoData(bvid, cid)
     videoDataBox.set(data)
 
     if (!isWebApiSuccess(data.videoshotJson)) {
-      warnNoPreview(data.videoshotJson)
+      warnNoPreview(data.videoshotJson!)
     }
   })
 
@@ -243,6 +247,7 @@ const VideoCardInner = memo(function VideoCardInner({
     // flag
     isHovering,
     isHoveringAfterDelay,
+    isHoveringDeferred,
     // el
     previewImageRef,
     previewImageEl,
@@ -536,14 +541,32 @@ const VideoCardInner = memo(function VideoCardInner({
     <VideoCardBottom item={item} cardData={cardData} handleVideoLinkClick={handleVideoLinkClick} />
   )
 
+  const largePreviewRef = useRef<ComponentRef<'div'>>(null)
+  const isHoveringOnLargePreview = useHover(largePreviewRef)
   const extraContent = (
     <>
-      {/* a large preview */}
+      {/* large preview + PreviewImage */}
       {/* {shouldShowPreview && previewImgProps && (
         <LargePreviewImage>
           <PreviewImage {...previewImgProps} />
         </LargePreviewImage>
       )} */}
+      {useLargePreview &&
+        (isHoveringDeferred || isHoveringOnLargePreview) &&
+        videoDataBox.state?.playUrl && (
+          <LargePreview ref={largePreviewRef}>
+            <video
+              src={videoDataBox.state.playUrl}
+              autoPlay
+              controls
+              css={css`
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+              `}
+            />
+          </LargePreview>
+        )}
     </>
   )
 

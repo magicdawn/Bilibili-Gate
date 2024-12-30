@@ -59,6 +59,11 @@ export const initialSettings = {
   /**
    * Video Card
    */
+  videoCard: {
+    __internal: {
+      useLargePreview: false,
+    },
+  },
 
   // 自动开始预览: 按键选择
   autoPreviewWhenKeyboardSelect: false,
