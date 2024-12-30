@@ -1,8 +1,8 @@
 import { bgLv1Value, colorPrimaryValue } from '$components/css-vars'
 import type { PvideoData } from '$define'
+import { minmax } from '$utility/num'
 import { css } from '@emotion/react'
-import { useMouse } from 'ahooks'
-import type { ComponentProps, ComponentPropsWithoutRef } from 'react'
+import type { ComponentProps, ComponentPropsWithoutRef, ComponentRef } from 'react'
 import { videoCardBorderRadiusValue } from '../../css-vars'
 import { previewCardWrapper } from '../index.module.scss'
 
@@ -32,30 +32,16 @@ const S = {
   `,
 }
 
-function fallbackWhenNan(...args: number[]) {
-  for (const num of args) {
-    if (isNaN(num)) continue
-    return num
-  }
-  return 0
-}
-
 /**
  * previewProgress 代表进度条进度
  * previewT 代表将渲染的图片
  * 两个解耦, previewT 可以 fallback 到 `previewProgress * videoDuration`
  */
-
 interface IProps {
   videoDuration: number
   pvideo?: PvideoData
-
   progress?: number
   t?: number
-
-  // hover => listen mousemove of PreviewImage div ref
-  // 如果没有移动鼠标, 后面 mousemove 无法触发, 这个时候需要从前面 mouseenter 中读取 enter cursor state
-  mouseEnterRelativeX: number | undefined
 }
 
 export type PreviewImageRef = {
@@ -64,34 +50,24 @@ export type PreviewImageRef = {
 
 export const PreviewImage = memo(
   forwardRef<PreviewImageRef, IProps & ComponentPropsWithoutRef<'div'>>(function (
-    { progress, t, videoDuration, pvideo, mouseEnterRelativeX, className, ...restProps },
+    { videoDuration, pvideo, progress, t, className, ...restProps },
     ref,
   ) {
-    const divRef = useRef<HTMLDivElement>(null)
-    const cursorState = useMouse(divRef)
+    const rootElRef = useRef<ComponentRef<'div'>>(null)
     const [size, setSize] = useState(() => ({ width: 0, height: 0 }))
-    // console.log('cursorState:', cursorState)
-
     useMount(() => {
-      const rect = divRef.current?.getBoundingClientRect()
+      const rect = rootElRef.current?.getBoundingClientRect()
       if (!rect) return
       setSize({ width: rect.width, height: rect.height })
     })
 
     const usingProgress = useMemo(() => {
-      let ret = 0
-      if (typeof progress === 'number') {
-        ret = progress
-      } else {
-        const relativeX = fallbackWhenNan(cursorState.elementX, mouseEnterRelativeX || 0)
-        if (size.width && relativeX && !isNaN(relativeX)) {
-          ret = relativeX / size.width
-        }
+      function getProgress(): number | undefined {
+        if (typeof progress === 'number' && !isNaN(progress)) return progress
+        return 0
       }
-      if (ret < 0) ret = 0
-      if (ret > 1) ret = 1
-      return ret
-    }, [progress, cursorState.elementX, mouseEnterRelativeX, size.width])
+      return minmax(getProgress() ?? 0, 0, 1)
+    }, [progress])
 
     const usingT = useMemo(
       () => t ?? Math.floor((videoDuration || 0) * usingProgress),
@@ -126,7 +102,7 @@ export const PreviewImage = memo(
     return (
       <div
         {...restProps}
-        ref={divRef}
+        ref={rootElRef}
         className={clsx(previewCardWrapper, className)}
         css={S.previewCardWrapper}
       >

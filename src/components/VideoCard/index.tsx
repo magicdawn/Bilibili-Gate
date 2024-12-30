@@ -36,11 +36,8 @@ import { videoCardBorderRadiusValue } from '../css-vars'
 import { useInNormalCardCss } from './card-border-css'
 import type { VideoData } from './card.service'
 import { fetchVideoData, isVideoshotDataValid } from './card.service'
-import {
-  PreviewImage,
-  SimplePregressBar,
-  type PreviewImageRef,
-} from './child-components/PreviewImage'
+import { LargePreviewImage } from './child-components/LargePreviewImage'
+import { PreviewImage, SimplePregressBar } from './child-components/PreviewImage'
 import { VideoCardActionStyle } from './child-components/VideoCardActions'
 import { VideoCardBottom } from './child-components/VideoCardBottom'
 import { BlacklistCard, DislikedCard, SkeletonCard } from './child-components/other-type-cards'
@@ -241,17 +238,17 @@ const VideoCardInner = memo(function VideoCardInner({
   const coverRef = useRef<HTMLElement | null>(null)
   const videoPreviewWrapperRef = cardUseBorder ? cardRef : coverRef
 
-  const previewImageRef = useRef<PreviewImageRef>(null)
-
   const {
     onStartPreviewAnimation,
     onHotkeyPreviewAnimation,
-    autoPreviewing,
-    previewProgress,
-    previewT,
+    // flag
     isHovering,
     isHoveringAfterDelay,
-    mouseEnterRelativeX,
+    // el
+    previewImageRef,
+    previewImageEl,
+    previewImgProps,
+    shouldShowPreview,
   } = usePreviewAnimation({
     uniqId: item.uniqId,
     emitter,
@@ -512,30 +509,7 @@ const VideoCardInner = memo(function VideoCardInner({
       </div>
 
       {watchlaterProgressBar}
-
-      {/* preview: follow-mouse or auto-preview */}
-      {!!(videoshotData?.image?.length && duration && (isHoveringAfterDelay || active)) &&
-        (autoPreviewWhenHover ? (
-          // auto-preview: start-by (hover | keyboard)
-          autoPreviewing && (
-            <PreviewImage
-              ref={previewImageRef}
-              videoDuration={duration}
-              pvideo={videoshotData}
-              mouseEnterRelativeX={mouseEnterRelativeX}
-              progress={previewProgress}
-              t={previewT}
-            />
-          )
-        ) : (
-          // follow-mouse
-          <PreviewImage
-            ref={previewImageRef}
-            videoDuration={duration}
-            pvideo={videoshotData}
-            mouseEnterRelativeX={mouseEnterRelativeX}
-          />
-        ))}
+      {previewImageEl}
 
       {!!dislikeButtonEl && (
         <div className='left-actions' css={VideoCardActionStyle.topContainer('left')}>
@@ -565,30 +539,12 @@ const VideoCardInner = memo(function VideoCardInner({
 
   const extraContent = (
     <>
-      {/* preview: follow-mouse or auto-preview */}
-      {/* {!!videoshotData?.image?.length && !!duration && (isHoveringAfterDelay || active) && (
+      {/* a large preview */}
+      {shouldShowPreview && previewImgProps && (
         <LargePreviewImage>
-          {autoPreviewWhenHover ? (
-            // auto-preview: start-by (hover | keyboard)
-            autoPreviewing && (
-              <PreviewImage
-                videoDuration={duration}
-                pvideo={videoshotData}
-                mouseEnterRelativeX={mouseEnterRelativeX}
-                progress={previewProgress}
-                t={previewT}
-              />
-            )
-          ) : (
-            // follow-mouse
-            <PreviewImage
-              videoDuration={duration}
-              pvideo={videoshotData}
-              mouseEnterRelativeX={mouseEnterRelativeX}
-            />
-          )}
+          <PreviewImage {...previewImgProps} />
         </LargePreviewImage>
-      )} */}
+      )}
     </>
   )
 

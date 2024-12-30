@@ -5,8 +5,9 @@ import { settings } from '$modules/settings'
 import { minmax } from '$utility/num'
 import { useEventListener, useMemoizedFn, useRafState, useUnmountedRef } from 'ahooks'
 import { delay } from 'es-toolkit'
-import type { MouseEvent } from 'react'
+import type { ComponentProps, MouseEvent, ReactNode } from 'react'
 import type { VideoData } from '../card.service'
+import { PreviewImage, type PreviewImageRef } from '../child-components/PreviewImage'
 import type { VideoCardEmitter } from '../index.shared'
 
 const DEBUG_ANIMATION = __PROD__
@@ -55,14 +56,14 @@ export function usePreviewAnimation({
   const startByHoverBox = useRefBox(false)
 
   // mouseenter cursor state
-  const [mouseEnterRelativeX, setMouseEnterRelativeX] = useState<number | undefined>(undefined)
-  const updateMouseEnterRelativeX = (e: MouseEvent) => {
+  const [mouseProgress, setMouseProgress] = useState<number | undefined>(undefined)
+  const updateMouseProgress = (e: MouseEvent) => {
     const rect = videoPreviewWrapperRef.current?.getBoundingClientRect()
     if (!rect) return
     // https://github.com/alibaba/hooks/blob/v3.7.0/packages/hooks/src/useMouse/index.ts#L62
-    const { x } = rect
-    const relativeX = e.pageX - window.pageXOffset - x
-    setMouseEnterRelativeX(relativeX)
+    const { x, width } = rect
+    const relativeX = e.pageX - window.scrollX - x
+    setMouseProgress(relativeX / width)
   }
 
   useEventListener(
@@ -71,7 +72,7 @@ export function usePreviewAnimation({
       emitter.emit('mouseenter', uniqId)
 
       isHoveringBox.set(true)
-      updateMouseEnterRelativeX(e)
+      updateMouseProgress(e)
 
       // fetch data
       const p = tryFetchVideoData()
@@ -120,8 +121,8 @@ export function usePreviewAnimation({
       setMouseMoved(true)
 
       // update mouse enter state in mouseenter-delay
-      if (isHoveringBox.value && !isHoveringAfterDelayBox.value) {
-        updateMouseEnterRelativeX(e)
+      if (isHoveringBox.value && (!isHoveringAfterDelayBox.value || !autoPreviewWhenHover)) {
+        updateMouseProgress(e)
       }
 
       if (!autoPreviewWhenHover) {
@@ -226,15 +227,48 @@ export function usePreviewAnimation({
     idBox.value = requestAnimationFrame(frame)
   })
 
+  const isHovering = isHoveringBox.state
+  const isHoveringAfterDelay = isHoveringAfterDelayBox.state
+
+  const videoshotData = videoDataBox.state?.videoshotJson?.data
+  const shouldShowPreview =
+    !!videoshotData?.image?.length &&
+    !!videoDuration &&
+    (isHoveringAfterDelay || active) &&
+    (autoPreviewWhenHover ? autoPreviewing : true)
+
+  const previewImageRef = useRef<PreviewImageRef>(null) // to expose imperative `getT()`
+  let previewImgProps: ComponentProps<typeof PreviewImage> | undefined
+  let previewImageEl: ReactNode
+  if (shouldShowPreview) {
+    const sharedProps = {
+      videoDuration,
+      pvideo: videoshotData,
+    }
+    if (autoPreviewWhenHover) {
+      // auto-preview: start-by (hover | keyboard)
+      previewImgProps = { ...sharedProps, progress: previewProgress, t: previewT }
+    } else {
+      // follow-mouse
+      previewImgProps = { ...sharedProps, progress: mouseProgress }
+    }
+    previewImageEl = <PreviewImage ref={previewImageRef} {...previewImgProps} />
+  }
+
   return {
     onHotkeyPreviewAnimation,
     onStartPreviewAnimation,
     autoPreviewing,
+    mouseProgress,
     previewProgress,
     previewT,
-    isHovering: isHoveringBox.state,
-    isHoveringAfterDelay: isHoveringAfterDelayBox.state,
-    mouseEnterRelativeX,
+    isHovering,
+    isHoveringAfterDelay,
+    // el
+    shouldShowPreview,
+    previewImageRef,
+    previewImgProps,
+    previewImageEl,
   }
 }
 
