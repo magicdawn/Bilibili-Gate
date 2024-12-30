@@ -5,8 +5,8 @@
 import { HOST_API } from '$common'
 import { dailyCache } from '$modules/gm/daily-cache'
 import axios from 'axios'
-import md5 from 'md5'
 import ms from 'ms'
+import { hash } from 'spark-md5'
 
 const mixinKeyEncTab = [
   46, 47, 18, 2, 53, 8, 23, 32, 15, 50, 10, 31, 58, 3, 45, 35, 27, 43, 5, 49, 33, 9, 42, 19, 29, 28,
@@ -43,7 +43,7 @@ export async function encWbi(_params: Record<string, any>) {
       )}`
     })
     .join('&')
-  const wbi_sign = md5(query + mixin_key) // 计算 w_rid
+  const wbi_sign = hash(query + mixin_key) // 计算 w_rid
 
   // full params: original + wts + w_rid
   return {

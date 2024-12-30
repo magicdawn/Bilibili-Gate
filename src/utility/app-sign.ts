@@ -1,4 +1,4 @@
-import md5 from 'md5'
+import { hash } from 'spark-md5'
 
 /**
  * 为请求参数进行 APP 签名
@@ -9,5 +9,5 @@ export function appSign(params: Record<string, any>, appkey: string, appsec: str
   params.appkey = appkey
   const searchParams = new URLSearchParams(params)
   searchParams.sort()
-  return md5(searchParams.toString() + appsec)
+  return hash(searchParams.toString() + appsec)
 }
