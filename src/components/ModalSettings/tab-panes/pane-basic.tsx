@@ -178,7 +178,7 @@ export function TabPaneBasic() {
           <CheckboxSettingItem
             configPath='pipWindowDefaultLocked'
             label='小窗默认锁定'
-            tooltip='开启后,小窗打开时默认为锁定状态'
+            tooltip='开启后, 小窗打开时默认为锁定状态'
           />
         </Space>
       </SettingsGroup>
@@ -224,6 +224,12 @@ export function TabPaneBasic() {
                 秒开始播放
               </>
             }
+          />
+
+          <CheckboxSettingItem
+            configPath='videoCard.useLargePreview'
+            label='使用浮动预览'
+            tooltip={<>类似浮图秀, 但使用视频预览</>}
           />
         </Space>
       </SettingsGroup>

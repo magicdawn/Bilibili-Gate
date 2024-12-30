@@ -97,29 +97,8 @@ export function useOpenRelated({
   })
 
   function handlePopup(newHref: string) {
-    let videoWidth: number | undefined
-    let videoHeight: number | undefined
-
-    if (item.api === EApiType.AppRecommend && item.uri?.startsWith('bilibili://')) {
-      const searchParams = new URL(item.uri).searchParams
-      const playerWidth = Number(searchParams.get('player_width') || 0)
-      const playerHeight = Number(searchParams.get('player_height') || 0)
-      if (playerWidth && playerHeight && !isNaN(playerWidth) && !isNaN(playerHeight)) {
-        videoWidth = playerWidth
-        videoHeight = playerHeight
-      }
-    }
-
-    if (item.api === EApiType.Ranking && isNormalRankingItem(item)) {
-      const w = item.dimension.width
-      const h = item.dimension.height
-      if (w && h && !isNaN(w) && !isNaN(h)) {
-        videoWidth = w
-        videoHeight = h
-      }
-    }
-
-    return openInPipOrPopup(newHref, cardData.bvid, videoWidth, videoHeight)
+    const { w, h } = getRecItemDimension(item)
+    return openInPipOrPopup(newHref, cardData.bvid, w, h)
   }
 
   function handleIINA() {
@@ -193,6 +172,34 @@ export function useOpenRelated({
     openInPopupButtonEl,
     onOpenInPopup,
   }
+}
+
+export function getRecItemDimension(item: RecItemType) {
+  let w: number | undefined
+  let h: number | undefined
+  let aspectRatio: number | undefined
+  if (item.api === EApiType.AppRecommend && item.uri?.startsWith('bilibili://')) {
+    const searchParams = new URL(item.uri).searchParams
+    const playerWidth = Number(searchParams.get('player_width') || 0)
+    const playerHeight = Number(searchParams.get('player_height') || 0)
+    if (playerWidth && playerHeight && !isNaN(playerWidth) && !isNaN(playerHeight)) {
+      w = playerWidth
+      h = playerHeight
+      aspectRatio = w / h
+    }
+  }
+
+  if (item.api === EApiType.Ranking && isNormalRankingItem(item)) {
+    const _w = item.dimension.width
+    const _h = item.dimension.height
+    if (_w && _h && !isNaN(_w) && !isNaN(_h)) {
+      w = _w
+      h = _h
+      aspectRatio = w / h
+    }
+  }
+
+  return { w, h, aspectRatio }
 }
 
 export const hasDocumentPictureInPicture = !!window.documentPictureInPicture?.requestWindow

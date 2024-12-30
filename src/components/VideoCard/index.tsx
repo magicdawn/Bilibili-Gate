@@ -36,8 +36,9 @@ import { videoCardBorderRadiusValue } from '../css-vars'
 import { useInNormalCardCss } from './card-border-css'
 import type { VideoData } from './card.service'
 import { fetchVideoData, isVideoshotDataValid } from './card.service'
-import { LargePreview } from './child-components/LargePreviewImage'
+import { LargePreview } from './child-components/LargePreview'
 import { SimplePregressBar } from './child-components/PreviewImage'
+import { RecoverableVideo } from './child-components/RecoverableVideo'
 import { VideoCardActionStyle } from './child-components/VideoCardActions'
 import { VideoCardBottom } from './child-components/VideoCardBottom'
 import { BlacklistCard, DislikedCard, SkeletonCard } from './child-components/other-type-cards'
@@ -56,7 +57,7 @@ import {
   RankingNumMark,
 } from './top-marks'
 import { useDislikeRelated } from './use/useDislikeRelated'
-import { useLinkTarget, useOpenRelated } from './use/useOpenRelated'
+import { getRecItemDimension, useLinkTarget, useOpenRelated } from './use/useOpenRelated'
 import { usePreviewAnimation } from './use/usePreviewAnimation'
 import { useWatchlaterRelated } from './use/useWatchlaterRelated'
 
@@ -171,9 +172,7 @@ const VideoCardInner = memo(function VideoCardInner({
     style: {
       videoCard: { useBorder: cardUseBorder, useBorderOnlyOnHover: cardUseBorderOnlyOnHover },
     },
-    videoCard: {
-      __internal: { useLargePreview },
-    },
+    videoCard: { useLargePreview },
   } = useSettingsSnapshot()
   const authed = !!accessKey
 
@@ -543,20 +542,17 @@ const VideoCardInner = memo(function VideoCardInner({
 
   const largePreviewRef = useRef<ComponentRef<'div'>>(null)
   const isHoveringOnLargePreview = useHover(largePreviewRef)
+  const itemDimension = useMemo(() => getRecItemDimension(item), [item])
+  const videoCurrentTimeRef = useRef<number | undefined>(undefined)
   const extraContent = (
     <>
-      {/* large preview + PreviewImage */}
-      {/* {shouldShowPreview && previewImgProps && (
-        <LargePreviewImage>
-          <PreviewImage {...previewImgProps} />
-        </LargePreviewImage>
-      )} */}
       {useLargePreview &&
         (isHoveringDeferred || isHoveringOnLargePreview) &&
         videoDataBox.state?.playUrl && (
-          <LargePreview ref={largePreviewRef}>
-            <video
+          <LargePreview ref={largePreviewRef} aspectRatio={itemDimension.aspectRatio}>
+            <RecoverableVideo
               src={videoDataBox.state.playUrl}
+              currentTimeRef={videoCurrentTimeRef}
               autoPlay
               controls
               css={css`

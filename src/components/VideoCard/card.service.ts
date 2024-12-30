@@ -74,7 +74,7 @@ export async function fetchVideoData(bvid: string, cid?: number): Promise<VideoD
   } while (retryTimes < 3)
 
   let playUrl: string | undefined
-  if (settings.videoCard.__internal.useLargePreview) {
+  if (settings.videoCard.useLargePreview) {
     cid ??= await getVideoCid(bvid)
     playUrl = await getVideoPlayUrl(bvid, cid)
     appLog('playUrl: bvid=%s cid=%s %s', bvid, cid, playUrl)
