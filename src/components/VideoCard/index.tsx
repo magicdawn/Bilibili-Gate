@@ -36,8 +36,7 @@ import { videoCardBorderRadiusValue } from '../css-vars'
 import { useInNormalCardCss } from './card-border-css'
 import type { VideoData } from './card.service'
 import { fetchVideoData, isVideoshotDataValid } from './card.service'
-import { LargePreviewImage } from './child-components/LargePreviewImage'
-import { PreviewImage, SimplePregressBar } from './child-components/PreviewImage'
+import { SimplePregressBar } from './child-components/PreviewImage'
 import { VideoCardActionStyle } from './child-components/VideoCardActions'
 import { VideoCardBottom } from './child-components/VideoCardBottom'
 import { BlacklistCard, DislikedCard, SkeletonCard } from './child-components/other-type-cards'
@@ -540,11 +539,11 @@ const VideoCardInner = memo(function VideoCardInner({
   const extraContent = (
     <>
       {/* a large preview */}
-      {shouldShowPreview && previewImgProps && (
+      {/* {shouldShowPreview && previewImgProps && (
         <LargePreviewImage>
           <PreviewImage {...previewImgProps} />
         </LargePreviewImage>
-      )}
+      )} */}
     </>
   )
 
