@@ -4,15 +4,13 @@ import { minmax } from '$utility/num'
 import { css } from '@emotion/react'
 import type { ComponentProps, ComponentPropsWithoutRef, ComponentRef } from 'react'
 import { videoCardBorderRadiusValue } from '../../css-vars'
-import { previewCardWrapper } from '../index.module.scss'
+import { zIndexPreviewImageWrapper } from '../index.module.scss'
 
 const S = {
-  previewCardWrapper: css`
+  previewImageWrapper: css`
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
+    z-index: ${zIndexPreviewImageWrapper};
     overflow: hidden;
 
     /* see https://github.com/magicdawn/bilibili-gate/issues/112 */
@@ -26,7 +24,7 @@ const S = {
     border-bottom-right-radius: 0;
   `,
 
-  previewCardInner: css`
+  previewImageInner: css`
     width: 100%;
     height: 100%;
   `,
@@ -50,7 +48,7 @@ export type PreviewImageRef = {
 
 export const PreviewImage = memo(
   forwardRef<PreviewImageRef, IProps & ComponentPropsWithoutRef<'div'>>(function (
-    { videoDuration, pvideo, progress, t, className, ...restProps },
+    { videoDuration, pvideo, progress, t, ...restProps },
     ref,
   ) {
     const rootElRef = useRef<ComponentRef<'div'>>(null)
@@ -100,12 +98,7 @@ export const PreviewImage = memo(
     }
 
     return (
-      <div
-        {...restProps}
-        ref={rootElRef}
-        className={clsx(previewCardWrapper, className)}
-        css={S.previewCardWrapper}
-      >
+      <div {...restProps} ref={rootElRef} css={S.previewImageWrapper}>
         {!!(pvideo && size.width && size.height && usingProgress) && (
           <PreviewImageInner {...innerProps} />
         )}
@@ -167,7 +160,7 @@ const PreviewImageInner = memo(function PreviewImageInner({
 
   return (
     <div
-      css={S.previewCardInner}
+      css={S.previewImageInner}
       style={{
         backgroundColor: 'black', // 防止加载过程中闪屏
         backgroundImage: `url(${snapshotUrl})`,

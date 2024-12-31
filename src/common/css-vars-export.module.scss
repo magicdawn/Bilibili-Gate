@@ -22,4 +22,12 @@
   app-cls-dark: $app-cls-dark;
   app-cls-dark-selector: #{string.unquote($app-cls-dark-selector)};
   app-cls-color-primary: $app-cls-color-primary;
+
+  // z-index
+  z-index-rec-header: $z-index-rec-header;
+  z-index-base-modal: $z-index-base-modal;
+  z-index-antd-popup-base: $z-index-antd-popup-base;
+  z-index-video-card-large-preview: $z-index-video-card-large-preview;
+  z-index-video-card-context-menu: $z-index-video-card-context-menu;
+  z-index-toast: $z-index-toast;
 }

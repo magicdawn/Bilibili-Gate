@@ -1,5 +1,3 @@
-$z: 3;
-
 .bili-video-card {
   position: relative;
   :global {
@@ -7,11 +5,12 @@ $z: 3;
       margin-right: 8px;
       align-items: center;
     }
-    .bili-video-card__stats--text {
-    }
   }
 }
 
-.preview-card-wrapper {
-  z-index: $z + 1;
+// video-card 内部 z-index
+:export {
+  z-index-watchlater-progress-bar: 2;
+  z-index-preview-image-wrapper: 3;
+  z-index-actions: 5;
 }

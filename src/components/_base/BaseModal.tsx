@@ -1,5 +1,5 @@
 import { APP_CLS_ROOT } from '$common'
-import { appClsDarkSelector } from '$common/css-vars-export.module.scss'
+import { appClsDarkSelector, zIndexBaseModal } from '$common/css-vars-export.module.scss'
 import { useIsDarkMode } from '$modules/dark-mode'
 import { hasMarginLeft, hasSize } from '$utility/css'
 import type { CssProp } from '$utility/type'
@@ -15,7 +15,7 @@ export const BaseModalStyle = {
     right: 0;
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 10002;
+    z-index: ${zIndexBaseModal};
 
     // make .model center
     display: flex;

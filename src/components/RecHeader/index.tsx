@@ -1,4 +1,5 @@
 import { APP_CLS_TAB_BAR, baseDebug } from '$common'
+import { zIndexRecHeader } from '$common/css-vars-export.module.scss'
 import { iconOnlyRoundButtonCss } from '$common/emotion-css'
 import { useSizeExpression } from '$common/hooks/useResizeObserverExpression'
 import { useSticky } from '$common/hooks/useSticky'
@@ -105,7 +106,7 @@ export const RecHeader = forwardRef<
               css`
                 position: sticky;
                 top: ${headerHeight - 1}px; // 有缝隙, 故 -1 px
-                z-index: 1000;
+                z-index: ${zIndexRecHeader};
                 margin-bottom: 10px;
                 transition:
                   background-color 0.3s ease-in-out,

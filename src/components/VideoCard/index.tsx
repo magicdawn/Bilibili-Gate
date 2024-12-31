@@ -1,4 +1,5 @@
 import { APP_CLS_CARD, APP_CLS_ROOT, APP_KEY_PREFIX, appWarn } from '$common'
+import { zIndexVideoCardContextMenu } from '$common/css-vars-export.module.scss'
 import { useLessFrequentFn } from '$common/hooks/useLessFrequentFn'
 import { useMittOn } from '$common/hooks/useMitt'
 import { useRefStateBox } from '$common/hooks/useRefState'
@@ -43,7 +44,7 @@ import { VideoCardActionStyle } from './child-components/VideoCardActions'
 import { VideoCardBottom } from './child-components/VideoCardBottom'
 import { BlacklistCard, DislikedCard, SkeletonCard } from './child-components/other-type-cards'
 import { useContextMenus } from './context-menus'
-import styles from './index.module.scss'
+import styles, { zIndexWatchlaterProgressBar } from './index.module.scss'
 import type { VideoCardEmitter } from './index.shared'
 import { defaultEmitter } from './index.shared'
 import type { IVideoCardData } from './process/normalize'
@@ -413,7 +414,7 @@ const VideoCardInner = memo(function VideoCardInner({
       <SimplePregressBar
         progress={item.progress / item.duration}
         css={css`
-          z-index: 2;
+          z-index: ${zIndexWatchlaterProgressBar};
           height: 3px;
         `}
       />
@@ -456,12 +457,13 @@ const VideoCardInner = memo(function VideoCardInner({
       href={href}
       target={target}
       css={[
-        coverRoundCss,
         css`
           display: block; /* firefox need this */
           position: relative;
           overflow: hidden;
+          isolation: isolate; // new stacking context
         `,
+        coverRoundCss,
         coverBorderCss,
       ]}
       onClick={handleVideoLinkClick}
@@ -574,6 +576,7 @@ const VideoCardInner = memo(function VideoCardInner({
           if (isSafari) return document.body
           return cardRef.current || document.body
         }}
+        overlayStyle={{ zIndex: zIndexVideoCardContextMenu }}
         menu={{
           items: contextMenus,
           style: {

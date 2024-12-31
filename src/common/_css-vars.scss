@@ -38,3 +38,13 @@ $app-using-font: var(
 
 // video card
 $app-video-card-border-radius-id: --#{$app-name}--video-card--border-radius;
+
+//
+// z-index
+//
+$z-index-rec-header: 1000;
+$z-index-base-modal: 10002;
+$z-index-antd-popup-base: 11000;
+$z-index-video-card-large-preview: 12000;
+$z-index-video-card-context-menu: 13000;
+$z-index-toast: 90000;

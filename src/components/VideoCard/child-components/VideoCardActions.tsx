@@ -2,8 +2,7 @@ import { colorPrimaryValue } from '$components/css-vars'
 import { css as _css, css } from '@emotion/react'
 import { useHover } from 'ahooks'
 import { type ComponentProps, type ReactNode } from 'react'
-
-const baseZ = 3
+import { zIndexActions } from '../index.module.scss'
 
 export type InlinePosition = 'left' | 'right'
 
@@ -13,7 +12,7 @@ const S = {
     top: 8px;
     ${inlinePosition}: 8px;
     transform: translateZ(0);
-    z-index: ${baseZ + 2};
+    z-index: ${zIndexActions};
   `,
 
   topContainer: (inlinePosition: InlinePosition) => [

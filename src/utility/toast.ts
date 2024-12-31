@@ -1,4 +1,5 @@
 import { APP_CLS_ROOT, OPERATION_FAIL_MSG, REQUEST_FAIL_MSG } from '$common'
+import { zIndexToast } from '$common/css-vars-export.module.scss'
 import { colorPrimaryValue } from '$components/css-vars'
 import { css } from '@emotion/css'
 
@@ -8,7 +9,7 @@ const toastContainer = css`
   left: 50%;
   transform: translate(-50%, -50%);
 
-  z-index: 90000;
+  z-index: ${zIndexToast};
   padding: 12px 24px;
   font-size: 14px;
 

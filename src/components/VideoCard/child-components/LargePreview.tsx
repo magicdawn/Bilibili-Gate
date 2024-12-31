@@ -1,4 +1,5 @@
 import { APP_CLS_CARD, appLog } from '$common'
+import { zIndexVideoCardLargePreview } from '$common/css-vars-export.module.scss'
 import { colorPrimaryValue } from '$components/css-vars'
 import { css } from '@emotion/react'
 import { useEventListener } from 'ahooks'
@@ -239,7 +240,7 @@ export const LargePreview = forwardRef<
         position &&
           css`
             position: fixed;
-            z-index: 90000;
+            z-index: ${zIndexVideoCardLargePreview};
             width: ${position.elWidth}px;
             height: ${position.elHeight}px;
             top: ${position.elPosY}px;
