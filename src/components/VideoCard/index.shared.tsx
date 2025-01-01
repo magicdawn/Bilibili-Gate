@@ -79,9 +79,9 @@ export const VideoLinkOpenModeConfig: Record<VideoLinkOpenMode, VideoLinkOpenMod
           href='https://developer.chrome.com/docs/web-platform/document-picture-in-picture'
           target='_blank'
         >
-          画中画窗口 API
+          「文档画中画」API
         </a>{' '}
-        可用时, 会使用画中画窗口的形式: 窗口置顶 + 播放页网页全屏.
+        可用时, 会使用「文档画中画」的形式: 窗口置顶 + 播放页网页全屏.
         <br />
         当该 API 不可用时, 会使用 popup window + 播放页网页全屏 的形式.
       </>

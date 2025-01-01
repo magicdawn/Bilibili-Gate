@@ -194,7 +194,7 @@ export function TabPaneBasic() {
           <CheckboxSettingItem
             configPath='videoCard.actions.openInPipWindow'
             label={'小窗打开'}
-            tooltip={<>仅当文档画中画 API 可以时, 勾选生效</>}
+            tooltip={<>仅当「文档画中画」API 可用时, 勾选生效</>}
           />
           <CheckboxSettingItem
             configPath='videoCard.actions.showLargePreview'
