@@ -415,12 +415,7 @@ export function DynamicFeedUsageInfo() {
             </span>
           )}
         </div>
-        <div className='flex items-center flex-wrap gap-x-10 gap-y-6'>
-          {/* actions for up|group */}
-          {viewingSomeGroup && !!selectedFollowGroup && (
-            <FollowGroupActions followGroup={selectedFollowGroup} onRefresh={onRefresh} />
-          )}
-
+        <div className='flex flex-col items-start  gap-x-10 gap-y-6'>
           <Checkbox
             checked={addSeparators}
             onChange={async (v) => {
@@ -431,6 +426,11 @@ export function DynamicFeedUsageInfo() {
           >
             <AntdTooltip title='添加今日/更早分割线'>添加分割线</AntdTooltip>
           </Checkbox>
+
+          {/* actions for up|group */}
+          {viewingSomeGroup && !!selectedFollowGroup && (
+            <FollowGroupActions followGroup={selectedFollowGroup} onRefresh={onRefresh} />
+          )}
         </div>
       </div>
     </div>
