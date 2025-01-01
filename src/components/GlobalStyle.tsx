@@ -2,7 +2,7 @@ import { APP_CLS_ROOT } from '$common'
 import { appBgId, appColorPrimaryId } from '$common/css-vars-export.module.scss'
 import { useAntLinkColorGlobalCss } from '$common/emotion-css'
 import { $headerWidth, $usingEvolevdHeader, useBackToTopRight } from '$header'
-import { useColors, useIsDarkMode } from '$modules/dark-mode'
+import { useIsDarkMode } from '$modules/dark-mode'
 import { useSettingsSnapshot } from '$modules/settings'
 import type { CssProp } from '$utility/type'
 import { Global, css as _css, css } from '@emotion/react'
@@ -12,7 +12,6 @@ export function GlobalStyle() {
   const colorPrimary = useColorPrimaryHex()
   const { pureRecommend, style } = useSettingsSnapshot()
   const dark = useIsDarkMode()
-  const { c, bg } = useColors()
   const backToTopRight = useBackToTopRight()
   const usingEvolevdHeader = $usingEvolevdHeader.use()
 

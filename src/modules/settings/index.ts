@@ -272,10 +272,70 @@ export function getSettingsSnapshot() {
 /**
  * storage
  */
-
 const storageKey = `settings`
 
-export function runSettingsMigration(val: object) {
+async function __pickSettingsFromGmStorage(): Promise<PartialDeep<Settings>> {
+  const saved = await GM.getValue<Settings>(storageKey)
+  if (!saved || typeof saved !== 'object') return {}
+  runSettingsMigration(saved)
+  return pickSettings(saved, allowedLeafSettingsPaths).pickedSettings
+}
+
+export async function loadAndSetup() {
+  const val = await __pickSettingsFromGmStorage()
+  updateSettings(val)
+
+  // persist when config change
+  subscribe(settings, () => {
+    _onSettingsChange()
+  })
+
+  // replace memory-settings when other tabs change
+  reciveGmValueUpdatesFromOtherTab<PartialDeep<Settings>>({
+    storageKey,
+    setPersist(val) {
+      _persist = val
+    },
+    onUpdate(newValue) {
+      updateSettings(newValue)
+    },
+  })
+}
+
+async function _onSettingsChange() {
+  const snap = cloneDeep(snapshot(settings))
+  await _saveToGmStorage(snap)
+  await saveToDraft(snap) // http backup
+}
+
+let _persist = true
+async function _saveToGmStorage(snap: ReadonlyDeep<PartialDeep<Settings>>) {
+  if (!_persist) return
+  await GM.setValue(storageKey, snap)
+}
+
+// #region modify settings
+export function updateSettings(payload: PartialDeep<Settings>) {
+  const { pickedPaths } = pickSettings(payload, allowedLeafSettingsPaths)
+  for (const p of pickedPaths) {
+    const v = get(payload, p)
+    set(settings, p, v)
+  }
+}
+
+export function resetSettings() {
+  return updateSettings(initialSettings)
+}
+// #endregion
+
+// #region helper
+
+/**
+ * this function mutates `val`
+ */
+export function runSettingsMigration(val: object | undefined) {
+  if (!val) return
+
   // from v0.28.2, remove after several releases
   const config: Array<[configPath: LeafSettingsPath, legacyConfigPath: string]> = [
     ['dynamicFeed.showLive', 'dynamicFeedShowLive'],
@@ -338,46 +398,6 @@ export function runSettingsMigration(val: object) {
   }
 }
 
-async function __pickSettingsFromGmStorage(): Promise<PartialDeep<Settings>> {
-  const saved = await GM.getValue<Settings>(storageKey)
-  if (!saved || typeof saved !== 'object') return {}
-  runSettingsMigration(saved)
-  return pickSettings(saved, allowedLeafSettingsPaths).pickedSettings
-}
-
-export async function loadAndSetup() {
-  const val = await __pickSettingsFromGmStorage()
-  updateSettings(val)
-
-  // persist when config change
-  subscribe(settings, () => {
-    _onSettingsChange()
-  })
-
-  // replace memory-settings when other tabs change
-  reciveGmValueUpdatesFromOtherTab<PartialDeep<Settings>>({
-    storageKey,
-    setPersist(val) {
-      _persist = val
-    },
-    onUpdate(newValue) {
-      updateSettings(newValue)
-    },
-  })
-}
-
-async function _onSettingsChange() {
-  const snap = cloneDeep(snapshot(settings))
-  await _saveToGmStorage(snap)
-  await saveToDraft(snap) // http backup
-}
-
-let _persist = true
-async function _saveToGmStorage(snap: ReadonlyDeep<PartialDeep<Settings>>) {
-  if (!_persist) return
-  await GM.setValue(storageKey, snap)
-}
-
 /**
  * pick
  */
@@ -396,27 +416,15 @@ export function pickSettings(
   })
   return { pickedPaths, pickedSettings }
 }
+// #endregion
 
-/**
- * manipulate memory settings
- */
-export function updateSettings(payload: PartialDeep<Settings>) {
-  const { pickedPaths } = pickSettings(payload, allowedLeafSettingsPaths)
-  for (const p of pickedPaths) {
-    const v = get(payload, p)
-    set(settings, p, v)
-  }
-}
-
-export function resetSettings() {
-  return updateSettings(initialSettings)
-}
-
-/**
- * 便于操作 inner array
- */
-
+// #region `inner array`
 export type SettingsInnerArrayItem<P extends ListSettingsPath> = Get<Settings, P>[number]
+
+export function useSettingsInnerArray<P extends ListSettingsPath>(path: P) {
+  const snap = useSettingsSnapshot()
+  return get(snap, path) as SettingsInnerArrayItem<P>[]
+}
 
 export async function getNewestValueOfSettingsInnerArray<P extends ListSettingsPath>(path: P) {
   // Q: 为什么重新获取
@@ -424,12 +432,14 @@ export async function getNewestValueOfSettingsInnerArray<P extends ListSettingsP
   const newest = await __pickSettingsFromGmStorage()
   return (get(newest, path) || get(getSettingsSnapshot(), path)) as SettingsInnerArrayItem<P>[]
 }
+
 export function setSettingsInnerArray<P extends ListSettingsPath>(
   path: P,
   value: SettingsInnerArrayItem<P>[],
 ) {
   set(settings, path, value)
 }
+
 export async function updateSettingsInnerArray<P extends ListSettingsPath>(
   path: P,
   { add, remove }: { add?: SettingsInnerArrayItem<P>[]; remove?: SettingsInnerArrayItem<P>[] },
@@ -440,6 +450,7 @@ export async function updateSettingsInnerArray<P extends ListSettingsPath>(
   for (const x of remove ?? []) s.delete(x)
   setSettingsInnerArray(path, Array.from(s))
 }
+// #endregion
 
 /**
  * load on init

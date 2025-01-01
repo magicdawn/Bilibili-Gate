@@ -27,11 +27,10 @@ function useHotkeyForConfig(
     hotkey,
     (e) => {
       if (shouldDisableShortcut()) return
-      const _get = () => !!get(settings, configPath)
-      const _set = (val: boolean) => set(settings, configPath, val)
-      _set(!_get())
-      const isCancel = !_get()
-      antMessage.success(`已${isCancel ? '禁用' : '启用'}「${label}」`)
+      const current = Boolean(get(settings, configPath))
+      const newValue = !current
+      set(settings, configPath, newValue)
+      antMessage.success(`已${newValue ? '启用' : '禁用'}「${label}」`)
     },
     { exactMatch: true },
   )

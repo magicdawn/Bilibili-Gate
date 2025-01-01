@@ -1,4 +1,3 @@
-import { flexCenterStyle } from '$common/emotion-css'
 import { AntdTooltip } from '$components/_base/antd-custom'
 import { borderColorValue, colorPrimaryValue } from '$components/css-vars'
 import { getUserNickname } from '$modules/bilibili/user/nickname'
@@ -6,14 +5,13 @@ import { formatSpaceUrl } from '$modules/rec-services/dynamic-feed/shared'
 import {
   getNewestValueOfSettingsInnerArray,
   updateSettingsInnerArray,
-  useSettingsSnapshot,
+  useSettingsInnerArray,
   type ListSettingsPath,
 } from '$modules/settings'
 import { antMessage } from '$utility/antd'
 import { css } from '@emotion/react'
 import { Empty, Input } from 'antd'
 import { uniq } from 'es-toolkit'
-import { get } from 'es-toolkit/compat'
 import type { ComponentPropsWithoutRef } from 'react'
 import IconParkOutlineCloseSmall from '~icons/icon-park-outline/close-small'
 
@@ -28,8 +26,7 @@ export function EditableListSettingItem({
   searchProps?: ComponentProps<typeof Search>
   disabled?: boolean
 }) {
-  const snap = useSettingsSnapshot()
-  const rawList = get(snap, configPath) as string[]
+  const rawList = useSettingsInnerArray(configPath)
   const list = useMemo(() => uniq(rawList).toReversed(), [rawList])
 
   return (
@@ -104,7 +101,7 @@ export function EditableListSettingItem({
               return (
                 <TagItemDisplay
                   key={t}
-                  tag={t}
+                  tag={t.toString()}
                   onDelete={async (tag) => {
                     await updateSettingsInnerArray(configPath, { remove: [tag] })
                   }}
@@ -242,12 +239,10 @@ export function UpTagItemDisplay({ tag }: { tag: string }) {
     <>
       <AntdTooltip title={tooltip}>
         <span
-          css={[
-            flexCenterStyle,
-            css`
-              cursor: ${mid ? 'pointer' : 'edit'};
-            `,
-          ]}
+          className={clsx(
+            'inline-flex items-center justify-center',
+            mid ? 'cursor-pointer' : 'cursor-[edit]',
+          )}
         >
           {mid && <IconRadixIconsPerson {...size(12)} className='mr-2' />}
           {mid ? (

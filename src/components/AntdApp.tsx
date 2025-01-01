@@ -1,4 +1,4 @@
-import { appUsingFont } from '$common/css-vars-export.module.scss'
+import { appUsingFont, zIndexAntdPopupBase } from '$common/css-vars-export.module.scss'
 import { useIsDarkMode } from '$modules/dark-mode'
 import { UseApp } from '$utility/antd'
 import { StyleProvider, type StyleProviderProps } from '@ant-design/cssinjs'
@@ -53,17 +53,13 @@ export function AntdApp({
           token: {
             colorPrimary,
             colorBgSpotlight: colorPrimary, // tooltip bg
-            zIndexPopupBase: 11000, // base-modal 10002
+            zIndexPopupBase: Number(zIndexAntdPopupBase),
             fontFamily: appUsingFont,
           },
           components: {
             Notification: {
-              zIndexPopup: 11000,
+              zIndexPopup: Number(zIndexAntdPopupBase),
             },
-            // Message: {
-            //   contentBg: colorPrimary,
-            //   colorText: '#fff',
-            // },
           },
         }}
       >

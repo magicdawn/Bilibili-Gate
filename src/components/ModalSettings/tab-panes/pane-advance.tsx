@@ -14,22 +14,20 @@ import { IconForOpenExternalLink } from '$modules/icon'
 import {
   allowedLeafSettingsPaths,
   internalBooleanPaths,
+  pickSettings,
   resetSettings,
+  runSettingsMigration,
   settings,
   updateSettings,
   useSettingsSnapshot,
   type BooleanSettingsPath,
-  type Settings,
 } from '$modules/settings'
 import { exportSettings, importSettings } from '$modules/settings/file-backup'
 import { articleDraft, restoreOmitPaths } from '$modules/settings/index.shared'
 import { antMessage } from '$utility/antd'
-import { getLeafPaths } from '$utility/object-paths'
 import { css } from '@emotion/react'
 import { Button, Popconfirm, Slider, Space } from 'antd'
 import { startCase } from 'es-toolkit'
-import { get, set } from 'es-toolkit/compat'
-import type { PartialDeep } from 'type-fest'
 import TablerFileExport from '~icons/tabler/file-export'
 import TablerFileImport from '~icons/tabler/file-import'
 import TablerRestore from '~icons/tabler/restore'
@@ -45,18 +43,15 @@ function onResetSettings() {
 
 async function onRestoreSettings() {
   const remoteSettings = await articleDraft.getData()
-
-  const pickedPaths = getLeafPaths(remoteSettings || {}).filter(
-    (p) => allowedLeafSettingsPaths.includes(p) && !restoreOmitPaths.includes(p),
+  runSettingsMigration(remoteSettings)
+  const { pickedPaths, pickedSettings } = pickSettings(
+    remoteSettings,
+    allowedLeafSettingsPaths,
+    restoreOmitPaths,
   )
   if (!pickedPaths.length) {
     return antMessage.error('备份不存在或没有有效的配置')
   }
-
-  const pickedSettings: PartialDeep<Settings> = {}
-  pickedPaths.forEach((p) => {
-    set(pickedSettings, p, get(remoteSettings, p))
-  })
 
   set_HAS_RESTORED_SETTINGS(true)
   updateSettings(pickedSettings)

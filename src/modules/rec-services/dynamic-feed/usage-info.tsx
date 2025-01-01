@@ -17,6 +17,7 @@ import { IconForOpenExternalLink, IconForReset } from '$modules/icon'
 import {
   settings,
   updateSettingsInnerArray,
+  useSettingsInnerArray,
   useSettingsSnapshot,
   type ListSettingsPath,
   type Settings,
@@ -29,7 +30,6 @@ import { useRequest } from 'ahooks'
 import { Avatar, Badge, Button, Checkbox, Dropdown, Input, Popover, Radio, Space } from 'antd'
 import type { CheckboxChangeEvent } from 'antd/es/checkbox'
 import { delay, throttle } from 'es-toolkit'
-import { get } from 'es-toolkit/compat'
 import { fastSortWithOrders } from 'fast-sort-lens'
 import type { ReactNode } from 'react'
 import type { Get } from 'type-fest'
@@ -736,8 +736,7 @@ function useValueInSettingsCollection<P extends ListSettingsPath>(
   value: Get<Settings, P>[number],
   listSettingsPath: P,
 ) {
-  const snap = useSettingsSnapshot()
-  const list = get(snap, listSettingsPath)
+  const list = useSettingsInnerArray(listSettingsPath)
   const checked = useMemo(() => list.includes(value), [list])
 
   const setChecked = useMemoizedFn(async (checked: boolean) => {
