@@ -3,6 +3,7 @@ import type { RecItemType } from '$define'
 import { EApiType } from '$define/index.shared'
 import { getBiliPlayerConfigAutoPlay } from '$modules/bilibili/player-config'
 import { getVideoDetail } from '$modules/bilibili/video/video-detail'
+import type { VideoDetailData } from '$modules/bilibili/video/video-detail-types'
 import { openNewTab } from '$modules/gm'
 import { isNormalRankingItem } from '$modules/rec-services/hot/ranking/category'
 import { settings, useSettingsSnapshot } from '$modules/settings'
@@ -174,10 +175,15 @@ export function useOpenRelated({
   }
 }
 
-export function getRecItemDimension(item: RecItemType) {
+export function getRecItemDimension(
+  item: RecItemType,
+  dimensionFromVideoDetail?: VideoDetailData['dimension'],
+) {
   let w: number | undefined
   let h: number | undefined
   let aspectRatio: number | undefined
+
+  // AppRecommend
   if (item.api === EApiType.AppRecommend && item.uri?.startsWith('bilibili://')) {
     const searchParams = new URL(item.uri).searchParams
     const playerWidth = Number(searchParams.get('player_width') || 0)
@@ -189,7 +195,8 @@ export function getRecItemDimension(item: RecItemType) {
     }
   }
 
-  if (item.api === EApiType.Ranking && isNormalRankingItem(item)) {
+  // ranking
+  else if (item.api === EApiType.Ranking && isNormalRankingItem(item)) {
     const _w = item.dimension.width
     const _h = item.dimension.height
     if (_w && _h && !isNaN(_w) && !isNaN(_h)) {
@@ -197,6 +204,13 @@ export function getRecItemDimension(item: RecItemType) {
       h = _h
       aspectRatio = w / h
     }
+  }
+
+  // video detail
+  else if (dimensionFromVideoDetail) {
+    w = dimensionFromVideoDetail.width
+    h = dimensionFromVideoDetail.height
+    aspectRatio = w / h
   }
 
   return { w, h, aspectRatio }

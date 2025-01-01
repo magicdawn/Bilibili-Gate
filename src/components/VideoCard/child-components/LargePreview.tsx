@@ -1,4 +1,4 @@
-import { APP_CLS_CARD, appLog } from '$common'
+import { APP_CLS_CARD, baseDebug } from '$common'
 import { zIndexVideoCardLargePreview } from '$common/css-vars-export.module.scss'
 import { colorPrimaryValue } from '$components/css-vars'
 import { css } from '@emotion/react'
@@ -7,8 +7,7 @@ import { orderBy, throttle } from 'es-toolkit'
 import { motion } from 'framer-motion'
 import type { ComponentRef, ReactNode } from 'react'
 
-type Direction = 'top' | 'right' | 'bottom' | 'left'
-type Bbox = { x: number; y: number; width: number; height: number }
+const debug = baseDebug.extend('VideoCard:LargePreview')
 
 export enum AspectRatioPreset {
   Horizontal = 16 / 9,
@@ -16,20 +15,24 @@ export enum AspectRatioPreset {
   Square = 1,
 }
 
-const reverseDirection = (direction: Direction) => {
-  switch (direction) {
-    case 'top':
-      return 'bottom'
-    case 'right':
-      return 'left'
-    case 'bottom':
-      return 'top'
-    case 'left':
-      return 'right'
-  }
+type Direction = 'top' | 'right' | 'bottom' | 'left'
+type Bbox = { x: number; y: number; width: number; height: number }
+
+const DirectionConfig: Record<
+  Direction,
+  { multiplier: 1 | -1; axis: 'x' | 'y'; reverse: Direction }
+> = {
+  right: { multiplier: 1, axis: 'x', reverse: 'left' },
+  left: { multiplier: -1, axis: 'x', reverse: 'right' },
+  bottom: { multiplier: 1, axis: 'y', reverse: 'top' },
+  top: { multiplier: -1, axis: 'y', reverse: 'bottom' },
 }
 
-const VisualPadding = 20
+const VisualPadding = {
+  border: 40,
+  card: 15,
+  total: 55,
+}
 
 export const LargePreview = forwardRef<
   ComponentRef<'div'>,
@@ -125,16 +128,16 @@ export const LargePreview = forwardRef<
       ['desc', 'desc'],
     )[0]
 
+    debug('picked direction', picked)
     const { direction, bbox, scale, scaleLimit } = picked
-    appLog('picked', picked)
 
     let elWidth: number
     let elHeight: number
     if (scaleLimit === 'width') {
-      elWidth = Math.floor(bbox.width - VisualPadding * 2)
+      elWidth = Math.floor(bbox.width - VisualPadding.total)
       elHeight = Math.floor(elWidth / aspectRatio)
     } else if (scaleLimit === 'height') {
-      elHeight = Math.floor(bbox.height - VisualPadding * 2)
+      elHeight = Math.floor(bbox.height - VisualPadding.total)
       elWidth = Math.floor(elHeight * aspectRatio)
     } else {
       throw new Error('unexpected scaleLimit')
@@ -144,22 +147,22 @@ export const LargePreview = forwardRef<
     let elPosY = 0
 
     const fixX = () => {
-      if (elPosX < VisualPadding) {
-        elPosX = VisualPadding
+      if (elPosX < VisualPadding.border) {
+        elPosX = VisualPadding.border
         return
       }
-      if (elPosX + elWidth > viewportWidth - VisualPadding) {
-        elPosX = viewportWidth - VisualPadding - elWidth
+      if (elPosX + elWidth > viewportWidth - VisualPadding.border) {
+        elPosX = viewportWidth - VisualPadding.border - elWidth
         return
       }
     }
     const fixY = () => {
-      if (elPosY < VisualPadding) {
-        elPosY = VisualPadding
+      if (elPosY < VisualPadding.border) {
+        elPosY = VisualPadding.border
         return
       }
-      if (elPosY + elHeight > viewportHeight - VisualPadding) {
-        elPosY = viewportHeight - VisualPadding - elHeight
+      if (elPosY + elHeight > viewportHeight - VisualPadding.border) {
+        elPosY = viewportHeight - VisualPadding.border - elHeight
         return
       }
     }
@@ -167,21 +170,21 @@ export const LargePreview = forwardRef<
     switch (direction) {
       case 'top':
         elPosX = cardRect.x + cardRect.width / 2 - elWidth / 2
-        elPosY = cardRect.top - VisualPadding - elHeight
+        elPosY = cardRect.top - VisualPadding.card - elHeight
         fixX()
         break
       case 'bottom':
         elPosX = cardRect.x + cardRect.width / 2 - elWidth / 2
-        elPosY = cardRect.bottom + VisualPadding
+        elPosY = cardRect.bottom + VisualPadding.card
         fixX()
         break
       case 'right':
-        elPosX = cardRect.right + VisualPadding
+        elPosX = cardRect.right + VisualPadding.card
         elPosY = cardRect.y + cardRect.height / 2 - elHeight / 2
         fixY()
         break
       case 'left':
-        elPosX = cardRect.left - VisualPadding - elWidth
+        elPosX = cardRect.left - VisualPadding.card - elWidth
         elPosY = cardRect.y + cardRect.height / 2 - elHeight / 2
         fixY()
         break
@@ -210,25 +213,18 @@ export const LargePreview = forwardRef<
   useEventListener('resize', calculatePostionThrottled, { target: window })
   useEventListener('scroll', calculatePostionThrottled, { target: window })
 
-  let initial: Partial<{ x: number; y: number }> = {}
   const direction = position?.direction
-  const animateDistance = 40
-  switch (direction) {
-    case 'right':
-      initial = { x: -animateDistance, y: 0 }
-      break
-    case 'left':
-      initial = { x: animateDistance, y: 0 }
-      break
-    case 'top':
-      initial = { x: 0, y: animateDistance }
-      break
-    case 'bottom':
-      initial = { x: 0, y: -animateDistance }
-      break
-    default:
-      break
-  }
+  const initial = useMemo(() => {
+    if (!direction) return
+    const { axis, multiplier } = DirectionConfig[direction]
+    const animateDistance = 20
+    if (axis === 'x') {
+      return { x: -multiplier * animateDistance, y: 0 }
+    }
+    if (axis === 'y') {
+      return { x: 0, y: -multiplier * animateDistance }
+    }
+  }, [direction])
 
   return (
     <div

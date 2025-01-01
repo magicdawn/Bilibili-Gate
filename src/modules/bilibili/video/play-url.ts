@@ -61,7 +61,7 @@ export async function getVideoPlayUrl(videoId: string | number, cid: number) {
   const res = await request.get('/x/player/wbi/playurl', { params })
   const json = res.data as VideoPlayUrlJson
 
-  const pickedVideos = json.data.dash.video.filter((v) => v.id === EResolution._480p)
+  const pickedVideos = json.data?.dash?.video.filter((v) => v.id === EResolution._480p) || []
   const hevcUrl = pickedVideos.find((x) => x.codecid === ECodecId.HEVC)?.baseUrl
   const avcUrl = pickedVideos.find((x) => x.codecid === ECodecId.AVC)?.baseUrl
   return hevcUrl || avcUrl

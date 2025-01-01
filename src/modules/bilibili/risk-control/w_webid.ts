@@ -8,19 +8,15 @@
 import { dailyCache } from '$modules/gm/daily-cache'
 import { formatSpaceUrl } from '$modules/rec-services/dynamic-feed/shared'
 import { request } from '$request'
-import { createUpdateDataFunction } from '$utility/async'
+import { reusePendingPromise } from '$utility/async'
 import { getUid } from '$utility/cookie'
 
 const cache = dailyCache<string>('w_webid')
 
-export const get_w_webId = createUpdateDataFunction({
-  fn: fetch_w_webId,
-  getCached() {
-    return cache.get()
-  },
-})
+export const get_w_webId = reusePendingPromise(async () => {
+  const cached = await cache.get()
+  if (cached) return cached
 
-async function fetch_w_webId(): Promise<string | undefined> {
   const mid = getUid()
   if (!mid) return
 
@@ -42,4 +38,4 @@ async function fetch_w_webId(): Promise<string | undefined> {
   if (id) await cache.set(id)
 
   return id
-}
+})

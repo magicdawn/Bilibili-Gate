@@ -14,7 +14,7 @@ import type { Root } from 'react-dom/client'
 import { createRoot } from 'react-dom/client'
 import { proxy, useSnapshot } from 'valtio'
 import { proxyMap } from 'valtio/utils'
-import { dislike } from '../VideoCard/card.service'
+import { dislike } from '../VideoCard/services/'
 
 interface IProps {
   show: boolean

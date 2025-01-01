@@ -35,8 +35,6 @@ import { Dropdown } from 'antd'
 import type { ComponentRef, CSSProperties, MouseEventHandler, ReactNode } from 'react'
 import { videoCardBorderRadiusValue } from '../css-vars'
 import { useInNormalCardCss } from './card-border-css'
-import type { VideoData } from './card.service'
-import { fetchVideoData, isVideoshotDataValid } from './card.service'
 import { LargePreview } from './child-components/LargePreview'
 import { SimplePregressBar } from './child-components/PreviewImage'
 import { RecoverableVideo } from './child-components/RecoverableVideo'
@@ -49,6 +47,8 @@ import type { VideoCardEmitter } from './index.shared'
 import { defaultEmitter } from './index.shared'
 import type { IVideoCardData } from './process/normalize'
 import { normalizeCardData } from './process/normalize'
+import type { VideoData } from './services'
+import { fetchVideoData, isVideoDataValid } from './services'
 import { StatItemDisplay } from './stat-item'
 import {
   ApiTypeTag,
@@ -204,12 +204,12 @@ const VideoCardInner = memo(function VideoCardInner({
     appWarn(`none (${allowed.join(',')}) goto type %s`, goto, item)
   }
 
-  const videoDataBox = useRefStateBox<VideoData | null>(null)
+  const videoDataBox = useRefStateBox<VideoData | undefined>(undefined)
   const tryFetchVideoData = useLockFn(async () => {
     if (!bvid) return // no bvid
     if (!bvid.startsWith('BV')) return // bvid invalid
     if (goto !== 'av') return // scrrenshot only for video
-    if (isVideoshotDataValid(videoDataBox.value?.videoshotJson?.data)) return // already fetched
+    if (isVideoDataValid(videoDataBox.value)) return // already fetched
 
     const data = await fetchVideoData(bvid, cid)
     videoDataBox.set(data)
@@ -544,7 +544,10 @@ const VideoCardInner = memo(function VideoCardInner({
 
   const largePreviewRef = useRef<ComponentRef<'div'>>(null)
   const isHoveringOnLargePreview = useHover(largePreviewRef)
-  const itemDimension = useMemo(() => getRecItemDimension(item), [item])
+  const itemDimension = useMemo(
+    () => getRecItemDimension(item, videoDataBox.state?.dimension),
+    [item, videoDataBox.state?.dimension],
+  )
   const videoCurrentTimeRef = useRef<number | undefined>(undefined)
   const extraContent = (
     <>

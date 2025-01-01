@@ -48,11 +48,11 @@ import { delay } from 'es-toolkit'
 import { size } from 'polished'
 import type { MouseEvent } from 'react'
 import { useSnapshot } from 'valtio'
-import type { watchlaterDel } from './card.service'
-import { watchlaterAdd } from './card.service'
 import { copyContent } from './index.shared'
 import { getFollowedStatus, isApiRecLike } from './process/filter'
 import type { IVideoCardData } from './process/normalize'
+import type { watchlaterDel } from './services'
+import { watchlaterAdd } from './services'
 import { getLinkTarget } from './use/useOpenRelated'
 
 export function useContextMenus({

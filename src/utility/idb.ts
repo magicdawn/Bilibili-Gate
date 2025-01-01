@@ -7,6 +7,7 @@ import { throttle } from 'es-toolkit'
 import localforage from 'localforage'
 import pLimit from 'p-limit'
 import { whenIdle } from './dom'
+import type { AnyFunction } from './type'
 
 export function getIdbCache<T>(tableName: string) {
   const db = localforage.createInstance({
@@ -28,7 +29,7 @@ export function getIdbCache<T>(tableName: string) {
   }
 }
 
-export function wrapWithIdbCache<A extends unknown[], FnReturnType>({
+export function wrapWithIdbCache<T extends AnyFunction>({
   fn,
   generateKey,
   tableName,
@@ -36,14 +37,15 @@ export function wrapWithIdbCache<A extends unknown[], FnReturnType>({
   concurrency, // concurrency for `fn`
   autoCleanUp = true,
 }: {
-  fn: (...args: A) => FnReturnType
-  generateKey: (...args: NoInfer<A>) => string
+  fn: T
+  generateKey: (...args: Parameters<T>) => string
   tableName: string
   ttl: number
   concurrency?: number
   autoCleanUp?: boolean
 }) {
-  type R = Awaited<FnReturnType>
+  type A = Parameters<T>
+  type R = Awaited<ReturnType<T>>
   type CacheEntry = { ts: number; val: R }
 
   const cache = getIdbCache<CacheEntry>(tableName)

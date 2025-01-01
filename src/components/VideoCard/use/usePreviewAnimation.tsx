@@ -6,9 +6,9 @@ import { minmax } from '$utility/num'
 import { useEventListener, useMemoizedFn, useRafState, useUnmountedRef } from 'ahooks'
 import { delay } from 'es-toolkit'
 import type { ComponentProps, MouseEvent, ReactNode } from 'react'
-import type { VideoData } from '../card.service'
 import { PreviewImage, type PreviewImageRef } from '../child-components/PreviewImage'
 import type { VideoCardEmitter } from '../index.shared'
+import type { VideoData } from '../services'
 
 const DEBUG_ANIMATION = __PROD__
   ? false //
@@ -34,7 +34,7 @@ export function usePreviewAnimation({
   active: boolean
   videoDuration?: number
   tryFetchVideoData: () => Promise<void>
-  videoDataBox: RefStateBox<VideoData | null>
+  videoDataBox: RefStateBox<VideoData | undefined>
   autoPreviewWhenHover: boolean
   videoPreviewWrapperRef: RefObject<HTMLElement>
 }) {

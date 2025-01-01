@@ -9,9 +9,9 @@ import { delay } from 'es-toolkit'
 import { size } from 'polished'
 import type { MouseEvent } from 'react'
 import type { VideoCardInnerProps } from '..'
-import { watchlaterAdd, watchlaterDel } from '../card.service'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
 import type { IVideoCardData } from '../process/normalize'
+import { watchlaterAdd, watchlaterDel } from '../services'
 
 /**
  * 稍候再看
