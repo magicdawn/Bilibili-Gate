@@ -20,7 +20,7 @@ import { useSnapshot } from 'valtio'
 import { AccessKeyManage } from '../AccessKeyManage'
 import { RefreshButton } from './RefreshButton'
 import { headerState } from './index.shared'
-import { showModalFeed, showModalSettings } from './modals'
+import { showModalFeed, showModalSettings, toggleModalSettings } from './modals'
 import { VideoSourceTab, useCurrentDisplayingTabKeys } from './tab'
 import { ETab } from './tab-enum'
 
@@ -55,9 +55,9 @@ export const RecHeader = forwardRef<
     ['shift.comma'],
     (e) => {
       if (shouldDisableShortcut()) return
-      headerState.modalSettingsVisible = !headerState.modalSettingsVisible
+      toggleModalSettings()
     },
-    { exactMatch: true },
+    { exactMatch: true, useCapture: true },
   )
 
   const [stickyRef, sticky] = useSticky<HTMLDivElement>()

@@ -6,6 +6,13 @@ import { settings } from '$modules/settings'
 import { once } from 'es-toolkit'
 import { headerState, useHeaderState } from './index.shared'
 
+export function toggleModalFeed() {
+  if (headerState.modalFeedVisible) {
+    hideModalFeed()
+  } else {
+    showModalFeed()
+  }
+}
 export function showModalFeed() {
   renderOnce()
   headerState.modalFeedVisible = true
@@ -22,6 +29,13 @@ if (IN_BILIBILI_HOMEPAGE && settings.showModalFeedOnLoad) {
   setTimeout(showModalFeed)
 }
 
+export function toggleModalSettings() {
+  if (headerState.modalSettingsVisible) {
+    hideModalSettings()
+  } else {
+    showModalSettings()
+  }
+}
 export function showModalSettings() {
   renderOnce()
   headerState.modalSettingsVisible = true
