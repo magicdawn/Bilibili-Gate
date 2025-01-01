@@ -13,7 +13,6 @@ async function addDynEntry() {
   const oldSelector = '.h-action'
   const oldBtnHtml = `<a
     href="https://www.bilibili.com/?dyn-mid=${mid}"
-    target="_blank"
     class="h-f-btn"
     style="width: auto; padding-inline: 15px;">${APP_NAME} 动态</a>`
 
@@ -39,7 +38,6 @@ async function addDynEntry() {
   const newSelector = '.upinfo .operations'
   const newBtnHmtl = `<a
     href="https://www.bilibili.com/?dyn-mid=${mid}"
-    target="_blank"
     class="${newBtnClassName}">${APP_NAME} 动态</a>`
 
   await tryAction(
