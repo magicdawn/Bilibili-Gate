@@ -60,7 +60,11 @@ export const initialSettings = {
    * Video Card
    */
   videoCard: {
-    useLargePreview: false,
+    // action buttons
+    actions: {
+      openInPipWindow: true,
+      showLargePreview: true,
+    },
   },
 
   // 自动开始预览: 按键选择

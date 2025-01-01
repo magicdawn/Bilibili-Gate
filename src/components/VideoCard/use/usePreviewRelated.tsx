@@ -8,7 +8,7 @@ import { delay } from 'es-toolkit'
 import type { ComponentProps, MouseEvent, ReactNode } from 'react'
 import { PreviewImage, type PreviewImageRef } from '../child-components/PreviewImage'
 import type { VideoCardEmitter } from '../index.shared'
-import type { VideoData } from '../services'
+import type { ImagePreviewData } from '../services'
 
 const DEBUG_ANIMATION = __PROD__
   ? false //
@@ -17,14 +17,14 @@ const DEBUG_ANIMATION = __PROD__
 /**
  * 自动以动画方式预览
  */
-export function usePreviewAnimation({
+export function usePreviewRelated({
   uniqId,
   emitter,
   title,
   active,
   videoDuration,
-  tryFetchVideoData,
-  videoDataBox,
+  tryFetchImagePreviewData,
+  imagePreviewDataBox,
   autoPreviewWhenHover,
   videoPreviewWrapperRef,
 }: {
@@ -33,13 +33,13 @@ export function usePreviewAnimation({
   title: string
   active: boolean
   videoDuration?: number
-  tryFetchVideoData: () => Promise<void>
-  videoDataBox: RefStateBox<VideoData | undefined>
+  tryFetchImagePreviewData: () => Promise<void>
+  imagePreviewDataBox: RefStateBox<ImagePreviewData | undefined>
   autoPreviewWhenHover: boolean
   videoPreviewWrapperRef: RefObject<HTMLElement>
 }) {
   const hasVideoData = useMemoizedFn(() => {
-    const data = videoDataBox.value?.videoshotJson?.data
+    const data = imagePreviewDataBox.value?.videoshotJson?.data
     return Boolean(data?.index?.length && data?.image?.length)
   })
 
@@ -54,10 +54,6 @@ export function usePreviewAnimation({
   const isHoveringBox = useRefStateBox(false)
   const isHoveringAfterDelayBox = useRefStateBox(false)
   const startByHoverBox = useRefBox(false)
-
-  const isHoveringDeferredBox = useRefStateBox(false)
-  const isHoveringDeferredOnTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
-  const isHoveringDeferredOffTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   // mouseenter cursor state
   const [mouseProgress, setMouseProgress] = useState<number | undefined>(undefined)
@@ -78,15 +74,8 @@ export function usePreviewAnimation({
       isHoveringBox.set(true)
       updateMouseProgress(e)
 
-      clearTimeout(isHoveringDeferredOnTimer.current)
-      clearTimeout(isHoveringDeferredOffTimer.current)
-      isHoveringDeferredOnTimer.current = setTimeout(() => {
-        if (!isHoveringBox.value) return
-        isHoveringDeferredBox.set(true)
-      }, 1000)
-
       // fetch data
-      const p = tryFetchVideoData()
+      const p = tryFetchImagePreviewData()
 
       // delay
       const HOVER_DELAY = 800
@@ -119,12 +108,6 @@ export function usePreviewAnimation({
   const _mouseleaveAction = useMemoizedFn(() => {
     isHoveringBox.set(false)
     isHoveringAfterDelayBox.set(false)
-
-    clearTimeout(isHoveringDeferredOnTimer.current)
-    clearTimeout(isHoveringDeferredOffTimer.current)
-    isHoveringDeferredOffTimer.current = setTimeout(() => {
-      isHoveringDeferredBox.set(false)
-    }, 100) // <- this is the defer
   })
   useEventListener('mouseleave', _mouseleaveAction, { target: videoPreviewWrapperRef })
   useMittOn(emitter, 'mouseenter-other-card', (srcUniqId) => {
@@ -167,7 +150,7 @@ export function usePreviewAnimation({
   const onHotkeyPreviewAnimation = useMemoizedFn(async () => {
     // console.log('hotkey preview', animationPaused)
     if (!idBox.value) {
-      await tryFetchVideoData()
+      await tryFetchImagePreviewData()
       if (hasVideoData()) {
         onStartPreviewAnimation(false)
       }
@@ -192,7 +175,7 @@ export function usePreviewAnimation({
     const runDuration = 8000
     const durationBoundary = [8_000, 16_000] as const
     {
-      if (videoDataBox.value) {
+      if (imagePreviewDataBox.value) {
         // const imgLen = data.videoshotData.index.length
         // runDuration = minmax(imgLen * 400, ...durationBoundary)
       }
@@ -246,9 +229,8 @@ export function usePreviewAnimation({
 
   const isHovering = isHoveringBox.state
   const isHoveringAfterDelay = isHoveringAfterDelayBox.state
-  const isHoveringDeferred = isHoveringDeferredBox.state
 
-  const videoshotData = videoDataBox.state?.videoshotJson?.data
+  const videoshotData = imagePreviewDataBox.state?.videoshotJson?.data
   const shouldShowPreview =
     !!videoshotData?.image?.length &&
     !!videoDuration &&
@@ -283,7 +265,6 @@ export function usePreviewAnimation({
     //
     isHovering,
     isHoveringAfterDelay,
-    isHoveringDeferred,
     // el
     shouldShowPreview,
     previewImageRef,

@@ -1,6 +1,6 @@
 import { type RecItemType } from '$define'
 import { EApiType } from '$define/index.shared'
-import { IconForWatchlater } from '$modules/icon'
+import { IconForLoading, IconForWatchlater } from '$modules/icon'
 import { IconAnimatedChecked } from '$modules/icon/animated-checked'
 import { watchlaterState } from '$modules/rec-services/watchlater'
 import { antMessage } from '$utility/antd'
@@ -101,7 +101,7 @@ export function useWatchlaterRelated({
   const addedSize = 18
   const icon = (() => {
     if ($req.loading) {
-      return <IconSvgSpinnersBarsRotateFade {...size(16)} />
+      return <IconForLoading {...size(16)} />
     }
 
     if (item.api === EApiType.Watchlater) {

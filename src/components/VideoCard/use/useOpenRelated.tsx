@@ -36,12 +36,14 @@ export function useOpenRelated({
   cardData,
   actionButtonVisible,
   previewImageRef,
+  hasOpenInPopupActionButton,
 }: {
   href: string
   item: RecItemType
   cardData: IVideoCardData
   actionButtonVisible: boolean
   previewImageRef: RefObject<PreviewImageRef | null>
+  hasOpenInPopupActionButton: boolean
 }) {
   const { videoLinkOpenMode } = useSettingsSnapshot()
 
@@ -142,10 +144,11 @@ export function useOpenRelated({
       : []
   }, [])
 
-  const openInPopupButtonEl: ReactNode = useMemo(() => {
+  const openInPopupActionButtonEl: ReactNode = useMemo(() => {
     if (videoLinkOpenMode === VideoLinkOpenMode.Popup) return
     if (item.api === EApiType.Live) return
     if (!hasDocumentPictureInPicture) return
+    if (!hasOpenInPopupActionButton) return
     return (
       <VideoCardActionButton
         visible={actionButtonVisible}
@@ -170,7 +173,7 @@ export function useOpenRelated({
     handleVideoLinkClick,
     consistentOpenMenus,
     conditionalOpenMenus,
-    openInPopupButtonEl,
+    openInPopupActionButtonEl,
     onOpenInPopup,
   }
 }

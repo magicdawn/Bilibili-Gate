@@ -47,8 +47,13 @@ import type { VideoCardEmitter } from './index.shared'
 import { defaultEmitter } from './index.shared'
 import type { IVideoCardData } from './process/normalize'
 import { normalizeCardData } from './process/normalize'
-import type { VideoData } from './services'
-import { fetchVideoData, isVideoDataValid } from './services'
+import type { ImagePreviewData, VideoPreviewData } from './services'
+import {
+  fetchImagePreviewData,
+  fetchVideoPreviewData,
+  isImagePreviewDataValid,
+  isVideoPreviewDataValid,
+} from './services'
 import { StatItemDisplay } from './stat-item'
 import {
   ApiTypeTag,
@@ -58,8 +63,9 @@ import {
   RankingNumMark,
 } from './top-marks'
 import { useDislikeRelated } from './use/useDislikeRelated'
+import { useLargePreviewRelated } from './use/useLargePreview'
 import { getRecItemDimension, useLinkTarget, useOpenRelated } from './use/useOpenRelated'
-import { usePreviewAnimation } from './use/usePreviewAnimation'
+import { usePreviewRelated } from './use/usePreviewRelated'
 import { useWatchlaterRelated } from './use/useWatchlaterRelated'
 
 export type VideoCardProps = {
@@ -173,7 +179,7 @@ const VideoCardInner = memo(function VideoCardInner({
     style: {
       videoCard: { useBorder: cardUseBorder, useBorderOnlyOnHover: cardUseBorderOnlyOnHover },
     },
-    videoCard: { useLargePreview },
+    videoCard: { actions: videoCardActions },
   } = useSettingsSnapshot()
   const authed = !!accessKey
 
@@ -204,19 +210,29 @@ const VideoCardInner = memo(function VideoCardInner({
     appWarn(`none (${allowed.join(',')}) goto type %s`, goto, item)
   }
 
-  const videoDataBox = useRefStateBox<VideoData | undefined>(undefined)
-  const tryFetchVideoData = useLockFn(async () => {
-    if (!bvid) return // no bvid
-    if (!bvid.startsWith('BV')) return // bvid invalid
-    if (goto !== 'av') return // scrrenshot only for video
-    if (isVideoDataValid(videoDataBox.value)) return // already fetched
+  const imagePreviewDataBox = useRefStateBox<ImagePreviewData | undefined>(undefined)
+  const videoPreviewDataBox = useRefStateBox<VideoPreviewData | undefined>(undefined)
 
-    const data = await fetchVideoData(bvid, cid)
-    videoDataBox.set(data)
-
+  const shouldFetchPreviewData = useMemo(() => {
+    if (!bvid) return false // no bvid
+    if (!bvid.startsWith('BV')) return false // bvid invalid
+    if (goto !== 'av') return false // scrrenshot only for video
+    return true
+  }, [bvid, goto])
+  const tryFetchImagePreviewData = useLockFn(async () => {
+    if (!shouldFetchPreviewData) return
+    if (isImagePreviewDataValid(imagePreviewDataBox.value)) return // already fetched
+    const data = await fetchImagePreviewData(bvid!)
+    imagePreviewDataBox.set(data)
     if (!isWebApiSuccess(data.videoshotJson)) {
       warnNoPreview(data.videoshotJson!)
     }
+  })
+  const tryFetchVideoPreviewData = useLockFn(async () => {
+    if (!shouldFetchPreviewData) return
+    if (isVideoPreviewDataValid(videoPreviewDataBox.value)) return // already fetched
+    const data = await fetchVideoPreviewData(bvid!)
+    videoPreviewDataBox.set(data)
   })
 
   // 3,false: 每三次触发一次
@@ -247,20 +263,17 @@ const VideoCardInner = memo(function VideoCardInner({
     // flag
     isHovering,
     isHoveringAfterDelay,
-    isHoveringDeferred,
     // el
     previewImageRef,
     previewImageEl,
-    previewImgProps,
-    shouldShowPreview,
-  } = usePreviewAnimation({
+  } = usePreviewRelated({
     uniqId: item.uniqId,
     emitter,
     title,
     active,
     videoDuration: duration,
-    tryFetchVideoData,
-    videoDataBox,
+    tryFetchImagePreviewData,
+    imagePreviewDataBox,
     autoPreviewWhenHover,
     videoPreviewWrapperRef,
   })
@@ -273,7 +286,7 @@ const VideoCardInner = memo(function VideoCardInner({
 
     // 自动开始预览
     if (settings.autoPreviewWhenKeyboardSelect) {
-      tryFetchVideoData().then(() => {
+      tryFetchImagePreviewData().then(() => {
         onStartPreviewAnimation(false)
       })
     }
@@ -295,6 +308,15 @@ const VideoCardInner = memo(function VideoCardInner({
     item,
     authed,
     actionButtonVisible,
+  })
+
+  // 浮动预览
+  const { largePreviewActionButtonEl, showLargePreview } = useLargePreviewRelated({
+    actionButtonVisible,
+    hasLargePreviewActionButton: videoCardActions.showLargePreview,
+    shouldFetchPreviewData,
+    tryFetchVideoPreviewData,
+    videoPreviewDataBox,
   })
 
   /**
@@ -320,7 +342,7 @@ const VideoCardInner = memo(function VideoCardInner({
     handleVideoLinkClick,
     consistentOpenMenus,
     conditionalOpenMenus,
-    openInPopupButtonEl,
+    openInPopupActionButtonEl,
     onOpenInPopup,
   } = useOpenRelated({
     href,
@@ -328,6 +350,7 @@ const VideoCardInner = memo(function VideoCardInner({
     cardData,
     actionButtonVisible,
     previewImageRef,
+    hasOpenInPopupActionButton: videoCardActions.openInPipWindow,
   })
 
   const handleCardClick: MouseEventHandler<HTMLDivElement> = useMemoizedFn((e) => {
@@ -523,12 +546,14 @@ const VideoCardInner = memo(function VideoCardInner({
         </div>
       )}
 
-      {!!(watchlaterButtonEl || openInPopupButtonEl) && (
+      {!!(watchlaterButtonEl || openInPopupActionButtonEl || largePreviewActionButtonEl) && (
         <div className='right-actions' css={VideoCardActionStyle.topContainer('right')}>
           {/* 稍后再看 */}
           {watchlaterButtonEl}
           {/* 小窗打开 */}
-          {openInPopupButtonEl}
+          {openInPopupActionButtonEl}
+          {/* 浮动预览 */}
+          {largePreviewActionButtonEl}
         </div>
       )}
 
@@ -545,29 +570,27 @@ const VideoCardInner = memo(function VideoCardInner({
   const largePreviewRef = useRef<ComponentRef<'div'>>(null)
   const isHoveringOnLargePreview = useHover(largePreviewRef)
   const itemDimension = useMemo(
-    () => getRecItemDimension(item, videoDataBox.state?.dimension),
-    [item, videoDataBox.state?.dimension],
+    () => getRecItemDimension(item, videoPreviewDataBox.state?.dimension),
+    [item, videoPreviewDataBox.state?.dimension],
   )
   const videoCurrentTimeRef = useRef<number | undefined>(undefined)
   const extraContent = (
     <>
-      {useLargePreview &&
-        (isHoveringDeferred || isHoveringOnLargePreview) &&
-        videoDataBox.state?.playUrl && (
-          <LargePreview ref={largePreviewRef} aspectRatio={itemDimension.aspectRatio}>
-            <RecoverableVideo
-              src={videoDataBox.state.playUrl}
-              currentTimeRef={videoCurrentTimeRef}
-              autoPlay
-              controls
-              css={css`
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-              `}
-            />
-          </LargePreview>
-        )}
+      {(showLargePreview || isHoveringOnLargePreview) && videoPreviewDataBox.state?.playUrl && (
+        <LargePreview ref={largePreviewRef} aspectRatio={itemDimension.aspectRatio}>
+          <RecoverableVideo
+            src={videoPreviewDataBox.state?.playUrl}
+            currentTimeRef={videoCurrentTimeRef}
+            autoPlay
+            controls
+            css={css`
+              width: 100%;
+              height: 100%;
+              object-fit: contain;
+            `}
+          />
+        </LargePreview>
+      )}
     </>
   )
 

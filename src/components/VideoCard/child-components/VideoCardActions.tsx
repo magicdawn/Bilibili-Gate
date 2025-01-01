@@ -1,6 +1,7 @@
 import { colorPrimaryValue } from '$components/css-vars'
 import { css as _css, css } from '@emotion/react'
 import { useHover } from 'ahooks'
+import type { ComponentRef } from 'react'
 import { type ComponentProps, type ReactNode } from 'react'
 import { zIndexActions } from '../index.module.scss'
 
@@ -74,33 +75,40 @@ const S = {
 
 export { S as VideoCardActionStyle }
 
-export const VideoCardActionButton = memo(function VideoCardActionButton({
-  inlinePosition,
-  icon,
-  tooltip,
-  visible,
-  className,
-  ...divProps
-}: {
-  inlinePosition: InlinePosition
-  icon: ReactNode
-  tooltip: string
-  visible?: boolean
-} & ComponentProps<'div'>) {
-  visible ??= true
-  const { triggerRef, tooltipEl } = useTooltip({ inlinePosition, tooltip })
-  return (
-    <div
-      {...divProps}
-      ref={triggerRef}
-      css={[S.button(visible)]}
-      className={clsx('action-button', className)}
-    >
-      {icon}
-      {tooltipEl}
-    </div>
-  )
-})
+export const VideoCardActionButton = memo(
+  forwardRef<
+    ComponentRef<'div'>,
+    {
+      inlinePosition: InlinePosition
+      icon: ReactNode
+      tooltip: string
+      visible?: boolean
+    } & ComponentProps<'div'>
+  >(({ inlinePosition, icon, tooltip, visible, className, ...divProps }, forwardedRef) => {
+    visible ??= true
+    const { triggerRef, tooltipEl } = useTooltip({ inlinePosition, tooltip })
+    return (
+      <div
+        {...divProps}
+        ref={(el) => {
+          triggerRef.current = el
+          if (forwardedRef) {
+            if (typeof forwardedRef === 'function') {
+              forwardedRef(el)
+            } else {
+              forwardedRef.current = el
+            }
+          }
+        }}
+        css={[S.button(visible)]}
+        className={clsx('action-button', className)}
+      >
+        {icon}
+        {tooltipEl}
+      </div>
+    )
+  }),
+)
 
 export function useTooltip({
   inlinePosition,
@@ -111,7 +119,7 @@ export function useTooltip({
   tooltip: ReactNode
   tooltipOffset?: number
 }) {
-  const triggerRef = useRef(null)
+  const triggerRef = useRef<ComponentRef<'div'> | null>(null)
   const hovering = useHover(triggerRef)
   const tooltipEl = (
     <span

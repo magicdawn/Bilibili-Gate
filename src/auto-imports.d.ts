@@ -16,6 +16,7 @@ declare global {
   const IconMaterialSymbolsDeleteOutlineRounded: typeof import('~icons/material-symbols/delete-outline-rounded.jsx')['default']
   const IconMaterialSymbolsLightOpenInNew: typeof import('~icons/material-symbols-light/open-in-new.jsx')['default']
   const IconMaterialSymbolsLightOpenInNewOff: typeof import('~icons/material-symbols-light/open-in-new-off.jsx')['default']
+  const IconMaterialSymbolsScreenshotMonitorOutline: typeof import('~icons/material-symbols/screenshot-monitor-outline.jsx')['default']
   const IconMdiShuffleDisabled: typeof import('~icons/mdi/shuffle-disabled.jsx')['default']
   const IconMynauiUsersGroup: typeof import('~icons/mynaui/users-group.jsx')['default']
   const IconParkOutlineAddTwo: typeof import('~icons/icon-park-outline/add-two.jsx')['default']

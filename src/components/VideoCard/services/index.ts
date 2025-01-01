@@ -3,10 +3,10 @@ import type { AppRecItem, PvideoJson } from '$define'
 import { getVideoPlayUrl } from '$modules/bilibili/video/play-url'
 import { getVideoDetail } from '$modules/bilibili/video/video-detail'
 import type { VideoDetailData } from '$modules/bilibili/video/video-detail-types'
-import { settings } from '$modules/settings'
 import { gmrequest, isWebApiSuccess, request } from '$request'
 import { getCsrfToken } from '$utility/cookie'
 import toast from '$utility/toast'
+import ms from 'ms'
 import { getVideoshotJson, isVideoshotDataValid } from './videoshot'
 
 const debug = baseDebug.extend('VideoCard:services')
@@ -106,45 +106,47 @@ export async function getRelated(bvid: string) {
  * preview related
  */
 
-type Dimension = VideoDetailData['dimension']
-
-export type VideoData = {
+// #region ImagePreview
+export type ImagePreviewData = {
   videoshotJson?: PvideoJson
+}
+
+export async function fetchImagePreviewData(bvid: string): Promise<ImagePreviewData> {
+  const [videoshotJson] = await Promise.all([getVideoshotJson(bvid)])
+  return { videoshotJson }
+}
+
+export function isImagePreviewDataValid(data?: ImagePreviewData) {
+  return isVideoshotDataValid(data?.videoshotJson?.data)
+}
+// #endregion
+
+// #region VideoPreview
+export type VideoPreviewData = {
+  ts?: number
   playUrl?: string
-  dimension?: Dimension
+  dimension?: VideoDetailData['dimension']
 }
 
-export function isVideoDataValid(data?: VideoData) {
+export const isVideoPreviewDataValid = (data?: VideoPreviewData): boolean => {
   if (!data) return false
-  const { videoshotJson, playUrl } = data
-  return isVideoshotDataValid(videoshotJson?.data) && !!playUrl
+  const { ts, playUrl } = data
+  return Boolean(playUrl && ts && Date.now() - ts <= ms('1h'))
 }
 
-export async function fetchVideoData(bvid: string, cid?: number): Promise<VideoData> {
-  const [videoshotJson, { playUrl, dimension }] = await Promise.all([
-    getVideoshotJson(bvid),
-    fetchPlayUrl(bvid, cid),
-  ])
-  return {
-    videoshotJson,
-    playUrl,
-    dimension,
-  }
-}
-
-async function fetchPlayUrl(bvid: string, cid?: number) {
+export async function fetchVideoPreviewData(bvid: string, cid?: number) {
   let playUrl: string | undefined
-  let dimension: Dimension | undefined
+  let dimension: VideoDetailData['dimension'] | undefined
 
-  if (settings.videoCard.useLargePreview) {
-    if (typeof cid === 'undefined') {
-      const detail = await getVideoDetail(bvid)
-      cid = detail.cid
-      dimension = detail.dimension
-    }
-    playUrl = await getVideoPlayUrl(bvid, cid)
-    debug('playUrl: bvid=%s cid=%s %s', bvid, cid, playUrl)
+  if (typeof cid === 'undefined') {
+    const detail = await getVideoDetail(bvid)
+    cid = detail.cid
+    dimension = detail.dimension
   }
 
-  return { playUrl, dimension }
+  playUrl = await getVideoPlayUrl(bvid, cid)
+  debug('playUrl: bvid=%s cid=%s %s', bvid, cid, playUrl)
+
+  return { playUrl, dimension, ts: Date.now() }
 }
+// #endregion

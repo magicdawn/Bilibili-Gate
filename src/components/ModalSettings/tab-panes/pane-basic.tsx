@@ -183,6 +183,27 @@ export function TabPaneBasic() {
         </Space>
       </SettingsGroup>
 
+      <SettingsGroup
+        title={
+          <>
+            视频卡片 Actions <HelpInfo>视频卡片右上角, 如「稍后再看」按钮</HelpInfo>
+          </>
+        }
+      >
+        <div className='flex items-center gap-x-10px'>
+          <CheckboxSettingItem
+            configPath='videoCard.actions.openInPipWindow'
+            label={'小窗打开'}
+            tooltip={<>仅当文档画中画 API 可以时, 勾选生效</>}
+          />
+          <CheckboxSettingItem
+            configPath='videoCard.actions.showLargePreview'
+            label={'浮动预览'}
+            tooltip='浮动预览: 类似浮图秀, 但使用视频预览'
+          />
+        </div>
+      </SettingsGroup>
+
       <SettingsGroup title='预览'>
         <Space size={10}>
           <CheckboxSettingItem
@@ -224,12 +245,6 @@ export function TabPaneBasic() {
                 秒开始播放
               </>
             }
-          />
-
-          <CheckboxSettingItem
-            configPath='videoCard.useLargePreview'
-            label='使用浮动预览'
-            tooltip={<>类似浮图秀, 但使用视频预览</>}
           />
         </Space>
       </SettingsGroup>
