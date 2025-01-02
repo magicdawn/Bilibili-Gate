@@ -125,12 +125,12 @@ export function isImagePreviewDataValid(data?: ImagePreviewData) {
 
 // #region VideoPreview
 export type VideoPreviewData = {
-  playUrl?: string
+  playUrls?: string[]
   dimension?: VideoDetailData['dimension']
 }
 
 export const isVideoPreviewDataValid = (data?: VideoPreviewData): boolean => {
-  return !!data?.playUrl
+  return !!data?.playUrls?.length
 }
 
 const videoPreviewCache = new QuickLRU<string, VideoPreviewData>({
@@ -143,7 +143,7 @@ export const fetchVideoPreviewData = reusePendingPromise(async (bvid: string, ci
   const cached = videoPreviewCache.get(cacheKey)
   if (cached) return cached
 
-  let playUrl: string | undefined
+  let playUrls: string[] = []
   let dimension: VideoDetailData['dimension'] | undefined
   if (typeof cid === 'undefined') {
     const detail = await getVideoDetail(bvid)
@@ -151,13 +151,13 @@ export const fetchVideoPreviewData = reusePendingPromise(async (bvid: string, ci
     dimension = detail.dimension
   }
 
-  playUrl = await getVideoPlayUrl(bvid, cid)
-  debug('playUrl: bvid=%s cid=%s %s', bvid, cid, playUrl)
-  if (playUrl) {
-    videoPreviewCache.set(cacheKey, { playUrl, dimension })
+  playUrls = await getVideoPlayUrl(bvid, cid)
+  debug('playUrl: bvid=%s cid=%s %s', bvid, cid, playUrls)
+  if (playUrls) {
+    videoPreviewCache.set(cacheKey, { playUrls, dimension })
   }
 
-  return { playUrl, dimension }
+  return { playUrls, dimension }
 })
 
 // #endregion

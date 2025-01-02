@@ -3,6 +3,7 @@
  */
 
 import { request } from '$request'
+import { orderBy } from 'es-toolkit'
 import type { VideoPlayUrlJson } from './play-url-types'
 
 /**
@@ -61,8 +62,10 @@ export async function getVideoPlayUrl(videoId: string | number, cid: number) {
   const res = await request.get('/x/player/wbi/playurl', { params })
   const json = res.data as VideoPlayUrlJson
 
-  const pickedVideos = json.data?.dash?.video.filter((v) => v.id === EResolution._480p) || []
-  const hevcUrl = pickedVideos.find((x) => x.codecid === ECodecId.HEVC)?.baseUrl
-  const avcUrl = pickedVideos.find((x) => x.codecid === ECodecId.AVC)?.baseUrl
-  return hevcUrl || avcUrl
+  const video = orderBy(json.data?.dash?.video || [], ['id', 'codecid'], ['desc', 'desc'])
+  const urls = video
+    .map((x) => [x.baseUrl])
+    .flat()
+    .filter(Boolean)
+  return urls
 }

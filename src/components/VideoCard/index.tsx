@@ -576,19 +576,24 @@ const VideoCardInner = memo(function VideoCardInner({
   const videoCurrentTimeRef = useRef<number | undefined>(undefined)
   const extraContent = (
     <>
-      {(showLargePreview || isHoveringOnLargePreview) && videoPreviewDataBox.state?.playUrl && (
+      {(showLargePreview || isHoveringOnLargePreview) && videoPreviewDataBox.state?.playUrls && (
         <LargePreview ref={largePreviewRef} aspectRatio={itemDimension.aspectRatio}>
           <RecoverableVideo
-            src={videoPreviewDataBox.state?.playUrl}
             currentTimeRef={videoCurrentTimeRef}
             autoPlay
             controls
+            loop
+            poster={cover}
             css={css`
               width: 100%;
               height: 100%;
               object-fit: contain;
             `}
-          />
+          >
+            {videoPreviewDataBox.state.playUrls.map((url, i) => (
+              <source key={i} src={url} />
+            ))}
+          </RecoverableVideo>
         </LargePreview>
       )}
     </>
