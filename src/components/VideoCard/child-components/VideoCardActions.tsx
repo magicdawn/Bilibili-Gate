@@ -25,7 +25,7 @@ const S = {
     `,
   ],
 
-  button: (visible: boolean) => css`
+  button: (visible: boolean, active = false) => css`
     position: relative;
     width: 28px;
     height: 28px;
@@ -36,9 +36,8 @@ const S = {
     color: #fff;
     &:hover {
       border-color: ${colorPrimaryValue};
-      /* 看不清, 就用 #fff 即可 */
-      /* color: ${colorPrimaryValue}; */
     }
+    ${active && `border-color: ${colorPrimaryValue};`}
 
     display: ${visible ? 'inline-flex' : 'none'};
     align-items: center;
@@ -83,8 +82,9 @@ export const VideoCardActionButton = memo(
       icon: ReactNode
       tooltip: string
       visible?: boolean
+      active?: boolean
     } & ComponentProps<'div'>
-  >(({ inlinePosition, icon, tooltip, visible, className, ...divProps }, forwardedRef) => {
+  >(({ inlinePosition, icon, tooltip, visible, active, className, ...divProps }, forwardedRef) => {
     visible ??= true
     const { triggerRef, tooltipEl } = useTooltip({ inlinePosition, tooltip })
     return (
@@ -100,7 +100,7 @@ export const VideoCardActionButton = memo(
             }
           }
         }}
-        css={[S.button(visible)]}
+        css={[S.button(visible, active)]}
         className={clsx('action-button', className)}
       >
         {icon}

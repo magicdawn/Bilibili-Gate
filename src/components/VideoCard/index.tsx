@@ -30,21 +30,19 @@ import { isFirefox, isSafari } from '$ua'
 import { antNotification } from '$utility/antd'
 import type { CssProp } from '$utility/type'
 import { css } from '@emotion/react'
-import { useHover, useLockFn } from 'ahooks'
+import { useLockFn } from 'ahooks'
 import { Dropdown } from 'antd'
 import type { ComponentRef, CSSProperties, MouseEventHandler, ReactNode } from 'react'
 import { videoCardBorderRadiusValue } from '../css-vars'
 import { useInNormalCardCss } from './card-border-css'
-import { LargePreview } from './child-components/LargePreview'
 import { SimplePregressBar } from './child-components/PreviewImage'
-import { RecoverableVideo } from './child-components/RecoverableVideo'
 import { VideoCardActionStyle } from './child-components/VideoCardActions'
 import { VideoCardBottom } from './child-components/VideoCardBottom'
 import { BlacklistCard, DislikedCard, SkeletonCard } from './child-components/other-type-cards'
 import { useContextMenus } from './context-menus'
 import styles, { zIndexWatchlaterProgressBar } from './index.module.scss'
-import type { VideoCardEmitter } from './index.shared'
-import { defaultEmitter } from './index.shared'
+import type { SharedEmitter, VideoCardEmitter } from './index.shared'
+import { defaultEmitter, defaultSharedEmitter } from './index.shared'
 import type { IVideoCardData } from './process/normalize'
 import { normalizeCardData } from './process/normalize'
 import type { ImagePreviewData, VideoPreviewData } from './services'
@@ -64,7 +62,7 @@ import {
 } from './top-marks'
 import { useDislikeRelated } from './use/useDislikeRelated'
 import { useLargePreviewRelated } from './use/useLargePreview'
-import { getRecItemDimension, useLinkTarget, useOpenRelated } from './use/useOpenRelated'
+import { useLinkTarget, useOpenRelated } from './use/useOpenRelated'
 import { usePreviewRelated } from './use/usePreviewRelated'
 import { useWatchlaterRelated } from './use/useWatchlaterRelated'
 
@@ -78,6 +76,7 @@ export type VideoCardProps = {
   onMoveToFirst?: (item: RecItemType, data: IVideoCardData) => void | Promise<void>
   onRefresh?: OnRefresh
   emitter?: VideoCardEmitter
+  sharedEmitter?: SharedEmitter
   tab: ETab
   baseCss?: CssProp
 } & ComponentProps<'div'>
@@ -159,6 +158,7 @@ export type VideoCardInnerProps = {
   onMoveToFirst?: (item: RecItemType, data: IVideoCardData) => void | Promise<void>
   onRefresh?: OnRefresh
   emitter?: VideoCardEmitter
+  sharedEmitter?: SharedEmitter
   watchlaterAdded: boolean
   tab: ETab
 }
@@ -171,6 +171,7 @@ const VideoCardInner = memo(function VideoCardInner({
   onMoveToFirst,
   onRefresh,
   emitter = defaultEmitter,
+  sharedEmitter = defaultSharedEmitter,
   watchlaterAdded,
 }: VideoCardInnerProps) {
   const {
@@ -221,7 +222,7 @@ const VideoCardInner = memo(function VideoCardInner({
   }, [bvid, goto])
   const tryFetchImagePreviewData = useLockFn(async () => {
     if (!shouldFetchPreviewData) return
-    if (isImagePreviewDataValid(imagePreviewDataBox.value)) return // already fetched
+    if (isImagePreviewDataValid(imagePreviewDataBox.val)) return // already fetched
     const data = await fetchImagePreviewData(bvid!)
     imagePreviewDataBox.set(data)
     if (!isWebApiSuccess(data.videoshotJson)) {
@@ -230,7 +231,7 @@ const VideoCardInner = memo(function VideoCardInner({
   })
   const tryFetchVideoPreviewData = useLockFn(async () => {
     if (!shouldFetchPreviewData) return
-    if (isVideoPreviewDataValid(videoPreviewDataBox.value)) return // already fetched
+    if (isVideoPreviewDataValid(videoPreviewDataBox.val)) return // already fetched
     const data = await fetchVideoPreviewData(bvid!)
     videoPreviewDataBox.set(data)
   })
@@ -253,8 +254,8 @@ const VideoCardInner = memo(function VideoCardInner({
    */
 
   // single ref 与 useEventListener 配合不是很好, 故使用两个 ref
-  const cardRef = useRef<HTMLElement | null>(null)
-  const coverRef = useRef<HTMLElement | null>(null)
+  const cardRef = useRef<ComponentRef<'div'> | null>(null)
+  const coverRef = useRef<ComponentRef<'a'> | null>(null)
   const videoPreviewWrapperRef = cardUseBorder ? cardRef : coverRef
 
   const {
@@ -268,7 +269,7 @@ const VideoCardInner = memo(function VideoCardInner({
     previewImageEl,
   } = usePreviewRelated({
     uniqId: item.uniqId,
-    emitter,
+    sharedEmitter,
     title,
     active,
     videoDuration: duration,
@@ -311,12 +312,19 @@ const VideoCardInner = memo(function VideoCardInner({
   })
 
   // 浮动预览
-  const { largePreviewActionButtonEl, showLargePreview } = useLargePreviewRelated({
-    actionButtonVisible,
-    hasLargePreviewActionButton: videoCardActions.showLargePreview,
+  const { largePreviewActionButtonEl, largePreviewEl } = useLargePreviewRelated({
     shouldFetchPreviewData,
     tryFetchVideoPreviewData,
     videoPreviewDataBox,
+    //
+    actionButtonVisible,
+    hasLargePreviewActionButton: videoCardActions.showLargePreview,
+    //
+    item,
+    cover,
+    sharedEmitter,
+    uniqId: item.uniqId,
+    cardRef,
   })
 
   /**
@@ -567,37 +575,7 @@ const VideoCardInner = memo(function VideoCardInner({
     <VideoCardBottom item={item} cardData={cardData} handleVideoLinkClick={handleVideoLinkClick} />
   )
 
-  const largePreviewRef = useRef<ComponentRef<'div'>>(null)
-  const isHoveringOnLargePreview = useHover(largePreviewRef)
-  const itemDimension = useMemo(
-    () => getRecItemDimension(item, videoPreviewDataBox.state?.dimension),
-    [item, videoPreviewDataBox.state?.dimension],
-  )
-  const videoCurrentTimeRef = useRef<number | undefined>(undefined)
-  const extraContent = (
-    <>
-      {(showLargePreview || isHoveringOnLargePreview) && videoPreviewDataBox.state?.playUrls && (
-        <LargePreview ref={largePreviewRef} aspectRatio={itemDimension.aspectRatio}>
-          <RecoverableVideo
-            currentTimeRef={videoCurrentTimeRef}
-            autoPlay
-            controls
-            loop
-            poster={cover}
-            css={css`
-              width: 100%;
-              height: 100%;
-              object-fit: contain;
-            `}
-          >
-            {videoPreviewDataBox.state.playUrls.map((url, i) => (
-              <source key={i} src={url} />
-            ))}
-          </RecoverableVideo>
-        </LargePreview>
-      )}
-    </>
-  )
+  const extraContent = <>{largePreviewEl}</>
 
   function wrapDropdown(c: ReactNode) {
     return (
@@ -626,8 +604,8 @@ const VideoCardInner = memo(function VideoCardInner({
   function wrapCardWrapper(c: ReactNode) {
     return (
       <div
-        ref={(el) => (cardRef.current = el)}
         className='bili-video-card__wrap'
+        ref={(el) => (cardRef.current = el)}
         css={css`
           background-color: unset;
           position: static;

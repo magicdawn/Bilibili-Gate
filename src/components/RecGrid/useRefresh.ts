@@ -74,7 +74,7 @@ export function useRefresh({
     await using stack = new AsyncDisposableStackPolyfill()
 
     // when already in refreshing
-    if (refreshingBox.value) {
+    if (refreshingBox.val) {
       /**
        * same tab but conditions changed
        */
@@ -89,7 +89,7 @@ export function useRefresh({
       // dynamic-feed: conditions changed
       if (
         tab === ETab.DynamicFeed &&
-        (s = servicesRegistry.value[ETab.DynamicFeed]) &&
+        (s = servicesRegistry.val[ETab.DynamicFeed]) &&
         !isEqual(s.config, getDynamicFeedServiceConfig())
       ) {
         debugSameTabConditionsChange()
@@ -98,7 +98,7 @@ export function useRefresh({
       // fav: conditions changed
       else if (
         tab === ETab.Fav &&
-        (s = servicesRegistry.value[ETab.Fav]) &&
+        (s = servicesRegistry.val[ETab.Fav]) &&
         !isEqual(s.config, getFavServiceConfig())
       ) {
         debugSameTabConditionsChange()
@@ -108,7 +108,7 @@ export function useRefresh({
       // has sub-tabs
       else if (
         tab === ETab.Hot &&
-        (s = servicesRegistry.value[ETab.Hot]) &&
+        (s = servicesRegistry.val[ETab.Hot]) &&
         s.subtab !== hotStore.subtab
       ) {
         debug(
@@ -174,7 +174,7 @@ export function useRefresh({
     }
 
     let willRefresh: boolean
-    const existingService = reuse ? servicesRegistry.value[tab] : undefined
+    const existingService = reuse ? servicesRegistry.val[tab] : undefined
     // reuse existing service
     if (existingService) {
       // cache
@@ -196,7 +196,7 @@ export function useRefresh({
     if (willRefresh) {
       const [err, service] = tryit(() => createServiceMap[tab]({ existingService }))()
       if (err) return onError(err)
-      servicesRegistry.set({ ...servicesRegistry.value, [tab]: service })
+      servicesRegistry.set({ ...servicesRegistry.val, [tab]: service })
 
       const success = await doFetch()
       if (!success) return

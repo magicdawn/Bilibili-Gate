@@ -11,6 +11,11 @@ import RiFullscreenFill from '~icons/ri/fullscreen-fill'
 
 export const STAT_NUMBER_FALLBACK = '0'
 
+export function copyContent(content: string) {
+  GM.setClipboard(content)
+  antMessage.success(`已复制: ${content}`)
+}
+
 export enum QueryKey {
   PlayerScreenMode = `${APP_SHORT_PREFIX}-player-screen-mode`,
   ForceAutoPlay = `${APP_SHORT_PREFIX}-force-auto-play`,
@@ -119,15 +124,20 @@ export type VideoCardEvents = {
   'trigger-dislike': void
   'start-preview-animation': void
   'hotkey-preview-animation': void
-
-  'mouseenter': string
-  'mouseenter-other-card': string
 }
-
 export type VideoCardEmitter = Emitter<VideoCardEvents>
-
-export const defaultEmitter = mitt<VideoCardEvents>()
-export function copyContent(content: string) {
-  GM.setClipboard(content)
-  antMessage.success(`已复制: ${content}`)
+export function createVideoCardEmitter() {
+  return mitt<VideoCardEvents>()
 }
+
+export type SharedEmitterEvents = {
+  'mouseenter': string
+  'show-large-preview': string
+}
+export type SharedEmitter = Emitter<SharedEmitterEvents>
+export function createSharedEmitter() {
+  return mitt<SharedEmitterEvents>()
+}
+
+export const defaultEmitter = createVideoCardEmitter()
+export const defaultSharedEmitter = createSharedEmitter()

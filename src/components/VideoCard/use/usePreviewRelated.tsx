@@ -7,7 +7,7 @@ import { useEventListener, useMemoizedFn, useRafState, useUnmountedRef } from 'a
 import { delay } from 'es-toolkit'
 import type { ComponentProps, MouseEvent, ReactNode } from 'react'
 import { PreviewImage, type PreviewImageRef } from '../child-components/PreviewImage'
-import type { VideoCardEmitter } from '../index.shared'
+import type { SharedEmitter } from '../index.shared'
 import type { ImagePreviewData } from '../services'
 
 const DEBUG_ANIMATION = __PROD__
@@ -19,7 +19,7 @@ const DEBUG_ANIMATION = __PROD__
  */
 export function usePreviewRelated({
   uniqId,
-  emitter,
+  sharedEmitter,
   title,
   active,
   videoDuration,
@@ -29,7 +29,7 @@ export function usePreviewRelated({
   videoPreviewWrapperRef,
 }: {
   uniqId: string
-  emitter: VideoCardEmitter
+  sharedEmitter: SharedEmitter
   title: string
   active: boolean
   videoDuration?: number
@@ -39,7 +39,7 @@ export function usePreviewRelated({
   videoPreviewWrapperRef: RefObject<HTMLElement>
 }) {
   const hasVideoData = useMemoizedFn(() => {
-    const data = imagePreviewDataBox.value?.videoshotJson?.data
+    const data = imagePreviewDataBox.val?.videoshotJson?.data
     return Boolean(data?.index?.length && data?.image?.length)
   })
 
@@ -69,7 +69,7 @@ export function usePreviewRelated({
   useEventListener(
     'mouseenter',
     async (e) => {
-      emitter.emit('mouseenter', uniqId)
+      sharedEmitter.emit('mouseenter', uniqId)
 
       isHoveringBox.set(true)
       updateMouseProgress(e)
@@ -89,13 +89,13 @@ export function usePreviewRelated({
       await Promise.all([p, delayPromise].filter(Boolean))
 
       // mouse leave after delay
-      if (!isHoveringBox.value) return
+      if (!isHoveringBox.val) return
 
       // set delay flag
       isHoveringAfterDelayBox.set(true)
 
       // start preview animation
-      if (autoPreviewWhenHover && !idBox.value && hasVideoData()) {
+      if (autoPreviewWhenHover && !idBox.val && hasVideoData()) {
         DEBUG_ANIMATION &&
           appLog(`[animation] mouseenter onStartPreviewAnimation uniqId=%s title=%s`, uniqId, title)
         onStartPreviewAnimation(true)
@@ -110,7 +110,7 @@ export function usePreviewRelated({
     isHoveringAfterDelayBox.set(false)
   })
   useEventListener('mouseleave', _mouseleaveAction, { target: videoPreviewWrapperRef })
-  useMittOn(emitter, 'mouseenter-other-card', (srcUniqId) => {
+  useMittOn(sharedEmitter, 'mouseenter', (srcUniqId) => {
     if (srcUniqId === uniqId) return
     _mouseleaveAction()
   })
@@ -121,7 +121,7 @@ export function usePreviewRelated({
       setMouseMoved(true)
 
       // update mouse enter state in mouseenter-delay
-      if (isHoveringBox.value && (!isHoveringAfterDelayBox.value || !autoPreviewWhenHover)) {
+      if (isHoveringBox.val && (!isHoveringAfterDelayBox.val || !autoPreviewWhenHover)) {
         updateMouseProgress(e)
       }
 
@@ -149,7 +149,7 @@ export function usePreviewRelated({
 
   const onHotkeyPreviewAnimation = useMemoizedFn(async () => {
     // console.log('hotkey preview', animationPaused)
-    if (!idBox.value) {
+    if (!idBox.val) {
       await tryFetchImagePreviewData()
       if (hasVideoData()) {
         onStartPreviewAnimation(false)
@@ -175,7 +175,7 @@ export function usePreviewRelated({
     const runDuration = 8000
     const durationBoundary = [8_000, 16_000] as const
     {
-      if (imagePreviewDataBox.value) {
+      if (imagePreviewDataBox.val) {
         // const imgLen = data.videoshotData.index.length
         // runDuration = minmax(imgLen * 400, ...durationBoundary)
       }
@@ -221,10 +221,10 @@ export function usePreviewRelated({
         }
       }
 
-      idBox.value = requestAnimationFrame(frame)
+      idBox.val = requestAnimationFrame(frame)
     }
 
-    idBox.value = requestAnimationFrame(frame)
+    idBox.val = requestAnimationFrame(frame)
   })
 
   const isHovering = isHoveringBox.state
@@ -304,8 +304,8 @@ function useAnimationController({
     if (unmounted.current) return true
 
     // mouse
-    if (startByHoverBox.value) {
-      if (!isHoveringBox.value) return true
+    if (startByHoverBox.val) {
+      if (!isHoveringBox.val) return true
     }
     // normal keyboard control
     else {
@@ -321,14 +321,14 @@ function useAnimationController({
       appLog(`[animation] stopAnimation: %o`, {
         autoPreviewWhenHover,
         unmounted: unmounted.current,
-        isHovering: isHoveringBox.value,
+        isHovering: isHoveringBox.val,
         active,
         mouseMoved,
       })
     }
 
-    if (idBox.value) cancelAnimationFrame(idBox.value)
-    idBox.value = undefined
+    if (idBox.val) cancelAnimationFrame(idBox.val)
+    idBox.val = undefined
     setAutoPreviewing(false)
     setPreviewProgress(undefined)
     setPreviewT(undefined)
@@ -343,10 +343,10 @@ function useAnimationController({
     stop,
 
     get paused() {
-      return pausedBox.value
+      return pausedBox.val
     },
     set paused(val: boolean) {
-      pausedBox.value = val
+      pausedBox.val = val
     },
 
     togglePaused() {

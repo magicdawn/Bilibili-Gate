@@ -33,10 +33,10 @@ export function useRefStateBox<T>(initialValue: T | (() => T)) {
       state, // use state in render, other case use `.val`
       get,
       set,
-      get value() {
+      get val() {
         return get()
       },
-      set value(newValue) {
+      set val(newValue) {
         set(newValue)
       },
     }),
@@ -55,10 +55,10 @@ export function useRefBox<T>(initialValue: T) {
     () => ({
       get,
       set,
-      get value() {
+      get val() {
         return get()
       },
-      set value(newValue: T) {
+      set val(newValue: T) {
         set(newValue)
       },
     }),

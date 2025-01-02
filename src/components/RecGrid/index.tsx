@@ -9,7 +9,11 @@ import { useCurrentUsingTab, useSortedTabKeys } from '$components/RecHeader/tab'
 import { EHotSubTab, ETab } from '$components/RecHeader/tab-enum'
 import { VideoCard } from '$components/VideoCard'
 import { getActiveCardBorderCss, useCardBorderCss } from '$components/VideoCard/card-border-css'
-import { type VideoCardEmitter, type VideoCardEvents } from '$components/VideoCard/index.shared'
+import {
+  createSharedEmitter,
+  type VideoCardEmitter,
+  type VideoCardEvents,
+} from '$components/VideoCard/index.shared'
 import { filterRecItems } from '$components/VideoCard/process/filter'
 import type { IVideoCardData } from '$components/VideoCard/process/normalize'
 import { useLinkTarget } from '$components/VideoCard/use/useOpenRelated'
@@ -116,7 +120,7 @@ const RecGridInner = memo(function ({
 
   const [extraInfo, setExtraInfo] = useState<ReactNode>(undefined)
   const updateExtraInfo = useMemoizedFn(() => {
-    setExtraInfo(servicesRegistry.value[tab]?.usageInfo)
+    setExtraInfo(servicesRegistry.val[tab]?.usageInfo)
   })
 
   const preAction = useMemoizedFn(() => {
@@ -177,8 +181,8 @@ const RecGridInner = memo(function ({
         return
       }
 
-      if (refreshingBox.value) return
-      if (loadMoreLocker.current[refreshTsBox.value]) return
+      if (refreshingBox.val) return
+      if (loadMoreLocker.current[refreshTsBox.val]) return
 
       // 场景
       // 当前 Tab: 稍后再看, 点视频进去, 在视频页移除了, 关闭视频页, 回到首页
@@ -208,17 +212,17 @@ const RecGridInner = memo(function ({
 
   const loadMore = useMemoizedFn(async () => {
     if (unmountedRef.current) return
-    if (!hasMoreBox.value) return
+    if (!hasMoreBox.val) return
     if (refreshAbortController.signal.aborted) return
-    if (refreshingBox.value) return
+    if (refreshingBox.val) return
 
-    const getState = () => ({ refreshTs: refreshTsBox.value })
+    const getState = () => ({ refreshTs: refreshTsBox.val })
     const startingState = getState()
     const lockKey = startingState.refreshTs
     if (isLocked(lockKey)) return
     lock(lockKey)
 
-    let newItems = itemsBox.value
+    let newItems = itemsBox.val
     let newHasMore = true
     let err: any
     try {
@@ -252,8 +256,8 @@ const RecGridInner = memo(function ({
 
     debug(
       'loadMore: seq(%s) len %s -> %s',
-      loadCompleteCountBox.value + 1,
-      itemsBox.value.length,
+      loadCompleteCountBox.val + 1,
+      itemsBox.val.length,
       newItems.length,
     )
     hasMoreBox.set(newHasMore)
@@ -306,22 +310,7 @@ const RecGridInner = memo(function ({
     })
   }, [usingVideoItems])
 
-  useEffect(() => {
-    const broadcastMouseEnter = (srcUniqId: string) => {
-      // broadcast
-      videoCardEmitters.forEach((emitter) => {
-        emitter.emit('mouseenter-other-card', srcUniqId)
-      })
-    }
-    videoCardEmitters.forEach((emitter) => {
-      emitter.on('mouseenter', broadcastMouseEnter)
-    })
-    return () => {
-      videoCardEmitters.forEach((emitter) => {
-        emitter.off('mouseenter')
-      })
-    }
-  }, [videoCardEmitters])
+  const sharedEmitter = useMemo(() => createSharedEmitter(), [])
 
   // 快捷键
   const { activeIndex, clearActiveIndex } = useShortcut({
@@ -362,11 +351,11 @@ const RecGridInner = memo(function ({
       antMessage.success(`已移除: ${data.title}`, 4)
 
       if (tab === ETab.Watchlater) {
-        servicesRegistry.value[tab]?.decreaseTotal()
+        servicesRegistry.val[tab]?.decreaseTotal()
         // updateExtraInfo(tab)
       }
       if (tab === ETab.Fav) {
-        servicesRegistry.value[tab]?.decreaseTotal()
+        servicesRegistry.val[tab]?.decreaseTotal()
         // updateExtraInfo(tab)
       }
 
@@ -534,13 +523,14 @@ const RecGridInner = memo(function ({
           key={item.uniqId}
           className={clsx(APP_CLS_CARD, { [APP_CLS_CARD_ACTIVE]: active })}
           baseCss={[cardBorderCss, getActiveCardBorderCss(active)]}
+          tab={tab}
           item={item}
           active={active}
           onRemoveCurrent={handleRemoveCard}
           onMoveToFirst={handleMoveCardToFirst}
           onRefresh={refresh}
           emitter={videoCardEmitters[index]}
-          tab={tab}
+          sharedEmitter={sharedEmitter}
         />
       )
     }

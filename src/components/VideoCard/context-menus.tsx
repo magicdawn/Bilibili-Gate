@@ -110,6 +110,8 @@ export function useContextMenus({
   consistentOpenMenus: AntMenuItem[]
   conditionalOpenMenus: AntMenuItem[]
 }): AntMenuItem[] {
+  const { cover } = cardData
+
   const { enableHideSomeContents } = useSnapshot(settings.dynamicFeed.whenViewAll)
 
   const onCopyLink = useMemoizedFn(() => {
@@ -290,6 +292,17 @@ export function useContextMenus({
         icon: <IconForCopy className='size-15px' />,
         onClick() {
           copyContent(getBvidInfo(cardData))
+        },
+      },
+      {
+        test: !!cover,
+        key: 'view-cover',
+        label: '查看封面',
+        icon: <IconForOpenExternalLink className='size-16px' />,
+        onClick() {
+          if (!cover) return
+          const url = cover
+          openNewTab(url)
         },
       },
     ])
