@@ -3,11 +3,12 @@
  */
 
 import { APP_NAMESPACE } from '$common'
-import { throttle } from 'es-toolkit'
+import { isNil, throttle } from 'es-toolkit'
 import localforage from 'localforage'
-import pLimit from 'p-limit'
+import { limitFunction } from 'p-limit'
+import pMemoize, { type AnyAsyncFunction } from 'p-memoize'
+import type { AsyncReturnType } from 'type-fest'
 import { whenIdle } from './dom'
-import type { AnyFunction } from './type'
 
 export function getIdbCache<T>(tableName: string) {
   const db = localforage.createInstance({
@@ -29,7 +30,7 @@ export function getIdbCache<T>(tableName: string) {
   }
 }
 
-export function wrapWithIdbCache<T extends AnyFunction>({
+export function wrapWithIdbCache<T extends AnyAsyncFunction>({
   fn,
   generateKey,
   tableName,
@@ -45,15 +46,14 @@ export function wrapWithIdbCache<T extends AnyFunction>({
   autoCleanUp?: boolean
 }) {
   type A = Parameters<T>
-  type R = Awaited<ReturnType<T>>
-  type CacheEntry = { ts: number; val: R }
+  type ValueType = AsyncReturnType<T>
+  type CacheEntry = { ts: number; val: ValueType }
 
   const cache = getIdbCache<CacheEntry>(tableName)
-  const limit = concurrency && concurrency > 0 ? pLimit(concurrency) : undefined
 
   const cleanUp = throttle(async () => {
     cache.db.iterate((cached: CacheEntry, key) => {
-      if (!cache || !shouldReuseCached(cached)) {
+      if (!shouldReuseCached(cached)) {
         cache.db.removeItem(key)
       }
     })
@@ -63,27 +63,44 @@ export function wrapWithIdbCache<T extends AnyFunction>({
     whenIdle().then(cleanUp)
   }
 
-  function shouldReuseCached(cached: CacheEntry) {
-    return cached.val && cached.ts && Date.now() - cached.ts <= ttl
+  function shouldReuseCached(cached: CacheEntry | null | undefined): boolean {
+    return Boolean(cached && cached.val && cached.ts && Date.now() - cached.ts <= ttl)
   }
 
-  async function wrapped(...args: A): Promise<R> {
-    const key = generateKey(...args)
-    const cached = await cache.get(key)
-    if (cached && shouldReuseCached(cached)) return cached.val
-    const result = await (limit ? limit(() => fn(...args)) : fn(...args))
-    await cache.set(key, { ts: Date.now(), val: result })
-    return result
-  }
-  Object.defineProperties(wrapped, {
+  const fnMemoized = pMemoize<T, string>(fn, {
+    cacheKey(args) {
+      return generateKey(...args)
+    },
+    cache: {
+      async has(key) {
+        const cached = await cache.get(key)
+        return shouldReuseCached(cached)
+      },
+      async get(key) {
+        const cached = await cache.get(key)
+        if (cached && shouldReuseCached(cached)) return cached.val
+      },
+      async set(key, val) {
+        if (isNil(val)) return
+        await cache.set(key, { val, ts: Date.now() })
+      },
+      async delete(key) {
+        await cache.delete(key)
+      },
+    },
+  })
+
+  const fnLimited =
+    concurrency && concurrency > 0 ? (limitFunction(fnMemoized, { concurrency }) as T) : fnMemoized
+
+  Object.defineProperties(fnLimited, {
     cache: { value: cache },
     cleanUp: { value: cleanUp },
     generateKey: { value: generateKey },
     shouldReuseCached: { value: shouldReuseCached },
   })
 
-  return wrapped as {
-    (...args: A): Promise<R>
+  return fnLimited as typeof fnLimited & {
     cache: typeof cache
     cleanUp: typeof cleanUp
     generateKey: typeof generateKey

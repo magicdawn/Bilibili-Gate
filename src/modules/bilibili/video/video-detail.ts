@@ -1,5 +1,4 @@
 import { request } from '$request'
-import { reusePendingPromise } from '$utility/async'
 import { wrapWithIdbCache } from '$utility/idb'
 import ms from 'ms'
 import type { VideoDetailJson } from './video-detail-types'
@@ -16,13 +15,8 @@ async function __fetchVideoDetail(bvid: string) {
 }
 
 export const getVideoDetail = wrapWithIdbCache({
-  fn: reusePendingPromise(__fetchVideoDetail),
+  fn: __fetchVideoDetail,
   generateKey: (bvid: string) => bvid,
   tableName: 'video_detail',
   ttl: ms('3M'),
 })
-
-export async function getVideoCid(bvid: string) {
-  const detail = await getVideoDetail(bvid)
-  return detail.cid
-}

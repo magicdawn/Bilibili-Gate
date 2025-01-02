@@ -1,7 +1,7 @@
 import { baseDebug } from '$common'
+import { reusePendingPromise } from '$utility/async'
 import { proxyMapWithGmStorage } from '$utility/valtio'
 import ms from 'ms'
-import pMemoize from 'p-memoize'
 import { proxy } from 'valtio'
 import { fetchAllFavCollections } from './collection/api'
 import { FavItemsOrder } from './fav-enum'
@@ -128,26 +128,26 @@ export async function updateList(force = false) {
   return Promise.all([updateFolderList(force), updateCollectionList(force)])
 }
 
-const memoizeOptions = {
-  cache: false as const,
-  cacheKey([force]: [boolean?]) {
-    return force ?? false
-  },
-}
-
-const updateFolderList = pMemoize(async (force: boolean = false) => {
+const _updateFolderList = reusePendingPromise(async () => {
+  const folders = await fetchFavFolder()
+  favStore.favFolders = folders
+  favStore.favFoldersUpdateAt = Date.now()
+})
+async function updateFolderList(force = false) {
   if (force) return
   const { favFolders, favFoldersUpdateAt } = favStore
   if (favFolders.length && favFoldersUpdateAt && Date.now() - favFoldersUpdateAt < ms('5min')) {
     return
   }
+  return _updateFolderList()
+}
 
-  const folders = await fetchFavFolder()
-  favStore.favFolders = folders
-  favStore.favFoldersUpdateAt = Date.now()
-}, memoizeOptions)
-
-const updateCollectionList = pMemoize(async (force: boolean = false) => {
+const _updateCollectionList = reusePendingPromise(async () => {
+  const collections = await fetchAllFavCollections()
+  favStore.favCollections = collections
+  favStore.favCollectionsUpdateAt = Date.now()
+})
+async function updateCollectionList(force = false) {
   if (force) return
   const { favCollections, favCollectionsUpdateAt } = favStore
   if (
@@ -157,8 +157,5 @@ const updateCollectionList = pMemoize(async (force: boolean = false) => {
   ) {
     return
   }
-
-  const collections = await fetchAllFavCollections()
-  favStore.favCollections = collections
-  favStore.favCollectionsUpdateAt = Date.now()
-}, memoizeOptions)
+  return _updateCollectionList()
+}

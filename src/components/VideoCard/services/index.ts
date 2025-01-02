@@ -4,9 +4,11 @@ import { getVideoPlayUrl } from '$modules/bilibili/video/play-url'
 import { getVideoDetail } from '$modules/bilibili/video/video-detail'
 import type { VideoDetailData } from '$modules/bilibili/video/video-detail-types'
 import { gmrequest, isWebApiSuccess, request } from '$request'
+import { reusePendingPromise } from '$utility/async'
 import { getCsrfToken } from '$utility/cookie'
 import toast from '$utility/toast'
 import ms from 'ms'
+import QuickLRU from 'quick-lru'
 import { getVideoshotJson, isVideoshotDataValid } from './videoshot'
 
 const debug = baseDebug.extend('VideoCard:services')
@@ -123,21 +125,26 @@ export function isImagePreviewDataValid(data?: ImagePreviewData) {
 
 // #region VideoPreview
 export type VideoPreviewData = {
-  ts?: number
   playUrl?: string
   dimension?: VideoDetailData['dimension']
 }
 
 export const isVideoPreviewDataValid = (data?: VideoPreviewData): boolean => {
-  if (!data) return false
-  const { ts, playUrl } = data
-  return Boolean(playUrl && ts && Date.now() - ts <= ms('1h'))
+  return !!data?.playUrl
 }
 
-export async function fetchVideoPreviewData(bvid: string, cid?: number) {
+const videoPreviewCache = new QuickLRU<string, VideoPreviewData>({
+  maxSize: 1_0000,
+  maxAge: ms('1h'),
+})
+
+export const fetchVideoPreviewData = reusePendingPromise(async (bvid: string, cid?: number) => {
+  const cacheKey = bvid
+  const cached = videoPreviewCache.get(cacheKey)
+  if (cached) return cached
+
   let playUrl: string | undefined
   let dimension: VideoDetailData['dimension'] | undefined
-
   if (typeof cid === 'undefined') {
     const detail = await getVideoDetail(bvid)
     cid = detail.cid
@@ -146,7 +153,11 @@ export async function fetchVideoPreviewData(bvid: string, cid?: number) {
 
   playUrl = await getVideoPlayUrl(bvid, cid)
   debug('playUrl: bvid=%s cid=%s %s', bvid, cid, playUrl)
+  if (playUrl) {
+    videoPreviewCache.set(cacheKey, { playUrl, dimension })
+  }
 
-  return { playUrl, dimension, ts: Date.now() }
-}
+  return { playUrl, dimension }
+})
+
 // #endregion
