@@ -78,7 +78,11 @@ export function useLargePreviewRelated({
   const onClick = useMemoizedFn(() => {
     clearTimeout(enterTimer.current)
     clearTimeout(leaveTimer.current)
-    showBy('click')
+    if (triggerFrom.val === 'click') {
+      hide()
+    } else {
+      showBy('click')
+    }
   })
 
   /**
