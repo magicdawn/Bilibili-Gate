@@ -34,7 +34,7 @@ export async function getFollowGroupContent(tagid: number | string) {
       },
     })
     const json = res.data as FollowGroupContentJson
-    return json.data
+    return json.data || []
   }
 
   let pn = 1
