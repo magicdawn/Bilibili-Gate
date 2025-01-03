@@ -67,6 +67,8 @@ export function useLargePreviewRelated({
   })
   useMittOn(sharedEmitter, 'show-large-preview', (srcUniqId) => {
     if (srcUniqId === uniqId) return
+    clearTimeout(enterTimer.current)
+    clearTimeout(leaveTimer.current)
     hide()
   })
 
