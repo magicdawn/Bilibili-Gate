@@ -147,16 +147,22 @@ export const initialSettings = {
   filter: {
     enabled: true,
 
-    // 最少播放量
+    // 时长
+    minDuration: {
+      enabled: false,
+      value: 60, // 60s
+    },
+
+    // 最少播放次数
     minPlayCount: {
       enabled: false,
       value: 10000,
     },
 
-    // 时长
-    minDuration: {
+    // 最少弹幕条数
+    minDanmakuCount: {
       enabled: false,
-      value: 60, // 60s
+      value: 10,
     },
 
     // 已关注豁免

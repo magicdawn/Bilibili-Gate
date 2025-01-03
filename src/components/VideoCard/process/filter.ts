@@ -68,7 +68,7 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
   }
 
   const filter = getSettingsSnapshot().filter
-  const { minDuration, minPlayCount, byAuthor, byTitle } = filter
+  const { minDuration, minPlayCount, minDanmakuCount, byAuthor, byTitle } = filter
 
   const blockUpMids = new Set<string>()
   const blockUpNames = new Set<string>()
@@ -100,8 +100,18 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
     // just keep it
     if (item.api === EApiType.Separator) return true
 
-    const { play, duration, recommendReason, goto, authorName, authorMid, title, bvid, href } =
-      normalizeCardData(item)
+    const {
+      play,
+      duration,
+      danmaku,
+      recommendReason,
+      goto,
+      authorName,
+      authorMid,
+      title,
+      bvid,
+      href,
+    } = normalizeCardData(item)
     const followed = getFollowedStatus(recommendReason)
 
     /**
@@ -201,6 +211,15 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
         return false
       }
 
+      // duration
+      if (minDuration.enabled && minDuration.value && duration && duration < minDuration.value) {
+        debug('filter out by min-duration-rule: %s < %s %o', duration, minDuration.value, {
+          bvid,
+          title,
+        })
+        return false
+      }
+
       // play
       if (
         minPlayCount.enabled &&
@@ -215,9 +234,14 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
         return false
       }
 
-      // duration
-      if (minDuration.enabled && minDuration.value && duration && duration < minDuration.value) {
-        debug('filter out by min-duration-rule: %s < %s %o', duration, minDuration.value, {
+      // danmaku
+      if (
+        minDanmakuCount.enabled &&
+        minDanmakuCount.value &&
+        typeof danmaku === 'number' &&
+        danmaku < minDanmakuCount.value
+      ) {
+        debug('filter out by min-danmaku-count-rule: %s < %s, %o', danmaku, minDanmakuCount.value, {
           bvid,
           title,
         })

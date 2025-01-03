@@ -48,7 +48,7 @@ const enum TabPaneKey {
 const tab = __PROD__
   ? TabPaneKey.Basic
   : // for debug, free to change this
-    TabPaneKey.CustomUi
+    TabPaneKey.Basic
 const modalSettingsStore = proxy({ tab })
 
 // empty component for conditional render
