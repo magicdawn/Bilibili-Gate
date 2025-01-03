@@ -5,8 +5,9 @@
 
 import { C, flexCenterStyle } from '$common/emotion-css'
 import { colorPrimaryValue } from '$components/css-vars'
-import { isAppRecommend, isLive, isRanking, type RecItemType } from '$define'
+import { isAppRecommend, isLive, isPcRecommend, isRanking, type RecItemType } from '$define'
 import { EApiType, EAppApiDevice } from '$define/index.shared'
+import { PcRecGoto } from '$define/pc-recommend'
 import { IconForLive } from '$modules/icon'
 import { formatSpaceUrl } from '$modules/rec-services/dynamic-feed/shared'
 import { ELiveStatus } from '$modules/rec-services/live/live-enum'
@@ -114,7 +115,7 @@ export function VideoCardBottom({
     appBadge,
     appBadgeDesc,
     rankingDesc,
-    liveDesc,
+    liveExtraDesc,
   } = cardData
 
   const isNormalVideo = goto === 'av'
@@ -297,7 +298,9 @@ export function VideoCardBottom({
           <div css={descOwnerCss}>{rankingDesc}</div>
         </Case>
 
-        <Case condition={isLive(item)}>
+        {/* 关注的直播 */}
+        {/* PC推荐: goto=live */}
+        <Case condition={isLive(item) || (isPcRecommend(item) && item.goto === PcRecGoto.Live)}>
           <>
             <a
               css={[
@@ -313,10 +316,10 @@ export function VideoCardBottom({
               ]}
               href={authorHref}
               target={target}
-              title={(authorName || '') + (liveDesc || '')}
+              title={(authorName || '') + (liveExtraDesc || '')}
             >
               {authorName}
-              {liveDesc && <span css={[C.ml(4)]}>{liveDesc}</span>}
+              {liveExtraDesc && <span css={[C.ml(4)]}>{liveExtraDesc}</span>}
             </a>
             {!!recommendReason && <span css={S.recommendReason}>{recommendReason}</span>}
           </>

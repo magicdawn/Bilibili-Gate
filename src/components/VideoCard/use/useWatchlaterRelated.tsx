@@ -1,4 +1,4 @@
-import { type RecItemType } from '$define'
+import { isAppRecommend, isPcRecommend, type RecItemType } from '$define'
 import { EApiType } from '$define/index.shared'
 import { IconForLoading, IconForWatchlater } from '$modules/icon'
 import { IconAnimatedChecked } from '$modules/icon/animated-checked'
@@ -31,7 +31,7 @@ export function useWatchlaterRelated({
 }) {
   const { avid, bvid } = cardData
   const hasWatchlaterEntry = (() => {
-    if (item.api === EApiType.AppRecommend) {
+    if (isAppRecommend(item) || isPcRecommend(item)) {
       return item.goto === 'av'
     }
     if (item.api === EApiType.Ranking) {

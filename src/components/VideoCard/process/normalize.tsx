@@ -24,6 +24,7 @@ import {
   type WatchlaterItemExtend,
 } from '$define'
 import { EApiType } from '$define/index.shared'
+import { PcRecGoto } from '$define/pc-recommend'
 import { styled } from '$libs'
 import { isFavFolderPrivate } from '$modules/rec-services/fav/fav-util'
 import type { FavItemExtend } from '$modules/rec-services/fav/types'
@@ -87,11 +88,16 @@ export interface IVideoCardData {
   authorFace?: string
   authorMid?: string
 
-  // adpater specific
+  /**
+   * adpater specific
+   */
   appBadge?: string
   appBadgeDesc?: string
   rankingDesc?: string
-  liveDesc?: string
+
+  //
+  liveExtraDesc?: string
+  liveAreaName?: string
 }
 
 type Getter<T> = Record<RecItemType['api'], (item: RecItemType) => T>
@@ -348,11 +354,14 @@ function apiIpadAppAdapter(item: IpadAppRecItemExtend): IVideoCardData {
 }
 
 function apiPcAdapter(item: PcRecItemExtend): IVideoCardData {
+  const _isVideo = item.goto === PcRecGoto.AV
+  const _isLive = item.goto === PcRecGoto.Live
+
   return {
     // video
-    avid: String(item.id),
-    bvid: item.bvid,
-    cid: item.cid,
+    avid: _isLive ? undefined : String(item.id),
+    bvid: _isLive ? undefined : item.bvid,
+    cid: _isLive ? undefined : item.cid,
     goto: item.goto,
     href: item.goto === 'av' ? `/video/${item.bvid}/` : item.uri,
     title: item.title,
@@ -361,23 +370,25 @@ function apiPcAdapter(item: PcRecItemExtend): IVideoCardData {
     pubdateDisplay: formatTimeStamp(item.pubdate),
     duration: item.duration,
     durationStr: formatDuration(item.duration),
-    recommendReason: item.rcmd_reason?.content,
+    recommendReason: _isLive ? item.room_info?.area.area_name : item.rcmd_reason?.content,
 
     // stat
-    play: item.stat.view,
-    like: item.stat.like,
+    play: item.stat?.view,
+    like: item.stat?.like,
     coin: undefined,
-    danmaku: item.stat.danmaku,
+    danmaku: item.stat?.danmaku,
     favorite: undefined,
-    statItems: [
-      { field: 'play', value: item.stat.view },
-      { field: 'like', value: item.stat.like },
-    ] satisfies StatItemType[],
+    statItems: _isLive
+      ? defineStatItems([{ field: 'live:viewed-by', value: item.room_info?.watched_show.num }])
+      : defineStatItems([
+          { field: 'play', value: item.stat?.view },
+          { field: 'danmaku', value: item.stat?.danmaku },
+        ]),
 
     // author
-    authorName: item.owner.name,
-    authorFace: item.owner.face,
-    authorMid: String(item.owner.mid),
+    authorName: item.owner?.name,
+    authorFace: item.owner?.face,
+    authorMid: String(item.owner?.mid),
   }
 }
 
@@ -688,7 +699,7 @@ function apiRankingAdapter(item: RankingItemExtend): IVideoCardData {
 
 function apiLiveAdapter(item: LiveItemExtend): IVideoCardData {
   const area = `${item.area_name_v2}`
-  const liveDesc =
+  const liveExtraDesc =
     item.live_status === ELiveStatus.Streaming
       ? '' // 「 不需要 space padding
       : `${DESC_SEPARATOR}${formatLiveTime(item.record_live_time)} 直播过`
@@ -712,9 +723,9 @@ function apiLiveAdapter(item: LiveItemExtend): IVideoCardData {
     goto: 'live',
     href: `https://live.bilibili.com/${item.roomid}`,
     title: item.title,
-    liveDesc,
     cover: item.room_cover,
     recommendReason: area,
+    liveExtraDesc,
     // stat
     statItems: defineStatItems([{ field: 'live:viewed-by', value: item.text_small }]),
     // author

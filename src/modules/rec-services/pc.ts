@@ -1,16 +1,33 @@
+import { baseDebug } from '$common'
 import type { PcRecItem, PcRecItemExtend, PcRecommendJson } from '$define'
 import { EApiType } from '$define/index.shared'
+import { PcRecGoto } from '$define/pc-recommend'
 import { isWebApiSuccess, request } from '$request'
 import toast from '$utility/toast'
 import { uniqBy } from 'es-toolkit'
 import { BaseTabService } from './_base'
 
+const debug = baseDebug.extend('modules:rec-services:pc')
+
 /**
  * 使用 web api 获取推荐
+ *
+ * 分区首页
+ * /x/web-interface/index/top/rcmd
+ * /x/web-interface/wbi/index/top/rcmd
+ *
+ * Feed流首页(多一个 feed)
+ * /x/web-interface/wbi/index/top/feed/rcmd
+ * 同时会掺和
+ *  - 直播 https://api.live.bilibili.com/xlive/web-interface/v1/webMain/getMoreRecList
+ *  - PGC 内容
+ *    - https://api.bilibili.com/pgc/web/variety/feed?cursor=0&page_size=14&web_location=333.1007
+ *    - https://api.bilibili.com/pgc/web/timeline/v2?day_before=4&day_after=2&season_type=4&web_location=333.1007
+ *    - https://api.bilibili.com/pgc/web/timeline/v2?day_before=4&day_after=2&season_type=1&web_location=333.1007
  */
 
 let _id = 0
-const uniqId = () => Date.now() + _id++
+const genUniqId = () => Date.now() + _id++
 
 export class PcRecService extends BaseTabService<PcRecItemExtend> {
   static PAGE_SIZE = 14
@@ -34,31 +51,19 @@ export class PcRecService extends BaseTabService<PcRecItemExtend> {
   }
 
   private async getRecommendTimes(times: number, abortSignal: AbortSignal) {
-    let list: PcRecItem[] = []
-
-    const parallel = async () => {
-      list = (
-        await Promise.all(new Array(times).fill(0).map(() => this.getRecommend(abortSignal)))
-      ).flat()
-    }
-    const sequence = async () => {
-      for (let x = 1; x <= times; x++) {
-        list = list.concat(await this.getRecommend(abortSignal))
-      }
-    }
-
-    await (true ? parallel : sequence)()
+    let list: PcRecItem[] = (
+      await Promise.all(new Array(times).fill(0).map(() => this.getRecommend(abortSignal)))
+    ).flat()
 
     list = list.filter((item) => {
-      const goto = item.goto as string
-
-      // ad
-      if (goto === 'ad') return false
-      if (goto.includes('ad')) return false
-
-      // can't handle for now
-      if (goto === 'live') return false
-
+      const allowedGotoList = [PcRecGoto.AV, PcRecGoto.Live]
+      if (!allowedGotoList.includes(item.goto)) {
+        const knownDisabledGotoList = [PcRecGoto.Ad]
+        if (!knownDisabledGotoList.includes(item.goto)) {
+          debug('uknown goto: %s %o', item.goto, item)
+        }
+        return false
+      }
       return true
     })
 
@@ -89,47 +94,20 @@ export class PcRecService extends BaseTabService<PcRecItemExtend> {
     let url: string
     let params: Record<string, string | number>
 
-    // 分区首页
-    // /x/web-interface/index/top/rcmd
-    // /x/web-interface/wbi/index/top/rcmd
-    /** fresh_type: 3,
-        version: 1,
-        ps: PcRecService.PAGE_SIZE, // >14 errors
-        fresh_idx: curpage,
-        fresh_idx_1h: curpage,
-        homepage_ver: 1,
-     */
-    url = '/x/web-interface/wbi/index/top/rcmd'
+    // https://socialsisteryi.github.io/bilibili-API-collect/docs/video/recommend.html#获取首页视频推荐列表-web端
+    url = '/x/web-interface/wbi/index/top/feed/rcmd'
     params = {
-      fresh_type: 3,
-      version: 1,
-      ps: PcRecService.PAGE_SIZE, // >14 errors
-      fresh_idx: curpage,
-      fresh_idx_1h: curpage,
+      web_location: 1430650,
+      feed_version: 'V8',
       homepage_ver: 1,
+      fresh_type: 4,
+      y_num: 5,
+      last_y_num: 5,
+      fresh_idx_1h: curpage,
+      fresh_idx: curpage,
+      uniq_id: genUniqId(),
+      ps: 12,
     }
-
-    // feed 推荐流首页
-    // /x/web-interface/wbi/index/top/feed/rcmd
-    // url = '/x/web-interface/wbi/index/top/feed/rcmd'
-    // params = {
-    //   web_location: 1430650,
-    //   fresh_type: 4,
-    //   feed_version: 'V_WATCHLATER_PIP_WINDOW',
-    //   fresh_idx_1h: curpage,
-    //   fresh_idx: curpage,
-    //   homepage_ver: 1,
-    //   ps: PcRecService.PAGE_SIZE,
-    //   uniq_id: uniqId(),
-    //   brush: 1,
-    //   fetch_row: 4,
-    //   y_num: 4,
-    //   last_y_num: 5,
-    //   // screen: '2048-667',
-    //   // seo_info: '',
-    //   // last_showlist:
-    //   //   'av_1251147478,av_1801357236,av_1002155115,av_1751950975,ad_n_5614,av_1402131443,av_n_1901089350,av_n_1851727201,av_n_1751712626,av_n_1251359542',
-    // }
 
     const res = await request.get(url, { signal: abortSignal, params })
     const json = res.data as PcRecommendJson

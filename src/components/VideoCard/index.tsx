@@ -12,6 +12,7 @@ import { borderColorValue } from '$components/css-vars'
 import {
   isAppRecommend,
   isLive,
+  isPcRecommend,
   isRanking,
   isWatchlater,
   type AppRecItemExtend,
@@ -19,6 +20,7 @@ import {
   type RecItemType,
 } from '$define'
 import { EApiType } from '$define/index.shared'
+import { PcRecGoto } from '$define/pc-recommend'
 import { useInBlacklist } from '$modules/bilibili/me/relations/blacklist'
 import { useIsDarkMode } from '$modules/dark-mode'
 import { UserFavService } from '$modules/rec-services/fav/user-fav-service'
@@ -91,6 +93,7 @@ export const VideoCard = memo(function VideoCard({
   onMoveToFirst,
   onRefresh,
   emitter,
+  sharedEmitter,
   tab,
   baseCss,
   ...restProps
@@ -138,6 +141,7 @@ export const VideoCard = memo(function VideoCard({
             cardData={cardData}
             active={active}
             emitter={emitter}
+            sharedEmitter={sharedEmitter}
             tab={tab}
             onRemoveCurrent={onRemoveCurrent}
             onMoveToFirst={onMoveToFirst}
@@ -421,7 +425,9 @@ const VideoCardInner = memo(function VideoCardInner({
    */
   const _isChargeOnly = isChargeOnlyVideo(item, recommendReason) // 充电专属
   const _isRanking = isRanking(item)
-  const _isStreaming = isLive(item) && item.live_status === ELiveStatus.Streaming // 直播中
+  const _isStreaming = // 直播中
+    (isLive(item) && item.live_status === ELiveStatus.Streaming) ||
+    (isPcRecommend(item) && item.goto === PcRecGoto.Live)
   const topMarks: ReactNode = (
     <>
       {/* 动态: 充电专属 */}

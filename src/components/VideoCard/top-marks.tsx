@@ -71,14 +71,8 @@ export function ChargeOnlyTag() {
 
 /* https://color.adobe.com/zh/metals-color-theme-18770781/ */
 function getColor(no: number) {
-  return no === 1
-    ? // gold
-      '#FFD700'
-    : no === 2
-      ? '#C0C0C0'
-      : no === 3
-        ? '#B36700'
-        : colorPrimaryValue
+  const medalColors = ['#FFD700', '#C0C0C0', '#B36700']
+  return medalColors[no - 1] ?? colorPrimaryValue
 }
 
 export function RankingNumMark({ item }: { item: RankingItemExtend }) {
@@ -216,15 +210,12 @@ export function LiveBadge({ className }: { className?: string }) {
 }
 
 export function ApiTypeTag({ item }: { item: RecItemType }) {
-  const text = isDynamicFeed(item)
-    ? '动态'
-    : isWatchlater(item)
-      ? '稍后再看'
-      : isFav(item)
-        ? item.from === 'fav-folder'
-          ? '收藏夹'
-          : '合集'
-        : item.api
+  const text = (() => {
+    if (isDynamicFeed(item)) return '动态'
+    if (isWatchlater(item)) return '稍后再看'
+    if (isFav(item)) return item.from === 'fav-folder' ? '收藏夹' : '合集'
+    return item.api
+  })()
 
   return (
     <div
