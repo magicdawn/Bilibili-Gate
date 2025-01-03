@@ -2,15 +2,17 @@ import { APP_CLS_CARD } from '$common'
 import { useMittOn } from '$common/hooks/useMitt'
 import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
 import type { RecItemType } from '$define'
+import { openNewTab } from '$modules/gm'
 import { IconForLoading } from '$modules/icon'
 import { shouldDisableShortcut } from '$utility/dom'
 import { css } from '@emotion/react'
-import { useClickAway, useHover, useRequest } from 'ahooks'
+import { useClickAway, useRequest } from 'ahooks'
 import type { ComponentRef, MutableRefObject } from 'react'
 import { LargePreview } from '../child-components/LargePreview'
 import { RecoverableVideo } from '../child-components/RecoverableVideo'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
 import { type SharedEmitter } from '../index.shared'
+import type { IVideoCardData } from '../process/normalize'
 import type { VideoPreviewData } from '../services'
 import { getRecItemDimension } from './useOpenRelated'
 
@@ -26,9 +28,8 @@ export function useLargePreviewRelated({
 
   // item
   item,
-  cover,
+  cardData,
   sharedEmitter,
-  uniqId,
   cardRef,
 }: {
   actionButtonVisible: boolean
@@ -37,23 +38,32 @@ export function useLargePreviewRelated({
   tryFetchVideoPreviewData: () => void
   videoPreviewDataBox: RefStateBox<VideoPreviewData | undefined>
   item: RecItemType
-  cover: string | undefined
+  cardData: IVideoCardData
   sharedEmitter: SharedEmitter
-  uniqId: string
   cardRef: MutableRefObject<ComponentRef<'div'> | null>
 }) {
+  const { uniqId } = item
+  const { cover, href, bvid } = cardData
+
   const $req = useRequest(async () => tryFetchVideoPreviewData(), { manual: true })
 
   const [visible, setVisible] = useState(false)
-  const triggerFrom = useRefStateBox<'hover' | 'click' | undefined>(undefined)
-  const showBy = useMemoizedFn((trigger: 'hover' | 'click') => {
-    setVisible(true)
-    triggerFrom.set(trigger)
-    sharedEmitter.emit('show-large-preview', uniqId)
-  })
+  type TriggerAction = 'hover' | 'click'
+  type TriggerElement = 'video-card-action-button' | 'popover'
+  const triggerAction = useRefStateBox<TriggerAction | undefined>(undefined)
+  const triggerEl = useRefStateBox<TriggerElement | undefined>(undefined)
+  const showBy = useMemoizedFn(
+    (action: TriggerAction, el: 'video-card-action-button' | 'popover') => {
+      setVisible(true)
+      triggerAction.set(action)
+      triggerEl.set(el)
+      sharedEmitter.emit('show-large-preview', uniqId)
+    },
+  )
   const hide = useMemoizedFn(() => {
     setVisible(false)
-    triggerFrom.set(undefined)
+    triggerAction.set(undefined)
+    triggerEl.set(undefined)
   })
   useMittOn(sharedEmitter, 'show-large-preview', (srcUniqId) => {
     if (srcUniqId === uniqId) return
@@ -62,26 +72,34 @@ export function useLargePreviewRelated({
 
   const enterTimer = useRef<ReturnType<typeof setTimeout>>()
   const leaveTimer = useRef<ReturnType<typeof setTimeout>>()
-  const onMouseEnter = useMemoizedFn(() => {
-    if (triggerFrom.val === 'click') return
+  const onMouseEnter = useMemoizedFn((triggerEl: TriggerElement) => {
+    if (triggerAction.val === 'click') return
     $req.run()
     clearTimeout(enterTimer.current)
     clearTimeout(leaveTimer.current)
-    enterTimer.current = setTimeout(() => showBy('hover'), 400) // 不要太敏感啊~
+    if (triggerEl === 'video-card-action-button') {
+      enterTimer.current = setTimeout(() => showBy('hover', triggerEl), 400) // 不要太敏感啊~
+    } else {
+      showBy('hover', triggerEl)
+    }
   })
-  const onMouseLeave = useMemoizedFn(() => {
-    if (triggerFrom.val === 'click') return
+  const onMouseLeave = useMemoizedFn((triggerEl: TriggerElement) => {
+    if (triggerAction.val === 'click') return
     clearTimeout(enterTimer.current)
     clearTimeout(leaveTimer.current)
-    leaveTimer.current = setTimeout(hide, 200) // give user a chance to hover on `popover` content
+    if (triggerEl === 'video-card-action-button') {
+      leaveTimer.current = setTimeout(hide, 250) // give user a chance to hover on `popover` content
+    } else {
+      hide()
+    }
   })
   const onClick = useMemoizedFn(() => {
     clearTimeout(enterTimer.current)
     clearTimeout(leaveTimer.current)
-    if (triggerFrom.val === 'click') {
+    if (triggerAction.val === 'click') {
       hide()
     } else {
-      showBy('click')
+      showBy('click', 'video-card-action-button')
     }
   })
 
@@ -101,19 +119,35 @@ export function useLargePreviewRelated({
     () => cardRef.current?.closest('.' + APP_CLS_CARD),
   )
 
-  const largePreviewRef = useRef<ComponentRef<'div'>>(null)
-  const isHoveringOnLargePreview = useHover(largePreviewRef)
+  const onOpenInNewTab = useMemoizedFn(() => {
+    if (!bvid) return
+
+    const u = new URL(`/video/${bvid}`, location.href)
+    if (typeof currentTimeRef.current === 'number') {
+      u.searchParams.set('t', Math.round(currentTimeRef.current).toString())
+    }
+    openNewTab(u.href)
+
+    videoRef.current?.pause()
+    hide()
+  })
+
   const itemDimension = useMemo(
     () => getRecItemDimension(item, videoPreviewDataBox.state?.dimension),
     [item, videoPreviewDataBox.state?.dimension],
   )
-  const videoCurrentTimeRef = useRef<number | undefined>(undefined)
-  const willRenderLargePreview =
-    (visible || isHoveringOnLargePreview) && !!videoPreviewDataBox.state?.playUrls?.length
+  const videoRef = useRef<ComponentRef<typeof RecoverableVideo> | null>(null)
+  const currentTimeRef = useRef<number | undefined>(undefined)
+  const willRenderLargePreview = visible && !!videoPreviewDataBox.state?.playUrls?.length
   const largePreviewEl = willRenderLargePreview && (
-    <LargePreview ref={largePreviewRef} aspectRatio={itemDimension.aspectRatio}>
+    <LargePreview
+      aspectRatio={itemDimension.aspectRatio}
+      onMouseEnter={(e) => onMouseEnter('popover')}
+      onMouseLeave={(e) => onMouseLeave('popover')}
+    >
       <RecoverableVideo
-        currentTimeRef={videoCurrentTimeRef}
+        ref={videoRef}
+        currentTimeRef={currentTimeRef}
         autoPlay
         controls
         loop
@@ -126,6 +160,42 @@ export function useLargePreviewRelated({
       >
         {videoPreviewDataBox.state?.playUrls?.map((url, i) => <source key={i} src={url} />)}
       </RecoverableVideo>
+      {/* action buttons */}
+      <div
+        css={css`
+          position: absolute;
+          right: 10px;
+          top: 10px;
+          display: flex;
+          flex-direction: row-reverse;
+          align-items: center;
+          justify-content: flex-start;
+          column-gap: 5px;
+        `}
+      >
+        {triggerAction.state === 'click' && triggerEl.state === 'video-card-action-button' && (
+          <VideoCardActionButton
+            inlinePosition={'right'}
+            icon={<IconRadixIconsCross2 className='size-14px' />}
+            tooltip={'关闭'}
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              hide()
+            }}
+          />
+        )}
+        <VideoCardActionButton
+          inlinePosition={'right'}
+          icon={<IconRadixIconsOpenInNewWindow className='size-14px' />}
+          tooltip={'新窗口打开'}
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            onOpenInNewTab()
+          }}
+        />
+      </div>
     </LargePreview>
   )
 
@@ -143,8 +213,8 @@ export function useLargePreviewRelated({
           )
         }
         tooltip={'浮动预览'}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
+        onMouseEnter={(e) => onMouseEnter('video-card-action-button')}
+        onMouseLeave={(e) => onMouseLeave('video-card-action-button')}
         onClick={(e) => {
           e.preventDefault()
           e.stopPropagation()

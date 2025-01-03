@@ -48,6 +48,8 @@ declare global {
   const IconParkSolidStar: typeof import('~icons/icon-park-solid/star.jsx')['default']
   const IconPhThumbsDownDuotone: typeof import('~icons/ph/thumbs-down-duotone.jsx')['default']
   const IconRadixIconsCaretRight: typeof import('~icons/radix-icons/caret-right.jsx')['default']
+  const IconRadixIconsCross2: typeof import('~icons/radix-icons/cross2.jsx')['default']
+  const IconRadixIconsOpenInNewWindow: typeof import('~icons/radix-icons/open-in-new-window.jsx')['default']
   const IconRadixIconsPerson: typeof import('~icons/radix-icons/person.jsx')['default']
   const IconSvgSpinnersBarsRotateFade: typeof import('~icons/svg-spinners/bars-rotate-fade.jsx')['default']
   const IconTablerCoinYen: typeof import('~icons/tabler/coin-yen.jsx')['default']

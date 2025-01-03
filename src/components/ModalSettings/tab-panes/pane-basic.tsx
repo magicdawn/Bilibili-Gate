@@ -199,7 +199,16 @@ export function TabPaneBasic() {
           <CheckboxSettingItem
             configPath='videoCard.actions.showLargePreview'
             label={'浮动预览'}
-            tooltip='浮动预览: 类似浮图秀, 但使用视频预览'
+            tooltip={
+              <>
+                类似浮图秀, 但使用视频预览 <br />
+                操作说明: <br />
+                1. 鼠标悬浮打开 「浮动预览」, 离开关闭 <br />
+                2. 点击固定「浮动预览」, 固定指: 不再随鼠标移出关闭预览 <br />
+                3.
+                可使用【再次点击】/【Esc键】/【触发其他卡片的「浮动预览」】/【点击「浮动预览」上的关闭按钮】/【点击页面空白处】等方式关闭固定的「浮动预览」
+              </>
+            }
           />
         </div>
       </SettingsGroup>

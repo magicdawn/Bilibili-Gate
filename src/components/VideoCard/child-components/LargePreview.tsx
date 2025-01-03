@@ -36,8 +36,8 @@ const VisualPadding = {
 
 export const LargePreview = forwardRef<
   ComponentRef<'div'>,
-  { children?: ReactNode; aspectRatio?: number }
->(({ children, aspectRatio = AspectRatioPreset.Horizontal }, forwardedRef) => {
+  { children?: ReactNode; aspectRatio?: number } & ComponentProps<'div'>
+>(({ children, aspectRatio = AspectRatioPreset.Horizontal, ...restProps }, forwardedRef) => {
   const ref = useRef<ComponentRef<'div'>>(null)
 
   const [visible, setVisible] = useState(false)
@@ -229,6 +229,7 @@ export const LargePreview = forwardRef<
   return (
     <div
       ref={ref}
+      {...restProps}
       css={[
         css`
           display: ${visible ? 'block' : 'none'};

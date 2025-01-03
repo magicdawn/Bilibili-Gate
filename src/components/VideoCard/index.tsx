@@ -325,9 +325,8 @@ const VideoCardInner = memo(function VideoCardInner({
     hasLargePreviewActionButton: videoCardActions.showLargePreview,
     //
     item,
-    cover,
+    cardData,
     sharedEmitter,
-    uniqId: item.uniqId,
     cardRef,
   })
 
