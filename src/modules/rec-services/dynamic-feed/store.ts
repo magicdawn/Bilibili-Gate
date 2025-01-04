@@ -17,8 +17,11 @@ import type { DynamicPortalUp } from './up/portal-types'
 
 export enum DynamicFeedQueryKey {
   Mid = 'dyn-mid',
+
+  SearchTextFull = 'dyn-search-text',
+  SearchTextShort = 'dyn-search',
+
   Offset = 'dyn-offset',
-  SearchText = 'dyn-search',
   MinId = 'dyn-min-id',
   MinTs = 'dyn-min-ts',
 }
@@ -27,7 +30,9 @@ const searchParams = new URLSearchParams(location.search)
 export const QUERY_DYNAMIC_UP_MID = searchParams.get(DynamicFeedQueryKey.Mid)?.trim()
 export const QUERY_DYNAMIC_OFFSET = searchParams.get(DynamicFeedQueryKey.Offset) || undefined // where to start, exclusive
 export const QUERY_DYNAMIC_SEARCH_TEXT = QUERY_DYNAMIC_UP_MID // only support using with `dyn-mid`
-  ? searchParams.get(DynamicFeedQueryKey.SearchText) || undefined
+  ? searchParams.get(DynamicFeedQueryKey.SearchTextFull) ||
+    searchParams.get(DynamicFeedQueryKey.SearchTextShort) ||
+    undefined
   : undefined
 export const QUERY_DYNAMIC_MIN_ID = QUERY_DYNAMIC_UP_MID // only support using with `dyn-mid`, dyn.id_str >= dyn-min-id, stands for `update since`
   ? searchParams.get(DynamicFeedQueryKey.MinId)
