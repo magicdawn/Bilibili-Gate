@@ -129,7 +129,7 @@ export function TabPaneFilter() {
                     className='w-130px'
                     size='small'
                     min={1}
-                    step={1000}
+                    step={100}
                     value={minDanmakuCount.value}
                     onChange={(val) => !isNil(val) && (settings.filter.minDanmakuCount.value = val)}
                     disabled={!enabled || !minDanmakuCount.enabled}
