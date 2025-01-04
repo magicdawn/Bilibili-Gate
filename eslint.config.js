@@ -1,5 +1,3 @@
-// @ts-check
-
 /** @import {Config} from 'typescript-eslint'  */
 
 import eslint from '@eslint/js'
@@ -7,14 +5,11 @@ import eslintConfigPrettier from 'eslint-config-prettier'
 import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
-/**
- * @param {Config} configArr
- */
-function defineConfig(configArr) {
-  return configArr
-}
+export default tseslint.config(
+  eslint.configs.recommended,
+  tseslint.configs.recommended,
+  eslintConfigPrettier,
 
-export default defineConfig([
   // must use single `ignores` key
   {
     ignores: ['dist/', '**/*.module.less.d.ts'],
@@ -27,11 +22,6 @@ export default defineConfig([
       },
     },
   },
-
-  eslint.configs.recommended,
-  ...tseslint.configs.recommended,
-  eslintConfigPrettier,
-
   {
     rules: {
       //
@@ -50,4 +40,4 @@ export default defineConfig([
       '@typescript-eslint/consistent-type-imports': ['warn', { fixStyle: 'separate-type-imports' }],
     },
   },
-])
+)

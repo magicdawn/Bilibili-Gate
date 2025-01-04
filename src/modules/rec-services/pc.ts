@@ -91,12 +91,9 @@ export class PcRecService extends BaseTabService<PcRecItemExtend> {
   private async getRecommend(abortSignal: AbortSignal) {
     const curpage = ++this.page // this has parallel call, can not ++ after success
 
-    let url: string
-    let params: Record<string, string | number>
-
     // https://socialsisteryi.github.io/bilibili-API-collect/docs/video/recommend.html#获取首页视频推荐列表-web端
-    url = '/x/web-interface/wbi/index/top/feed/rcmd'
-    params = {
+    const url = '/x/web-interface/wbi/index/top/feed/rcmd'
+    const params = {
       web_location: 1430650,
       feed_version: 'V8',
       homepage_ver: 1,
