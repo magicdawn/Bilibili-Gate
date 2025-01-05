@@ -185,34 +185,25 @@ class AppRecInnerService implements IService {
 
   // 一次不够, 多来几次
   async getRecommendTimes(abortSignal: AbortSignal, times: number) {
-    let list: AppRecItem[] = []
-
-    const parallel = async () => {
-      list = (
-        await Promise.all(
-          new Array(times).fill(0).map(() => this.getRecommend(this.deviceParamForApi)),
-        )
-      ).flat()
-    }
-    const sequence = async () => {
-      for (let x = 1; x <= times; x++) {
-        list = list.concat(await this.getRecommend(this.deviceParamForApi))
-      }
-    }
-
-    // 并行: 快,but 好多重复啊
-    await (true ? parallel : sequence)()
+    let list: AppRecItem[] = (
+      await Promise.all(
+        new Array(times).fill(0).map(() => this.getRecommend(this.deviceParamForApi)),
+      )
+    ).flat()
 
     // rm ad & unsupported card_type
     list = list.filter((item) => {
       // ad
-      // card_type & card_goto exists, goto may exists
       if (item.card_goto?.includes('ad')) return false
       if (item.goto?.includes('ad')) return false
       if ((item as any).ad_info) return false
 
       // unsupported: bannner
       if ((item.card_goto as string | undefined) === 'banner') return false
+
+      // 充电专属
+      // 特征: 没有 player_args
+      if (item.goto === 'av' && typeof item.player_args === 'undefined') return false
 
       return true
     })
