@@ -220,7 +220,7 @@ export function useLargePreviewRelated({
           $req.loading ? (
             <IconForLoading className='size-16px' />
           ) : (
-            <IconMaterialSymbolsScreenshotMonitorOutline className='size-16px' />
+            <IconParkOutlineVideoTwo className='size-15px' />
           )
         }
         tooltip={
