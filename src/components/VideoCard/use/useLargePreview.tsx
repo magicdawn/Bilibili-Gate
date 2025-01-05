@@ -43,23 +43,21 @@ export function useLargePreviewRelated({
   cardRef: MutableRefObject<ComponentRef<'div'> | null>
 }) {
   const { uniqId } = item
-  const { cover, href, bvid } = cardData
+  const { cover, bvid } = cardData
 
   const $req = useRequest(async () => tryFetchVideoPreviewData(), { manual: true })
 
   const [visible, setVisible] = useState(false)
   type TriggerAction = 'hover' | 'click'
-  type TriggerElement = 'video-card-action-button' | 'popover'
+  type TriggerElement = 'video-card-action-button' | 'popover' | 'popover-action-button'
   const triggerAction = useRefStateBox<TriggerAction | undefined>(undefined)
   const triggerEl = useRefStateBox<TriggerElement | undefined>(undefined)
-  const showBy = useMemoizedFn(
-    (action: TriggerAction, el: 'video-card-action-button' | 'popover') => {
-      setVisible(true)
-      triggerAction.set(action)
-      triggerEl.set(el)
-      sharedEmitter.emit('show-large-preview', uniqId)
-    },
-  )
+  const showBy = useMemoizedFn((action: TriggerAction, el: TriggerElement) => {
+    setVisible(true)
+    triggerAction.set(action)
+    triggerEl.set(el)
+    sharedEmitter.emit('show-large-preview', uniqId)
+  })
   const hide = useMemoizedFn(() => {
     setVisible(false)
     triggerAction.set(undefined)
@@ -95,13 +93,13 @@ export function useLargePreviewRelated({
       hide()
     }
   })
-  const onClick = useMemoizedFn(() => {
+  const onClick = useMemoizedFn((el: TriggerElement) => {
     clearTimeout(enterTimer.current)
     clearTimeout(leaveTimer.current)
     if (triggerAction.val === 'click') {
       hide()
     } else {
-      showBy('click', 'video-card-action-button')
+      showBy('click', el)
     }
   })
 
@@ -175,7 +173,7 @@ export function useLargePreviewRelated({
           column-gap: 5px;
         `}
       >
-        {triggerAction.state === 'click' && triggerEl.state === 'video-card-action-button' && (
+        {triggerAction.state === 'click' ? (
           <VideoCardActionButton
             inlinePosition={'right'}
             icon={<IconRadixIconsCross2 className='size-14px' />}
@@ -184,6 +182,17 @@ export function useLargePreviewRelated({
               e.preventDefault()
               e.stopPropagation()
               hide()
+            }}
+          />
+        ) : (
+          <VideoCardActionButton
+            inlinePosition={'right'}
+            icon={<IconParkOutlinePin className='size-14px' />}
+            tooltip={'固定'}
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              onClick('popover-action-button')
             }}
           />
         )}
@@ -214,13 +223,15 @@ export function useLargePreviewRelated({
             <IconMaterialSymbolsScreenshotMonitorOutline className='size-16px' />
           )
         }
-        tooltip={'浮动预览'}
+        tooltip={
+          triggerAction.state === 'click' ? (visible ? '关闭浮动预览' : '浮动预览') : '浮动预览'
+        }
         onMouseEnter={(e) => onMouseEnter('video-card-action-button')}
         onMouseLeave={(e) => onMouseLeave('video-card-action-button')}
         onClick={(e) => {
           e.preventDefault()
           e.stopPropagation()
-          onClick()
+          onClick('video-card-action-button')
         }}
       />
     )
