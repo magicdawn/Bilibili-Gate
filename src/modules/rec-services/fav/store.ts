@@ -1,8 +1,10 @@
-import { baseDebug } from '$common'
+import { baseDebug, IN_BILIBILI_HOMEPAGE } from '$common'
 import { reusePendingPromise } from '$utility/async'
+import { setPageTitle } from '$utility/dom'
 import { proxyMapWithGmStorage } from '$utility/valtio'
 import ms from 'ms'
 import { proxy } from 'valtio'
+import { subscribeKey } from 'valtio/utils'
 import { fetchAllFavCollections } from './collection/api'
 import { FavItemsOrder } from './fav-enum'
 import type { FavCollectionDetailInfo } from './types/collections/collection-detail'
@@ -40,7 +42,8 @@ export const QUERY_FAV_FOLDER_ID = parseId(
 )
 
 export const SHOW_FAV_TAB_ONLY =
-  typeof QUERY_FAV_FOLDER_ID === 'number' || typeof QUERY_FAV_COLLECTION_ID === 'number'
+  IN_BILIBILI_HOMEPAGE &&
+  (typeof QUERY_FAV_FOLDER_ID === 'number' || typeof QUERY_FAV_COLLECTION_ID === 'number')
 
 export const favStore = proxy({
   // methods
@@ -156,4 +159,15 @@ async function updateCollectionList(force = false) {
     return
   }
   return _updateCollectionList()
+}
+
+/**
+ * side effects
+ */
+
+if (SHOW_FAV_TAB_ONLY) {
+  subscribeKey(favStore, 'selectedLabel', () => {
+    if (!favStore.selectedLabel) return
+    setPageTitle(favStore.selectedLabel)
+  })
 }

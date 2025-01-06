@@ -138,26 +138,28 @@ const videoPreviewCache = new QuickLRU<string, VideoPreviewData>({
   maxAge: ms('1h'),
 })
 
-export const fetchVideoPreviewData = reusePendingPromise(async (bvid: string, cid?: number) => {
-  const cacheKey = bvid
-  const cached = videoPreviewCache.get(cacheKey)
-  if (cached) return cached
+export const fetchVideoPreviewData = reusePendingPromise(
+  async (bvid: string, cid: number | undefined, useMp4: boolean) => {
+    const cacheKey = JSON.stringify([bvid, useMp4])
+    const cached = videoPreviewCache.get(cacheKey)
+    if (cached) return cached
 
-  let playUrls: string[] = []
-  let dimension: VideoDetailData['dimension'] | undefined
-  if (typeof cid === 'undefined') {
-    const detail = await getVideoDetail(bvid)
-    cid = detail.cid
-    dimension = detail.dimension
-  }
+    let playUrls: string[] = []
+    let dimension: VideoDetailData['dimension'] | undefined
+    if (typeof cid === 'undefined') {
+      const detail = await getVideoDetail(bvid)
+      cid = detail.cid
+      dimension = detail.dimension
+    }
 
-  playUrls = await getVideoPlayUrl(bvid, cid)
-  debug('playUrl: bvid=%s cid=%s %s', bvid, cid, playUrls)
-  if (playUrls) {
-    videoPreviewCache.set(cacheKey, { playUrls, dimension })
-  }
+    playUrls = await getVideoPlayUrl(bvid, cid, useMp4)
+    debug('playUrl: bvid=%s cid=%s %s', bvid, cid, playUrls)
+    if (playUrls) {
+      videoPreviewCache.set(cacheKey, { playUrls, dimension })
+    }
 
-  return { playUrls, dimension }
-})
+    return { playUrls, dimension }
+  },
+)
 
 // #endregion

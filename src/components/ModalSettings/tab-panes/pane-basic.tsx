@@ -12,7 +12,7 @@ import { antMessage } from '$utility/antd'
 import { css } from '@emotion/react'
 import { Button, Select, Space, Tag } from 'antd'
 import styles from '../index.module.scss'
-import { toastAndReload } from '../index.shared'
+import { explainForFlag, toastAndReload } from '../index.shared'
 import { SettingsGroup } from './_shared'
 
 export function TabPaneBasic() {
@@ -253,6 +253,14 @@ export function TabPaneBasic() {
                 </Tag>
                 秒开始播放
               </>
+            }
+          />
+
+          <CheckboxSettingItem
+            configPath='videoCard.videoPreview.useMp4'
+            label='浮动预览使用 mp4'
+            tooltip={
+              <>{explainForFlag('使用 mp4, 最高 720p, 有声音', '使用 dash, 最高 1080p, 无声音')}</>
             }
           />
         </Space>

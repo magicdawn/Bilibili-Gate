@@ -65,6 +65,10 @@ export const initialSettings = {
       openInPipWindow: true,
       showLargePreview: true,
     },
+
+    videoPreview: {
+      useMp4: false, // mp4 | dash (mp4: single video, dash: video only, no audio)
+    },
   },
 
   // 自动开始预览: 按键选择

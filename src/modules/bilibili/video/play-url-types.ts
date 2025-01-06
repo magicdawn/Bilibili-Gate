@@ -18,7 +18,8 @@ export interface Data {
   video_codecid: number
   seek_param: string
   seek_type: string
-  dash: Dash
+  dash?: Dash
+  durl?: Durl[]
   support_formats: SupportFormat[]
   high_format: null
   volume: Volume
@@ -114,4 +115,14 @@ export interface MultiSceneArgs {
   high_dynamic_target_i: string
   normal_target_i: string
   undersized_target_i: string
+}
+
+export interface Durl {
+  order: number
+  length: number
+  size: number
+  ahead: string
+  vhead: string
+  url: string
+  backup_url: string[]
 }

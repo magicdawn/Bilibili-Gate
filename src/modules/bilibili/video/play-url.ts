@@ -43,11 +43,11 @@ export enum EResolution {
   DolbyVision = 126,
 }
 
-export async function getVideoPlayUrl(videoId: string | number, cid: number) {
+export async function getVideoPlayUrl(videoId: string | number, cid: number, useMp4: boolean) {
   const params: Record<string, any> = {
     cid,
     fnver: 0,
-    fnval: 16,
+    fnval: useMp4 ? 1 : 16, // 1:mp4, 16:dash
   }
 
   const _videoId = videoId.toString()
@@ -62,10 +62,15 @@ export async function getVideoPlayUrl(videoId: string | number, cid: number) {
   const res = await request.get('/x/player/wbi/playurl', { params })
   const json = res.data as VideoPlayUrlJson
 
+  if (json?.data?.durl) {
+    const dUrls = (json.data.durl || []).map((x) => x.url)
+    if (dUrls.length) return dUrls
+  }
+
   const video = orderBy(json.data?.dash?.video || [], ['id', 'codecid'], ['desc', 'desc'])
-  const urls = video
+  const dashUrls = video
     .map((x) => [x.baseUrl])
     .flat()
     .filter(Boolean)
-  return urls
+  return dashUrls
 }

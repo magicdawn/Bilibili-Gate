@@ -184,7 +184,10 @@ const VideoCardInner = memo(function VideoCardInner({
     style: {
       videoCard: { useBorder: cardUseBorder, useBorderOnlyOnHover: cardUseBorderOnlyOnHover },
     },
-    videoCard: { actions: videoCardActions },
+    videoCard: {
+      actions: videoCardActions,
+      videoPreview: { useMp4 },
+    },
   } = useSettingsSnapshot()
   const authed = !!accessKey
 
@@ -236,9 +239,12 @@ const VideoCardInner = memo(function VideoCardInner({
   const tryFetchVideoPreviewData = useLockFn(async () => {
     if (!shouldFetchPreviewData) return
     if (isVideoPreviewDataValid(videoPreviewDataBox.val)) return // already fetched
-    const data = await fetchVideoPreviewData(bvid!)
+    const data = await fetchVideoPreviewData(bvid!, cid, useMp4)
     videoPreviewDataBox.set(data)
   })
+  useUpdateEffect(() => {
+    videoPreviewDataBox.set(undefined)
+  }, [useMp4])
 
   // 3,false: 每三次触发一次
   const warnNoPreview = useLessFrequentFn(
