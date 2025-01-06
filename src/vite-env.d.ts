@@ -3,15 +3,17 @@
 declare const __SCRIPT_VERSION__: string
 
 interface Window {
-  documentPictureInPicture:
-    | {
-        requestWindow(options: {
-          width?: number
-          height?: number
-          disallowReturnToOpener?: boolean
-        }): Promise<Window>
-      }
-    | undefined
+  documentPictureInPicture?: {
+    requestWindow(options: {
+      width?: number
+      height?: number
+      disallowReturnToOpener?: boolean
+    }): Promise<Window>
+  }
+
+  navigation?: {
+    addEventListener?: (event: string, listener: () => void) => void
+  }
 }
 
 interface VMScriptGMTabOptions {

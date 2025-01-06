@@ -73,10 +73,11 @@ const state = proxy({
   },
 })
 
-// @ts-ignore
-unsafeWindow?.navigation?.addEventListener?.('navigatesuccess', () => {
-  state.href = location.href
-})
+if (typeof window.navigation !== 'undefined') {
+  window.navigation.addEventListener?.('navigatesuccess', () => {
+    state.href = location.href
+  })
+}
 
 function ActionButtons() {
   const { mid, collectionId } = useSnapshot(state)
