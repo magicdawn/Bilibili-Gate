@@ -39,7 +39,7 @@ import {
 } from '$modules/rec-services/dynamic-feed/store'
 import { dynamicFeedFilterSelectUp } from '$modules/rec-services/dynamic-feed/usage-info'
 import { formatFavCollectionUrl, formatFavFolderUrl } from '$modules/rec-services/fav/fav-url'
-import { FavSearchParamsKey, favStore } from '$modules/rec-services/fav/store'
+import { FavQueryKey, favStore } from '$modules/rec-services/fav/store'
 import { UserFavService, defaultFavFolderName } from '$modules/rec-services/fav/user-fav-service'
 import { settings, updateSettingsInnerArray } from '$modules/settings'
 import { antMessage, defineAntMenus, type AntMenuItem } from '$utility/antd'
@@ -439,7 +439,7 @@ export function useContextMenus({
                     const { id } = item.folder
                     const url =
                       tab !== ETab.Fav || (favStore.selectedKey === 'all' && favStore.usingShuffle)
-                        ? `/?${FavSearchParamsKey.FolderIdFull}=${id}`
+                        ? `/?${FavQueryKey.FolderIdFull}=${id}`
                         : formatFavFolderUrl(id)
                     window.open(url, getLinkTarget())
                   },
@@ -475,7 +475,7 @@ export function useContextMenus({
                     const { id } = item.collection
                     const url =
                       tab !== ETab.Fav || (favStore.selectedKey === 'all' && favStore.usingShuffle)
-                        ? `/?${FavSearchParamsKey.CollectionIdFull}=${id}`
+                        ? `/?${FavQueryKey.CollectionIdFull}=${id}`
                         : formatFavCollectionUrl(id)
                     window.open(url, getLinkTarget())
                   },

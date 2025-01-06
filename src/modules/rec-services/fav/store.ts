@@ -16,7 +16,7 @@ const debug = baseDebug.extend('modules:rec-services:fav:store')
 export type FavSelectedKeyPrefix = 'fav-folder' | 'fav-collection' | 'all'
 export type FavStore = typeof favStore
 
-export enum FavSearchParamsKey {
+export enum FavQueryKey {
   CollectionIdFull = 'fav-collection-id',
   CollectionId = 'fav-cid',
   FolderIdFull = 'fav-folder-id',
@@ -33,12 +33,10 @@ const parseId = (text: string | undefined | null) => {
 const searchParams = new URLSearchParams(location.search)
 
 export const QUERY_FAV_COLLECTION_ID = parseId(
-  searchParams.get(FavSearchParamsKey.CollectionIdFull) ??
-    searchParams.get(FavSearchParamsKey.CollectionId),
+  searchParams.get(FavQueryKey.CollectionIdFull) ?? searchParams.get(FavQueryKey.CollectionId),
 )
 export const QUERY_FAV_FOLDER_ID = parseId(
-  searchParams.get(FavSearchParamsKey.FolderIdFull) ??
-    searchParams.get(FavSearchParamsKey.FolderId),
+  searchParams.get(FavQueryKey.FolderIdFull) ?? searchParams.get(FavQueryKey.FolderId),
 )
 
 export const SHOW_FAV_TAB_ONLY =
