@@ -126,6 +126,24 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
     return false
   }
 
+  shouldReduceMinCount() {
+    // 选择了分组 & 分组很少更新 & (not using merge-timeline)
+    if (this.viewingSomeGroup && !this.whenViewSomeGroupMergeTimelineService) {
+      return true
+    }
+
+    // 过滤结果可能较少
+    if (
+      this.searchText ||
+      this.dynamicFeedVideoType === DynamicFeedVideoType.DynamicOnly ||
+      this.filterMinDuration !== DynamicFeedVideoMinDuration.All
+    ) {
+      return true
+    }
+
+    return false
+  }
+
   offset: string = ''
   page = 0 // pages loaded
 

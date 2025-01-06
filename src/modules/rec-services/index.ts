@@ -7,7 +7,6 @@ import type { RecItemTypeOrSeparator } from '$define'
 import { EApiType } from '$define/index.shared'
 import { uniqBy } from 'es-toolkit'
 import { AppRecService } from './app'
-import { DynamicFeedVideoMinDuration, DynamicFeedVideoType } from './dynamic-feed/store'
 import { PcRecService } from './pc'
 import { getServiceFromRegistry, REC_TABS, type FetcherOptions } from './service-map'
 
@@ -146,13 +145,7 @@ export async function refreshForGrid(fetcherOptions: FetcherOptions) {
   // 当结果很少的, 不用等一屏
   if (fetcherOptions.tab === ETab.DynamicFeed) {
     const service = getServiceFromRegistry(fetcherOptions.servicesRegistry, ETab.DynamicFeed)
-    if (
-      typeof service.followGroupTagId !== 'undefined' || // 选择了分组 & 分组很少更新, TODO: 考虑 merge-timeline
-      // 过滤结果可能比较少
-      service.searchText ||
-      service.dynamicFeedVideoType === DynamicFeedVideoType.DynamicOnly ||
-      service.filterMinDuration !== DynamicFeedVideoMinDuration.All
-    ) {
+    if (service.shouldReduceMinCount()) {
       minCount = 1
     }
   }
