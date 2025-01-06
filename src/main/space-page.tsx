@@ -47,7 +47,7 @@ const state = proxy({
       const reg = new RegExp(
         String.raw`https://space.bilibili.com\/(?<mid>\d+)\/lists\/(?<collectionId>\d+)\?type=season`,
       )
-      const match = location.href.match(reg)
+      const match = this.href.match(reg)
       if (match?.groups?.collectionId) {
         return Number(match?.groups?.collectionId)
       }
@@ -58,8 +58,8 @@ const state = proxy({
       const reg = new RegExp(
         String.raw`https://space.bilibili.com\/(?<mid>\d+)\/channel\/collectiondetail\?`,
       )
-      if (reg.test(location.href)) {
-        const u = new URL(location.href)
+      if (reg.test(this.href)) {
+        const u = new URL(this.href)
         const collectionId = u.searchParams.get('sid')?.trim()
         if (collectionId) {
           return Number(collectionId)
