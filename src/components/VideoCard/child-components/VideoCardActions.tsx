@@ -1,3 +1,4 @@
+import { setForwardedRef } from '$common/hooks/mixed-ref'
 import { colorPrimaryValue } from '$components/css-vars'
 import { css as _css, css } from '@emotion/react'
 import { useHover } from 'ahooks'
@@ -92,13 +93,7 @@ export const VideoCardActionButton = memo(
         {...divProps}
         ref={(el) => {
           triggerRef.current = el
-          if (forwardedRef) {
-            if (typeof forwardedRef === 'function') {
-              forwardedRef(el)
-            } else {
-              forwardedRef.current = el
-            }
-          }
+          setForwardedRef(forwardedRef, el)
         }}
         css={[S.button(visible, active)]}
         className={clsx('action-button', className)}

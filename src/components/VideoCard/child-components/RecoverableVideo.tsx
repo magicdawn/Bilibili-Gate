@@ -1,34 +1,20 @@
-import { useEventListener, useUnmount } from 'ahooks'
+import { useMixedRef } from '$common/hooks/mixed-ref'
+import { useEventListener } from 'ahooks'
 import type { ComponentProps, ComponentRef, MutableRefObject } from 'react'
 
 export const RecoverableVideo = forwardRef<
   ComponentRef<'video'>,
   ComponentProps<'video'> & { currentTimeRef: MutableRefObject<number | undefined> }
->(({ currentTimeRef, ...videoProps }, forwardRef) => {
-  const ref = useRef<ComponentRef<'video'>>(null)
-
-  const syncForwardedRef = () => {
-    forwardRef &&
-      (typeof forwardRef === 'function'
-        ? forwardRef(ref.current)
-        : (forwardRef.current = ref.current))
-  }
-
+>(({ currentTimeRef, ...videoProps }, forwardedRef) => {
+  const ref = useMixedRef<ComponentRef<'video'> | null>(forwardedRef)
   const mounted = useRef(false)
 
   useMount(() => {
-    syncForwardedRef()
-
     // set initial time
     if (ref.current && typeof currentTimeRef.current === 'number') {
       ref.current.currentTime = currentTimeRef.current
     }
-
     mounted.current = true
-  })
-
-  useUnmount(() => {
-    syncForwardedRef()
   })
 
   useEventListener(
@@ -40,5 +26,5 @@ export const RecoverableVideo = forwardRef<
     { target: ref },
   )
 
-  return <video ref={ref} {...videoProps} />
+  return <video {...videoProps} ref={ref} />
 })
