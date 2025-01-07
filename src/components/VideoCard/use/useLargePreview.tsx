@@ -16,6 +16,14 @@ import type { IVideoCardData } from '../process/normalize'
 import type { VideoPreviewData } from '../services'
 import { getRecItemDimension } from './useOpenRelated'
 
+type Timer = ReturnType<typeof setTimeout>
+type TimerRef = MutableRefObject<Timer | undefined>
+function clearTimerRef(timerRef: TimerRef) {
+  if (typeof timerRef.current === 'undefined') return
+  clearTimeout(timerRef.current)
+  timerRef.current = undefined
+}
+
 export function useLargePreviewRelated({
   // videoPreview data
   shouldFetchPreviewData,
@@ -51,32 +59,36 @@ export function useLargePreviewRelated({
   type TriggerAction = 'hover' | 'click'
   type TriggerElement = 'video-card-action-button' | 'popover' | 'popover-action-button'
   const triggerAction = useRefStateBox<TriggerAction | undefined>(undefined)
-  const triggerEl = useRefStateBox<TriggerElement | undefined>(undefined)
+  const triggerElement = useRefStateBox<TriggerElement | undefined>(undefined)
+
+  const enterTimer = useRef<Timer | undefined>(undefined)
+  const leaveTimer = useRef<Timer | undefined>(undefined)
+  const clearTimers = useMemoizedFn(() => {
+    clearTimerRef(enterTimer)
+    clearTimerRef(leaveTimer)
+  })
+
   const showBy = useMemoizedFn((action: TriggerAction, el: TriggerElement) => {
     setVisible(true)
     triggerAction.set(action)
-    triggerEl.set(el)
+    triggerElement.set(el)
     sharedEmitter.emit('show-large-preview', uniqId)
   })
   const hide = useMemoizedFn(() => {
     setVisible(false)
     triggerAction.set(undefined)
-    triggerEl.set(undefined)
+    triggerElement.set(undefined)
   })
   useMittOn(sharedEmitter, 'show-large-preview', (srcUniqId) => {
     if (srcUniqId === uniqId) return
-    clearTimeout(enterTimer.current)
-    clearTimeout(leaveTimer.current)
+    clearTimers()
     hide()
   })
 
-  const enterTimer = useRef<ReturnType<typeof setTimeout>>()
-  const leaveTimer = useRef<ReturnType<typeof setTimeout>>()
   const onMouseEnter = useMemoizedFn((triggerEl: TriggerElement) => {
     if (triggerAction.val === 'click') return
     $req.run()
-    clearTimeout(enterTimer.current)
-    clearTimeout(leaveTimer.current)
+    clearTimers()
     if (triggerEl === 'video-card-action-button') {
       enterTimer.current = setTimeout(() => showBy('hover', triggerEl), 400) // 不要太敏感啊~
     } else {
@@ -85,8 +97,7 @@ export function useLargePreviewRelated({
   })
   const onMouseLeave = useMemoizedFn((triggerEl: TriggerElement) => {
     if (triggerAction.val === 'click') return
-    clearTimeout(enterTimer.current)
-    clearTimeout(leaveTimer.current)
+    clearTimers()
     if (triggerEl === 'video-card-action-button') {
       leaveTimer.current = setTimeout(hide, 250) // give user a chance to hover on `popover` content
     } else {
@@ -94,8 +105,7 @@ export function useLargePreviewRelated({
     }
   })
   const onClick = useMemoizedFn((el: TriggerElement) => {
-    clearTimeout(enterTimer.current)
-    clearTimeout(leaveTimer.current)
+    clearTimers()
     if (triggerAction.val === 'click') {
       hide()
     } else {
