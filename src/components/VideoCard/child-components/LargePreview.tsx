@@ -1,11 +1,13 @@
 import { APP_CLS_CARD, baseDebug } from '$common'
 import { zIndexVideoCardLargePreview } from '$common/css-vars-export.module.scss'
 import { colorPrimaryValue } from '$components/css-vars'
+import { isSafari } from '$ua'
 import { css } from '@emotion/react'
 import { useEventListener } from 'ahooks'
 import { orderBy, throttle } from 'es-toolkit'
 import { motion } from 'framer-motion'
 import type { ComponentRef, ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 
 const debug = baseDebug.extend('VideoCard:LargePreview')
 
@@ -202,11 +204,6 @@ export const LargePreview = forwardRef<
   )
 
   useMount(() => {
-    if (forwardedRef) {
-      typeof forwardedRef === 'function'
-        ? forwardedRef(ref.current)
-        : (forwardedRef.current = ref.current)
-    }
     calculatePostion()
   })
 
@@ -226,10 +223,13 @@ export const LargePreview = forwardRef<
     }
   }, [direction])
 
-  return (
+  // as a placeholder, to get cardRect
+  const videoCardDescendant = <div ref={ref} data-role='video-card-descendant'></div>
+
+  const el = (
     <div
-      ref={ref}
       {...restProps}
+      ref={forwardedRef}
       css={[
         css`
           display: ${visible ? 'block' : 'none'};
@@ -263,5 +263,15 @@ export const LargePreview = forwardRef<
         </motion.div>
       )}
     </div>
+  )
+
+  return (
+    <>
+      {videoCardDescendant}
+
+      {/* safari container-type still use layout containment */}
+      {/* https://stackoverflow.com/a/74606435/2822866 */}
+      {isSafari ? createPortal(el, document.body) : el}
+    </>
   )
 })

@@ -113,22 +113,6 @@ export function useLargePreviewRelated({
     }
   })
 
-  /**
-   * trigger by click, more ways to close
-   */
-  useKeyPress(
-    'esc',
-    () => {
-      if (shouldDisableShortcut()) return
-      hide()
-    },
-    { exactMatch: true },
-  )
-  useClickAway(
-    () => hide(),
-    () => cardRef.current?.closest('.' + APP_CLS_CARD),
-  )
-
   const onOpenInNewTab = useMemoizedFn(() => {
     if (!bvid) return
 
@@ -148,9 +132,11 @@ export function useLargePreviewRelated({
   )
   const videoRef = useRef<ComponentRef<typeof RecoverableVideo> | null>(null)
   const currentTimeRef = useRef<number | undefined>(undefined)
+  const largePreviewRef = useRef<ComponentRef<typeof LargePreview> | null>(null)
   const willRenderLargePreview = visible && !!videoPreviewDataBox.state?.playUrls?.length
   const largePreviewEl = willRenderLargePreview && (
     <LargePreview
+      ref={largePreviewRef}
       aspectRatio={itemDimension.aspectRatio}
       onMouseEnter={(e) => onMouseEnter('popover')}
       onMouseLeave={(e) => onMouseLeave('popover')}
@@ -245,6 +231,25 @@ export function useLargePreviewRelated({
         }}
       />
     )
+
+  /**
+   * trigger by click, more ways to close
+   */
+  useKeyPress(
+    'esc',
+    () => {
+      if (shouldDisableShortcut()) return
+      hide()
+    },
+    { exactMatch: true },
+  )
+  useClickAway(
+    () => hide(),
+    [
+      () => cardRef.current?.closest('.' + APP_CLS_CARD), // click from card
+      largePreviewRef, // click from `LargePreview`, safari 中使用 createPortal 不再是 card descendant
+    ],
+  )
 
   return { largePreviewActionButtonEl, largePreviewEl }
 }
