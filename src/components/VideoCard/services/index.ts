@@ -1,8 +1,8 @@
 import { baseDebug, HOST_APP, OPERATION_FAIL_MSG } from '$common'
 import type { AppRecItem, PvideoJson } from '$define'
 import { getVideoPlayUrl } from '$modules/bilibili/video/play-url'
-import { getVideoDetail } from '$modules/bilibili/video/video-detail'
-import type { VideoDetailData } from '$modules/bilibili/video/video-detail-types'
+import type { VideoPage } from '$modules/bilibili/video/types/page-list'
+import { getVideoPageList } from '$modules/bilibili/video/video-detail'
 import { gmrequest, isWebApiSuccess, request } from '$request'
 import { reusePendingPromise } from '$utility/async'
 import { getCsrfToken } from '$utility/cookie'
@@ -126,7 +126,7 @@ export function isImagePreviewDataValid(data?: ImagePreviewData) {
 // #region VideoPreview
 export type VideoPreviewData = {
   playUrls?: string[]
-  dimension?: VideoDetailData['dimension']
+  dimension?: VideoPage['dimension']
 }
 
 export const isVideoPreviewDataValid = (data?: VideoPreviewData): boolean => {
@@ -145,11 +145,14 @@ export const fetchVideoPreviewData = reusePendingPromise(
     if (cached) return cached
 
     let playUrls: string[] = []
-    let dimension: VideoDetailData['dimension'] | undefined
+    let dimension: VideoPreviewData['dimension']
     if (typeof cid === 'undefined') {
-      const detail = await getVideoDetail(bvid)
-      cid = detail.cid
-      dimension = detail.dimension
+      const pages = await getVideoPageList(bvid)
+      cid = pages[0]?.cid
+      dimension = pages[0]?.dimension
+      if (typeof cid === 'undefined') {
+        throw new Error(`can not get cid by bvid=${bvid}`)
+      }
     }
 
     playUrls = await getVideoPlayUrl(bvid, cid, useMp4)

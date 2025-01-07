@@ -2,8 +2,8 @@ import { baseDebug } from '$common'
 import type { RecItemType } from '$define'
 import { EApiType } from '$define/index.shared'
 import { getBiliPlayerConfigAutoPlay } from '$modules/bilibili/player-config'
-import { getVideoDetail } from '$modules/bilibili/video/video-detail'
-import type { VideoDetailData } from '$modules/bilibili/video/video-detail-types'
+import type { VideoDetailData } from '$modules/bilibili/video/types/video-detail'
+import { getVideoPageList } from '$modules/bilibili/video/video-detail'
 import { openNewTab } from '$modules/gm'
 import { isNormalRankingItem } from '$modules/rec-services/hot/ranking/category'
 import { settings, useSettingsSnapshot } from '$modules/settings'
@@ -233,10 +233,11 @@ export async function openInPipOrPopup(
   // get video width and height via API if needed
   const MAX_API_WAIT = 200
   if ((!videoWidth || !videoHeight) && bvid) {
-    const detail = await Promise.race([getVideoDetail(bvid), delay(MAX_API_WAIT)])
-    if (detail) {
-      videoWidth = detail.dimension.width
-      videoHeight = detail.dimension.height
+    const videoPages = await Promise.race([getVideoPageList(bvid), delay(MAX_API_WAIT)])
+    if (videoPages?.[0]?.dimension) {
+      const { dimension } = videoPages[0]
+      videoWidth = dimension.width
+      videoHeight = dimension.height
     }
   }
 

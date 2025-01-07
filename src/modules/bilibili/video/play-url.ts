@@ -4,7 +4,7 @@
 
 import { request } from '$request'
 import { orderBy } from 'es-toolkit'
-import type { VideoPlayUrlJson } from './play-url-types'
+import type { VideoPlayUrlJson } from './types/play-url'
 
 /**
  * 7	AVC 编码	8K 视频不支持该格式
@@ -67,6 +67,7 @@ export async function getVideoPlayUrl(videoId: string | number, cid: number, use
     if (dUrls.length) return dUrls
   }
 
+  // dash
   const video = orderBy(json.data?.dash?.video || [], ['id', 'codecid'], ['desc', 'desc'])
   const dashUrls = video
     .map((x) => [x.baseUrl])
