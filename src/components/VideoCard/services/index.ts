@@ -139,8 +139,8 @@ const videoPreviewCache = new QuickLRU<string, VideoPreviewData>({
 })
 
 export const fetchVideoPreviewData = reusePendingPromise(
-  async (bvid: string, cid: number | undefined, useMp4: boolean) => {
-    const cacheKey = JSON.stringify([bvid, useMp4])
+  async (bvid: string, cid: number | undefined, useMp4: boolean, preferNormalCdn: boolean) => {
+    const cacheKey = JSON.stringify([bvid, useMp4, preferNormalCdn])
     const cached = videoPreviewCache.get(cacheKey)
     if (cached) return cached
 
@@ -155,7 +155,7 @@ export const fetchVideoPreviewData = reusePendingPromise(
       }
     }
 
-    playUrls = await getVideoPlayUrl(bvid, cid, useMp4)
+    playUrls = await getVideoPlayUrl(bvid, cid, useMp4, preferNormalCdn)
     debug('playUrl: bvid=%s cid=%s %s', bvid, cid, playUrls)
     if (playUrls) {
       videoPreviewCache.set(cacheKey, { playUrls, dimension })

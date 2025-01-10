@@ -3,7 +3,7 @@
  */
 
 import { request } from '$request'
-import { orderBy } from 'es-toolkit'
+import { fastOrderBy } from 'fast-sort-lens'
 import type { VideoPlayUrlJson } from './types/play-url'
 
 /**
@@ -43,7 +43,12 @@ export enum EResolution {
   DolbyVision = 126,
 }
 
-export async function getVideoPlayUrl(videoId: string | number, cid: number, useMp4: boolean) {
+export async function getVideoPlayUrl(
+  videoId: string | number,
+  cid: number,
+  useMp4: boolean = false,
+  preferNormalCdn: boolean = false,
+) {
   const params: Record<string, any> = {
     cid,
     fnver: 0,
@@ -62,16 +67,28 @@ export async function getVideoPlayUrl(videoId: string | number, cid: number, use
   const res = await request.get('/x/player/wbi/playurl', { params })
   const json = res.data as VideoPlayUrlJson
 
+  function getUrlPriority(url: string) {
+    const { hostname } = new URL(url)
+    if (preferNormalCdn && (hostname.includes('mcdn') || hostname.includes('pcdn'))) {
+      return 1
+    }
+    return 10
+  }
+  function reOrderUrls(urls: string[]) {
+    return fastOrderBy(urls, [getUrlPriority], ['desc'])
+  }
+
+  // mp4
   if (json?.data?.durl) {
-    const dUrls = (json.data.durl || []).map((x) => x.url)
-    if (dUrls.length) return dUrls
+    const urls = (json.data.durl || [])
+      .map((x) => [x.url, ...x.backup_url])
+      .flat()
+      .filter(Boolean)
+    if (urls.length) return reOrderUrls(urls)
   }
 
   // dash
-  const video = orderBy(json.data?.dash?.video || [], ['id', 'codecid'], ['desc', 'desc'])
-  const dashUrls = video
-    .map((x) => [x.baseUrl])
-    .flat()
-    .filter(Boolean)
+  const video = fastOrderBy(json.data?.dash?.video || [], ['id', 'codecid'], ['desc', 'desc'])
+  const dashUrls = video.map((x) => reOrderUrls([x.baseUrl, ...x.backupUrl])[0]).filter(Boolean)
   return dashUrls
 }

@@ -68,6 +68,10 @@ export const initialSettings = {
 
     videoPreview: {
       useMp4: false, // mp4 | dash (mp4: single video, dash: video only, no audio)
+
+      __internal: {
+        preferNormalCdn: false,
+      },
     },
   },
 
