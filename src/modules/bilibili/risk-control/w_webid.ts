@@ -13,10 +13,13 @@ import { getUid } from '$utility/cookie'
 
 const cache = dailyCache<string>('w_webid')
 
-export const get_w_webId = reusePendingPromise(async () => {
+export async function get_w_webId() {
   const cached = await cache.get()
   if (cached) return cached
+  return __fetch_w_webId()
+}
 
+const __fetch_w_webId = reusePendingPromise(async () => {
   const mid = getUid()
   if (!mid) return
 
