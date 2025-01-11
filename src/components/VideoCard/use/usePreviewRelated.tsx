@@ -13,6 +13,11 @@ import type { ImagePreviewData } from '../services'
 const DEBUG_ANIMATION = __PROD__
   ? false //
   : false // 👈🏻👈🏻👈🏻 dev: free to change
+function debugAnimation(...args: Parameters<typeof appLog>) {
+  if (!DEBUG_ANIMATION) return
+  const [message, ...rest] = args
+  appLog(`[animation] ${message}`, ...rest)
+}
 
 /**
  * 自动以动画方式预览
@@ -96,8 +101,7 @@ export function usePreviewRelated({
 
       // start preview animation
       if (autoPreviewWhenHover && !idBox.val && hasVideoData()) {
-        DEBUG_ANIMATION &&
-          appLog(`[animation] mouseenter onStartPreviewAnimation uniqId=%s title=%s`, uniqId, title)
+        debugAnimation(`mouseenter onStartPreviewAnimation uniqId=%s title=%s`, uniqId, title)
         onStartPreviewAnimation(true)
       }
     },
@@ -135,6 +139,8 @@ export function usePreviewRelated({
   // raf id
   const idBox = useRefBox<number | undefined>(undefined)
 
+  const onResume = useRef<(() => void) | undefined>(undefined)
+
   const animationController = useAnimationController({
     startByHoverBox,
     isHoveringBox,
@@ -145,6 +151,9 @@ export function usePreviewRelated({
     setAutoPreviewing,
     setPreviewT,
     setPreviewProgress,
+    onResume() {
+      onResume.current?.()
+    },
   })
 
   const onHotkeyPreviewAnimation = useMemoizedFn(async () => {
@@ -171,49 +180,35 @@ export function usePreviewRelated({
     setPreviewProgress((val) => (typeof val === 'undefined' ? 0 : val)) // get rid of undefined
     setPreviewT(undefined)
 
-    // total ms
-    const runDuration = 8000
-    const durationBoundary = [8_000, 16_000] as const
-    {
-      if (imagePreviewDataBox.val) {
-        // const imgLen = data.videoshotData.index.length
-        // runDuration = minmax(imgLen * 400, ...durationBoundary)
-      }
-    }
-
-    const getInterval = () => {
-      return settings.autoPreviewUpdateInterval
-    }
-
+    const RUN_DURATION = 8000 // total ms
     let start = performance.now()
-    let tUpdateAt = 0
+    let updateAt = 0
 
-    // resume()'s implementation, 闭包这里获取不到最新 previewAnimationProgress
-    animationController.resumeImplRef.current = () => {
-      start = performance.now() - getProgress() * runDuration
+    // resume()'s implementation
+    onResume.current = () => {
+      start = performance.now() - getProgress() * RUN_DURATION
     }
 
     function frame(t: number) {
       // stop
       if (animationController.shouldStop()) {
-        animationController.stop()
-        return
+        return animationController.stop()
       }
 
       if (!animationController.paused) {
         const now = performance.now()
         const elapsed = now - start
-        const p = minmax((elapsed % runDuration) / runDuration, 0, 1)
+        const p = minmax((elapsed % RUN_DURATION) / RUN_DURATION, 0, 1)
 
         // progress 一直动影响注意力, 但跳动感觉也不好, ...
         if (settings.autoPreviewUseContinuousProgress) {
           setPreviewProgress(p)
         }
 
-        if (!tUpdateAt || now - tUpdateAt >= getInterval()) {
+        if (!updateAt || now - updateAt >= settings.autoPreviewUpdateInterval) {
           setPreviewProgress(p)
 
-          tUpdateAt = now
+          updateAt = now
           if (videoDuration) {
             const t = minmax(Math.round(p * videoDuration), 0, videoDuration)
             setPreviewT(t)
@@ -283,6 +278,7 @@ function useAnimationController({
   setAutoPreviewing,
   setPreviewT,
   setPreviewProgress,
+  onResume,
 }: {
   startByHoverBox: RefBox<boolean>
   isHoveringBox: RefStateBox<boolean>
@@ -293,6 +289,7 @@ function useAnimationController({
   setAutoPreviewing: (autoPreviewing: boolean) => void
   setPreviewT: (t: number | undefined) => void
   setPreviewProgress: (p: number | undefined) => void
+  onResume?: () => void
 }) {
   const unmounted = useUnmountedRef()
 
@@ -317,8 +314,8 @@ function useAnimationController({
   })
 
   const stop = useMemoizedFn((isClear = false) => {
-    if (!isClear && DEBUG_ANIMATION) {
-      appLog(`[animation] stopAnimation: %o`, {
+    if (!isClear) {
+      debugAnimation(`stopAnimation: %o`, {
         autoPreviewWhenHover,
         unmounted: unmounted.current,
         isHovering: isHoveringBox.val,
@@ -332,40 +329,39 @@ function useAnimationController({
     setAutoPreviewing(false)
     setPreviewProgress(undefined)
     setPreviewT(undefined)
-    animationController.reset()
+    controller.reset()
   })
 
-  const resumeImplRef = useRef<() => void>()
-  const pausedBox = useRefStateBox(false)
+  const _paused = useRef(false)
 
-  const animationController = {
-    shouldStop,
-    stop,
+  const controller = useMemo(() => {
+    return {
+      shouldStop,
+      stop,
 
-    get paused() {
-      return pausedBox.val
-    },
-    set paused(val: boolean) {
-      pausedBox.val = val
-    },
+      get paused() {
+        return _paused.current
+      },
+      set paused(val: boolean) {
+        _paused.current = val
+      },
 
-    togglePaused() {
-      const prev = this.paused
-      this.paused = !this.paused
-      if (prev) {
-        // to resume
-        resumeImplRef.current?.()
-      } else {
-        // to pause
-      }
-    },
+      togglePaused() {
+        const prev = this.paused
+        this.paused = !this.paused
+        if (prev) {
+          // to resume
+          onResume?.()
+        } else {
+          // to pause
+        }
+      },
 
-    reset() {
-      this.paused = false
-    },
+      reset() {
+        this.paused = false
+      },
+    }
+  }, [shouldStop, stop, _paused, onResume])
 
-    resumeImplRef,
-  }
-
-  return animationController
+  return controller
 }
