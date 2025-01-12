@@ -173,7 +173,7 @@ function RankingUsageInfo() {
       placement='bottomLeft'
       getPopupContainer={getPopupContainer}
       content={popoverContent}
-      overlayInnerStyle={{ border: `1px solid ${usePopoverBorderColor()}` }}
+      styles={{ body: { border: `1px solid ${usePopoverBorderColor()}` } }}
     >
       <Button css={[popoverOpen && buttonOpenCss]}>{category.name}</Button>
     </Popover>

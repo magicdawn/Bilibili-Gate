@@ -1,7 +1,7 @@
 import { flexVerticalCenterStyle } from '$common/emotion-css'
 import { type OnRefresh } from '$components/RecGrid/useRefresh'
 import { HelpInfo } from '$components/_base/HelpInfo'
-import { QUERY_DYNAMIC_UP_MID } from '$modules/rec-services/dynamic-feed/store'
+import { SHOW_DYNAMIC_FEED_ONLY } from '$modules/rec-services/dynamic-feed/store'
 import { SHOW_FAV_TAB_ONLY } from '$modules/rec-services/fav/store'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { checkLoginStatus, useHasLogined } from '$utility/cookie'
@@ -21,7 +21,7 @@ export const videoSourceTabState = await proxyWithGmStorage<{ value: ETab }>(
   { value: ETab.AppRecommend },
   `video-source-tab`,
 )
-if (QUERY_DYNAMIC_UP_MID && videoSourceTabState.value !== ETab.DynamicFeed) {
+if (SHOW_DYNAMIC_FEED_ONLY && videoSourceTabState.value !== ETab.DynamicFeed) {
   videoSourceTabState.value = ETab.DynamicFeed
 }
 if (SHOW_FAV_TAB_ONLY && videoSourceTabState.value !== ETab.Fav) {
@@ -53,10 +53,9 @@ export function useCurrentDisplayingTabKeys() {
         return true
       }
 
-      if (key === ETab.DynamicFeed && QUERY_DYNAMIC_UP_MID) {
+      if (key === ETab.DynamicFeed && SHOW_DYNAMIC_FEED_ONLY) {
         return true
       }
-
       if (key === ETab.Fav && SHOW_FAV_TAB_ONLY) {
         return true
       }
@@ -66,10 +65,9 @@ export function useCurrentDisplayingTabKeys() {
   }, [hidingTabKeys, customTabKeysOrder, logined])
 
   // dynamic-feed only
-  if (QUERY_DYNAMIC_UP_MID && keys.includes(ETab.DynamicFeed)) {
+  if (SHOW_DYNAMIC_FEED_ONLY && keys.includes(ETab.DynamicFeed)) {
     return [ETab.DynamicFeed]
   }
-
   // fav only
   if (SHOW_FAV_TAB_ONLY && keys.includes(ETab.Fav)) {
     return [ETab.Fav]

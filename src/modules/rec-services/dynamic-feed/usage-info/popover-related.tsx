@@ -2,18 +2,16 @@ import { __PROD__ } from '$common'
 import {
   APP_CLS_USE_ANT_LINK_COLOR,
   buttonOpenCss,
-  flexVerticalCenterStyle,
   iconOnlyRoundButtonCss,
   usePopoverBorderColor,
 } from '$common/emotion-css'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
-import { copyBvidInfos, copyBvidsSingleLine } from '$components/RecGrid/unsafe-window-export'
-import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
+import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import { CHARGE_ONLY_TEXT } from '$components/VideoCard/top-marks'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { AntdTooltip } from '$components/_base/antd-custom'
 import { colorPrimaryValue } from '$components/css-vars'
-import { IconForOpenExternalLink, IconForReset } from '$modules/icon'
+import { IconForOpenExternalLink } from '$modules/icon'
 import {
   settings,
   updateSettingsInnerArray,
@@ -22,72 +20,40 @@ import {
   type ListSettingsPath,
   type Settings,
 } from '$modules/settings'
-import type { AntMenuItem } from '$utility/antd'
 import { antMessage } from '$utility/antd'
-import { getAvatarSrc } from '$utility/image'
 import { css } from '@emotion/react'
 import { useRequest } from 'ahooks'
-import { Avatar, Badge, Button, Checkbox, Dropdown, Input, Popover, Radio, Space } from 'antd'
+import { Badge, Button, Checkbox, Input, Popover, Radio } from 'antd'
 import type { CheckboxChangeEvent } from 'antd/es/checkbox'
 import { delay, throttle } from 'es-toolkit'
-import { fastSortWithOrders } from 'fast-sort-lens'
 import type { ReactNode } from 'react'
 import type { Get } from 'type-fest'
 import { useSnapshot } from 'valtio'
-import { usePopupContainer } from '../_base'
-import { dropdownMenuStyle } from '../_shared'
 import {
   createUpdateSearchCacheNotifyFns,
   hasLocalDynamicFeedCache,
   localDynamicFeedInfoCache,
   updateLocalDynamicFeedCache,
-} from './cache'
+} from '../cache'
 import {
   fetchVideoDynamicFeedsWithCache,
   FollowGroupMergeTimelineService,
-} from './group/merge-timeline-service'
-import type { FollowGroup } from './group/types/groups'
-import { formatFollowGroupUrl, IconForGroup, IconForPopoverTrigger, IconForUp } from './shared'
+} from '../group/merge-timeline-service'
+import type { FollowGroup } from '../group/types/groups'
+import { formatFollowGroupUrl, IconForPopoverTrigger } from '../shared'
 import {
   DF_SELECTED_KEY_PREFIX_GROUP,
   DF_SELECTED_KEY_PREFIX_UP,
   dfStore,
+  DynamicFeedQueryKey,
   DynamicFeedVideoMinDuration,
   DynamicFeedVideoMinDurationConfig,
   DynamicFeedVideoType,
   DynamicFeedVideoTypeLabel,
-  updateFilterData,
-  type DynamicFeedStore,
-  type DynamicFeedStoreSelectedKey,
+  QUERY_DYNAMIC_SEARCH_TEXT,
+  SHOW_DYNAMIC_FEED_ONLY,
   type UpMidType,
-} from './store'
-
-export function dynamicFeedFilterSelectUp(payload: Partial<typeof dfStore>) {
-  Object.assign(dfStore, payload)
-  // 选择了 up, 去除红点
-  if (payload.upMid) {
-    const item = dfStore.upList.find((x) => x.mid.toString() === payload.upMid)
-    if (item) item.has_update = false
-  }
-}
-
-const clearPayload: Partial<DynamicFeedStore> = {
-  upMid: undefined,
-  upName: undefined,
-  upFace: undefined,
-  searchText: undefined,
-  selectedFollowGroupTagId: undefined,
-  dynamicFeedVideoType: DynamicFeedVideoType.All,
-  filterMinDuration: DynamicFeedVideoMinDuration.All,
-}
-
-const classes = {
-  popover: {
-    wrapper: 'max-w-350px',
-    section: 'mt-10 first:mt-0 min-w-300px',
-    sectionTilte: 'flex items-center text-20px pl-2px pb-2px',
-  },
-} as const
+} from '../store'
 
 const flexBreak = (
   <div
@@ -98,173 +64,18 @@ const flexBreak = (
   />
 )
 
-export function DynamicFeedUsageInfo() {
-  const { ref, getPopupContainer } = usePopupContainer()
-  const onRefresh = useOnRefreshContext()
+export function usePopoverRelated({
+  externalSearchInput,
+  onRefresh,
+  getPopupContainer,
+}: {
+  externalSearchInput: boolean
+  onRefresh: OnRefresh | undefined
+  getPopupContainer: (() => HTMLElement) | undefined
+}) {
+  const { upMid, dynamicFeedVideoType, filterMinDuration, searchText, hideChargeOnlyVideos } =
+    useSnapshot(dfStore)
 
-  const dfSettings = useSettingsSnapshot().dynamicFeed
-  const { addCopyBvidButton, externalSearchInput } = dfSettings.__internal
-
-  const {
-    viewingSomeUp,
-    upName,
-    upMid,
-    upFace,
-    upList,
-
-    followGroups,
-    selectedFollowGroup,
-    viewingSomeGroup,
-
-    selectedKey,
-
-    dynamicFeedVideoType,
-    filterMinDuration,
-    searchText,
-    hideChargeOnlyVideos,
-
-    addSeparators,
-  } = useSnapshot(dfStore)
-
-  const showPopoverBadge = useMemo(() => {
-    return !!(
-      dynamicFeedVideoType !== DynamicFeedVideoType.All ||
-      hideChargeOnlyVideos ||
-      searchText ||
-      filterMinDuration !== DynamicFeedVideoMinDuration.All
-    )
-  }, [dynamicFeedVideoType, hideChargeOnlyVideos, searchText, filterMinDuration])
-
-  // try update on mount
-  useMount(() => {
-    updateFilterData()
-  })
-
-  const onSelect = useMemoizedFn(async (payload: Partial<typeof dfStore>) => {
-    dynamicFeedFilterSelectUp(payload)
-    await delay(100)
-    onRefresh?.()
-  })
-
-  const onClear = useMemoizedFn(() => {
-    onSelect({ ...clearPayload })
-  })
-
-  const menuItems = useMemo((): AntMenuItem[] => {
-    const itemAll: AntMenuItem = {
-      key: 'all' satisfies DynamicFeedStoreSelectedKey,
-      icon: <Avatar size={'small'}>全</Avatar>,
-      label: '全部',
-      onClick: onClear,
-    }
-
-    let groupItems: AntMenuItem[] = []
-    if (dfSettings.followGroup.enabled) {
-      groupItems = followGroups.map((group) => {
-        return {
-          key: `group:${group.tagid}` satisfies DynamicFeedStoreSelectedKey,
-          label: group.name + ` (${group.count})`,
-          icon: <Avatar size={'small'}>组</Avatar>,
-          onClick() {
-            onSelect({ ...clearPayload, selectedFollowGroupTagId: group.tagid })
-          },
-        }
-      })
-    }
-
-    function mapName(name: string) {
-      return (
-        name
-          .toLowerCase()
-          // 让字母在前面
-          .replace(/^([a-z])/, '999999$1')
-      )
-    }
-
-    const upListSorted = fastSortWithOrders(upList, [
-      { prop: (it) => (it.has_update ? 1 : 0), order: 'desc' },
-      {
-        prop: 'uname',
-        order: (a: string, b: string) => {
-          ;[a, b] = [a, b].map(mapName)
-          return a.localeCompare(b, 'zh-CN')
-        },
-      },
-    ])
-
-    const items: AntMenuItem[] = upListSorted.map((up) => {
-      let avatar: ReactNode = <Avatar size={'small'} src={getAvatarSrc(up.face)} />
-      if (up.has_update) {
-        avatar = <Badge dot>{avatar}</Badge>
-      }
-
-      return {
-        key: `up:${up.mid}` satisfies DynamicFeedStoreSelectedKey,
-        icon: avatar,
-        // label: up.uname,
-        label: (
-          <span
-            title={up.uname}
-            css={css`
-              display: block;
-              max-width: 130px;
-              text-overflow: ellipsis;
-              white-space: nowrap;
-              overflow: hidden;
-            `}
-          >
-            {up.uname}
-          </span>
-        ),
-        onClick() {
-          onSelect({ ...clearPayload, upMid: up.mid.toString(), upName: up.uname, upFace: up.face })
-        },
-      }
-    })
-
-    return [itemAll, ...groupItems, ...items]
-  }, [upList, dfSettings.followGroup.enabled, followGroups])
-
-  // #region scope dropdown menus
-  const followGroupMidsCount = selectedFollowGroup?.count
-  const upIcon = <IconForUp {...size(14)} className='mt--2px' />
-  const upAvtar = upFace ? <Avatar size={20} src={getAvatarSrc(upFace)} /> : undefined
-  const dropdownButtonIcon = viewingSomeUp ? (
-    upAvtar || upIcon
-  ) : selectedFollowGroup ? (
-    <IconForGroup {...size(18)} />
-  ) : undefined
-  const dropdownButtonLabel = viewingSomeUp
-    ? upName
-    : selectedFollowGroup
-      ? selectedFollowGroup.name + (followGroupMidsCount ? ` (${followGroupMidsCount})` : '')
-      : '全部'
-
-  const [scopeDropdownOpen, setScopeDropdownOpen] = useState(false)
-  const scopeDropdownMenu = (
-    <Dropdown
-      open={scopeDropdownOpen}
-      onOpenChange={setScopeDropdownOpen}
-      placement='bottomLeft'
-      getPopupContainer={getPopupContainer}
-      menu={{
-        items: menuItems,
-        style: { ...dropdownMenuStyle, border: `1px solid ${usePopoverBorderColor()}` },
-        selectedKeys: [selectedKey],
-      }}
-    >
-      <Button
-        icon={dropdownButtonIcon}
-        className='gap-4px'
-        css={[scopeDropdownOpen && buttonOpenCss]}
-      >
-        {dropdownButtonLabel}
-      </Button>
-    </Dropdown>
-  )
-  // #endregion
-
-  // #region popover
   const searchInput = (
     <Input.Search
       style={{ width: externalSearchInput ? '250px' : undefined }}
@@ -290,10 +101,110 @@ export function DynamicFeedUsageInfo() {
       }}
     />
   )
+
   const popoverContent = (
-    <div className={classes.popover.wrapper}>
-      <div className={classes.popover.section}>
-        <div className={classes.popover.sectionTilte}>
+    <PopoverContent
+      externalSearchInput={externalSearchInput}
+      searchInput={searchInput}
+      onRefresh={onRefresh}
+    />
+  )
+
+  const [popoverOpen, setPopoverOpen] = useState(
+    __PROD__
+      ? false //
+      : false, // dev: change to true for debug if needed);
+  )
+  const onPopoverOpenChange = __PROD__
+    ? setPopoverOpen //
+    : setPopoverOpen // dev: free to change
+
+  const showPopoverBadge = useMemo(() => {
+    return !!(
+      dynamicFeedVideoType !== DynamicFeedVideoType.All ||
+      hideChargeOnlyVideos ||
+      searchText ||
+      filterMinDuration !== DynamicFeedVideoMinDuration.All
+    )
+  }, [dynamicFeedVideoType, hideChargeOnlyVideos, searchText, filterMinDuration])
+
+  const popoverTrigger = (
+    <Popover
+      open={popoverOpen}
+      onOpenChange={onPopoverOpenChange}
+      arrow={false}
+      placement='bottomLeft'
+      getPopupContainer={getPopupContainer}
+      content={popoverContent}
+      styles={{ body: { border: `1px solid ${usePopoverBorderColor()}` } }}
+    >
+      <Badge dot={showPopoverBadge} color={colorPrimaryValue} offset={[-5, 5]}>
+        <Button css={[iconOnlyRoundButtonCss, popoverOpen && buttonOpenCss]}>
+          <IconForPopoverTrigger className='ml-1' />
+        </Button>
+      </Badge>
+    </Popover>
+  )
+
+  return { searchInput, popoverContent, popoverTrigger }
+}
+
+const classes = {
+  wrapper: 'max-w-350px',
+  section: 'mt-10 first:mt-0 min-w-300px',
+  sectionTilte: 'flex items-center text-20px pl-2px pb-2px',
+  sectionContent: 'flex flex-col items-start gap-x-10px gap-y-6px',
+} as const
+
+function PopoverContent({
+  externalSearchInput,
+  searchInput,
+  onRefresh,
+}: {
+  externalSearchInput: boolean
+  searchInput: ReactNode
+  onRefresh: OnRefresh | undefined
+}) {
+  const {
+    viewingSomeUp,
+    selectedFollowGroup,
+    viewingSomeGroup,
+    selectedKey,
+    dynamicFeedVideoType,
+    filterMinDuration,
+    hideChargeOnlyVideos,
+    addSeparators,
+    searchText,
+  } = useSnapshot(dfStore)
+
+  let linkToReflectSearchTextEl: ReactNode
+  {
+    const show = SHOW_DYNAMIC_FEED_ONLY && !!searchText
+    const disabled = searchText === QUERY_DYNAMIC_SEARCH_TEXT
+    const { href, path } = useMemo(() => {
+      const u = new URL(location.href)
+      if (u.searchParams.has(DynamicFeedQueryKey.SearchTextFull)) {
+        u.searchParams.set(DynamicFeedQueryKey.SearchTextFull, searchText || '')
+      } else if (u.searchParams.has(DynamicFeedQueryKey.SearchTextShort)) {
+        u.searchParams.set(DynamicFeedQueryKey.SearchTextShort, searchText || '')
+      } else {
+        u.searchParams.set(DynamicFeedQueryKey.SearchTextFull, searchText || '')
+      }
+      return { href: u.href, path: `${u.pathname}?${u.search}` }
+    }, [searchText])
+    linkToReflectSearchTextEl = show && (
+      <AntdTooltip title={href}>
+        <Button disabled={disabled} href={href}>
+          转到搜索词为「{searchText || '空'}」的链接
+        </Button>
+      </AntdTooltip>
+    )
+  }
+
+  return (
+    <div className={classes.wrapper}>
+      <div className={classes.section}>
+        <div className={classes.sectionTilte}>
           视频类型
           <HelpInfo>
             「{CHARGE_ONLY_TEXT}」在此程序中归类为「投稿视频」
@@ -322,9 +233,9 @@ export function DynamicFeedUsageInfo() {
         </div>
       </div>
       {dynamicFeedVideoType !== DynamicFeedVideoType.DynamicOnly && (
-        <div className={classes.popover.section}>
-          <div className={classes.popover.sectionTilte}>充电专属</div>
-          <div css={flexVerticalCenterStyle}>
+        <div className={classes.section}>
+          <div className={classes.sectionTilte}>充电专属</div>
+          <div className={classes.sectionContent}>
             <Checkbox
               checked={hideChargeOnlyVideos}
               onChange={async (e) => {
@@ -357,8 +268,8 @@ export function DynamicFeedUsageInfo() {
           </div>
         </div>
       )}
-      <div className={classes.popover.section}>
-        <div className={classes.popover.sectionTilte}>最短时长</div>
+      <div className={classes.section}>
+        <div className={classes.sectionTilte}>最短时长</div>
         <div>
           <Radio.Group
             css={css`
@@ -386,16 +297,23 @@ export function DynamicFeedUsageInfo() {
           </Radio.Group>
         </div>
       </div>
-      {!externalSearchInput && (
-        <div className={classes.popover.section}>
-          <div className={classes.popover.sectionTilte}>搜索</div>
-          <div>{searchInput}</div>
+
+      {/* search */}
+      {(!externalSearchInput || linkToReflectSearchTextEl) && (
+        <div className={classes.section}>
+          <div className={classes.sectionTilte}>搜索</div>
+          <div className={classes.sectionContent}>
+            {!externalSearchInput && searchInput}
+            {linkToReflectSearchTextEl}
+          </div>
         </div>
       )}
+
+      {/* search-cache */}
       <SearchCacheRelated />
 
-      <div className={classes.popover.section}>
-        <div className={classes.popover.sectionTilte}>
+      <div className={classes.section}>
+        <div className={classes.sectionTilte}>
           {viewingSomeGroup ? '分组' : viewingSomeUp ? 'UP' : '全部'}
           <HelpInfo>
             当前{viewingSomeGroup ? '分组' : viewingSomeUp ? 'UP' : '范围'}的一些操作~
@@ -415,7 +333,7 @@ export function DynamicFeedUsageInfo() {
             </span>
           )}
         </div>
-        <div className='flex flex-col items-start  gap-x-10 gap-y-6'>
+        <div className={classes.sectionContent}>
           <Checkbox
             checked={addSeparators}
             onChange={async (v) => {
@@ -434,72 +352,6 @@ export function DynamicFeedUsageInfo() {
         </div>
       </div>
     </div>
-  )
-  const [popoverOpen, setPopoverOpen] = useState(
-    __PROD__
-      ? false //
-      : false, // dev: change to true for debug if needed);
-  )
-  const onPopoverOpenChange = __PROD__
-    ? setPopoverOpen //
-    : setPopoverOpen // dev: free to change
-  const popoverTrigger = (
-    <Popover
-      open={popoverOpen}
-      onOpenChange={onPopoverOpenChange}
-      arrow={false}
-      placement='bottomLeft'
-      getPopupContainer={getPopupContainer}
-      content={popoverContent}
-      overlayInnerStyle={{ border: `1px solid ${usePopoverBorderColor()}` }}
-    >
-      <Badge dot={showPopoverBadge} color={colorPrimaryValue} offset={[-5, 5]}>
-        <Button css={[iconOnlyRoundButtonCss, popoverOpen && buttonOpenCss]}>
-          <IconForPopoverTrigger className='ml-1' />
-        </Button>
-      </Badge>
-    </Popover>
-  )
-  // #endregion
-
-  return (
-    <>
-      <Space ref={ref}>
-        {scopeDropdownMenu}
-
-        {(viewingSomeUp || selectedFollowGroup) && (
-          <Button onClick={onClear} className='gap-0'>
-            <IconForReset className='size-14px mr-5px' />
-            <span>清除</span>
-          </Button>
-        )}
-
-        {popoverTrigger}
-
-        {externalSearchInput && searchInput}
-
-        {addCopyBvidButton && (
-          <>
-            <Button
-              onClick={() => {
-                copyBvidsSingleLine()
-                antMessage.success('已复制')
-              }}
-            >
-              Copy Bvids SingleLine
-            </Button>
-            <Button
-              onClick={() => {
-                copyBvidInfos()
-                antMessage.success('已复制')
-              }}
-            >
-              Copy Bvid Infos
-            </Button>
-          </>
-        )}
-      </Space>
-    </>
   )
 }
 
@@ -532,16 +384,16 @@ function SearchCacheRelated() {
   return (
     <>
       {cacheAllItemsEntry && viewingSomeUp && upMid && upName && (
-        <div className={classes.popover.section}>
-          <div className={classes.popover.sectionTilte}>
+        <div className={classes.section}>
+          <div className={classes.sectionTilte}>
             搜索缓存
             <HelpInfo>
               开启搜索缓存后, 会加载并缓存 UP 所有的动态 <br />
               {'当本地有缓存且总条数 <= 5000时, 搜索框成为及时搜索, 无需点击搜索按钮'}
             </HelpInfo>
           </div>
-          <div>
-            <div className='flex gap-y-3 gap-x-10 flex-wrap'>
+          <div className={classes.sectionContent}>
+            <div className='flex flex-wrap items-center gap-x-10 gap-y-3'>
               <Checkbox className='inline-flex items-center' checked={checked} onChange={onChange}>
                 <AntdTooltip title='只有开启此项, 搜索时才会使用缓存'>
                   <span>为「{upName}」开启</span>
@@ -555,21 +407,19 @@ function SearchCacheRelated() {
               >
                 更新缓存
               </Button>
-              {flexBreak}
-
-              <CheckboxSettingItem
-                configPath='dynamicFeed.advancedSearch'
-                label={'使用高级搜索'}
-                tooltip={
-                  <>
-                    高级搜索 <br />
-                    1. 可以使用多个搜索词, 用空格分隔, 逻辑关系为且 (AND) <br />
-                    2. 可以使用引号包裹搜索词, 如 "word or sentence" <br />
-                    2. 可以使用 -"word or sentence" 排除关键词 <br />
-                  </>
-                }
-              />
             </div>
+            <CheckboxSettingItem
+              configPath='dynamicFeed.advancedSearch'
+              label={'使用高级搜索'}
+              tooltip={
+                <>
+                  高级搜索 <br />
+                  1. 可以使用多个搜索词, 用空格分隔, 逻辑关系为且 (AND) <br />
+                  2. 可以使用引号包裹搜索词, 如 "word or sentence" <br />
+                  2. 可以使用 -"word or sentence" 排除关键词 <br />
+                </>
+              }
+            />
           </div>
         </div>
       )}
