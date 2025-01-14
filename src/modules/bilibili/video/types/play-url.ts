@@ -42,8 +42,8 @@ export interface Audio {
   id: number
   baseUrl: string
   base_url: string
-  backupUrl: string[]
-  backup_url: string[]
+  backupUrl?: string[]
+  backup_url?: string[]
   bandwidth: number
   mimeType: MIMEType
   mime_type: MIMEType
@@ -124,5 +124,5 @@ export interface Durl {
   ahead: string
   vhead: string
   url: string
-  backup_url: string[]
+  backup_url?: string[]
 }
