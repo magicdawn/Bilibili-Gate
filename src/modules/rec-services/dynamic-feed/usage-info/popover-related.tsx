@@ -167,7 +167,7 @@ function PopoverContent({
 }) {
   const {
     viewingSomeUp,
-    selectedFollowGroup,
+    selectedGroup,
     viewingSomeGroup,
     selectedKey,
     dynamicFeedVideoType,
@@ -318,16 +318,16 @@ function PopoverContent({
           <HelpInfo>
             当前{viewingSomeGroup ? '分组' : viewingSomeUp ? 'UP' : '范围'}的一些操作~
           </HelpInfo>
-          {viewingSomeGroup && selectedFollowGroup && (
+          {viewingSomeGroup && selectedGroup && (
             <span className='inline-flex items-center ml-15 font-size-14'>
               (
               <a
-                href={formatFollowGroupUrl(selectedFollowGroup?.tagid || '')}
+                href={formatFollowGroupUrl(selectedGroup?.tagid || '')}
                 target='_blank'
                 className={`inline-flex items-center font-size-16 mx-4 ${APP_CLS_USE_ANT_LINK_COLOR}`}
               >
                 <IconForOpenExternalLink className='size-18 mr-2' />
-                {selectedFollowGroup?.name}
+                {selectedGroup?.name}
               </a>
               )
             </span>
@@ -346,8 +346,8 @@ function PopoverContent({
           </Checkbox>
 
           {/* actions for up|group */}
-          {viewingSomeGroup && !!selectedFollowGroup && (
-            <FollowGroupActions followGroup={selectedFollowGroup} onRefresh={onRefresh} />
+          {viewingSomeGroup && !!selectedGroup && (
+            <FollowGroupActions followGroup={selectedGroup} onRefresh={onRefresh} />
           )}
         </div>
       </div>

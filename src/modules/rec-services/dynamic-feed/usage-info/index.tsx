@@ -39,7 +39,7 @@ const clearPayload: Partial<DynamicFeedStore> = {
   upName: undefined,
   upFace: undefined,
   searchText: undefined,
-  selectedFollowGroupTagId: undefined,
+  selectedGroupId: undefined,
   dynamicFeedVideoType: DynamicFeedVideoType.All,
   filterMinDuration: DynamicFeedVideoMinDuration.All,
 }
@@ -57,8 +57,8 @@ export function DynamicFeedUsageInfo() {
     upFace,
     upList,
 
-    followGroups,
-    selectedFollowGroup,
+    groups,
+    selectedGroup,
 
     selectedKey,
   } = useSnapshot(dfStore)
@@ -88,13 +88,13 @@ export function DynamicFeedUsageInfo() {
 
     let groupItems: AntMenuItem[] = []
     if (dfSettings.followGroup.enabled) {
-      groupItems = followGroups.map((group) => {
+      groupItems = groups.map((group) => {
         return {
           key: `group:${group.tagid}` satisfies DynamicFeedStoreSelectedKey,
           label: group.name + ` (${group.count})`,
           icon: <Avatar size={'small'}>组</Avatar>,
           onClick() {
-            onSelect({ ...clearPayload, selectedFollowGroupTagId: group.tagid })
+            onSelect({ ...clearPayload, selectedGroupId: group.tagid })
           },
         }
       })
@@ -151,21 +151,21 @@ export function DynamicFeedUsageInfo() {
     })
 
     return [itemAll, ...groupItems, ...items]
-  }, [upList, dfSettings.followGroup.enabled, followGroups])
+  }, [upList, dfSettings.followGroup.enabled, groups])
 
   // #region scope dropdown menus
-  const followGroupMidsCount = selectedFollowGroup?.count
+  const followGroupMidsCount = selectedGroup?.count
   const upIcon = <IconForUp {...size(14)} className='mt--2px' />
   const upAvtar = upFace ? <Avatar size={20} src={getAvatarSrc(upFace)} /> : undefined
   const dropdownButtonIcon = viewingSomeUp ? (
     upAvtar || upIcon
-  ) : selectedFollowGroup ? (
+  ) : selectedGroup ? (
     <IconForGroup {...size(18)} />
   ) : undefined
   const dropdownButtonLabel = viewingSomeUp
     ? upName
-    : selectedFollowGroup
-      ? selectedFollowGroup.name + (followGroupMidsCount ? ` (${followGroupMidsCount})` : '')
+    : selectedGroup
+      ? selectedGroup.name + (followGroupMidsCount ? ` (${followGroupMidsCount})` : '')
       : '全部'
 
   const [scopeDropdownOpen, setScopeDropdownOpen] = useState(false)
@@ -203,7 +203,7 @@ export function DynamicFeedUsageInfo() {
       <Space ref={ref}>
         {scopeDropdownMenu}
 
-        {(viewingSomeUp || selectedFollowGroup) && (
+        {(viewingSomeUp || selectedGroup) && (
           <Button onClick={onClear} className='gap-0'>
             <IconForReset className='size-14px mr-5px' />
             <span>清除</span>

@@ -56,7 +56,7 @@ export class AppRecService extends BaseTabService<RecItemType> {
     {
       const store = createDfStore()
       store.upMid = undefined
-      store.selectedFollowGroupTagId = undefined
+      store.selectedGroupId = undefined
       const config = getDynamicFeedServiceConfig(store)
       Object.assign(config, {
         showLiveInDynamicFeed: true,

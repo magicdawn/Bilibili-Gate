@@ -51,7 +51,7 @@ export function getDynamicFeedServiceConfig(usingDfStore: DynamicFeedStore = dfS
      */
     // UP | 分组
     upMid: snap.upMid,
-    followGroupTagId: snap.selectedFollowGroup?.tagid,
+    groupId: snap.selectedGroup?.tagid,
 
     // 搜索
     searchText: snap.searchText,
@@ -86,10 +86,8 @@ export function getDynamicFeedServiceConfig(usingDfStore: DynamicFeedStore = dfS
       settings.dynamicFeed.__internal.cacheAllItemsUpMids.includes(snap.upMid.toString()), // the switch for this up
 
     forceUseMergeTime:
-      !!snap.selectedFollowGroup &&
-      settings.dynamicFeed.followGroup.forceUseMergeTimelineIds.includes(
-        snap.selectedFollowGroup.tagid,
-      ),
+      !!snap.selectedGroup &&
+      settings.dynamicFeed.followGroup.forceUseMergeTimelineIds.includes(snap.selectedGroup.tagid),
 
     /**
      * from query
@@ -118,18 +116,23 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
 
     if (this.liveRecService?.hasMore) return true
 
-    if (this.viewingSomeGroup && this.whenViewSomeGroupMergeTimelineService) {
-      return this.whenViewSomeGroupMergeTimelineService.hasMore
+    if (this.viewingSomeGroup && this.groupMergeTimelineService) {
+      return this.groupMergeTimelineService.hasMore
     }
 
     if (this.hasMoreExceptQueue) return true
     return false
   }
 
-  shouldReduceMinCount() {
+  async shouldReduceMinCount() {
+    if (this.viewingAll) {
+      // return true
+    }
+
     // 选择了分组 & 分组很少更新 & (not using merge-timeline)
-    if (this.viewingSomeGroup && !this.whenViewSomeGroupMergeTimelineService) {
-      return true
+    if (this.viewingSomeGroup) {
+      await this.loadGroupMids()
+      return !this.groupMergeTimelineService
     }
 
     // 过滤结果可能较少
@@ -155,7 +158,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
     if (this.config.showLiveInDynamicFeed) {
       const filterEmpty =
         !this.upMid &&
-        typeof this.followGroupTagId === 'undefined' &&
+        typeof this.groupId === 'undefined' &&
         !this.searchText &&
         this.dynamicFeedVideoType === DynamicFeedVideoType.All &&
         this.filterMinDuration === DynamicFeedVideoMinDuration.All
@@ -177,8 +180,8 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
     return this.config.upMid
   }
   // NOTE: number | undefined 默认分组是 0
-  get followGroupTagId() {
-    return this.config.followGroupTagId
+  get groupId() {
+    return this.config.groupId
   }
   get searchText() {
     return this.config.searchText
@@ -205,21 +208,29 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
   get viewingSomeGroup() {
     return this.config.viewingSomeGroup
   }
-  private whenViewSomeGroupMergeTimelineService: FollowGroupMergeTimelineService | undefined
-  private whenViewSomeGroupMids = new Set<number>()
-  private async loadWhenViewSomeGroupMids() {
-    if (typeof this.followGroupTagId !== 'number') return // no need
-    if (this.whenViewSomeGroupMids.size) return // loaded
-    const mids = await getFollowGroupContent(this.followGroupTagId)
-    this.whenViewSomeGroupMids = new Set(mids)
-    if (
-      mids.length > 0 &&
-      (mids.length <= FollowGroupMergeTimelineService.ENABLE_MERGE_TIMELINE_UPMID_COUNT_THRESHOLD || // <- 太多了则从全部过滤
-        this.config.forceUseMergeTime)
-    ) {
-      this.whenViewSomeGroupMergeTimelineService = new FollowGroupMergeTimelineService(
-        mids.map((x) => x.toString()),
-      )
+  private shouldEnableMergeTimeline(midCount: number) {
+    return (
+      this.config.forceUseMergeTime ||
+      (midCount > 0 &&
+        midCount <= FollowGroupMergeTimelineService.ENABLE_MERGE_TIMELINE_UPMID_COUNT_THRESHOLD) // <- 太多了则从全部过滤
+    )
+  }
+  private groupMergeTimelineService: FollowGroupMergeTimelineService | undefined
+  private groupMids = new Set<number>()
+  private groupMidsLoaded = false
+  private async loadGroupMids() {
+    if (typeof this.groupId !== 'number') return // no need
+    if (this.groupMidsLoaded) return // loaded
+    try {
+      const mids = await getFollowGroupContent(this.groupId)
+      this.groupMids = new Set(mids)
+      if (this.shouldEnableMergeTimeline(mids.length)) {
+        this.groupMergeTimelineService = new FollowGroupMergeTimelineService(
+          mids.map((x) => x.toString()),
+        )
+      }
+    } finally {
+      this.groupMidsLoaded = true
     }
   }
 
@@ -257,8 +268,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
 
   override async fetchMore(abortSignal: AbortSignal) {
     const items = await this._fetchMore(abortSignal)
-    const itemsWithSeparators = this.handleAddSeparators(items)
-    return itemsWithSeparators
+    return this.handleAddSeparators(items)
   }
 
   private _queueForSearchCache: QueueStrategy<DynamicFeedItem> | undefined
@@ -273,7 +283,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
 
     // viewingSomeGroup: ensure current follow-group's mids loaded
     if (this.viewingSomeGroup) {
-      await this.loadWhenViewSomeGroupMids()
+      await this.loadGroupMids()
     }
     // viewingAll: ensure hide contents from these mids loaded
     if (this.viewingAll) {
@@ -318,8 +328,8 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
     }
 
     // a group with manual merge-timeline service
-    else if (this.viewingSomeGroup && this.whenViewSomeGroupMergeTimelineService) {
-      rawItems = await this.whenViewSomeGroupMergeTimelineService.loadMore(abortSignal)
+    else if (this.viewingSomeGroup && this.groupMergeTimelineService) {
+      rawItems = await this.groupMergeTimelineService.loadMore(abortSignal)
     }
 
     // normal
@@ -362,10 +372,10 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
       // by 关注分组
       .filter((x) => {
         if (!this.viewingSomeGroup) return true
-        if (!this.whenViewSomeGroupMids.size) return true
+        if (!this.groupMids.size) return true
         const mid = x?.modules?.module_author?.mid
         if (!mid) return true
-        return this.whenViewSomeGroupMids.has(mid)
+        return this.groupMids.has(mid)
       })
 
       // by 动态视频|投稿视频
@@ -481,9 +491,9 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
     }
 
     // update group count if needed
-    if (this.viewingSomeGroup && dfStore.followGroups.length) {
-      const group = dfStore.followGroups.find((x) => x.tagid === this.followGroupTagId)
-      if (group) group.count = this.whenViewSomeGroupMids.size
+    if (this.viewingSomeGroup && dfStore.groups.length) {
+      const group = dfStore.groups.find((x) => x.tagid === this.groupId)
+      if (group) group.count = this.groupMids.size
     }
 
     return items

@@ -371,9 +371,9 @@ function DynamicFeedWhenViewAllHideIdsPanel() {
     await updateSettingsInnerArray('dynamicFeed.whenViewAll.hideIds', { remove: [mid] })
   })
 
-  const { followGroups } = useSnapshot(dfStore)
+  const { groups } = useSnapshot(dfStore)
   useMount(() => {
-    dfStore.updateFollowGroups()
+    dfStore.updateGroups()
   })
 
   const empty = !hideIds.length
@@ -392,9 +392,7 @@ function DynamicFeedWhenViewAllHideIdsPanel() {
           <TagItemDisplay
             tag={tag}
             onDelete={onDelete}
-            renderTag={(t) => (
-              <DynamicFeedWhenViewAllHideIdTag tag={t} followGroups={followGroups} />
-            )}
+            renderTag={(t) => <DynamicFeedWhenViewAllHideIdTag tag={t} followGroups={groups} />}
           />
         )
       })}

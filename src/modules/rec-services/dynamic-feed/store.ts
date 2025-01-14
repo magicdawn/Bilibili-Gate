@@ -116,12 +116,12 @@ export function createDfStore() {
     upList: [] as DynamicPortalUp[],
     upListUpdatedAt: 0,
 
-    followGroups: [] as FollowGroup[],
-    followGroupsUpdatedAt: 0,
-    selectedFollowGroupTagId: undefined as number | undefined,
-    get selectedFollowGroup(): FollowGroup | undefined {
-      if (typeof this.selectedFollowGroupTagId !== 'number') return
-      return this.followGroups.find((x) => x.tagid === this.selectedFollowGroupTagId)
+    groups: [] as FollowGroup[],
+    groupsUpdatedAt: 0,
+    selectedGroupId: undefined as number | undefined,
+    get selectedGroup(): FollowGroup | undefined {
+      if (typeof this.selectedGroupId !== 'number') return
+      return this.groups.find((x) => x.tagid === this.selectedGroupId)
     },
 
     dynamicFeedVideoType: DynamicFeedVideoType.All,
@@ -135,14 +135,13 @@ export function createDfStore() {
       return !!this.upMid
     },
     get viewingSomeGroup(): boolean {
-      return typeof this.selectedFollowGroupTagId === 'number'
+      return typeof this.selectedGroupId === 'number'
     },
 
     // 筛选 UP & 分组 select 控件的 key
     get selectedKey(): DynamicFeedStoreSelectedKey {
       if (this.upMid) return `${DF_SELECTED_KEY_PREFIX_UP}${this.upMid}`
-      if (this.selectedFollowGroup)
-        return `${DF_SELECTED_KEY_PREFIX_GROUP}${this.selectedFollowGroup.tagid}`
+      if (this.selectedGroup) return `${DF_SELECTED_KEY_PREFIX_GROUP}${this.selectedGroup.tagid}`
       return DF_SELECTED_KEY_ALL
     },
 
@@ -166,7 +165,7 @@ export function createDfStore() {
      * methods
      */
     updateUpList,
-    updateFollowGroups,
+    updateGroups,
   })
 }
 
@@ -189,7 +188,7 @@ async function updateUpList(force = false) {
   dfStore.upListUpdatedAt = Date.now()
 }
 
-async function updateFollowGroups(force = false) {
+async function updateGroups(force = false) {
   {
     const { followGroup, whenViewAll } = settings.dynamicFeed
     const enabled =
@@ -200,20 +199,20 @@ async function updateFollowGroups(force = false) {
 
   const cacheHit =
     !force &&
-    dfStore.followGroups.length &&
-    dfStore.followGroupsUpdatedAt &&
-    dfStore.followGroupsUpdatedAt - Date.now() < ms('1h')
+    dfStore.groups.length &&
+    dfStore.groupsUpdatedAt &&
+    dfStore.groupsUpdatedAt - Date.now() < ms('1h')
   if (cacheHit) return
 
   const groups = await getAllFollowGroups()
-  dfStore.followGroups = groups.filter((x) => !!x.count)
-  dfStore.followGroupsUpdatedAt = Date.now()
+  dfStore.groups = groups.filter((x) => !!x.count)
+  dfStore.groupsUpdatedAt = Date.now()
 }
 
 export async function updateFilterData() {
   // not logined
   if (!getUid()) return
-  return Promise.all([updateUpList(), updateFollowGroups()])
+  return Promise.all([updateUpList(), updateGroups()])
 }
 
 // #region !Side Effects
@@ -221,7 +220,7 @@ export async function updateFilterData() {
 void (async () => {
   if (!IN_BILIBILI_HOMEPAGE) return
   await delay(5_000)
-  if (!dfStore.upList.length || !dfStore.followGroups.length) {
+  if (!dfStore.upList.length || !dfStore.groups.length) {
     await whenIdle()
     updateFilterData()
   }
@@ -230,13 +229,13 @@ void (async () => {
 if (QUERY_DYNAMIC_UP_MID) {
   subscribeOnKeys(
     dfStore,
-    ['upName', 'searchText', 'selectedFollowGroup', 'viewingSomeUp', 'viewingAll'],
-    ({ upName, searchText, selectedFollowGroup, viewingSomeUp, viewingAll }) => {
+    ['upName', 'searchText', 'selectedGroup', 'viewingSomeUp', 'viewingAll'],
+    ({ upName, searchText, selectedGroup, viewingSomeUp, viewingAll }) => {
       let title = viewingAll
         ? '动态'
         : viewingSomeUp
           ? `「${upName}」的动态`
-          : `「${selectedFollowGroup?.name}」分组动态`
+          : `「${selectedGroup?.name}」分组动态`
       if (searchText) {
         title = `🔍【${searchText}】 - ` + title
       }

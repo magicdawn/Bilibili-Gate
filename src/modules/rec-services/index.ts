@@ -145,7 +145,7 @@ export async function refreshForGrid(fetcherOptions: FetcherOptions) {
   // 当结果很少的, 不用等一屏
   if (fetcherOptions.tab === ETab.DynamicFeed) {
     const service = getServiceFromRegistry(fetcherOptions.servicesRegistry, ETab.DynamicFeed)
-    if (service.shouldReduceMinCount()) {
+    if (await service.shouldReduceMinCount()) {
       minCount = 1
     }
   }
