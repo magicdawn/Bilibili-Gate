@@ -1,33 +1,3 @@
-@use 'css-vars' as *;
-@use 'sass:string';
-
-:export {
-  // ids
-  app-color-primary-id: $app-color-primary-id;
-  app-border-color-id: $app-border-color-id;
-  app-custom-font-family-id: $app-custom-font-family-id;
-  app-video-card-border-radius-id: $app-video-card-border-radius-id;
-
-  app-bg-id: $app-bg-id;
-  app-bg-lv1-id: $app-bg-lv1-id;
-  app-bg-lv2-id: $app-bg-lv2-id;
-  app-bg-lv3-id: $app-bg-lv3-id;
-
-  // values
-  bili-pink: $bili-pink;
-  app-custom-font-family: $app-custom-font-family;
-  app-using-font: $app-using-font;
-
-  app-cls-root: $app-cls-root;
-  app-cls-dark: $app-cls-dark;
-  app-cls-dark-selector: #{string.unquote($app-cls-dark-selector)};
-  app-cls-color-primary: $app-cls-color-primary;
-
-  // z-index
-  z-index-rec-header: $z-index-rec-header;
-  z-index-base-modal: $z-index-base-modal;
-  z-index-antd-popup-base: $z-index-antd-popup-base;
-  z-index-video-card-large-preview: $z-index-video-card-large-preview;
-  z-index-video-card-context-menu: $z-index-video-card-context-menu;
-  z-index-toast: $z-index-toast;
-}
+@use 'css-vars' with (
+  $use-export: true
+);
