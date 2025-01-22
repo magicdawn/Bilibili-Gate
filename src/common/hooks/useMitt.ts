@@ -13,5 +13,5 @@ export function useMittOn<Events extends Record<EventType, unknown>, Key extends
     return () => {
       emitter.off(type, fn)
     }
-  }, [emitter])
+  }, [emitter, type])
 }

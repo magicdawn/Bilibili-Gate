@@ -28,12 +28,12 @@ $app-bg-lv3-id: --#{$app-name}--bg--lv3;
 //
 // 由于 B站 默认 css, 加上了 !important, 这里如果需要自定义也需要加上
 // 优先使用 Bilibili-Evolved 的自定义字体
-$app-custom-font-family-id: --#{$app-name}--custom-font-family;
-$app-custom-font-family: 'Alibaba PuHuiTi 3.0', 'PingFang SC', HarmonyOS_Regular, 'Helvetica Neue',
+$app-custom-font-id: --#{$app-name}--font;
+$app-custom-font-value: 'Alibaba PuHuiTi 3.0', 'PingFang SC', HarmonyOS_Regular, 'Helvetica Neue',
   'Microsoft YaHei', sans-serif;
 $app-using-font: var(
   --custom-font-family--options--font-family,
-  var(#{$app-custom-font-family-id})
+  var(#{$app-custom-font-id})
 ) !important;
 
 // video card
@@ -58,7 +58,7 @@ $use-export: false !default;
     // ids
     app-color-primary-id: $app-color-primary-id;
     app-border-color-id: $app-border-color-id;
-    app-custom-font-family-id: $app-custom-font-family-id;
+    app-custom-font-id: $app-custom-font-id;
     app-video-card-border-radius-id: $app-video-card-border-radius-id;
 
     app-bg-id: $app-bg-id;
@@ -68,7 +68,7 @@ $use-export: false !default;
 
     // values
     bili-pink: $bili-pink;
-    app-custom-font-family: $app-custom-font-family;
+    app-custom-font-value: $app-custom-font-value;
     app-using-font: $app-using-font;
 
     app-cls-root: $app-cls-root;

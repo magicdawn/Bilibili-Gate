@@ -2,7 +2,7 @@
 @use 'css-vars' as *;
 
 :root {
-  #{$app-custom-font-family-id}: #{meta.inspect($app-custom-font-family)};
+  #{$app-custom-font-id}: #{meta.inspect($app-custom-font-value)};
 }
 
 .#{$app-cls-color-primary} {

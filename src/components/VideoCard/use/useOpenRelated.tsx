@@ -2,7 +2,7 @@ import { baseDebug } from '$common'
 import type { RecItemType } from '$define'
 import { EApiType } from '$define/index.shared'
 import { getBiliPlayerConfigAutoPlay } from '$modules/bilibili/player-config'
-import type { VideoDetailData } from '$modules/bilibili/video/types/video-detail'
+import type { VideoPage } from '$modules/bilibili/video/types/page-list'
 import { getVideoPageList } from '$modules/bilibili/video/video-detail'
 import { openNewTab } from '$modules/gm'
 import { isNormalRankingItem } from '$modules/rec-services/hot/ranking/category'
@@ -178,16 +178,20 @@ export function useOpenRelated({
   }
 }
 
-export function getRecItemDimension(
-  item: RecItemType,
-  dimensionFromVideoDetail?: VideoDetailData['dimension'],
-) {
+export function getRecItemDimension(item: RecItemType, dimensionFromApi?: VideoPage['dimension']) {
   let w: number | undefined
   let h: number | undefined
   let aspectRatio: number | undefined
 
+  // from API
+  if (dimensionFromApi) {
+    w = dimensionFromApi.width
+    h = dimensionFromApi.height
+    aspectRatio = w / h
+  }
+
   // AppRecommend
-  if (item.api === EApiType.AppRecommend && item.uri?.startsWith('bilibili://')) {
+  else if (item.api === EApiType.AppRecommend && item.uri?.startsWith('bilibili://')) {
     const searchParams = new URL(item.uri).searchParams
     const playerWidth = Number(searchParams.get('player_width') || 0)
     const playerHeight = Number(searchParams.get('player_height') || 0)
@@ -207,13 +211,6 @@ export function getRecItemDimension(
       h = _h
       aspectRatio = w / h
     }
-  }
-
-  // video detail
-  else if (dimensionFromVideoDetail) {
-    w = dimensionFromVideoDetail.width
-    h = dimensionFromVideoDetail.height
-    aspectRatio = w / h
   }
 
   return { w, h, aspectRatio }
