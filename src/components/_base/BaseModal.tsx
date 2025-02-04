@@ -47,7 +47,7 @@ export const BaseModalStyle = {
   modalBody: css`
     padding-top: 0;
     flex-grow: 1;
-    overflow-y: scroll;
+    overflow-y: auto;
   `,
 
   modalTitle: css`

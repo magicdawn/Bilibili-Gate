@@ -31,7 +31,7 @@
 }
 
 .tab-pane {
-  overflow-y: scroll;
+  overflow-y: auto;
   min-height: 362px;
   max-height: max(362px, calc(90vh - #{50px + 56px + 15px}));
 }

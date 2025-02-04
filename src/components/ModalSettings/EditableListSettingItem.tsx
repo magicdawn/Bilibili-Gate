@@ -93,7 +93,7 @@ export function EditableListSettingItem({
               gap: 5px 10px;
               align-items: flex-start;
               max-height: 250px;
-              overflow-y: scroll;
+              overflow-y: auto;
               padding-right: 10px;
             `}
           >

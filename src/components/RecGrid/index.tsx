@@ -635,7 +635,7 @@ function ErrorDetail({ err, tab }: { err: any; tab: ETab }) {
                 white-space: pre-wrap;
                 word-break: normal;
                 max-height: 50vh;
-                overflow-y: scroll;
+                overflow-y: auto;
               `}
             >
               {errDetail}
