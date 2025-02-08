@@ -422,10 +422,10 @@ function apiDynamicAdapter(item: DynamicFeedItemExtend): IVideoCardData {
     recommendReason: v.badge.text,
 
     // stat
-    statItems: [
+    statItems: defineStatItems([
       { field: 'play', value: v.stat.play },
       { field: 'danmaku', value: v.stat.danmaku },
-    ] satisfies StatItemType[],
+    ]),
     play: parseCount(v.stat.play),
     danmaku: parseCount(v.stat.danmaku),
 
@@ -474,12 +474,12 @@ function apiWatchlaterAdapter(item: WatchlaterItemExtend): IVideoCardData {
     recommendReason: `${formatTimeStamp(item.add_at)} · 稍后再看`,
 
     // stat
-    statItems: [
+    statItems: defineStatItems([
       { field: 'play', value: item.stat.view },
       { field: 'like', value: item.stat.like },
       // { field: 'coin', value: item.stat.coin },
       { field: 'favorite', value: item.stat.favorite },
-    ] satisfies StatItemType[],
+    ]),
     play: item.stat.view,
     like: item.stat.like,
     danmaku: item.stat.danmaku,
@@ -551,11 +551,11 @@ function apiFavAdapter(item: FavItemExtend): IVideoCardData {
     play: item.cnt_info.play,
     danmaku: item.cnt_info.danmaku,
     favorite: item.cnt_info.collect,
-    statItems: [
+    statItems: defineStatItems([
       { field: 'play', value: item.cnt_info.play },
       { field: 'danmaku', value: item.cnt_info.danmaku },
       { field: 'favorite', value: item.cnt_info.collect },
-    ] satisfies StatItemType[],
+    ]),
 
     // author
     authorName: item.upper.name,
@@ -586,11 +586,11 @@ function apiPopularGeneralAdapter(item: PopularGeneralItemExtend): IVideoCardDat
     coin: undefined,
     danmaku: item.stat.danmaku,
     favorite: undefined,
-    statItems: [
+    statItems: defineStatItems([
       { field: 'play', value: item.stat.view },
       { field: 'like', value: item.stat.like },
-      { field: 'danmaku', value: item.stat.danmaku },
-    ] satisfies StatItemType[],
+      // { field: 'danmaku', value: item.stat.danmaku },
+    ]),
 
     // author
     authorName: item.owner.name,
@@ -619,11 +619,11 @@ function apiPopularWeeklyAdapter(item: PopularWeeklyItemExtend): IVideoCardData 
     play: item.stat.view,
     like: item.stat.like,
     danmaku: item.stat.danmaku,
-    statItems: [
+    statItems: defineStatItems([
       { field: 'play', value: item.stat.view },
       { field: 'like', value: item.stat.like },
-      { field: 'danmaku', value: item.stat.danmaku },
-    ] satisfies StatItemType[],
+      // { field: 'danmaku', value: item.stat.danmaku },
+    ]),
 
     // author
     authorName: item.owner.name,
@@ -657,7 +657,7 @@ function apiRankingAdapter(item: RankingItemExtend): IVideoCardData {
       statItems: defineStatItems([
         { field: 'play', value: item.stat.view },
         { field: 'bangumi:follow', value: item.stat.follow },
-        { field: 'danmaku', value: item.stat.danmaku },
+        // { field: 'danmaku', value: item.stat.danmaku },
       ]),
 
       rankingDesc,
@@ -684,11 +684,11 @@ function apiRankingAdapter(item: RankingItemExtend): IVideoCardData {
     play: item.stat.view,
     like: item.stat.like,
     danmaku: item.stat.danmaku,
-    statItems: [
-      { field: 'play', value: item.stat.view } as const,
-      { field: 'like', value: item.stat.like } as const,
-      { field: 'danmaku', value: item.stat.danmaku } as const,
-    ].filter(Boolean) satisfies StatItemType[],
+    statItems: defineStatItems([
+      { field: 'play', value: item.stat.view },
+      { field: 'like', value: item.stat.like },
+      // { field: 'danmaku', value: item.stat.danmaku },
+    ]),
 
     // author
     authorName: item.owner.name,
