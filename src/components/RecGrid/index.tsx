@@ -457,11 +457,14 @@ const RecGridInner = memo(function ({
       <div
         ref={containerRef}
         className={scopedClsNames.videoGridContainer}
+        data-tab={tab}
         css={css`
           min-height: 100vh;
         `}
       >
-        <div className={gridClassName}>{gridChildren}</div>
+        <div className={gridClassName} data-tab={tab}>
+          {gridChildren}
+        </div>
         {gridSiblings}
       </div>
     )
