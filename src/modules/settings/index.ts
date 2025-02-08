@@ -62,7 +62,7 @@ export const initialSettings = {
   videoCard: {
     // action buttons
     actions: {
-      openInPipWindow: true,
+      openInPipWindow: false,
       showLargePreview: true,
     },
 
