@@ -30,6 +30,7 @@
     "@commitlint/prompt-cli": "^19.7.1",
     "@commitlint/types": "^19.5.0",
     "@emotion/babel-plugin": "^11.13.5",
+    "@eslint/js": "^9.20.0",
     "@iconify/json": "^2.2.304",
     "@magicdawn/prettier-config": "^0.0.4",
     "@styled/typescript-styled-plugin": "^1.0.1",

@@ -1,8 +1,9 @@
 import { APP_CLS_CARD, baseDebug } from '$common'
 import { zIndexVideoCardLargePreview } from '$common/css-vars-export.module.scss'
+import { useMixedRef } from '$common/hooks/mixed-ref'
 import { colorPrimaryValue } from '$components/css-vars'
 import { isSafari } from '$ua'
-import { css } from '@emotion/react'
+import { css as _css, css } from '@emotion/react'
 import { useEventListener } from 'ahooks'
 import { orderBy, throttle } from 'es-toolkit'
 import { motion } from 'framer-motion'
@@ -32,15 +33,16 @@ const DirectionConfig: Record<
 
 const VisualPadding = {
   border: 40,
-  card: 15,
-  total: 55,
+  card: 10,
 }
 
 export const LargePreview = forwardRef<
   ComponentRef<'div'>,
   { children?: ReactNode; aspectRatio?: number } & ComponentProps<'div'>
 >(({ children, aspectRatio = AspectRatioPreset.Horizontal, ...restProps }, forwardedRef) => {
-  const ref = useRef<ComponentRef<'div'>>(null)
+  const ref = useRef<ComponentRef<'div'> | null>(null)
+  const cardRef = useRef<ComponentRef<'div'> | null>(null)
+  const elRef = useMixedRef(forwardedRef)
 
   const [visible, setVisible] = useState(false)
   const [position, setPosition] = useState<
@@ -50,17 +52,20 @@ export const LargePreview = forwardRef<
         elHeight: number
         elPosX: number
         elPosY: number
+        arrowTop: number
+        arrowLeft: number
       }
     | undefined
   >(undefined)
 
   const hide = useMemoizedFn(() => {
+    cardRef.current = null
     setVisible(false)
     setPosition(undefined)
   })
 
   const calculatePostion = useMemoizedFn(() => {
-    const card = ref.current?.closest('.' + APP_CLS_CARD)
+    const card = ref.current?.closest<HTMLDivElement>('.' + APP_CLS_CARD)
     if (!card) return hide()
 
     const viewportWidth = document.documentElement.clientWidth
@@ -76,6 +81,9 @@ export const LargePreview = forwardRef<
     ) {
       return hide()
     }
+
+    // sync ref
+    cardRef.current = card
 
     const possibleBoundingBox: Record<Direction, Bbox> = {
       top: { x: 0, y: 0, width: viewportWidth, height: cardRect.top },
@@ -136,10 +144,10 @@ export const LargePreview = forwardRef<
     let elWidth: number
     let elHeight: number
     if (scaleLimit === 'width') {
-      elWidth = Math.floor(bbox.width - VisualPadding.total)
+      elWidth = Math.floor(bbox.width - (VisualPadding.card + VisualPadding.border))
       elHeight = Math.floor(elWidth / aspectRatio)
     } else if (scaleLimit === 'height') {
-      elHeight = Math.floor(bbox.height - VisualPadding.total)
+      elHeight = Math.floor(bbox.height - (VisualPadding.card + VisualPadding.border))
       elWidth = Math.floor(elHeight * aspectRatio)
     } else {
       throw new Error('unexpected scaleLimit')
@@ -147,6 +155,15 @@ export const LargePreview = forwardRef<
 
     let elPosX = 0
     let elPosY = 0
+
+    let arrowTop = 0
+    let arrowLeft = 0
+    const setArrowTop = () => {
+      arrowTop = cardRect.y + cardRect.height / 2 - elPosY
+    }
+    const setArrowLeft = () => {
+      arrowLeft = cardRect.x + cardRect.width / 2 - elPosX
+    }
 
     const fixX = () => {
       if (elPosX < VisualPadding.border) {
@@ -174,28 +191,32 @@ export const LargePreview = forwardRef<
         elPosX = cardRect.x + cardRect.width / 2 - elWidth / 2
         elPosY = cardRect.top - VisualPadding.card - elHeight
         fixX()
+        setArrowLeft()
         break
       case 'bottom':
         elPosX = cardRect.x + cardRect.width / 2 - elWidth / 2
         elPosY = cardRect.bottom + VisualPadding.card
         fixX()
+        setArrowLeft()
         break
       case 'right':
         elPosX = cardRect.right + VisualPadding.card
         elPosY = cardRect.y + cardRect.height / 2 - elHeight / 2
         fixY()
+        setArrowTop()
         break
       case 'left':
         elPosX = cardRect.left - VisualPadding.card - elWidth
         elPosY = cardRect.y + cardRect.height / 2 - elHeight / 2
         fixY()
+        setArrowTop()
         break
     }
 
     elPosX = Math.floor(elPosX)
     elPosY = Math.floor(elPosY)
     setVisible(true)
-    setPosition({ direction, elWidth, elHeight, elPosX, elPosY })
+    setPosition({ direction, elWidth, elHeight, elPosX, elPosY, arrowTop, arrowLeft })
   })
 
   const calculatePostionThrottled = useMemo(
@@ -229,7 +250,7 @@ export const LargePreview = forwardRef<
   const el = (
     <div
       {...restProps}
-      ref={forwardedRef}
+      ref={elRef}
       css={[
         css`
           display: ${visible ? 'block' : 'none'};
@@ -251,15 +272,31 @@ export const LargePreview = forwardRef<
           animate={{ opacity: 1, x: 0, y: 0 }}
           transition={{ bounce: false }}
           css={css`
-            background-color: rgba(255 255 255 / 0.5);
-            backdrop-filter: blur(10px);
-            border: 1px solid ${colorPrimaryValue};
-            border-radius: 20px;
+            position: relative;
             height: 100%;
-            overflow: hidden;
           `}
         >
-          {children}
+          {direction && (
+            <PopoverArrow
+              size={7}
+              direction={direction}
+              arrowTop={position.arrowTop}
+              arrowLeft={position.arrowLeft}
+            />
+          )}
+          <div
+            css={css`
+              background-color: rgba(255 255 255 / 0.5);
+              backdrop-filter: blur(10px);
+              /* border: 1px solid ${colorPrimaryValue}; */
+              box-shadow: 0px 0px 1px 1px ${colorPrimaryValue};
+              border-radius: 20px;
+              height: 100%;
+              overflow: hidden;
+            `}
+          >
+            {children}
+          </div>
         </motion.div>
       )}
     </div>
@@ -275,3 +312,52 @@ export const LargePreview = forwardRef<
     </>
   )
 })
+
+function PopoverArrow({
+  size,
+  direction,
+  arrowTop,
+  arrowLeft,
+}: {
+  size: number
+  direction: Direction
+  arrowTop: number
+  arrowLeft: number
+}) {
+  const { axis, multiplier, reverse } = DirectionConfig[direction]
+  const extra = useMemo(() => {
+    if (axis === 'x') {
+      return _css`
+        ${direction}: 100%;
+        margin-${direction}: -1px;
+        top: ${arrowTop}px;
+        margin-top: -${size}px;
+      `
+    } else {
+      return _css`
+        ${direction}: 100%;
+        margin-${direction}: -1px;
+        left: ${arrowLeft}px;
+        margin-left: -${size}px;
+      `
+    }
+  }, [size, direction, axis, arrowTop, arrowLeft])
+
+  return (
+    <div
+      css={[
+        css`
+          position: absolute;
+          height: 0;
+          width: 0;
+          box-sizing: content-box;
+          border: ${size}px solid transparent;
+        `,
+        extra,
+        _css`
+          border-${direction}-color: ${colorPrimaryValue};
+        `,
+      ]}
+    />
+  )
+}
