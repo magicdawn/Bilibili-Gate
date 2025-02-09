@@ -1,4 +1,4 @@
-import { APP_CLS_CARD, APP_CLS_ROOT, APP_KEY_PREFIX, appWarn } from '$common'
+import { APP_CLS_CARD, APP_CLS_CARD_COVER, APP_CLS_ROOT, APP_KEY_PREFIX, appWarn } from '$common'
 import { zIndexVideoCardContextMenu } from '$common/css-vars-export.module.scss'
 import { useLessFrequentFn } from '$common/hooks/useLessFrequentFn'
 import { useMittOn } from '$common/hooks/useMitt'
@@ -501,6 +501,7 @@ const VideoCardInner = memo(function VideoCardInner({
       ref={(el) => (coverRef.current = el)}
       href={href}
       target={target}
+      className={APP_CLS_CARD_COVER}
       css={[
         css`
           display: block; /* firefox need this */

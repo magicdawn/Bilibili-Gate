@@ -26,6 +26,7 @@ export const APP_CLS_ROOT = `${APP_NAMESPACE}-root`
 export const APP_CLS_GRID = `${APP_NAMESPACE}-video-grid`
 export const APP_CLS_CARD = `${APP_NAMESPACE}-video-card`
 export const APP_CLS_CARD_ACTIVE = `${APP_NAMESPACE}-video-card-active`
+export const APP_CLS_CARD_COVER = `${APP_NAMESPACE}-video-card-cover`
 export const APP_CLS_TAB_BAR = `${APP_NAMESPACE}-tab-bar`
 
 export const REQUEST_FAIL_MSG = '请求失败, 请重试 !!!'

@@ -1,4 +1,4 @@
-import { APP_CLS_CARD, baseDebug } from '$common'
+import { APP_CLS_CARD, APP_CLS_CARD_COVER, baseDebug } from '$common'
 import { zIndexVideoCardLargePreview } from '$common/css-vars-export.module.scss'
 import { useMixedRef } from '$common/hooks/mixed-ref'
 import { colorPrimaryValue } from '$components/css-vars'
@@ -41,7 +41,6 @@ export const LargePreview = forwardRef<
   { children?: ReactNode; aspectRatio?: number } & ComponentProps<'div'>
 >(({ children, aspectRatio = AspectRatioPreset.Horizontal, ...restProps }, forwardedRef) => {
   const ref = useRef<ComponentRef<'div'> | null>(null)
-  const cardRef = useRef<ComponentRef<'div'> | null>(null)
   const elRef = useMixedRef(forwardedRef)
 
   const [visible, setVisible] = useState(false)
@@ -59,45 +58,44 @@ export const LargePreview = forwardRef<
   >(undefined)
 
   const hide = useMemoizedFn(() => {
-    cardRef.current = null
     setVisible(false)
     setPosition(undefined)
   })
 
   const calculatePostion = useMemoizedFn(() => {
-    const card = ref.current?.closest<HTMLDivElement>('.' + APP_CLS_CARD)
-    if (!card) return hide()
+    const cardCover = ref.current
+      ?.closest<HTMLDivElement>('.' + APP_CLS_CARD)
+      ?.querySelector<HTMLAnchorElement>('.' + APP_CLS_CARD_COVER)
+    if (!cardCover) return hide()
 
     const viewportWidth = document.documentElement.clientWidth
     const viewportHeight = document.documentElement.clientHeight
-    const cardRect = card.getBoundingClientRect()
+    const cardCoverRect = cardCover.getBoundingClientRect()
 
     // invisible
+    const tolerance = 40
     if (
-      cardRect.top > viewportHeight ||
-      cardRect.bottom < 0 ||
-      cardRect.left > viewportWidth ||
-      cardRect.right < 0
+      cardCoverRect.top > viewportHeight - tolerance ||
+      cardCoverRect.bottom < 0 + tolerance ||
+      cardCoverRect.left > viewportWidth - tolerance ||
+      cardCoverRect.right < 0 + tolerance
     ) {
       return hide()
     }
 
-    // sync ref
-    cardRef.current = card
-
     const possibleBoundingBox: Record<Direction, Bbox> = {
-      top: { x: 0, y: 0, width: viewportWidth, height: cardRect.top },
+      top: { x: 0, y: 0, width: viewportWidth, height: cardCoverRect.top },
       bottom: {
         x: 0,
-        y: cardRect.bottom,
+        y: cardCoverRect.bottom,
         width: viewportWidth,
-        height: viewportHeight - cardRect.bottom,
+        height: viewportHeight - cardCoverRect.bottom,
       },
-      left: { x: 0, y: 0, width: cardRect.left, height: viewportHeight },
+      left: { x: 0, y: 0, width: cardCoverRect.left, height: viewportHeight },
       right: {
-        x: cardRect.right,
+        x: cardCoverRect.right,
         y: 0,
-        width: viewportWidth - cardRect.right,
+        width: viewportWidth - cardCoverRect.right,
         height: viewportHeight,
       },
     }
@@ -125,13 +123,13 @@ export const LargePreview = forwardRef<
           // rest space
           switch (x.direction) {
             case 'top':
-              return cardRect.top
+              return cardCoverRect.top
             case 'bottom':
-              return viewportHeight - cardRect.bottom
+              return viewportHeight - cardCoverRect.bottom
             case 'left':
-              return cardRect.left
+              return cardCoverRect.left
             case 'right':
-              return viewportWidth - cardRect.right
+              return viewportWidth - cardCoverRect.right
           }
         },
       ],
@@ -159,10 +157,10 @@ export const LargePreview = forwardRef<
     let arrowTop = 0
     let arrowLeft = 0
     const setArrowTop = () => {
-      arrowTop = cardRect.y + cardRect.height / 2 - elPosY
+      arrowTop = cardCoverRect.y + cardCoverRect.height / 2 - elPosY
     }
     const setArrowLeft = () => {
-      arrowLeft = cardRect.x + cardRect.width / 2 - elPosX
+      arrowLeft = cardCoverRect.x + cardCoverRect.width / 2 - elPosX
     }
 
     const fixX = () => {
@@ -188,26 +186,26 @@ export const LargePreview = forwardRef<
 
     switch (direction) {
       case 'top':
-        elPosX = cardRect.x + cardRect.width / 2 - elWidth / 2
-        elPosY = cardRect.top - VisualPadding.card - elHeight
+        elPosX = cardCoverRect.x + cardCoverRect.width / 2 - elWidth / 2
+        elPosY = cardCoverRect.top - VisualPadding.card - elHeight
         fixX()
         setArrowLeft()
         break
       case 'bottom':
-        elPosX = cardRect.x + cardRect.width / 2 - elWidth / 2
-        elPosY = cardRect.bottom + VisualPadding.card
+        elPosX = cardCoverRect.x + cardCoverRect.width / 2 - elWidth / 2
+        elPosY = cardCoverRect.bottom + VisualPadding.card
         fixX()
         setArrowLeft()
         break
       case 'right':
-        elPosX = cardRect.right + VisualPadding.card
-        elPosY = cardRect.y + cardRect.height / 2 - elHeight / 2
+        elPosX = cardCoverRect.right + VisualPadding.card
+        elPosY = cardCoverRect.y + cardCoverRect.height / 2 - elHeight / 2
         fixY()
         setArrowTop()
         break
       case 'left':
-        elPosX = cardRect.left - VisualPadding.card - elWidth
-        elPosY = cardRect.y + cardRect.height / 2 - elHeight / 2
+        elPosX = cardCoverRect.left - VisualPadding.card - elWidth
+        elPosY = cardCoverRect.y + cardCoverRect.height / 2 - elHeight / 2
         fixY()
         setArrowTop()
         break
@@ -331,14 +329,14 @@ function PopoverArrow({
         ${direction}: 100%;
         margin-${direction}: -1px;
         top: ${arrowTop}px;
-        margin-top: -${size}px;
+        margin-top: -${size / 2}px;
       `
     } else {
       return _css`
         ${direction}: 100%;
         margin-${direction}: -1px;
         left: ${arrowLeft}px;
-        margin-left: -${size}px;
+        margin-left: -${size / 2}px;
       `
     }
   }, [size, direction, axis, arrowTop, arrowLeft])
