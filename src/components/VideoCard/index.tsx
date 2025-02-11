@@ -64,7 +64,7 @@ import {
 } from './top-marks'
 import { useDislikeRelated } from './use/useDislikeRelated'
 import { useLargePreviewRelated } from './use/useLargePreview'
-import { useLinkTarget, useOpenRelated } from './use/useOpenRelated'
+import { getRecItemDimension, useLinkTarget, useOpenRelated } from './use/useOpenRelated'
 import { usePreviewRelated } from './use/usePreviewRelated'
 import { useWatchlaterRelated } from './use/useWatchlaterRelated'
 
@@ -242,7 +242,13 @@ const VideoCardInner = memo(function VideoCardInner({
   const tryFetchVideoPreviewData = useLockFn(async () => {
     if (!shouldFetchPreviewData) return
     if (isVideoPreviewDataValid(videoPreviewDataBox.val)) return // already fetched
-    const data = await fetchVideoPreviewData(bvid!, cid, useMp4, preferNormalCdn)
+    const data = await fetchVideoPreviewData({
+      bvid: bvid!,
+      cid,
+      useMp4,
+      preferNormalCdn,
+      aspectRatioFromItem: getRecItemDimension(item)?.aspectRatio,
+    })
     videoPreviewDataBox.set(data)
   })
   useUpdateEffect(() => {

@@ -100,8 +100,8 @@ export function useOpenRelated({
   })
 
   function handlePopup(newHref: string) {
-    const { w, h } = getRecItemDimension(item)
-    return openInPipOrPopup(newHref, cardData.bvid, w, h)
+    const { width, height } = getRecItemDimension(item)
+    return openInPipOrPopup(newHref, cardData.bvid, width, height)
   }
 
   function handleIINA() {
@@ -179,15 +179,15 @@ export function useOpenRelated({
 }
 
 export function getRecItemDimension(item: RecItemType, dimensionFromApi?: VideoPage['dimension']) {
-  let w: number | undefined
-  let h: number | undefined
+  let width: number | undefined
+  let height: number | undefined
   let aspectRatio: number | undefined
 
   // from API
   if (dimensionFromApi) {
-    w = dimensionFromApi.width
-    h = dimensionFromApi.height
-    aspectRatio = w / h
+    width = dimensionFromApi.width
+    height = dimensionFromApi.height
+    aspectRatio = width / height
   }
 
   // AppRecommend
@@ -196,24 +196,24 @@ export function getRecItemDimension(item: RecItemType, dimensionFromApi?: VideoP
     const playerWidth = Number(searchParams.get('player_width') || 0)
     const playerHeight = Number(searchParams.get('player_height') || 0)
     if (playerWidth && playerHeight && !isNaN(playerWidth) && !isNaN(playerHeight)) {
-      w = playerWidth
-      h = playerHeight
-      aspectRatio = w / h
+      width = playerWidth
+      height = playerHeight
+      aspectRatio = width / height
     }
   }
 
   // ranking
   else if (item.api === EApiType.Ranking && isNormalRankingItem(item)) {
-    const _w = item.dimension.width
-    const _h = item.dimension.height
-    if (_w && _h && !isNaN(_w) && !isNaN(_h)) {
-      w = _w
-      h = _h
-      aspectRatio = w / h
+    const w = item.dimension.width
+    const h = item.dimension.height
+    if (w && h && !isNaN(w) && !isNaN(h)) {
+      width = w
+      height = h
+      aspectRatio = width / height
     }
   }
 
-  return { w, h, aspectRatio }
+  return { width, height, aspectRatio }
 }
 
 export const hasDocumentPictureInPicture = !!window.documentPictureInPicture?.requestWindow

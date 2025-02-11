@@ -123,7 +123,7 @@ export function isImagePreviewDataValid(data?: ImagePreviewData) {
 }
 // #endregion
 
-// #region VideoPreview
+// #region! VideoPreview
 export type VideoPreviewData = {
   playUrls?: string[]
   dimension?: VideoPage['dimension']
@@ -139,14 +139,26 @@ const videoPreviewCache = new QuickLRU<string, VideoPreviewData>({
 })
 
 export const fetchVideoPreviewData = reusePendingPromise(
-  async (bvid: string, cid: number | undefined, useMp4: boolean, preferNormalCdn: boolean) => {
+  async ({
+    bvid,
+    cid,
+    useMp4,
+    preferNormalCdn,
+    aspectRatioFromItem,
+  }: {
+    bvid: string
+    cid: number | undefined
+    useMp4: boolean
+    preferNormalCdn: boolean
+    aspectRatioFromItem: number | undefined
+  }) => {
     const cacheKey = JSON.stringify([bvid, useMp4, preferNormalCdn])
     const cached = videoPreviewCache.get(cacheKey)
     if (cached) return cached
 
     let playUrls: string[] = []
-    let dimension: VideoPreviewData['dimension']
-    if (typeof cid === 'undefined') {
+    let dimension: VideoPreviewData['dimension'] | undefined
+    if (typeof cid === 'undefined' || typeof aspectRatioFromItem === 'undefined') {
       const pages = await getVideoPageList(bvid)
       cid = pages[0]?.cid
       dimension = pages[0]?.dimension

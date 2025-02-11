@@ -126,7 +126,7 @@ export function useLargePreviewRelated({
     hide()
   })
 
-  const itemDimension = useMemo(
+  const usingDimension = useMemo(
     () => getRecItemDimension(item, videoPreviewDataBox.state?.dimension),
     [item, videoPreviewDataBox.state?.dimension],
   )
@@ -137,7 +137,7 @@ export function useLargePreviewRelated({
   const largePreviewEl = willRenderLargePreview && (
     <LargePreview
       ref={largePreviewRef}
-      aspectRatio={itemDimension.aspectRatio}
+      aspectRatio={usingDimension.aspectRatio}
       onMouseEnter={(e) => onMouseEnter('popover')}
       onMouseLeave={(e) => onMouseLeave('popover')}
     >
