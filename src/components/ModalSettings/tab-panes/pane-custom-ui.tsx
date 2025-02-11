@@ -81,20 +81,12 @@ export function TabPaneCustomUI() {
             通用
             <ResetPartialSettingsButton
               className='ml-10'
-              paths={[
-                'style.general.videoSourceTabStandardHeight',
-                'style.general.popoverBorderColorUseColorPrimary',
-              ]}
+              paths={['style.general.popoverBorderColorUseColorPrimary']}
             />
           </>
         }
       >
         <div css={S.itemsContainer}>
-          <CheckboxSettingItem
-            configPath='style.general.videoSourceTabStandardHeight'
-            label='Tab 栏使用标准高度'
-            tooltip={explainForFlag('标准高度', '紧凑高度')}
-          />
           <CheckboxSettingItem
             configPath='style.general.popoverBorderColorUseColorPrimary'
             label='下拉面板使用主题色边框'

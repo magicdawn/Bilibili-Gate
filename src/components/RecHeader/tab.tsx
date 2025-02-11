@@ -3,7 +3,7 @@ import { type OnRefresh } from '$components/RecGrid/useRefresh'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { SHOW_DYNAMIC_FEED_ONLY } from '$modules/rec-services/dynamic-feed/store'
 import { SHOW_FAV_TAB_ONLY } from '$modules/rec-services/fav/store'
-import { settings, useSettingsSnapshot } from '$modules/settings'
+import { useSettingsSnapshot } from '$modules/settings'
 import { checkLoginStatus, useHasLogined } from '$utility/cookie'
 import { proxyWithGmStorage } from '$utility/valtio'
 import { css } from '@emotion/react'
@@ -127,7 +127,6 @@ const radioBtnStandardCss = css`
 export function VideoSourceTab({ onRefresh }: { onRefresh: OnRefresh }) {
   const logined = useHasLogined()
   const tab = useCurrentUsingTab()
-  const { videoSourceTabStandardHeight } = useSnapshot(settings.style.general)
   const currentTabConfigList = useCurrentDisplayingTabConfigList()
 
   return (
@@ -163,7 +162,7 @@ export function VideoSourceTab({ onRefresh }: { onRefresh: OnRefresh }) {
       >
         {currentTabConfigList.map(({ key, label }) => (
           <Radio.Button
-            css={[radioBtnCss, videoSourceTabStandardHeight && radioBtnStandardCss]}
+            css={[radioBtnCss, radioBtnStandardCss]}
             className='video-source-tab' // can be used to customize css
             tabIndex={-1}
             value={key}

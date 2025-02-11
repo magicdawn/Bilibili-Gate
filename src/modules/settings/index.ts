@@ -199,9 +199,6 @@ export const initialSettings = {
    */
   style: {
     general: {
-      // video-source-tab 高度: true 高; false compact;
-      videoSourceTabStandardHeight: true,
-
       popoverBorderColorUseColorPrimary: false,
     },
 
@@ -387,7 +384,7 @@ export function runSettingsMigration(val: object | undefined) {
     ['filter.byTitle.enabled', 'filterByTitleEnabled'],
     ['filter.byTitle.keywords', 'filterByTitleKeywords'],
 
-    ['style.general.videoSourceTabStandardHeight', 'styleUseStandardVideoSourceTab'],
+    // ['style.general.videoSourceTabStandardHeight', 'styleUseStandardVideoSourceTab'],
     ['style.pureRecommend.useStickyTabbar', 'styleUseStickyTabbarInPureRecommend'],
     ['style.pureRecommend.useCustomGrid', 'styleUseCustomGrid'],
     ['style.pureRecommend.useWhiteBackground', 'styleUseWhiteBackground'],
