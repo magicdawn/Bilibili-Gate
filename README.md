@@ -289,6 +289,9 @@ pnpm build # build 完会自动使用 Chrome 打开安装地址
 
 <!-- AFDIAN-ACTION:START -->
 
+<a href="https://afdian.com/u/7f117ec42b4411eda3e852540025c377">
+  <img src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png?imageView2/1/?imageView2/1/w/120/h/120" width="40" height="40" alt="爱发电用户_7f117" title="爱发电用户_7f117"/>
+</a>
 <a href="https://afdian.com/u/8f4c3df8963211ecb3de52540025c377">
   <img src="https://pic1.afdiancdn.com/default/avatar/avatar-yellow.png?imageView2/1/w/120/h/120" width="40" height="40" alt="小培lovely" title="小培lovely"/>
 </a>
@@ -345,9 +348,6 @@ pnpm build # build 完会自动使用 Chrome 打开安装地址
 </a>
 <a href="https://afdian.com/u/3cb7759cb52c11eea14a52540025c377">
   <img src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png?imageView2/1/?imageView2/1/w/120/h/120" width="40" height="40" alt="爱发电用户_3cb77" title="爱发电用户_3cb77"/>
-</a>
-<a href="https://afdian.com/u/603f8734aa5011eea3295254001e7c00">
-  <img src="https://pic1.afdiancdn.com/default/avatar/avatar-orange.png?imageView2/1/w/120/h/120" width="40" height="40" alt="爱发电用户_A9Bn" title="爱发电用户_A9Bn"/>
 </a>
 <!-- 注意: 尽量将标签前靠,否则经测试可能被 GitHub 解析为代码块 -->
 
