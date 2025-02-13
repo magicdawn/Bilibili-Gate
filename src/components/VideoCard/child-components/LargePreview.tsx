@@ -231,16 +231,24 @@ export const LargePreview = forwardRef<
 
   const direction = position?.direction
   const initial = useMemo(() => {
-    if (!direction) return
-    const { axis, multiplier } = DirectionConfig[direction]
+    if (!position || !direction) return
+    const { axis, multiplier, reverse } = DirectionConfig[direction]
     const animateDistance = 20
     if (axis === 'x') {
-      return { x: -multiplier * animateDistance, y: 0 }
+      return {
+        x: -multiplier * animateDistance,
+        y: 0,
+        transformOrigin: `${reverse} ${position.arrowTop}px`, // for scale
+      }
     }
     if (axis === 'y') {
-      return { x: 0, y: -multiplier * animateDistance }
+      return {
+        x: 0,
+        y: -multiplier * animateDistance,
+        transformOrigin: `${position.arrowLeft}px ${reverse}`, // for scale
+      }
     }
-  }, [direction])
+  }, [position, direction])
 
   // as a placeholder, to get cardRect
   const videoCardDescendant = <div ref={ref} data-role='video-card-descendant'></div>
@@ -266,9 +274,9 @@ export const LargePreview = forwardRef<
     >
       {visible && (
         <motion.div
-          initial={{ opacity: 0, ...initial }}
-          animate={{ opacity: 1, x: 0, y: 0 }}
-          transition={{ bounce: false }}
+          initial={{ opacity: 0, ...initial, scale: 0.5 }}
+          animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+          transition={{ bounce: false, duration: 0.2 }}
           css={css`
             position: relative;
             height: 100%;
