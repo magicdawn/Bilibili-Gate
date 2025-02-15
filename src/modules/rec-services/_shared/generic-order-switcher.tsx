@@ -91,9 +91,11 @@ export const GenericOrderSwitcher = function <T extends string | number>({
         </Button>
       </Dropdown>
       <HelpInfo>
+        {extraHelpInfo}
+        {extraHelpInfo && <div className='mt-8px'></div>}
+        操作说明: <br />
         1. 点击/下拉切换 <br />
         2. 按住 <kbd>Shift</kbd> 键点击逆序切换 <br />
-        {extraHelpInfo}
       </HelpInfo>
     </span>
   )

@@ -75,19 +75,16 @@ const WatchlaterItemsOrderConfig: Record<
 const list = Object.values(WatchlaterItemsOrder)
 
 const extraHelpInfo = (
-  <>
-    <hr className='my-8px' />
-    <div className='flex flex-col gap-y-4px'>
-      {list.map((x) => {
-        const { icon, label, helpInfo } = WatchlaterItemsOrderConfig[x]
-        return (
-          <div key={x} className={'flex items-center justify-left line-height-[0] gap-x-4px'}>
-            {icon} <span className='min-w-80px'>{label}</span> :&nbsp;&nbsp; {helpInfo}
-          </div>
-        )
-      })}
-    </div>
-  </>
+  <div className='flex flex-col gap-y-4px'>
+    {list.map((x) => {
+      const { icon, label, helpInfo } = WatchlaterItemsOrderConfig[x]
+      return (
+        <div key={x} className={'flex items-center justify-left line-height-[0] gap-x-4px'}>
+          {icon} <span className='min-w-80px'>{label}</span> :&nbsp;&nbsp; {helpInfo}
+        </div>
+      )
+    })}
+  </div>
 )
 
 function WatchlaterOrderSwitcher() {
