@@ -38,7 +38,6 @@ const S = {
     }
   `,
 }
-export const sharedS = S
 
 export function SettingsGroup({
   children,

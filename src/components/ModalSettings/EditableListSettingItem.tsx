@@ -179,7 +179,7 @@ export const TagItemDisplay = forwardRef<HTMLDivElement, TagItemDisplayProps>(
   },
 )
 
-export function UpTagItemDisplay({ tag }: { tag: string }) {
+function UpTagItemDisplay({ tag }: { tag: string }) {
   const regMidWithRemark = /^(?<mid>\d+)\((?<remark>[\S ]+)\)$/
   const regMid = /^\d+$/
 
