@@ -66,11 +66,12 @@ export const initialSettings = {
       showLargePreview: true,
     },
 
+    // current largePreview: videoPreview
     videoPreview: {
       useMp4: false, // mp4 | dash (mp4: single video, dash: video only, no audio)
-
       __internal: {
         preferNormalCdn: false,
+        disableScale: false,
       },
     },
   },
@@ -329,7 +330,7 @@ async function _saveToGmStorage(snap: ReadonlyDeep<PartialDeep<Settings>>) {
   await GM.setValue(storageKey, snap)
 }
 
-// #region modify settings
+// #region! modify settings
 export function updateSettings(payload: PartialDeep<Settings>) {
   const { pickedPaths } = pickSettings(payload, allowedLeafSettingsPaths)
   for (const p of pickedPaths) {
@@ -343,7 +344,7 @@ export function resetSettings() {
 }
 // #endregion
 
-// #region helper
+// #region! helper
 
 /**
  * this function mutates `val`

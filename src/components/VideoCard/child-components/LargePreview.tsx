@@ -2,6 +2,7 @@ import { APP_CLS_CARD, APP_CLS_CARD_COVER, baseDebug } from '$common'
 import { zIndexVideoCardLargePreview } from '$common/css-vars-export.module.scss'
 import { useMixedRef } from '$common/hooks/mixed-ref'
 import { colorPrimaryValue } from '$components/css-vars'
+import { useSettingsSnapshot } from '$modules/settings'
 import { isSafari } from '$ua'
 import { css as _css, css } from '@emotion/react'
 import { useEventListener } from 'ahooks'
@@ -229,16 +230,22 @@ export const LargePreview = forwardRef<
   useEventListener('resize', calculatePostionThrottled, { target: window })
   useEventListener('scroll', calculatePostionThrottled, { target: window })
 
-  const direction = position?.direction
+  const { disableScale } = useSettingsSnapshot().videoCard.videoPreview.__internal
+
   const initial = useMemo(() => {
-    if (!position || !direction) return
+    const direction = position?.direction
+    if (!direction) return
+
     const { axis, multiplier, reverse } = DirectionConfig[direction]
     const animateDistance = 20
+    const scale = disableScale ? 1 : 0.5
+
     if (axis === 'x') {
       return {
         x: -multiplier * animateDistance,
         y: 0,
         transformOrigin: `${reverse} ${position.arrowTop}px`, // for scale
+        scale,
       }
     }
     if (axis === 'y') {
@@ -246,9 +253,10 @@ export const LargePreview = forwardRef<
         x: 0,
         y: -multiplier * animateDistance,
         transformOrigin: `${position.arrowLeft}px ${reverse}`, // for scale
+        scale,
       }
     }
-  }, [position, direction])
+  }, [position, disableScale])
 
   // as a placeholder, to get cardRect
   const videoCardDescendant = <div ref={ref} data-role='video-card-descendant'></div>
@@ -274,7 +282,7 @@ export const LargePreview = forwardRef<
     >
       {visible && (
         <motion.div
-          initial={{ opacity: 0, ...initial, scale: 0.5 }}
+          initial={{ opacity: 0, ...initial }}
           animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
           transition={{ bounce: false, duration: 0.2 }}
           css={css`
@@ -282,10 +290,10 @@ export const LargePreview = forwardRef<
             height: 100%;
           `}
         >
-          {direction && (
+          {position?.direction && (
             <PopoverArrow
               size={7}
-              direction={direction}
+              direction={position.direction}
               arrowTop={position.arrowTop}
               arrowLeft={position.arrowLeft}
             />
