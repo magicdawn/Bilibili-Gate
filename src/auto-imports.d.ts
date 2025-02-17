@@ -7,6 +7,7 @@
 export {}
 declare global {
   const Fragment: typeof import('react')['Fragment']
+  const IconIcOutlineCloud: typeof import('~icons/ic/outline-cloud.jsx')['default']
   const IconIonLayersOutline: typeof import('~icons/ion/layers-outline.jsx')['default']
   const IconLetsIconsViewHide: typeof import('~icons/lets-icons/view-hide.jsx')['default']
   const IconLucideFolder: typeof import('~icons/lucide/folder.jsx')['default']

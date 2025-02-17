@@ -284,7 +284,7 @@ export const LargePreview = forwardRef<
         <motion.div
           initial={{ opacity: 0, ...initial }}
           animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
-          transition={{ bounce: false, duration: 0.2 }}
+          transition={{ bounce: false, duration: 0.2 }} // default duration: 0.3
           css={css`
             position: relative;
             height: 100%;

@@ -200,10 +200,7 @@ export function usePreviewRelated({
         const elapsed = now - start
         const p = minmax((elapsed % RUN_DURATION) / RUN_DURATION, 0, 1)
 
-        // progress 一直动影响注意力, 但跳动感觉也不好, ...
-        if (settings.autoPreviewUseContinuousProgress) {
-          setPreviewProgress(p)
-        }
+        setPreviewProgress(p)
 
         if (!updateAt || now - updateAt >= settings.autoPreviewUpdateInterval) {
           setPreviewProgress(p)

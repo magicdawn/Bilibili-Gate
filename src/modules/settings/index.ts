@@ -82,9 +82,6 @@ export const initialSettings = {
   // 自动开始预览: 鼠标悬浮; 不再跟随鼠标位置, 默认: 跟随鼠标
   autoPreviewWhenHover: true,
 
-  // 自动预览: 连续式进度条 跳跃式进度条
-  autoPreviewUseContinuousProgress: true,
-
   // 自动预览: 更新间隔
   // 跳跃式(400) 连续式(700)
   autoPreviewUpdateInterval: 700,

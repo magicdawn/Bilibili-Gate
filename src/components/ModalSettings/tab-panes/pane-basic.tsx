@@ -13,7 +13,7 @@ import { css } from '@emotion/react'
 import { Button, Select, Space, Tag } from 'antd'
 import styles from '../index.module.scss'
 import { explainForFlag, toastAndReload } from '../index.shared'
-import { SettingsGroup } from './_shared'
+import { ResetPartialSettingsButton, SettingsGroup } from './_shared'
 
 export function TabPaneBasic() {
   const { videoLinkOpenMode } = useSettingsSnapshot()
@@ -71,7 +71,22 @@ export function TabPaneBasic() {
         <AccessKeyManage />
       </SettingsGroup>
 
-      <SettingsGroup title='开关'>
+      <SettingsGroup
+        titleClassName='justify-between'
+        title={
+          <>
+            开关
+            <ResetPartialSettingsButton
+              paths={[
+                'pureRecommend',
+                'useNarrowMode',
+                'showModalFeedOnLoad',
+                'showModalFeedEntry',
+              ]}
+            />
+          </>
+        }
+      >
         <Space size={10} wrap>
           <CheckboxSettingItem
             configPath='pureRecommend'
@@ -121,8 +136,16 @@ export function TabPaneBasic() {
         </Space>
       </SettingsGroup>
 
-      <SettingsGroup title='视频链接'>
-        <Space size={10}>
+      <SettingsGroup
+        titleClassName='justify-between'
+        title={
+          <>
+            视频链接
+            <ResetPartialSettingsButton paths={['videoLinkOpenMode', 'pipWindowDefaultLocked']} />
+          </>
+        }
+      >
+        <Space size={20}>
           <div css={flexVerticalCenterStyle}>
             默认打开模式
             <HelpInfo
@@ -184,18 +207,19 @@ export function TabPaneBasic() {
       </SettingsGroup>
 
       <SettingsGroup
+        titleClassName='justify-between'
         title={
           <>
-            视频卡片 Actions <HelpInfo>视频卡片右上角, 如「稍后再看」按钮</HelpInfo>
+            <span className='flex items-center'>
+              视频卡片操作 <HelpInfo>视频卡片右上角「稍后再看」按钮旁</HelpInfo>
+            </span>
+            <ResetPartialSettingsButton
+              paths={['videoCard.actions.showLargePreview', 'videoCard.actions.openInPipWindow']}
+            />
           </>
         }
       >
         <div className='flex items-center gap-x-10px'>
-          <CheckboxSettingItem
-            configPath='videoCard.actions.openInPipWindow'
-            label={'小窗打开'}
-            tooltip={<>仅当「文档画中画」API 可用时, 勾选生效</>}
-          />
           <CheckboxSettingItem
             configPath='videoCard.actions.showLargePreview'
             label={'浮动预览'}
@@ -221,10 +245,31 @@ export function TabPaneBasic() {
               </>
             }
           />
+
+          <CheckboxSettingItem
+            configPath='videoCard.actions.openInPipWindow'
+            label={'小窗打开'}
+            tooltip={<>仅当「文档画中画」API 可用时, 勾选生效</>}
+          />
         </div>
       </SettingsGroup>
 
-      <SettingsGroup title='预览'>
+      <SettingsGroup
+        titleClassName='justify-between'
+        title={
+          <>
+            预览
+            <ResetPartialSettingsButton
+              paths={[
+                'autoPreviewWhenKeyboardSelect',
+                'autoPreviewWhenHover',
+                'startPlayFromPreviewPoint',
+                'videoCard.videoPreview.useMp4',
+              ]}
+            />
+          </>
+        }
+      >
         <Space size={10}>
           <CheckboxSettingItem
             configPath='autoPreviewWhenKeyboardSelect'

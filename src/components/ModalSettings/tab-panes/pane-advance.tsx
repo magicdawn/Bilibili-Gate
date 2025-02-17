@@ -1,10 +1,5 @@
 import { APP_NAME } from '$common'
-import {
-  buttonOpenCss,
-  C,
-  flexVerticalCenterStyle,
-  iconOnlyRoundButtonCss,
-} from '$common/emotion-css'
+import { buttonOpenCss, flexVerticalCenterStyle, iconOnlyRoundButtonCss } from '$common/emotion-css'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { CollapsePanel } from '$components/_base/CollapsePanel'
 import { HelpInfo } from '$components/_base/HelpInfo'
@@ -79,7 +74,7 @@ export function TabPaneAdvance() {
           </Popconfirm>
 
           <Space size={5}>
-            <AntdTooltip title='导出所有设置项到文件中, 包含 access_key 等数据'>
+            <AntdTooltip title='导出所有设置项到文件中, 包含 access_key 等数据, 请妥善保存'>
               <Button onClick={() => exportSettings()}>
                 <TablerFileExport />
                 导出设置
@@ -95,50 +90,50 @@ export function TabPaneAdvance() {
         </Space>
       </SettingsGroup>
 
-      <SettingsGroup title='备份/恢复'>
-        <div css={flexVerticalCenterStyle}>
-          <CheckboxSettingItem
-            configPath='backupSettingsToArticleDraft'
-            label='备份设置到专栏草稿箱中'
-            tooltip={`专栏 - 草稿箱 - ${APP_NAME}`}
-          />
+      <SettingsGroup
+        title={
+          <>
+            <IconIcOutlineCloud className='size-28px mr-4px' />
+            备份
+          </>
+        }
+      >
+        <div className='flex items-center gap-x-40px'>
+          <span className='flex items-center gap-x-8px'>
+            <CheckboxSettingItem
+              configPath='backupSettingsToArticleDraft'
+              label='备份设置到专栏草稿箱中'
+              tooltip={`专栏 - 草稿箱 - ${APP_NAME}`}
+            />
+            <a
+              className='inline-flex items-center'
+              href='https://member.bilibili.com/platform/upload/text/draft'
+              target='_blank'
+            >
+              <IconForOpenExternalLink className='size-16px mr-4px' />
+              去草稿箱浏览
+            </a>
+          </span>
 
-          <a
-            style={{
-              marginLeft: 15,
-              display: 'inline-flex',
-              alignItems: 'center',
-            }}
-            href='https://member.bilibili.com/platform/upload/text/draft'
-            target='_blank'
+          <Popconfirm
+            title='确定'
+            description='将覆盖本地设置? 此操作不可逆!'
+            onConfirm={onRestoreSettings}
           >
-            <IconForOpenExternalLink css={[C.size(16), C.mr(4)]} />
-            去草稿箱浏览
-          </a>
+            <Button danger type='primary'>
+              <TablerRestore />
+              从专栏草稿箱中恢复
+            </Button>
+          </Popconfirm>
         </div>
-
-        <Popconfirm
-          title='确定'
-          description='将覆盖本地设置? 此操作不可逆!'
-          onConfirm={onRestoreSettings}
-        >
-          <Button danger type='primary'>
-            <TablerRestore />
-            从专栏草稿箱中恢复
-          </Button>
-        </Popconfirm>
       </SettingsGroup>
 
       <SettingsGroup
-        titleCss={css`
-          justify-content: space-between;
-        `}
+        titleClassName='justify-between'
         title={
           <>
             预览
-            <ResetPartialSettingsButton
-              paths={['autoPreviewUpdateInterval', 'autoPreviewUseContinuousProgress']}
-            />
+            <ResetPartialSettingsButton paths={['autoPreviewUpdateInterval']} />
           </>
         }
       >
@@ -154,27 +149,13 @@ export function TabPaneAdvance() {
           />
           <span style={{ width: '65px' }}>({autoPreviewUpdateInterval}ms)</span>
         </div>
-
-        <CheckboxSettingItem
-          configPath={'autoPreviewUseContinuousProgress'}
-          label='自动预览: 使用连续式进度条'
-          tooltip={
-            <>
-              ✅ 连续式进度条
-              <br />❎ 跳跃式进度条
-            </>
-          }
-        />
       </SettingsGroup>
 
       <SettingsGroup
         title={
           <>
             其他
-            <HelpInfo>
-              这里是一些作者不愿意解释的设置项😬 <br />
-              随时会删, don't rely on it
-            </HelpInfo>
+            <HelpInfo>这里是一些作者不愿意解释的设置项 😬</HelpInfo>
             <Button
               onClick={() => setInternalKeysExpanded((v) => !v)}
               className='ml-10px'

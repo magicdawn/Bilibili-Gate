@@ -43,6 +43,7 @@ export function SettingsGroup({
   children,
   title,
   titleCss,
+  titleClassName,
   ...rest
 }: Merge<
   ComponentProps<'div'>,
@@ -50,11 +51,16 @@ export function SettingsGroup({
     children?: React.ReactNode
     title: ReactNode
     titleCss?: CssProp
+    titleClassName?: string
   }
 >) {
   return (
     <div css={S.settingsGroup} data-as='settings-group' {...rest}>
-      <div css={[S.settingsGroupTitle, titleCss]} data-as='settings-group-title'>
+      <div
+        data-as='settings-group-title'
+        className={titleClassName}
+        css={[S.settingsGroupTitle, titleCss]}
+      >
         {title}
       </div>
       <div css={S.settingsGroupContent} data-as='settings-group-content'>
