@@ -113,13 +113,18 @@ export function useLargePreviewRelated({
     }
   })
 
+  const getLargePreviewCurrentTime = useMemoizedFn(() => {
+    if (!visible) return
+    if (!currentTimeRef.current) return
+    return Math.floor(currentTimeRef.current)
+  })
+
   const onOpenInNewTab = useMemoizedFn(() => {
     if (!bvid) return
 
     const u = new URL(`/video/${bvid}`, location.href)
-    if (typeof currentTimeRef.current === 'number') {
-      u.searchParams.set('t', Math.round(currentTimeRef.current).toString())
-    }
+    const t = getLargePreviewCurrentTime()
+    if (t) u.searchParams.set('t', t.toString())
     openNewTab(u.href)
 
     videoRef.current?.pause()
@@ -251,5 +256,10 @@ export function useLargePreviewRelated({
     ],
   )
 
-  return { largePreviewActionButtonEl, largePreviewEl }
+  return {
+    largePreviewActionButtonEl,
+    largePreviewEl,
+    getLargePreviewCurrentTime,
+    hideLargePreview: hide,
+  }
 }

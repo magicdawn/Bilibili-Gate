@@ -37,6 +37,8 @@ export function useOpenRelated({
   actionButtonVisible,
   previewImageRef,
   hasOpenInPopupActionButton,
+  getLargePreviewCurrentTime,
+  hideLargePreview,
 }: {
   href: string
   item: RecItemType
@@ -44,6 +46,8 @@ export function useOpenRelated({
   actionButtonVisible: boolean
   previewImageRef: RefObject<PreviewImageRef | null>
   hasOpenInPopupActionButton: boolean
+  getLargePreviewCurrentTime: () => number | undefined
+  hideLargePreview: () => void
 }) {
   const { videoLinkOpenMode } = useSettingsSnapshot()
 
@@ -70,7 +74,12 @@ export function useOpenRelated({
           u.searchParams.set(QueryKey.ForceAutoPlay, ForceAutoPlay.ON)
         }
       }
-      if (settings.startPlayFromPreviewPoint) {
+
+      const largePreviewT = getLargePreviewCurrentTime()
+      if (largePreviewT) {
+        hideLargePreview()
+        u.searchParams.set('t', largePreviewT.toString())
+      } else if (settings.startPlayFromPreviewPoint) {
         const t = previewImageRef.current?.getT()
         if (t) {
           u.searchParams.set('t', t.toString())

@@ -331,7 +331,12 @@ const VideoCardInner = memo(function VideoCardInner({
   })
 
   // 浮动预览
-  const { largePreviewActionButtonEl, largePreviewEl } = useLargePreviewRelated({
+  const {
+    largePreviewActionButtonEl,
+    largePreviewEl,
+    getLargePreviewCurrentTime,
+    hideLargePreview,
+  } = useLargePreviewRelated({
     shouldFetchPreviewData,
     tryFetchVideoPreviewData,
     videoPreviewDataBox,
@@ -377,6 +382,8 @@ const VideoCardInner = memo(function VideoCardInner({
     actionButtonVisible,
     previewImageRef,
     hasOpenInPopupActionButton: videoCardActions.openInPipWindow,
+    getLargePreviewCurrentTime,
+    hideLargePreview,
   })
 
   const handleCardClick: MouseEventHandler<HTMLDivElement> = useMemoizedFn((e) => {
