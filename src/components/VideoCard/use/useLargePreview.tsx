@@ -6,7 +6,7 @@ import { openNewTab } from '$modules/gm'
 import { IconForLoading } from '$modules/icon'
 import { shouldDisableShortcut } from '$utility/dom'
 import { css } from '@emotion/react'
-import { useClickAway, useRequest } from 'ahooks'
+import { useClickAway, useEventListener, useRequest } from 'ahooks'
 import type { ComponentRef, MutableRefObject } from 'react'
 import { LargePreview } from '../child-components/LargePreview'
 import { RecoverableVideo } from '../child-components/RecoverableVideo'
@@ -57,7 +57,11 @@ export function useLargePreviewRelated({
 
   const [visible, setVisible] = useState(false)
   type TriggerAction = 'hover' | 'click'
-  type TriggerElement = 'video-card-action-button' | 'popover' | 'popover-action-button'
+  type TriggerElement =
+    | 'video-card-action-button'
+    | 'popover'
+    | 'popover-action-button'
+    | 'popover-video-fullscreen-button'
   const triggerAction = useRefStateBox<TriggerAction | undefined>(undefined)
   const triggerElement = useRefStateBox<TriggerElement | undefined>(undefined)
 
@@ -254,6 +258,22 @@ export function useLargePreviewRelated({
       () => cardRef.current?.closest('.' + APP_CLS_CARD), // click from card
       largePreviewRef, // click from `LargePreview`, safari 中使用 createPortal 不再是 card descendant
     ],
+  )
+
+  /**
+   * trigger by hover, when video goes into fullscreen, switch trigger to click
+   * 这样可以防止 "一进入全屏, 马上触发 mouseleave, 触发关闭" 的 case
+   */
+  useEventListener(
+    'fullscreenchange',
+    () => {
+      if (!document.fullscreenElement) return // exit fullscreen
+      if (!visible || triggerAction.val === 'click') return // not showing LargePreview
+      if (document.fullscreenElement === videoRef.current) {
+        showBy('click', 'popover-video-fullscreen-button')
+      }
+    },
+    { target: document },
   )
 
   return {
