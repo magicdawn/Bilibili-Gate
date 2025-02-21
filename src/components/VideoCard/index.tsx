@@ -99,8 +99,8 @@ export const VideoCard = memo(function VideoCard({
   ...restProps
 }: VideoCardProps) {
   // loading defaults to
-  // true when item is not provided
-  // false when item provided
+  // `true`   => when item is not provided
+  // `false`  => when item provided
   loading = loading ?? !item
 
   const dislikedReason = useDislikedReason(item?.api === EApiType.AppRecommend && item.param)
