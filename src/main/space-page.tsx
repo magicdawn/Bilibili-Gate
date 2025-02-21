@@ -45,7 +45,7 @@ const state = proxy({
     // new: https://space.bilibili.com/<mid>/lists/<collection-id>?type=season
     {
       const reg = new RegExp(
-        String.raw`https://space.bilibili.com\/(?<mid>\d+)\/lists\/(?<collectionId>\d+)\?type=season`,
+        String.raw`https://space.bilibili.com\/(?<mid>\d+)\/lists\/(?<collectionId>\d+)(?:\?type=season)?`,
       )
       const match = this.href.match(reg)
       if (match?.groups?.collectionId) {
