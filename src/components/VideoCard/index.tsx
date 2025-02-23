@@ -335,6 +335,7 @@ const VideoCardInner = memo(function VideoCardInner({
     largePreviewActionButtonEl,
     largePreviewEl,
     getLargePreviewCurrentTime,
+    largePreviewVisible,
     hideLargePreview,
   } = useLargePreviewRelated({
     shouldFetchPreviewData,
@@ -399,8 +400,13 @@ const VideoCardInner = memo(function VideoCardInner({
    * expose actions
    */
 
-  useMittOn(emitter, 'open', onOpenWithMode)
+  useMittOn(emitter, 'open', () => onOpenWithMode())
   useMittOn(emitter, 'open-in-popup', onOpenInPopup)
+  useMittOn(emitter, 'open-with-large-preview-visible', () => {
+    if (!largePreviewVisible) return
+    hideLargePreview()
+    onOpenWithMode()
+  })
   useMittOn(emitter, 'toggle-watch-later', () => onToggleWatchlater())
   useMittOn(emitter, 'trigger-dislike', () => onTriggerDislike())
   useMittOn(emitter, 'start-preview-animation', onStartPreviewAnimation)

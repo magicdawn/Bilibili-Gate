@@ -280,6 +280,7 @@ export function useLargePreviewRelated({
     largePreviewActionButtonEl,
     largePreviewEl,
     getLargePreviewCurrentTime,
+    largePreviewVisible: visible,
     hideLargePreview: hide,
   }
 }

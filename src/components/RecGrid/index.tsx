@@ -3,6 +3,7 @@
  */
 
 import { APP_CLS_CARD, APP_CLS_CARD_ACTIVE, APP_CLS_GRID, baseDebug } from '$common'
+import { useMittOn } from '$common/hooks/useMitt'
 import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
 import { useModalDislikeVisible } from '$components/ModalDislike'
 import { useCurrentUsingTab, useSortedTabKeys } from '$components/RecHeader/tab'
@@ -312,6 +313,15 @@ const RecGridInner = memo(function ({
 
   const sharedEmitter = useMemo(() => createSharedEmitter(), [])
 
+  const [activeLargePreviewUniqId, setActiveLargePreviewUniqId] = useState<string | undefined>(
+    undefined,
+  )
+  useMittOn(sharedEmitter, 'show-large-preview', setActiveLargePreviewUniqId)
+  const activeLargePreviewItemIndex = useMemo(() => {
+    if (!activeLargePreviewUniqId) return
+    return usingVideoItems.findIndex((item) => item.uniqId === activeLargePreviewUniqId)
+  }, [usingItems, activeLargePreviewUniqId])
+
   // 快捷键
   const { activeIndex, clearActiveIndex } = useShortcut({
     enabled: shortcutEnabled && !modalDislikeVisible,
@@ -320,6 +330,7 @@ const RecGridInner = memo(function ({
     containerRef,
     getScrollerRect,
     videoCardEmitters,
+    activeLargePreviewItemIndex,
     changeScrollY: infiniteScrollUseWindow
       ? function ({ offset, absolute }) {
           const scroller = document.documentElement

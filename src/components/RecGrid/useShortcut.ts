@@ -22,6 +22,8 @@ interface IOptions {
 
   /** video-card */
   videoCardEmitters: Array<VideoCardEmitter>
+
+  activeLargePreviewItemIndex: number | undefined
 }
 
 // 快捷键
@@ -34,6 +36,7 @@ export function useShortcut({
   getScrollerRect,
   changeScrollY,
   videoCardEmitters,
+  activeLargePreviewItemIndex,
 }: IOptions) {
   const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined)
 
@@ -173,7 +176,17 @@ export function useShortcut({
   }
 
   useKey('esc', clearActiveIndex)
-  useKey('enter', () => getActiveEmitter()?.emit('open'))
+  useKey('enter', () => {
+    if (!isEnabled()) return
+
+    if (typeof activeIndex === 'number') {
+      return videoCardEmitters[activeIndex]?.emit('open')
+    }
+
+    if (typeof activeLargePreviewItemIndex === 'number') {
+      return videoCardEmitters[activeLargePreviewItemIndex]?.emit('open-with-large-preview-visible')
+    }
+  })
   useKey('x', () => getActiveEmitter()?.emit('open-in-popup'))
   useKey('backspace', () => getActiveEmitter()?.emit('trigger-dislike'))
   // 稍候再看, s 与 BILIBILI-Envoled 快捷键冲突
