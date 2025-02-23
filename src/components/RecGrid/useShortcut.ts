@@ -176,14 +176,16 @@ export function useShortcut({
   }
 
   useKey('esc', clearActiveIndex)
-  useKey('enter', () => {
+  useKey('enter', (e) => {
     if (!isEnabled()) return
 
     if (typeof activeIndex === 'number') {
+      e.preventDefault()
       return videoCardEmitters[activeIndex]?.emit('open')
     }
 
     if (typeof activeLargePreviewItemIndex === 'number') {
+      e.preventDefault()
       return videoCardEmitters[activeLargePreviewItemIndex]?.emit('open-with-large-preview-visible')
     }
   })
