@@ -74,20 +74,10 @@ export const PreviewImage = memo(
 
     /**
      * expose ref as imperative handle
+     * 使用 pvideo.index 获取也不是很准确, 缩略图与视频有几秒偏差~
      */
-
-    const __getTDirect = useMemoizedFn(() => usingT)
-    const __getTByIndex = useMemoizedFn((): number | undefined => {
-      const arr = pvideo?.index || []
-      const index = calcIndex(arr, usingT) ?? -1
-      if (index === -1) return
-      return arr[index]
-    }) // 也不是很准确, 缩略图与视频有几秒偏差~
-    useImperativeHandle(ref, () => {
-      return {
-        getT: __getTDirect,
-      }
-    }, [__getTDirect])
+    const getT = useMemoizedFn(() => usingT)
+    useImperativeHandle(ref, () => ({ getT }), [getT])
 
     const innerProps = {
       progress: usingProgress,
