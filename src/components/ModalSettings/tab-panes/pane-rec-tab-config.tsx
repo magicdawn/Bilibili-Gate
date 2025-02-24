@@ -8,7 +8,6 @@ import { AntdTooltip } from '$components/_base/antd-custom'
 import { bgLv2Value, bgLv3Value } from '$components/css-vars'
 import { EAppApiDevice } from '$define/index.shared'
 import { getUserNickname } from '$modules/bilibili/user/nickname'
-import { FollowGroupMergeTimelineService } from '$modules/rec-services/dynamic-feed/group/merge-timeline-service'
 import type { FollowGroup } from '$modules/rec-services/dynamic-feed/group/types/groups'
 import {
   IconForGroup,
@@ -21,6 +20,7 @@ import {
   DF_SELECTED_KEY_PREFIX_UP,
   dfStore,
 } from '$modules/rec-services/dynamic-feed/store'
+import { FollowGroupMechanismNote } from '$modules/rec-services/dynamic-feed/usage-info/popover-related'
 import {
   settings,
   updateSettings,
@@ -133,11 +133,7 @@ export function TabPaneRecTabsConfig() {
                   tooltip={
                     <>
                       动态 Tab 启用分组筛选 <br />
-                      当分组中 UP 较少(不超过{' '}
-                      {FollowGroupMergeTimelineService.ENABLE_MERGE_TIMELINE_UPMID_COUNT_THRESHOLD}
-                      ), 会使用「拼接时间线」的形式, 速度较快, 可以获取所有动态; <br />
-                      否则基于全部动态 + 分组UP过滤, 速度可能巨慢,
-                      且貌似只能获取最近一个月的动态数据. <br />
+                      <FollowGroupMechanismNote />
                     </>
                   }
                 />

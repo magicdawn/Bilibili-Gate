@@ -453,6 +453,40 @@ const tryInstantSearchWithCache = throttle(async function ({
   onRefresh?.()
 }, 100)
 
+export function FollowGroupMechanismNote() {
+  return (
+    <>
+      <p>机制介绍:</p>
+      <ul>
+        <li className='flex items-start gap-x-10px'>
+          <div>「从全部过滤」:</div>
+          <div>
+            基于全部动态 + 分组UP过滤, 速度可能巨慢, 且过滤后的数量取决于B站记录的"全部"动态范围
+          </div>
+        </li>
+        <li className='flex items-start gap-x-10px'>
+          <div>「拼接时间线」:</div>
+          <div>
+            可以理解为: 去看一遍分组所有 UP 的动态, 然后将它们拼接起来 <br />
+            启动慢, 但可以加载所有动态; 且分组 UP 越多, 启动越慢 <br />
+            默认分组 UP 数量不超过{' '}
+            {FollowGroupMergeTimelineService.ENABLE_MERGE_TIMELINE_UPMID_COUNT_THRESHOLD}{' '}
+            时会使用「拼接时间线」 <br />
+            详见
+            <a
+              className='mx-5px'
+              href='https://magicdawn.fun/2024/12/01/bilibili-gate-dynamic-feed-merge-timeline/'
+              target='_blank'
+            >
+              介绍博客
+            </a>
+          </div>
+        </li>
+      </ul>
+    </>
+  )
+}
+
 function FollowGroupActions({
   followGroup,
   onRefresh,
@@ -484,9 +518,7 @@ function FollowGroupActions({
         <AntdTooltip
           title={
             <>
-              默认分组 UP 数量不超过{' '}
-              {FollowGroupMergeTimelineService.ENABLE_MERGE_TIMELINE_UPMID_COUNT_THRESHOLD}{' '}
-              时会使用「拼接时间线」
+              <FollowGroupMechanismNote />
               {disabled && (
                 <p
                   css={css`
