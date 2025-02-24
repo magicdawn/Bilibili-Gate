@@ -1,37 +1,42 @@
 import { baseDebug } from '$common'
-import { AntdApp } from '$components/AntdApp'
-import {
-  ForceAutoPlay,
-  PlayerScreenMode,
-  QueryKey,
-  VideoLinkOpenModeConfig,
-} from '$components/VideoCard/index.shared'
+import { ForceAutoPlay, PlayerScreenMode, QueryKey } from '$components/VideoCard/index.shared'
 import {
   hasDocumentPictureInPicture,
   openInPipOrPopup,
 } from '$components/VideoCard/use/useOpenRelated'
 import { getBiliPlayer } from '$modules/bilibili/player'
 import { getBiliPlayerConfigAutoPlay } from '$modules/bilibili/player-config'
-import { onVideoChange } from '$modules/bilibili/video-page'
-import { css } from '@emotion/react'
-import { Button } from 'antd'
+import { isMac } from '$ua'
 import { delay } from 'es-toolkit'
 import ms from 'ms'
 
 const debug = baseDebug.extend('main:video-play-page')
 
 export async function initVideoPlayPage() {
-  // open in pipwindow
-  if (hasDocumentPictureInPicture) {
-    // GM command
-    registerOpenInPipCommand()
-
-    // 按钮, 但会导致闪一下, 然后按钮没了. 可能类似 ssr dehydrate
-    // addOpenInPipWindowButton()
-  }
-
+  registerGmCommands()
   await handleFullscreen()
   await handleForceAutoPlay()
+}
+
+function registerGmCommands() {
+  registerOpenInPipCommand()
+  registerOpenInIinaCommand()
+}
+
+function registerOpenInPipCommand() {
+  if (!hasDocumentPictureInPicture) return
+  GM.registerMenuCommand?.('🎦 小窗打开', () => {
+    pausePlayingVideo()
+    openInPipWindow()
+  })
+}
+
+function registerOpenInIinaCommand() {
+  if (!isMac) return
+  GM.registerMenuCommand?.('▶️ IINA 打开', () => {
+    pausePlayingVideo()
+    openInIina()
+  })
 }
 
 /**
@@ -91,13 +96,15 @@ async function handleForceAutoPlay() {
   debug('handleForceAutoPlay complete, playing = %s', playing())
 }
 
-function pausePlayingVideoAndOpenInPipWindow() {
+function pausePlayingVideo() {
   // make it pause
   const player = getBiliPlayer()
   if (player && !player.isPaused()) {
     player.pause()
   }
+}
 
+function openInPipWindow() {
   // open in pipwindow
   const u = new URL(location.href)
   u.searchParams.set(QueryKey.PlayerScreenMode, PlayerScreenMode.WebFullscreen)
@@ -105,46 +112,8 @@ function pausePlayingVideoAndOpenInPipWindow() {
   openInPipOrPopup(newHref, '')
 }
 
-function registerOpenInPipCommand() {
-  GM.registerMenuCommand?.('🎦 小窗打开', () => {
-    pausePlayingVideoAndOpenInPipWindow()
-  })
-}
-
-async function addOpenInPipWindowButton() {
-  if (window.top !== window) {
-    // inside a iframe
-    return
-  }
-
-  const el = document.createElement('div')
-
-  onVideoChange(async () => {
-    await delay(1500)
-    document
-      .querySelector<HTMLDivElement>(
-        '.video-info-meta .video-info-detail-list.video-info-detail-content',
-      )
-      ?.appendChild(el)
-  })
-
-  const root = createRoot(el)
-  root.render(
-    <>
-      <AntdApp>
-        <Button
-          size='small'
-          css={css`
-            height: 22px;
-            line-height: 22px;
-            gap: 0;
-          `}
-          onClick={pausePlayingVideoAndOpenInPipWindow}
-        >
-          {VideoLinkOpenModeConfig.Popup.icon}
-          <span css={{ marginLeft: 4 }}>{VideoLinkOpenModeConfig.Popup.label}</span>
-        </Button>
-      </AntdApp>
-    </>,
-  )
+function openInIina() {
+  // open in iina
+  const iinaUrl = `iina://open?url=${encodeURIComponent(location.href)}`
+  window.open(iinaUrl, '_self')
 }
