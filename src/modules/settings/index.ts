@@ -89,10 +89,6 @@ export const initialSettings = {
   // hover 延时
   useDelayForHover: false,
 
-  // 从预览处开始播放视频
-  // /video/BVID/?t=start
-  startPlayFromPreviewPoint: false,
-
   /**
    * tab=dynamic-feed
    */

@@ -263,7 +263,6 @@ export function TabPaneBasic() {
               paths={[
                 'autoPreviewWhenKeyboardSelect',
                 'autoPreviewWhenHover',
-                'startPlayFromPreviewPoint',
                 'videoCard.videoPreview.useMp4',
               ]}
             />
@@ -299,24 +298,6 @@ export function TabPaneBasic() {
             label='浮动预览使用 mp4'
             tooltip={
               <>{explainForFlag('使用 mp4, 最高 720p, 有声音', '使用 dash, 最高 1080p, 无声音')}</>
-            }
-          />
-
-          <CheckboxSettingItem
-            configPath='startPlayFromPreviewPoint'
-            label='从预览处开始播放'
-            tooltip={
-              <>
-                从「浮动预览」的进度开始播放, 视频链接会附加
-                <Tag color='green' className='m-inline-4'>
-                  t=val
-                </Tag>
-                参数, 从
-                <Tag className='m-inline-4' color='green-inverse'>
-                  t
-                </Tag>
-                秒开始播放
-              </>
             }
           />
         </Space>

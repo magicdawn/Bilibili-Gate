@@ -79,11 +79,6 @@ export function useOpenRelated({
       if (largePreviewT) {
         hideLargePreview()
         u.searchParams.set('t', largePreviewT.toString())
-      } else if (settings.startPlayFromPreviewPoint) {
-        const t = previewImageRef.current?.getT()
-        if (t) {
-          u.searchParams.set('t', t.toString())
-        }
       }
     })
 
