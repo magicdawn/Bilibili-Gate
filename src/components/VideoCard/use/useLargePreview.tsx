@@ -25,10 +25,13 @@ function clearTimerRef(timerRef: TimerRef) {
   timerRef.current = undefined
 }
 
-export const largePreviewStore = await proxyWithGmStorage<{ volume: number | undefined }>(
+export const largePreviewStore = await proxyWithGmStorage<{
+  volume: number | undefined
+  muted: boolean | undefined
+}>(
   {
-    // A double values must fall between 0 and 1, where 0 is effectively muted and 1 is the loudest possible value.
-    volume: undefined,
+    volume: undefined, // A double values must fall between 0 and 1, where 0 is effectively muted and 1 is the loudest possible value.
+    muted: undefined,
   },
   'large-preview-store',
 )

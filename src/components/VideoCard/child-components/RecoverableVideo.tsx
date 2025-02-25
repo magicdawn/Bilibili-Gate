@@ -7,30 +7,36 @@ export const RecoverableVideo = forwardRef<
   ComponentProps<'video'> & { currentTimeRef: MutableRefObject<number | undefined> }
 >(({ currentTimeRef, ...videoProps }, forwardedRef) => {
   const ref = useMixedRef<ComponentRef<'video'> | null>(forwardedRef)
-  const mounted = useRef(false)
+  const mountedRef = useRef(false)
 
   useMount(() => {
-    // set initial time
-    if (ref.current && typeof currentTimeRef.current === 'number') {
-      ref.current.currentTime = currentTimeRef.current
+    if (ref.current) {
+      // set initial time
+      if (typeof currentTimeRef.current === 'number') {
+        ref.current.currentTime = currentTimeRef.current
+      }
+      // set initial volume & muted
+      if (typeof largePreviewStore.volume === 'number') {
+        ref.current.volume = largePreviewStore.volume
+      }
+      if (typeof largePreviewStore.muted === 'boolean') {
+        ref.current.muted = largePreviewStore.muted
+      }
     }
-    // set initial volume
-    if (ref.current && typeof largePreviewStore.volume === 'number') {
-      ref.current.volume = largePreviewStore.volume
-    }
-    mounted.current = true
+    mountedRef.current = true
   })
 
   const onTimeUpdate = useMemoizedFn(() => {
-    if (!mounted.current) return
+    if (!mountedRef.current) return
     currentTimeRef.current = ref.current?.currentTime
   })
 
   const onVolumeChange = useMemoizedFn(() => {
-    if (!mounted.current) return
-    if (typeof ref.current?.volume === 'number') {
-      largePreviewStore.volume = ref.current.volume
-    }
+    if (!mountedRef.current) return
+    if (!ref.current) return
+    // persist values
+    largePreviewStore.volume = ref.current.volume
+    largePreviewStore.muted = ref.current.muted
   })
 
   return (
