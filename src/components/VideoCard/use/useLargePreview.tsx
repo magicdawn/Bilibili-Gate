@@ -5,6 +5,7 @@ import type { RecItemType } from '$define'
 import { openNewTab } from '$modules/gm'
 import { IconForLoading } from '$modules/icon'
 import { shouldDisableShortcut } from '$utility/dom'
+import { proxyWithGmStorage } from '$utility/valtio'
 import { css } from '@emotion/react'
 import { useClickAway, useEventListener, useRequest } from 'ahooks'
 import type { ComponentRef, MutableRefObject } from 'react'
@@ -23,6 +24,14 @@ function clearTimerRef(timerRef: TimerRef) {
   clearTimeout(timerRef.current)
   timerRef.current = undefined
 }
+
+export const largePreviewStore = await proxyWithGmStorage<{ volume: number | undefined }>(
+  {
+    // A double values must fall between 0 and 1, where 0 is effectively muted and 1 is the loudest possible value.
+    volume: undefined,
+  },
+  'large-preview-store',
+)
 
 export function useLargePreviewRelated({
   // videoPreview data
