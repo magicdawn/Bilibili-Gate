@@ -39,19 +39,18 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { css } from '@emotion/react'
-import { Checkbox, Col, Collapse, Empty, Radio, Space } from 'antd'
+import { Checkbox, Collapse, Empty, Radio, Space } from 'antd'
 import { useSnapshot } from 'valtio'
 import { TagItemDisplay } from '../EditableListSettingItem'
-import styles from '../index.module.scss'
 import { explainForFlag } from '../index.shared'
-import { ResetPartialSettingsButton } from './_shared'
+import { ResetPartialSettingsButton, SettingsGroup, sharedCss } from './shared'
 
 export function TabPaneRecTabsConfig() {
   const { dynamicFeed, appRecommend } = useSettingsSnapshot()
   const sortedTabKeys = useSortedTabKeys()
 
   return (
-    <div className={styles.tabPane}>
+    <div css={sharedCss.tabPane}>
       <div
         css={css`
           display: grid;
@@ -59,173 +58,165 @@ export function TabPaneRecTabsConfig() {
           column-gap: 50px;
         `}
       >
-        <div className={styles.settingsGroup}>
-          <div className={styles.settingsGroupTitle}>
-            Tab 设置
-            <HelpInfo className='ml-5px mr-20px'>勾选显示, 拖动排序</HelpInfo>
-            <Col flex={1} />
-            <ResetPartialSettingsButton paths={['hidingTabKeys', 'customTabKeysOrder']} />
-          </div>
+        <SettingsGroup
+          title={
+            <>
+              Tab 设置
+              <HelpInfo className='ml-5px'>勾选显示, 拖动排序</HelpInfo>
+              <span className='flex-1' />
+              <ResetPartialSettingsButton paths={['hidingTabKeys', 'customTabKeysOrder']} />
+            </>
+          }
+        >
           <VideoSourceTabOrder />
-        </div>
+        </SettingsGroup>
 
-        <div className={styles.settingsGroup}>
-          <div className={styles.settingsGroupTitle}>更多设置</div>
+        <SettingsGroup title='更多设置' contentClassName='gap-y-15px'>
+          {/* watchlater */}
           <div
-            className={clsx(styles.settingsGroupContent)}
             css={css`
-              display: flex;
-              flex-direction: column;
+              order: ${sortedTabKeys.indexOf(ETab.Watchlater) + 1};
             `}
           >
-            {/* watchlater */}
-            <div
-              css={css`
-                order: ${sortedTabKeys.indexOf(ETab.Watchlater) + 1};
-              `}
-            >
-              <div className={styles.settingsGroupSubTitle}>
-                <TabIcon tabKey={ETab.Watchlater} mr={5} mt={-1} />
-                稍后再看
-              </div>
-              <Space size={10}>
-                <CheckboxSettingItem
-                  configPath='watchlaterAddSeparator'
-                  label='添加分割线'
-                  tooltip='添加「近期」「更早」分割线'
-                />
-              </Space>
+            <div className='flex items-center text-size-1.3em'>
+              <TabIcon tabKey={ETab.Watchlater} mr={5} mt={-1} />
+              稍后再看
             </div>
+            <Space size={10}>
+              <CheckboxSettingItem
+                configPath='watchlaterAddSeparator'
+                label='添加分割线'
+                tooltip='添加「近期」「更早」分割线'
+              />
+            </Space>
+          </div>
 
-            {/* fav */}
-            <div
-              css={css`
-                order: ${sortedTabKeys.indexOf(ETab.Fav) + 1};
-              `}
-            >
-              <div className={styles.settingsGroupSubTitle}>
-                <TabIcon tabKey={ETab.Fav} mr={5} mt={-2} />
-                收藏
-              </div>
-              <Space size={10}>
-                <CheckboxSettingItem
-                  configPath='fav.addSeparator'
-                  label='添加分割线'
-                  tooltip='顺序显示时, 按收藏夹添加分割线'
-                />
-              </Space>
+          {/* fav */}
+          <div
+            css={css`
+              order: ${sortedTabKeys.indexOf(ETab.Fav) + 1};
+            `}
+          >
+            <div className='flex items-center text-size-1.3em'>
+              <TabIcon tabKey={ETab.Fav} mr={5} mt={-2} />
+              收藏
             </div>
+            <Space size={10}>
+              <CheckboxSettingItem
+                configPath='fav.addSeparator'
+                label='添加分割线'
+                tooltip='顺序显示时, 按收藏夹添加分割线'
+              />
+            </Space>
+          </div>
 
-            {/* dynamic-feed */}
-            <div
-              css={css`
-                order: ${sortedTabKeys.indexOf(ETab.DynamicFeed) + 1};
-              `}
-            >
-              <div className={styles.settingsGroupSubTitle}>
-                <TabIcon tabKey={ETab.DynamicFeed} mr={5} mt={-2} />
-                动态
-              </div>
-              <div className='flex flex-wrap  gap-x-10 gap-y-10'>
-                <CheckboxSettingItem
-                  configPath='dynamicFeed.followGroup.enabled'
-                  label='启用分组筛选'
-                  tooltip={
-                    <>
-                      动态 Tab 启用分组筛选 <br />
-                      <FollowGroupMechanismNote />
-                    </>
-                  }
-                />
-                <CheckboxSettingItem
-                  configPath='dynamicFeed.showLive'
-                  label='在动态中显示直播'
-                  tooltip={
-                    <>
-                      动态里显示正在直播的 UP
-                      <br />
-                      P.S 仅在选择「全部」时展示
-                    </>
-                  }
-                />
-                <CheckboxSettingItem
-                  configPath='dynamicFeed.whenViewAll.enableHideSomeContents'
-                  label='「全部」动态过滤'
-                  tooltip={
-                    <>
-                      查看「全部」动态时 <br />
-                      {explainForFlag(
-                        '将添加右键菜单, 点击可添加到「全部」动态的过滤列表',
-                        '关闭此功能',
-                      )}
-                    </>
-                  }
-                />
-
-                {dynamicFeed.whenViewAll.enableHideSomeContents && (
-                  <Collapse
-                    size='small'
-                    css={css`
-                      width: 100%;
-                    `}
-                    items={[
-                      {
-                        key: '1',
-                        label: '在「全部」动态中隐藏 UP/分组 的动态',
-                        children: <DynamicFeedWhenViewAllHideIdsPanel />,
-                      },
-                    ]}
-                  />
-                )}
-              </div>
+          {/* dynamic-feed */}
+          <div
+            css={css`
+              order: ${sortedTabKeys.indexOf(ETab.DynamicFeed) + 1};
+            `}
+          >
+            <div className='flex items-center text-size-1.3em'>
+              <TabIcon tabKey={ETab.DynamicFeed} mr={5} mt={-2} />
+              动态
             </div>
-
-            {/* recommend */}
-            <div
-              css={css`
-                order: ${sortedTabKeys.indexOf(ETab.AppRecommend) + 1};
-              `}
-            >
-              <div className={styles.settingsGroupSubTitle}>
-                <TabIcon tabKey={ETab.AppRecommend} mr={5} />
-                App 推荐
-              </div>
-              <div className='flex flex-col gap-y-5'>
-                <div className='flex items-center'>
-                  App API 设备类型
-                  <HelpInfo className='ml-5px mr-10px'>
-                    默认 ipad, 视频有 头像/日期 等信息
+            <div className='flex flex-wrap  gap-x-10 gap-y-10'>
+              <CheckboxSettingItem
+                configPath='dynamicFeed.followGroup.enabled'
+                label='启用分组筛选'
+                tooltip={
+                  <>
+                    动态 Tab 启用分组筛选 <br />
+                    <FollowGroupMechanismNote />
+                  </>
+                }
+              />
+              <CheckboxSettingItem
+                configPath='dynamicFeed.showLive'
+                label='在动态中显示直播'
+                tooltip={
+                  <>
+                    动态里显示正在直播的 UP
                     <br />
-                    可选 android, 有图文类型的推荐
-                  </HelpInfo>
-                  <Radio.Group
-                    optionType='button'
-                    buttonStyle='solid'
-                    size='small'
-                    options={[EAppApiDevice.ipad, EAppApiDevice.android]}
-                    value={appRecommend.deviceParamForApi}
-                    onChange={(e) =>
-                      void (settings.appRecommend.deviceParamForApi = e.target.value)
-                    }
-                  />
-                </div>
-                <div className='flex items-center'>
-                  <CheckboxSettingItem
-                    configPath='appRecommend.addOtherTabContents'
-                    label='显示来自其他 Tab 的内容'
-                    tooltip={
-                      <>
-                        显示来自其他 Tab 的内容 <br />
-                        如动态 / 收藏 / 稍后再看 <br />
-                        但是: 刷新时间会更长
-                      </>
-                    }
-                  />
-                </div>
+                    P.S 仅在选择「全部」时展示
+                  </>
+                }
+              />
+              <CheckboxSettingItem
+                configPath='dynamicFeed.whenViewAll.enableHideSomeContents'
+                label='「全部」动态过滤'
+                tooltip={
+                  <>
+                    查看「全部」动态时 <br />
+                    {explainForFlag(
+                      '将添加右键菜单, 点击可添加到「全部」动态的过滤列表',
+                      '关闭此功能',
+                    )}
+                  </>
+                }
+              />
+
+              {dynamicFeed.whenViewAll.enableHideSomeContents && (
+                <Collapse
+                  size='small'
+                  css={css`
+                    width: 100%;
+                  `}
+                  items={[
+                    {
+                      key: '1',
+                      label: '在「全部」动态中隐藏 UP/分组 的动态',
+                      children: <DynamicFeedWhenViewAllHideIdsPanel />,
+                    },
+                  ]}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* recommend */}
+          <div
+            css={css`
+              order: ${sortedTabKeys.indexOf(ETab.AppRecommend) + 1};
+            `}
+          >
+            <div className='flex items-center text-size-1.3em'>
+              <TabIcon tabKey={ETab.AppRecommend} mr={5} />
+              App 推荐
+            </div>
+            <div className='flex flex-col gap-y-5'>
+              <div className='flex items-center'>
+                App API 设备类型
+                <HelpInfo className='ml-5px mr-10px'>
+                  默认 ipad, 视频有 头像/日期 等信息
+                  <br />
+                  可选 android, 有图文类型的推荐
+                </HelpInfo>
+                <Radio.Group
+                  optionType='button'
+                  buttonStyle='solid'
+                  size='small'
+                  options={[EAppApiDevice.ipad, EAppApiDevice.android]}
+                  value={appRecommend.deviceParamForApi}
+                  onChange={(e) => void (settings.appRecommend.deviceParamForApi = e.target.value)}
+                />
+              </div>
+              <div className='flex items-center'>
+                <CheckboxSettingItem
+                  configPath='appRecommend.addOtherTabContents'
+                  label='显示来自其他 Tab 的内容'
+                  tooltip={
+                    <>
+                      显示来自其他 Tab 的内容 <br />
+                      如动态 / 收藏 / 稍后再看 <br />
+                      但是: 刷新时间会更长
+                    </>
+                  }
+                />
               </div>
             </div>
           </div>
-        </div>
+        </SettingsGroup>
       </div>
     </div>
   )

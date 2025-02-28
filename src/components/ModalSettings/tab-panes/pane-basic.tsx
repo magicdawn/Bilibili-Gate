@@ -11,9 +11,8 @@ import { updateSettings, useSettingsSnapshot } from '$modules/settings'
 import { antMessage } from '$utility/antd'
 import { css } from '@emotion/react'
 import { Button, Select, Space, Tag } from 'antd'
-import styles from '../index.module.scss'
 import { explainForFlag, toastAndReload } from '../index.shared'
-import { ResetPartialSettingsButton, SettingsGroup } from './_shared'
+import { ResetPartialSettingsButton, SettingsGroup, sharedCss } from './shared'
 
 export function TabPaneBasic() {
   const { videoLinkOpenMode } = useSettingsSnapshot()
@@ -51,7 +50,7 @@ export function TabPaneBasic() {
   })
 
   return (
-    <div className={styles.tabPane}>
+    <div css={sharedCss.tabPane}>
       <SettingsGroup
         title={
           <>

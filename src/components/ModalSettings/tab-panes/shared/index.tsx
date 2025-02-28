@@ -5,15 +5,22 @@ import {
   updateSettings,
   type LeafSettingsPath,
 } from '$modules/settings'
+import { useUnoSimpleMerge } from '$utility/css'
 import type { CssProp } from '$utility/type'
 import { css } from '@emotion/react'
-import { Button, Popconfirm, Space } from 'antd'
+import { Button, Popconfirm } from 'antd'
 import { size } from 'polished'
 import type { ComponentProps, ReactNode } from 'react'
 import type { Merge } from 'type-fest'
 import IconParkOutlineReturn from '~icons/icon-park-outline/return'
 
 const S = {
+  tabPane: css`
+    overflow-y: auto;
+    min-height: 362px;
+    max-height: max(362px, calc(90vh - ${50 + 56 + 15}px));
+  `,
+
   settingsGroup: css`
     margin-bottom: 10px;
   `,
@@ -38,12 +45,15 @@ const S = {
     }
   `,
 }
+export { S as sharedCss }
 
 export function SettingsGroup({
   children,
   title,
   titleCss,
   titleClassName,
+  contentCss,
+  contentClassName,
   ...rest
 }: Merge<
   ComponentProps<'div'>,
@@ -52,22 +62,26 @@ export function SettingsGroup({
     title: ReactNode
     titleCss?: CssProp
     titleClassName?: string
+    contentCss?: CssProp
+    contentClassName?: string
   }
 >) {
   return (
-    <div css={S.settingsGroup} data-as='settings-group' {...rest}>
+    <div css={S.settingsGroup} data-role='settings-group' {...rest}>
       <div
-        data-as='settings-group-title'
+        data-role='settings-group-title'
         className={titleClassName}
         css={[S.settingsGroupTitle, titleCss]}
       >
         {title}
       </div>
-      <div css={S.settingsGroupContent} data-as='settings-group-content'>
-        <Space size={5} direction='vertical' className='flex'>
-          {/* the content */}
-          {children}
-        </Space>
+      <div
+        css={[S.settingsGroupContent, contentCss]}
+        data-role='settings-group-content'
+        className={useUnoSimpleMerge('flex flex-col gap-y-5px', contentClassName)}
+      >
+        {/* the content */}
+        {children}
       </div>
     </div>
   )

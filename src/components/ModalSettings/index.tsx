@@ -10,12 +10,12 @@ import { css } from '@emotion/react'
 import { Tabs } from 'antd'
 import { get, set } from 'es-toolkit/compat'
 import { proxy, useSnapshot } from 'valtio'
-import styles from './index.module.scss'
 import { TabPaneAdvance } from './tab-panes/pane-advance'
 import { TabPaneBasic } from './tab-panes/pane-basic'
 import { TabPaneCustomUI, useHotkeyForConfigBorder } from './tab-panes/pane-custom-ui'
 import { TabPaneFilter } from './tab-panes/pane-filter'
 import { TabPaneRecTabsConfig } from './tab-panes/pane-rec-tab-config'
+import { SettingsGroup, sharedCss } from './tab-panes/shared'
 import { ThemesSelect } from './theme'
 
 function useHotkeyForConfig(
@@ -125,15 +125,10 @@ export function ModalSettings({ show, onHide }: { show: boolean; onHide: () => v
               label: '主题选择',
               key: TabPaneKey.ThemeSelect,
               children: (
-                <div className={styles.tabPane}>
-                  <div className={styles.settingsGroup}>
-                    <div className={styles.settingsGroupTitle} style={{ marginBottom: 15 }}>
-                      主题选择
-                    </div>
-                    <div className={clsx(styles.settingsGroupContent)}>
-                      <ThemesSelect />
-                    </div>
-                  </div>
+                <div css={sharedCss.tabPane}>
+                  <SettingsGroup title='主题选择'>
+                    <ThemesSelect />
+                  </SettingsGroup>
                 </div>
               ),
             },

@@ -7,10 +7,9 @@ import { css } from '@emotion/react'
 import { Tag } from 'antd'
 import { isEqual } from 'es-toolkit'
 import { pick } from 'radash'
-import styles from '../index.module.scss'
 import { explainForFlag } from '../index.shared'
 import { CheckboxSettingItem } from '../setting-item'
-import { ResetPartialSettingsButton, SettingsGroup } from './_shared'
+import { ResetPartialSettingsButton, SettingsGroup, sharedCss } from './shared'
 
 type CardBorderState = Partial<
   Pick<Settings['style']['videoCard'], 'useBorder' | 'useBorderOnlyOnHover'>
@@ -53,7 +52,7 @@ export function useHotkeyForConfigBorder() {
 }
 
 const S = {
-  tabPane: css`
+  pane: css`
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
@@ -70,10 +69,9 @@ const S = {
 
 export function TabPaneCustomUI() {
   const { style } = useSettingsSnapshot()
-  const { pureRecommend, videoCard } = style
 
   return (
-    <div className={styles.tabPane} css={S.tabPane}>
+    <div css={[sharedCss.tabPane, S.pane]}>
       {/* 通用 */}
       <SettingsGroup
         title={
