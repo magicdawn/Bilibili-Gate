@@ -1,9 +1,10 @@
 import { APP_NAME, APP_NAMESPACE } from '$common'
+import { AntdTooltip } from '$components/_base/antd-custom'
 import { DynamicFeedQueryKey } from '$modules/rec-services/dynamic-feed/store'
 import { FavQueryKey } from '$modules/rec-services/fav/store'
 import { tryAction } from '$utility/dom'
 import { css } from '@emotion/react'
-import type { ComponentProps } from 'react'
+import type { ComponentProps, ReactNode } from 'react'
 import { proxy, useSnapshot } from 'valtio'
 
 export async function initSpacePage() {
@@ -85,7 +86,10 @@ function ActionButtons() {
   if (!mid) return
 
   const viewDynamicFeedButton = (
-    <ActionButton href={`https://www.bilibili.com/?${DynamicFeedQueryKey.Mid}=${mid}`}>
+    <ActionButton
+      href={`https://www.bilibili.com/?${DynamicFeedQueryKey.Mid}=${mid}`}
+      tooltip={`在「${APP_NAME}」中查看 UP 的动态`}
+    >
       {APP_NAME} 动态
     </ActionButton>
   )
@@ -94,6 +98,7 @@ function ActionButtons() {
     <ActionButton
       href={`https://www.bilibili.com/?${FavQueryKey.CollectionIdFull}=${collectionId}`}
       target='_blank'
+      tooltip={`在「${APP_NAME}」中查看合集`}
     >
       {APP_NAME} 合集
     </ActionButton>
@@ -107,9 +112,16 @@ function ActionButtons() {
   )
 }
 
-function ActionButton({ href, children, className, style, ...restProps }: ComponentProps<'a'>) {
+function ActionButton({
+  href,
+  children,
+  className,
+  style,
+  tooltip,
+  ...restProps
+}: ComponentProps<'a'> & { tooltip?: ReactNode }) {
   const { usingNewSpacePage } = useSnapshot(state)
-  return usingNewSpacePage ? (
+  const btn = usingNewSpacePage ? (
     <a
       href={href}
       className={className}
@@ -147,6 +159,12 @@ function ActionButton({ href, children, className, style, ...restProps }: Compon
       {children}
     </a>
   )
+
+  if (tooltip) {
+    return <AntdTooltip title={tooltip}>{btn}</AntdTooltip>
+  } else {
+    return btn
+  }
 }
 
 function parseMid(href = location.href) {

@@ -16,17 +16,14 @@ export function HelpInfo({
   tooltipProps?: Partial<ComponentProps<typeof AntdTooltip>>
   IconComponent?: ComponentType<ComponentProps<'svg'>>
 } & ComponentProps<'svg'>) {
-  const [_hasSize, _hasMarginLeft] = useMemo(
-    () => [hasSize(className), hasMarginLeft(className)],
-    [className],
-  )
-
-  const _className = clsx(
-    'cursor-pointer',
-    !_hasSize && 'size-16px',
-    !_hasMarginLeft && 'ml-4px',
-    className,
-  )
+  const _className = useMemo(() => {
+    return clsx(
+      'cursor-pointer',
+      !hasSize(className) && 'size-16px',
+      !hasMarginLeft(className) && 'ml-4px',
+      className,
+    )
+  }, [className])
 
   IconComponent ??= DefaultIconComponent
   const icon = <IconComponent {...restSvgProps} className={_className} />
