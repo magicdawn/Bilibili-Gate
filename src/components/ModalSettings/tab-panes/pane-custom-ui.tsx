@@ -1,7 +1,7 @@
 import { APP_NAME } from '$common'
+import { antMessage } from '$modules/antd'
 import type { Settings } from '$modules/settings'
 import { settings, useSettingsSnapshot } from '$modules/settings'
-import { antMessage } from '$utility/antd'
 import { shouldDisableShortcut } from '$utility/dom'
 import { css } from '@emotion/react'
 import { Tag } from 'antd'

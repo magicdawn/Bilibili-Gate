@@ -1,5 +1,6 @@
-import { AntdTooltip } from '$components/_base/antd-custom'
 import { borderColorValue, colorPrimaryValue } from '$components/css-vars'
+import { antMessage } from '$modules/antd'
+import { AntdTooltip } from '$modules/antd/custom'
 import { getUserNickname } from '$modules/bilibili/user/nickname'
 import { formatSpaceUrl } from '$modules/rec-services/dynamic-feed/shared'
 import {
@@ -8,7 +9,6 @@ import {
   useSettingsInnerArray,
   type ListSettingsPath,
 } from '$modules/settings'
-import { antMessage } from '$utility/antd'
 import { css } from '@emotion/react'
 import { Empty, Input } from 'antd'
 import { uniq } from 'es-toolkit'

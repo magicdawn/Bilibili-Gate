@@ -1,6 +1,6 @@
 import { appUsingFont, zIndexAntdPopupBase } from '$common/css-vars-export.module.scss'
+import { AntdStaticFunctionsSetup } from '$modules/antd'
 import { useIsDarkMode } from '$modules/dark-mode'
-import { UseApp } from '$utility/antd'
 import { StyleProvider, type StyleProviderProps } from '@ant-design/cssinjs'
 import { cache as emotionCssDefaultCache } from '@emotion/css'
 import { CacheProvider, type EmotionCache } from '@emotion/react'
@@ -70,7 +70,7 @@ export function AntdApp({
 
   return wrap(
     <>
-      {renderAppComponent && <UseApp />}
+      {renderAppComponent && <AntdStaticFunctionsSetup />}
       {injectGlobalStyle && <GlobalStyle />}
       {children}
     </>,

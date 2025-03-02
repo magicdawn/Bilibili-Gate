@@ -9,8 +9,9 @@ import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import { CHARGE_ONLY_TEXT } from '$components/VideoCard/top-marks'
 import { HelpInfo } from '$components/_base/HelpInfo'
-import { AntdTooltip } from '$components/_base/antd-custom'
 import { colorPrimaryValue } from '$components/css-vars'
+import { antMessage } from '$modules/antd'
+import { AntdTooltip } from '$modules/antd/custom'
 import { IconForOpenExternalLink } from '$modules/icon'
 import {
   settings,
@@ -20,7 +21,6 @@ import {
   type ListSettingsPath,
   type Settings,
 } from '$modules/settings'
-import { antMessage } from '$utility/antd'
 import { css } from '@emotion/react'
 import { useRequest } from 'ahooks'
 import { Badge, Button, Checkbox, Input, Popover, Radio } from 'antd'

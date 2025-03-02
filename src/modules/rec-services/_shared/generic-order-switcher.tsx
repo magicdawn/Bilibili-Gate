@@ -1,7 +1,7 @@
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { styled } from '$libs'
-import { defineAntMenus } from '$utility/antd'
+import { defineAntMenus } from '$modules/antd'
 import { Button, Dropdown, type DropdownProps } from 'antd'
 import type { ElementRef, MouseEvent } from 'react'
 

@@ -1,4 +1,4 @@
-import { AntdTooltip } from '$components/_base/antd-custom'
+import { AntdTooltip } from '$modules/antd/custom'
 import type { BooleanSettingsPath } from '$modules/settings'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { Button, Checkbox, Switch } from 'antd'

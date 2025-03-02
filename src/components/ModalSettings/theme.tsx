@@ -8,8 +8,8 @@
 
 import { flexCenterStyle } from '$common/emotion-css'
 import { HelpInfo } from '$components/_base/HelpInfo'
-import { AntdTooltip } from '$components/_base/antd-custom'
 import { $evolvedThemeColor } from '$header'
+import { AntdTooltip } from '$modules/antd/custom'
 import { IconAnimatedChecked } from '$modules/icon/animated-checked'
 import { updateSettings, useSettingsSnapshot } from '$modules/settings'
 import { css } from '@emotion/react'

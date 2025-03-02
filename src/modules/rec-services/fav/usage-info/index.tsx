@@ -1,7 +1,7 @@
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
+import { defineAntMenus, type AntMenuItem } from '$modules/antd'
 import { settings, useSettingsSnapshot } from '$modules/settings'
-import { defineAntMenus, type AntMenuItem } from '$utility/antd'
 import { css } from '@emotion/react'
 import { Button, Dropdown, Popover, Tag, Transfer } from 'antd'
 import type { TransferDirection } from 'antd/es/transfer'

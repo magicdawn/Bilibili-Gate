@@ -1,4 +1,4 @@
-import { antMessage } from '$utility/antd'
+import { antMessage } from '$modules/antd'
 import { delay } from 'es-toolkit'
 import type { ReactNode } from 'react'
 

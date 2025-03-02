@@ -1,7 +1,7 @@
 import { hasMarginLeft, hasSize } from '$utility/css'
 import type { ComponentType, ReactNode } from 'react'
 import IconParkOutlineTips from '~icons/icon-park-outline/tips'
-import { AntdTooltip } from './antd-custom'
+import { AntdTooltip } from '../../modules/antd/custom'
 
 const DefaultIconComponent = IconParkOutlineTips
 

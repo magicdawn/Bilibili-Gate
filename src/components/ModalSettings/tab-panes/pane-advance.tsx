@@ -3,8 +3,9 @@ import { buttonOpenCss, flexVerticalCenterStyle, iconOnlyRoundButtonCss } from '
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { CollapsePanel } from '$components/_base/CollapsePanel'
 import { HelpInfo } from '$components/_base/HelpInfo'
-import { AntdTooltip } from '$components/_base/antd-custom'
 import { borderColorValue } from '$components/css-vars'
+import { antMessage } from '$modules/antd'
+import { AntdTooltip } from '$modules/antd/custom'
 import { IconForOpenExternalLink } from '$modules/icon'
 import {
   allowedLeafSettingsPaths,
@@ -19,7 +20,6 @@ import {
 } from '$modules/settings'
 import { exportSettings, importSettings } from '$modules/settings/file-backup'
 import { articleDraft, restoreOmitPaths } from '$modules/settings/index.shared'
-import { antMessage } from '$utility/antd'
 import { css } from '@emotion/react'
 import { Button, Popconfirm, Slider, Space } from 'antd'
 import { startCase } from 'es-toolkit'

@@ -1,5 +1,5 @@
 import type { DynamicFeedItem } from '$define'
-import { antNotification } from '$utility/antd'
+import { antNotification } from '$modules/antd'
 import { getIdbCache } from '$utility/idb'
 import { throttle, uniqBy } from 'es-toolkit'
 import { fetchVideoDynamicFeeds } from '../api'

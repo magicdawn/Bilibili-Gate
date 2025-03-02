@@ -19,11 +19,11 @@ const messageConfig: MessageConfigOptions = {
 }
 message.config(messageConfig)
 
-export function UseApp() {
+export function AntdStaticFunctionsSetup() {
   const h = $headerHeight.use()
   return (
     <App component={'div'} message={{ ...messageConfig, top: h - 4 }}>
-      <UseAppInner />
+      <SetupInner />
     </App>
   )
 }
@@ -32,8 +32,7 @@ export function UseApp() {
 export let antStatic: ReturnType<typeof App.useApp>
 export let antMessage: MessageInstance = message
 export let antNotification: NotificationInstance = notification
-
-function UseAppInner() {
+function SetupInner() {
   antStatic = App.useApp()
   antMessage = antStatic.message
   antNotification = antStatic.notification
@@ -43,7 +42,6 @@ function UseAppInner() {
 /**
  * menu related. (context menus / dropdown menus)
  */
-
 export type AntMenuItem = NonNullable<NonNullable<MenuProps['items']>[number]>
 
 export function defineAntMenus(

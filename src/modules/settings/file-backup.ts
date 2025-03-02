@@ -1,6 +1,6 @@
 import { APP_NAME } from '$common'
 import { toastAndReload } from '$components/ModalSettings/index.shared'
-import { antMessage } from '$utility/antd'
+import { antMessage } from '$modules/antd'
 import toast from '$utility/toast'
 import dayjs from 'dayjs'
 import { tryit } from 'radash'

@@ -17,6 +17,7 @@ import {
   type RecItemType,
 } from '$define'
 import { EApiType } from '$define/index.shared'
+import { antMessage, defineAntMenus, type AntMenuItem } from '$modules/antd'
 import { UserBlacklistService } from '$modules/bilibili/me/relations/blacklist'
 import { UserfollowService } from '$modules/bilibili/me/relations/follow'
 import { setNicknameCache } from '$modules/bilibili/user/nickname'
@@ -42,7 +43,6 @@ import { formatFavCollectionUrl, formatFavFolderUrl } from '$modules/rec-service
 import { FavQueryKey, favStore } from '$modules/rec-services/fav/store'
 import { UserFavService, defaultFavFolderName } from '$modules/rec-services/fav/user-fav-service'
 import { settings, updateSettingsInnerArray } from '$modules/settings'
-import { antMessage, defineAntMenus, type AntMenuItem } from '$utility/antd'
 import toast from '$utility/toast'
 import { delay } from 'es-toolkit'
 import { size } from 'polished'

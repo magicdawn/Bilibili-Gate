@@ -4,9 +4,10 @@ import { useSortedTabKeys } from '$components/RecHeader/tab'
 import { TabConfig, TabIcon } from '$components/RecHeader/tab-config'
 import { ETab, TabKeys } from '$components/RecHeader/tab-enum'
 import { HelpInfo } from '$components/_base/HelpInfo'
-import { AntdTooltip } from '$components/_base/antd-custom'
 import { bgLv2Value, bgLv3Value } from '$components/css-vars'
 import { EAppApiDevice } from '$define/index.shared'
+import { antMessage } from '$modules/antd'
+import { AntdTooltip } from '$modules/antd/custom'
 import { getUserNickname } from '$modules/bilibili/user/nickname'
 import type { FollowGroup } from '$modules/rec-services/dynamic-feed/group/types/groups'
 import {
@@ -27,7 +28,6 @@ import {
   updateSettingsInnerArray,
   useSettingsSnapshot,
 } from '$modules/settings'
-import { antMessage } from '$utility/antd'
 import type { DragEndEvent } from '@dnd-kit/core'
 import { DndContext, PointerSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core'
 import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers'

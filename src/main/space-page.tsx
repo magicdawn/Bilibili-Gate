@@ -1,5 +1,5 @@
 import { APP_NAME, APP_NAMESPACE } from '$common'
-import { AntdTooltip } from '$components/_base/antd-custom'
+import { AntdTooltip } from '$modules/antd/custom'
 import { DynamicFeedQueryKey } from '$modules/rec-services/dynamic-feed/store'
 import { FavQueryKey } from '$modules/rec-services/fav/store'
 import { tryAction } from '$utility/dom'

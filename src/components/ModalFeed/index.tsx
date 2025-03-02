@@ -8,8 +8,8 @@ import { VideoSourceTab } from '$components/RecHeader/tab'
 import { BaseModal, BaseModalStyle, ModalClose } from '$components/_base/BaseModal'
 import { CollapseBtn } from '$components/_base/CollapseBtn'
 import { colorPrimaryValue } from '$components/css-vars'
+import { antMessage } from '$modules/antd'
 import { useSettingsSnapshot } from '$modules/settings'
-import { antMessage } from '$utility/antd'
 import { css } from '@emotion/react'
 
 const S = {

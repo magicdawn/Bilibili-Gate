@@ -1,5 +1,4 @@
 import { appWarn } from '$common'
-import { AntdTooltip } from '$components/_base/antd-custom'
 import { colorPrimaryValue } from '$components/css-vars'
 import {
   isAppRecommend,
@@ -26,6 +25,7 @@ import {
 import { EApiType } from '$define/index.shared'
 import { PcRecGoto } from '$define/pc-recommend'
 import { styled } from '$libs'
+import { AntdTooltip } from '$modules/antd/custom'
 import { isFavFolderPrivate } from '$modules/rec-services/fav/fav-util'
 import type { FavItemExtend } from '$modules/rec-services/fav/types'
 import {

@@ -1,7 +1,7 @@
 import { APP_SHORT_PREFIX } from '$common'
+import { antMessage } from '$modules/antd'
 import { IconForOpenExternalLink, IconForPlayer } from '$modules/icon'
 import { isMac } from '$ua'
-import { antMessage } from '$utility/antd'
 import mitt, { type Emitter } from 'mitt'
 import { size } from 'polished'
 import type { ReactNode } from 'react'
