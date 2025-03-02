@@ -19,7 +19,7 @@ function compose(...fns: Array<(c: ReactNode) => ReactNode>) {
   }
 }
 
-export function AntdApp({
+export function AppRoot({
   children,
   injectGlobalStyle = false,
   renderAppComponent = false,

@@ -1,5 +1,5 @@
 import { APP_CLS_ROOT } from '$common'
-import { AntdApp } from '$components/AntdApp'
+import { AppRoot } from '$components/AppRoot'
 import { BaseModal, BaseModalStyle, ModalClose } from '$components/_base/BaseModal'
 import { css } from '@emotion/react'
 import { QRCode } from 'antd'
@@ -131,8 +131,8 @@ const renderOnce = once(function render() {
   document.body.appendChild(container)
   const r = createRoot(container)
   r.render(
-    <AntdApp>
+    <AppRoot>
       <TvQrCodeAuth />
-    </AntdApp>,
+    </AppRoot>,
   )
 })

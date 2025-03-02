@@ -1,5 +1,5 @@
 import { APP_CLS_ROOT, APP_NAMESPACE, appWarn } from '$common'
-import { AntdApp } from '$components/AntdApp'
+import { AppRoot } from '$components/AppRoot'
 import { PureRecommend } from '$components/PureRecommend'
 import { registerSettingsGmCommand } from '$components/RecHeader/modals'
 import { SectionRecommend } from '$components/SectionRecommend'
@@ -87,9 +87,9 @@ async function initHomepageSection() {
   // react render
   root = createRoot(recommendContainer)
   root.render(
-    <AntdApp injectGlobalStyle renderAppComponent>
+    <AppRoot injectGlobalStyle renderAppComponent>
       <SectionRecommend />
-    </AntdApp>,
+    </AppRoot>,
   )
 
   // header
@@ -120,7 +120,7 @@ async function initHomepagePureRecommend() {
   // react render
   root = createRoot(reactContainer)
   root.render(
-    <AntdApp injectGlobalStyle renderAppComponent>
+    <AppRoot injectGlobalStyle renderAppComponent>
       <PureRecommend />
       <FloatButton.BackTop
         style={{
@@ -128,6 +128,6 @@ async function initHomepagePureRecommend() {
           insetInlineEnd: 'var(--back-top-right, 24px)',
         }}
       />
-    </AntdApp>,
+    </AppRoot>,
   )
 }

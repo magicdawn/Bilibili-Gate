@@ -1,5 +1,5 @@
 import { APP_CLS_ROOT, IN_BILIBILI_HOMEPAGE } from '$common'
-import { AntdApp } from '$components/AntdApp'
+import { AppRoot } from '$components/AppRoot'
 import { ModalFeed } from '$components/ModalFeed'
 import { ModalSettings } from '$components/ModalSettings'
 import { settings } from '$modules/settings'
@@ -54,9 +54,9 @@ const renderOnce = once(function render() {
   document.body.appendChild(container)
   const r = createRoot(container)
   r.render(
-    <AntdApp>
+    <AppRoot>
       <ModalsContainer />
-    </AntdApp>,
+    </AppRoot>,
   )
 })
 

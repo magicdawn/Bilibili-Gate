@@ -1,6 +1,6 @@
 import { APP_CLS_ROOT } from '$common'
 import { useLessFrequentFn } from '$common/hooks/useLessFrequentFn'
-import { AntdApp } from '$components/AntdApp'
+import { AppRoot } from '$components/AppRoot'
 import { colorPrimaryValue } from '$components/css-vars'
 import { openNewTab } from '$modules/gm'
 import { settings } from '$modules/settings'
@@ -30,7 +30,7 @@ export function renderInPipWindow(newHref: string, pipWindow: Window) {
 
   const root = createRoot(container)
   root.render(
-    <AntdApp
+    <AppRoot
       emotionCache={cache}
       styleProviderProps={{ container: cssInsertContainer }}
       injectGlobalStyle
@@ -38,7 +38,7 @@ export function renderInPipWindow(newHref: string, pipWindow: Window) {
       <App component={false} message={{ getContainer: () => pipWindow.document.body }}>
         <PipWindowContent newHref={newHref} pipWindow={pipWindow} />
       </App>
-    </AntdApp>,
+    </AppRoot>,
   )
 }
 
