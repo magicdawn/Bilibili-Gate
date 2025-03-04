@@ -73,10 +73,9 @@ export const RefreshButton = forwardRef<RefreshButtonActions, RefreshButtonProps
   return (
     <Button
       disabled={refreshing}
-      className={className}
+      className={clsx(className, 'flex items-center gap-x-4px')}
       style={style}
       css={css`
-        gap: 0;
         &.ant-btn:not(:disabled):focus-visible {
           outline: none;
         }
@@ -84,8 +83,8 @@ export const RefreshButton = forwardRef<RefreshButtonActions, RefreshButtonProps
       ref={btn}
       onClick={onClick}
     >
-      <IconForRoll ref={scope} className='size-14px mr-5px' />
-      <span className='relative top-1px'>{text}</span>
+      <IconForRoll ref={scope} className='size-14px' />
+      {text}
     </Button>
   )
 })
