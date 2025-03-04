@@ -10,7 +10,7 @@ import type {
   MessageInstance,
 } from 'antd/es/message/interface'
 import type { NotificationInstance } from 'antd/es/notification/interface'
-import { isNil, omit } from 'es-toolkit'
+import { omit } from 'es-toolkit'
 
 const messageConfig: MessageConfigOptions = {
   // duration: default 3, 单位秒
@@ -40,23 +40,20 @@ function SetupInner() {
 }
 
 /**
- * menu related. (context menus / dropdown menus)
+ * menu related (context menus / dropdown menus)
  */
+
 export type AntMenuItem = NonNullable<NonNullable<MenuProps['items']>[number]>
 
-export function defineAntMenus(
-  arr: Array<(AntMenuItem & { test?: boolean | (() => boolean) }) | undefined | null | false>,
-): AntMenuItem[] {
+type ItemInput = (AntMenuItem & { test?: boolean | (() => boolean) }) | false | undefined | null
+
+export function defineAntMenus(arr: ItemInput[]): AntMenuItem[] {
   return arr
-    .filter((x) => !isNil(x) && x !== false) // inferred type predicate
-    .map((x) => {
-      const testResult =
-        typeof x.test === 'undefined' ? true : typeof x.test === 'function' ? x.test() : x.test
-      return {
-        ...x,
-        testResult,
-      }
+    .filter(Boolean)
+    .filter((x) => {
+      if (typeof x.test === 'undefined') return true
+      if (typeof x.test === 'boolean') return x.test
+      return x.test()
     })
-    .filter((x) => x.testResult)
-    .map((x) => omit(x, ['test', 'testResult']) as AntMenuItem)
+    .map((x) => omit(x, ['test']) as AntMenuItem)
 }

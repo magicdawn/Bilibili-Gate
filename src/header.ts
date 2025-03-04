@@ -70,10 +70,9 @@ export function useBackToTopRight(): number | undefined {
   return right
 }
 
-function calcEvolvedThemeColor() {
+export const $evolvedThemeColor = valtioFactory(function calcEvolvedThemeColor() {
   return window.getComputedStyle(document.documentElement).getPropertyValue('--theme-color')
-}
-export const $evolvedThemeColor = valtioFactory(calcEvolvedThemeColor)
+})
 
 function action() {
   $usingEvolevdHeader.updateThrottled()
