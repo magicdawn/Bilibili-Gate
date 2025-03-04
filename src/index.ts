@@ -34,10 +34,6 @@ import { initSpacePage } from '$main/space-page'
 import { initVideoPlayPage } from '$main/video-play-page'
 
 void (function main() {
-  if (!IN_BILIBILI_HOMEPAGE && !IN_BILIBILI_VIDEO_PLAY_PAGE && !IN_BILIBILI_SPACE_PAGE) {
-    return
-  }
-
   if (IN_BILIBILI_HOMEPAGE) {
     return initHomepage()
   }

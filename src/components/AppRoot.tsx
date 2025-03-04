@@ -22,13 +22,13 @@ function compose(...fns: Array<(c: ReactNode) => ReactNode>) {
 export function AppRoot({
   children,
   injectGlobalStyle = false,
-  renderAppComponent = false,
+  antdSetup = false,
   emotionCache = emotionCssDefaultCache,
   styleProviderProps,
 }: {
   children: ReactNode
   injectGlobalStyle?: boolean
-  renderAppComponent?: boolean
+  antdSetup?: boolean
   emotionCache?: EmotionCache
   styleProviderProps?: StyleProviderProps
 }) {
@@ -70,7 +70,7 @@ export function AppRoot({
 
   return wrap(
     <>
-      {renderAppComponent && <AntdStaticFunctionsSetup />}
+      {antdSetup && <AntdStaticFunctionsSetup />}
       {injectGlobalStyle && <GlobalStyle />}
       {children}
     </>,

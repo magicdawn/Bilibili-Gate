@@ -87,7 +87,7 @@ async function initHomepageSection() {
   // react render
   root = createRoot(recommendContainer)
   root.render(
-    <AppRoot injectGlobalStyle renderAppComponent>
+    <AppRoot injectGlobalStyle antdSetup>
       <SectionRecommend />
     </AppRoot>,
   )
@@ -120,7 +120,7 @@ async function initHomepagePureRecommend() {
   // react render
   root = createRoot(reactContainer)
   root.render(
-    <AppRoot injectGlobalStyle renderAppComponent>
+    <AppRoot injectGlobalStyle antdSetup>
       <PureRecommend />
       <FloatButton.BackTop
         style={{
