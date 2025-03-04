@@ -41,8 +41,8 @@ export const LargePreview = forwardRef<
   ComponentRef<'div'>,
   { children?: ReactNode; aspectRatio?: number } & ComponentProps<'div'>
 >(({ children, aspectRatio = AspectRatioPreset.Horizontal, ...restProps }, forwardedRef) => {
-  const ref = useRef<ComponentRef<'div'> | null>(null)
-  const elRef = useMixedRef(forwardedRef)
+  const placeholderRef = useRef<ComponentRef<'div'> | null>(null)
+  const popoverRef = useMixedRef(forwardedRef)
 
   const [visible, setVisible] = useState(false)
   const [position, setPosition] = useState<
@@ -64,7 +64,7 @@ export const LargePreview = forwardRef<
   })
 
   const calculatePostion = useMemoizedFn(() => {
-    const cardCover = ref.current
+    const cardCover = placeholderRef.current
       ?.closest<HTMLDivElement>('.' + APP_CLS_CARD)
       ?.querySelector<HTMLAnchorElement>('.' + APP_CLS_CARD_COVER)
     if (!cardCover) return hide()
@@ -226,7 +226,6 @@ export const LargePreview = forwardRef<
   useMount(() => {
     calculatePostion()
   })
-
   useEventListener('resize', calculatePostionThrottled, { target: window })
   useEventListener('scroll', calculatePostionThrottled, { target: window })
 
@@ -258,13 +257,13 @@ export const LargePreview = forwardRef<
     }
   }, [position, disableScale])
 
-  // as a placeholder, to get cardRect
-  const videoCardDescendant = <div ref={ref} data-role='video-card-descendant'></div>
+  // as videoCardDescendant, to get cardRect
+  const placeholderEl = <div ref={placeholderRef} data-role='video-card-descendant' />
 
-  const el = (
+  const popoverEl = (
     <div
       {...restProps}
-      ref={elRef}
+      ref={popoverRef}
       css={[
         css`
           display: ${visible ? 'block' : 'none'};
@@ -318,11 +317,10 @@ export const LargePreview = forwardRef<
 
   return (
     <>
-      {videoCardDescendant}
-
+      {placeholderEl}
       {/* safari container-type still use layout containment */}
       {/* https://stackoverflow.com/a/74606435/2822866 */}
-      {isSafari ? createPortal(el, document.body) : el}
+      {isSafari ? createPortal(popoverEl, document.body) : popoverEl}
     </>
   )
 })

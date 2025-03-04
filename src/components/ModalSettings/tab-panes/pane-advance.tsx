@@ -189,7 +189,11 @@ export function TabPaneAdvance() {
                   key={k}
                   configPath={k as BooleanSettingsPath}
                   tooltip={k}
-                  label={startCase(k.slice('__internal'.length))}
+                  label={startCase(
+                    k.startsWith('__internal')
+                      ? k.slice('__internal'.length)
+                      : k.replaceAll('__internal.', ''),
+                  )}
                 />
               ))}
             </Space>
