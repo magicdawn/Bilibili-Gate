@@ -144,10 +144,10 @@ export const LargePreview = forwardRef<
     let elHeight: number
     if (scaleLimit === 'width') {
       elWidth = Math.floor(bbox.width - (VisualPadding.card + VisualPadding.border))
-      elHeight = Math.floor(elWidth / aspectRatio)
+      elHeight = elWidth / aspectRatio
     } else if (scaleLimit === 'height') {
       elHeight = Math.floor(bbox.height - (VisualPadding.card + VisualPadding.border))
-      elWidth = Math.floor(elHeight * aspectRatio)
+      elWidth = elHeight * aspectRatio
     } else {
       throw new Error('unexpected scaleLimit')
     }
