@@ -1,5 +1,5 @@
 import { settings } from '$modules/settings'
-import toast from '../../utility/toast'
+import toast from '$utility/toast'
 import { getAccessKeyByQrCode } from './tv-qrcode'
 
 export async function getAccessKey() {

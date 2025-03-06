@@ -43,10 +43,12 @@ export async function getAccessKeyByQrCode() {
     if (!qrcodeStore.auth_code) return true
     if (pollfor !== qrcodeStore.auth_code) return true
   }
+  function shouldContinue() {
+    return !shouldBreak()
+  }
 
-  while (true) {
+  while (shouldContinue()) {
     // delay
-    if (shouldBreak()) return
     const p1 = delay(1500) // wait enough time
     const p2 = whenQrCodeModalHide() // if user click close, quick break
     await Promise.race([p1, p2])
@@ -54,7 +56,6 @@ export async function getAccessKeyByQrCode() {
     if (shouldBreak()) return
 
     // poll
-    if (shouldBreak()) return
     res = await poll(qrcodeStore.auth_code)
     const { success, accessKey, accessKeyExpireAt, message, action } = res
     if (shouldBreak()) return
@@ -62,7 +63,6 @@ export async function getAccessKeyByQrCode() {
     /**
      * handle result
      */
-
     // in any case, show message
     updateStore({ message })
 
@@ -74,7 +74,6 @@ export async function getAccessKeyByQrCode() {
 
     // refresh
     if (action === 'refresh') {
-      if (shouldBreak()) return
       await delay(2000) // let user see '已过期消息'
       if (shouldBreak()) return
       await refreshQrCode()
@@ -88,7 +87,6 @@ export async function getAccessKeyByQrCode() {
     }
 
     // other errors
-    if (shouldBreak()) return
     updateStore({ message })
     toast(message)
     return
