@@ -33,7 +33,7 @@
   :global(.bili-video-card__skeleton--avatar) {
     background-size: 400% 100%;
     animation-name: ant-skeleton-loading;
-    animation-duration: 2.165s;
+    animation-duration: 2s;
     animation-timing-function: ease;
     animation-iteration-count: infinite;
   }
@@ -45,8 +45,7 @@
   }
 
   // https://css-tricks.com/css-keyframe-animation-delay-iterations/
-  // raw animation-duration: 1.4s; / 0.618 = 2.165s
-  61.8%,
+  80%,
   100% {
     background-position: 0 50%;
   }
