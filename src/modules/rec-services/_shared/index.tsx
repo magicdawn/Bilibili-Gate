@@ -1,6 +1,9 @@
 import { ButtonSettingItem } from '$components/ModalSettings/setting-item'
+import { copyBvidInfos, copyBvidsSingleLine } from '$components/RecGrid/unsafe-window-export'
+import { antMessage } from '$modules/antd'
 import { IconForDefaultOrder, IconForShuffle } from '$modules/icon'
-import type { BooleanSettingsPath } from '$modules/settings'
+import { useSettingsSnapshot, type BooleanSettingsPath } from '$modules/settings'
+import { Button } from 'antd'
 import type { ComponentProps, CSSProperties } from 'react'
 
 export function ShuffleSettingsItemFor({
@@ -36,4 +39,32 @@ export const dropdownMenuStyle: CSSProperties = {
   overflowY: 'scroll',
   scrollbarWidth: 'thin',
   paddingRight: '12px',
+}
+
+export function InternalAddCopyBvidButtons() {
+  const addCopyBvidButton = useSettingsSnapshot().__internalAddCopyBvidButton
+  return (
+    <>
+      {addCopyBvidButton && (
+        <>
+          <Button
+            onClick={() => {
+              copyBvidsSingleLine()
+              antMessage.success('已复制')
+            }}
+          >
+            Copy Bvids SingleLine
+          </Button>
+          <Button
+            onClick={() => {
+              copyBvidInfos()
+              antMessage.success('已复制')
+            }}
+          >
+            Copy Bvid Infos
+          </Button>
+        </>
+      )}
+    </>
+  )
 }

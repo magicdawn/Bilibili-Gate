@@ -9,7 +9,7 @@ import { delay, groupBy } from 'es-toolkit'
 import type { Key } from 'react'
 import { useSnapshot } from 'valtio'
 import { usePopupContainer } from '../../_base'
-import { dropdownMenuStyle } from '../../_shared'
+import { dropdownMenuStyle, InternalAddCopyBvidButtons } from '../../_shared'
 import { isFavFolderDefault, isFavFolderPrivate } from '../fav-util'
 import type { FavAllService } from '../service/fav-all'
 import type { FavFolderBasicService } from '../service/fav-folder'
@@ -168,6 +168,8 @@ export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
 
       {/* extra */}
       {extraContent}
+
+      <InternalAddCopyBvidButtons />
     </div>
   )
 }

@@ -1,8 +1,6 @@
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
-import { copyBvidInfos, copyBvidsSingleLine } from '$components/RecGrid/unsafe-window-export'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
 import type { AntMenuItem } from '$modules/antd'
-import { antMessage } from '$modules/antd'
 import { IconForReset } from '$modules/icon'
 import { useSettingsSnapshot } from '$modules/settings'
 import { getAvatarSrc } from '$utility/image'
@@ -13,7 +11,7 @@ import { fastSortWithOrders } from 'fast-sort-lens'
 import type { ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
 import { usePopupContainer } from '../../_base'
-import { dropdownMenuStyle } from '../../_shared'
+import { dropdownMenuStyle, InternalAddCopyBvidButtons } from '../../_shared'
 import { IconForGroup, IconForUp } from '../shared'
 import {
   dfStore,
@@ -49,7 +47,7 @@ export function DynamicFeedUsageInfo() {
   const onRefresh = useOnRefreshContext()
 
   const dfSettings = useSettingsSnapshot().dynamicFeed
-  const { addCopyBvidButton, externalSearchInput } = dfSettings.__internal
+  const { externalSearchInput } = dfSettings.__internal
 
   const {
     viewingSomeUp,
@@ -214,26 +212,7 @@ export function DynamicFeedUsageInfo() {
 
         {externalSearchInput && searchInput}
 
-        {addCopyBvidButton && (
-          <>
-            <Button
-              onClick={() => {
-                copyBvidsSingleLine()
-                antMessage.success('已复制')
-              }}
-            >
-              Copy Bvids SingleLine
-            </Button>
-            <Button
-              onClick={() => {
-                copyBvidInfos()
-                antMessage.success('已复制')
-              }}
-            >
-              Copy Bvid Infos
-            </Button>
-          </>
-        )}
+        <InternalAddCopyBvidButtons />
       </Space>
     </>
   )

@@ -109,7 +109,6 @@ export const initialSettings = {
     __internal: {
       cacheAllItemsEntry: false,
       cacheAllItemsUpMids: [] as string[], // enable for these up
-      addCopyBvidButton: false,
       externalSearchInput: false, // more convenient
     },
   },
@@ -250,6 +249,7 @@ export const initialSettings = {
    * internal
    */
   __internalEnableCopyBvidInfoContextMenu: false,
+  __internalAddCopyBvidButton: false,
   __internalHotSubUseDropdown: false,
 }
 
