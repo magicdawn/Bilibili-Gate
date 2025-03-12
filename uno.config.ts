@@ -1,15 +1,14 @@
 import presetRemToPx from '@unocss/preset-rem-to-px'
-import { defineConfig, presetUno, transformerDirectives } from 'unocss'
-// import { defineConfig, presetAttributify, presetUno } from 'unocss'
-// import transformerAttributifyJsx from '@unocss/transformer-attributify-jsx'
+import { defineConfig, presetWind3, transformerDirectives } from 'unocss'
 
 export default defineConfig({
   presets: [
-    presetUno({ preflight: false }),
+    presetWind3({ preflight: false }),
     presetRemToPx({
       baseFontSize: 4, // mr-4 = 1rem;
     }),
   ],
+
   // https://github.com/unocss/unocss/issues/1620
   blocklist: ['container'],
 
@@ -19,10 +18,4 @@ export default defineConfig({
   ],
 
   transformers: [transformerDirectives()],
-
-  // presetAttributify({
-  //     prefixedOnly: true,
-  //     prefix: 'uno:',
-  //   }),
-  // transformers: [transformerAttributifyJsx()], // this does not work
 })
