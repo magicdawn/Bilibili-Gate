@@ -214,13 +214,13 @@ export function VideoCardBottom({
         css={css`
           /* as item */
           flex: 1;
+          margin-left: 5px; // Q: why not column-gap:10px. A: avatar may hide, margin-left is needed
 
           /* as container */
           display: flex;
           flex-direction: column;
           row-gap: 4px;
-
-          margin-left: 5px; // Q: why not column-gap:10px. A: avatar my hide, margin-left is needed
+          overflow: hidden;
         `}
       >
         {/* title */}
@@ -274,7 +274,11 @@ export function VideoCardBottom({
               <span className='bili-video-card__info--date'>{DESC_SEPARATOR + pubdateDisplay}</span>
             )}
           </a>
-          {!!recommendReason && <span css={S.recommendReason}>{recommendReason}</span>}
+          {!!recommendReason && (
+            <span css={S.recommendReason} title={recommendReason}>
+              {recommendReason}
+            </span>
+          )}
         </>
       )
     }
@@ -321,7 +325,11 @@ export function VideoCardBottom({
               {authorName}
               {liveExtraDesc && <span css={[C.ml(4)]}>{liveExtraDesc}</span>}
             </a>
-            {!!recommendReason && <span css={S.recommendReason}>{recommendReason}</span>}
+            {!!recommendReason && (
+              <span css={S.recommendReason} title={recommendReason}>
+                {recommendReason}
+              </span>
+            )}
           </>
         </Case>
       </Switch>
