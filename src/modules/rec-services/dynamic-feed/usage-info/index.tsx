@@ -5,7 +5,7 @@ import { IconForReset } from '$modules/icon'
 import { useSettingsSnapshot } from '$modules/settings'
 import { getAvatarSrc } from '$utility/image'
 import { css } from '@emotion/react'
-import { Avatar, Badge, Button, Dropdown, Space } from 'antd'
+import { Avatar, Badge, Button, Dropdown } from 'antd'
 import { delay } from 'es-toolkit'
 import { fastSortWithOrders } from 'fast-sort-lens'
 import type { ReactNode } from 'react'
@@ -198,7 +198,7 @@ export function DynamicFeedUsageInfo() {
 
   return (
     <>
-      <Space ref={ref}>
+      <div ref={ref} className='inline-flex items-center gap-x-8px'>
         {scopeDropdownMenu}
 
         {(viewingSomeUp || selectedGroup) && (
@@ -213,7 +213,7 @@ export function DynamicFeedUsageInfo() {
         {externalSearchInput && searchInput}
 
         <InternalAddCopyBvidButtons />
-      </Space>
+      </div>
     </>
   )
 }
