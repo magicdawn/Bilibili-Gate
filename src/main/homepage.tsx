@@ -8,8 +8,7 @@ import { isSafari } from '$ua'
 import { tryAction, tryToRemove } from '$utility/dom'
 import { FloatButton } from 'antd'
 import { delay } from 'es-toolkit'
-import type { Root } from 'react-dom/client'
-import { createRoot } from 'react-dom/client'
+import { createRoot, type Root } from 'react-dom/client'
 
 // in this entry, if no insert point found, render to document body
 const isHashEntry = (location.hash || '').startsWith(`#/${APP_NAMESPACE}/`)
@@ -80,12 +79,11 @@ async function initHomepageSection() {
   }
 
   // attach to dom
-  const recommendContainer = document.createElement('section')
-  recommendContainer.classList.add(APP_CLS_ROOT)
-  insert(recommendContainer)
+  const container = document.createElement('section')
+  container.classList.add(APP_CLS_ROOT)
+  insert(container)
 
-  // react render
-  root = createRoot(recommendContainer)
+  root = createRoot(container)
   root.render(
     <AppRoot injectGlobalStyle antdSetup>
       <SectionRecommend />
@@ -109,16 +107,13 @@ async function initHomepagePureRecommend() {
 
   const biliLayout = document.createElement('div')
   biliLayout.classList.add('bili-feed4-layout', 'pure-recommend')
+  document.body.appendChild(biliLayout)
 
-  const insertFn = (reactContainer: HTMLElement) => document.body.appendChild(reactContainer)
-  insertFn(biliLayout)
+  const container = document.createElement('section')
+  container.classList.add(APP_CLS_ROOT)
+  biliLayout.appendChild(container)
 
-  const reactContainer = document.createElement('section')
-  reactContainer.classList.add(APP_CLS_ROOT)
-  biliLayout.appendChild(reactContainer)
-
-  // react render
-  root = createRoot(reactContainer)
+  root = createRoot(container)
   root.render(
     <AppRoot injectGlobalStyle antdSetup>
       <PureRecommend />
