@@ -8,11 +8,6 @@ import createEmotion from '@emotion/css/create-instance'
 import { css, Global } from '@emotion/react'
 import { useHover } from 'ahooks'
 import { App } from 'antd'
-import { once } from 'es-toolkit'
-import RadixIconsCross2 from '~icons/radix-icons/cross-2'
-import RadixIconsLockClosed from '~icons/radix-icons/lock-closed'
-import RadixIconsLockOpen1 from '~icons/radix-icons/lock-open-1'
-import RadixIconsOpenInNewWindow from '~icons/radix-icons/open-in-new-window'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
 import { QueryKey } from '../index.shared'
 
@@ -43,28 +38,8 @@ export function renderInPipWindow(newHref: string, pipWindow: Window) {
 }
 
 export function PipWindowContent({ newHref, pipWindow }: { pipWindow: Window; newHref: string }) {
-  const focusOnce = useMemo(() => {
-    return once(() => {
-      window.focus()
-    })
-  }, [])
-  useKeyPress(
-    ['leftarrow', 'rightarrow', 'uparrow', 'downawrrow', 'esc', 'tab'],
-    (e) => {
-      focusOnce()
-    },
-    {
-      exactMatch: true,
-      target: pipWindow.document.documentElement,
-    },
-  )
-
   const hovering = useHover(pipWindow.document.documentElement)
-
-  // use settings value
-  const [locked, setLocked] = useState(() => {
-    return settings.pipWindowDefaultLocked
-  })
+  const [locked, setLocked] = useState(() => settings.pipWindowDefaultLocked)
 
   return (
     <>
@@ -124,7 +99,6 @@ const S = {
   `,
 }
 
-// TODO: enable drag
 function LockOverlay({ locked }: { locked: boolean }) {
   const { message } = App.useApp()
   const onOverlayClick = useLessFrequentFn(() => {
@@ -160,7 +134,7 @@ function CloseThenOpenButton({ newHref, pipWindow }: { pipWindow: Window; newHre
   return (
     <VideoCardActionButton
       inlinePosition={'right'}
-      icon={<RadixIconsOpenInNewWindow />}
+      icon={<IconRadixIconsOpenInNewWindow />}
       tooltip={'新窗口打开'}
       onClick={onClick}
       css={S.button}
@@ -172,7 +146,7 @@ function CloseButton({ pipWindow }: { pipWindow: Window }) {
   return (
     <VideoCardActionButton
       inlinePosition={'right'}
-      icon={<RadixIconsCross2 />}
+      icon={<IconRadixIconsCross2 />}
       tooltip={'关闭'}
       css={S.button}
       onClick={() => {
@@ -192,7 +166,7 @@ function LockButton({
   return (
     <VideoCardActionButton
       inlinePosition={'right'}
-      icon={locked ? <RadixIconsLockClosed /> : <RadixIconsLockOpen1 />}
+      icon={locked ? <IconRadixIconsLockClosed /> : <IconRadixIconsLockOpen1 />}
       tooltip={locked ? '已锁定, 点击解锁' : '已解锁, 点击锁定'}
       css={S.button}
       onClick={(e) => {

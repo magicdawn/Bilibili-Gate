@@ -52,6 +52,8 @@ declare global {
   const IconPhThumbsDownDuotone: typeof import('~icons/ph/thumbs-down-duotone.jsx')['default']
   const IconRadixIconsCaretRight: typeof import('~icons/radix-icons/caret-right.jsx')['default']
   const IconRadixIconsCross2: typeof import('~icons/radix-icons/cross2.jsx')['default']
+  const IconRadixIconsLockClosed: typeof import('~icons/radix-icons/lock-closed.jsx')['default']
+  const IconRadixIconsLockOpen1: typeof import('~icons/radix-icons/lock-open1.jsx')['default']
   const IconRadixIconsOpenInNewWindow: typeof import('~icons/radix-icons/open-in-new-window.jsx')['default']
   const IconRadixIconsPerson: typeof import('~icons/radix-icons/person.jsx')['default']
   const IconSvgSpinnersBarsRotateFade: typeof import('~icons/svg-spinners/bars-rotate-fade.jsx')['default']
