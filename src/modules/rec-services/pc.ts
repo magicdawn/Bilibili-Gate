@@ -4,7 +4,7 @@ import { EApiType } from '$define/index.shared'
 import { PcRecGoto } from '$define/pc-recommend'
 import { isWebApiSuccess, request } from '$request'
 import toast from '$utility/toast'
-import { uniqBy } from 'es-toolkit'
+import { range, uniqBy } from 'es-toolkit'
 import { BaseTabService } from './_base'
 
 const debug = baseDebug.extend('modules:rec-services:pc')
@@ -52,7 +52,7 @@ export class PcRecService extends BaseTabService<PcRecItemExtend> {
 
   private async getRecommendTimes(times: number, abortSignal: AbortSignal) {
     let list: PcRecItem[] = (
-      await Promise.all(new Array(times).fill(0).map(() => this.getRecommend(abortSignal)))
+      await Promise.all(range(times).map(() => this.getRecommend(abortSignal)))
     ).flat()
 
     list = list.filter((item) => {

@@ -5,7 +5,7 @@ import { EApiType, EAppApiDevice } from '$define/index.shared'
 import { getSettingsSnapshot } from '$modules/settings'
 import { gmrequest } from '$request'
 import { getHasLogined } from '$utility/cookie'
-import { randomInt, shuffle, uniqBy } from 'es-toolkit'
+import { randomInt, range, shuffle, uniqBy } from 'es-toolkit'
 import { times } from 'es-toolkit/compat'
 import { BaseTabService, type IService } from './_base'
 import { DynamicFeedRecService, getDynamicFeedServiceConfig } from './dynamic-feed'
@@ -186,9 +186,7 @@ class AppRecInnerService implements IService {
   // 一次不够, 多来几次
   async getRecommendTimes(abortSignal: AbortSignal, times: number) {
     let list: AppRecItem[] = (
-      await Promise.all(
-        new Array(times).fill(0).map(() => this.getRecommend(this.deviceParamForApi)),
-      )
+      await Promise.all(range(times).map(() => this.getRecommend(this.deviceParamForApi)))
     ).flat()
 
     // rm ad & unsupported card_type

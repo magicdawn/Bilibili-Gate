@@ -7,7 +7,9 @@
     "prepare": "husky",
     "dev": "vite",
     "_typecheck": "tsc --noEmit",
+    "_lint": "oxlint",
     "typecheck": "turbo _typecheck",
+    "lint": "turbo _lint",
     "build:scss": "typed-scss-modules 'src/**/*.module.scss'",
     "build:scss:hcm": "hcm 'src/**/*.module.scss' -o generated --localsConvention camelCaseOnly",
     "build:vite": "vite build",
@@ -31,7 +33,7 @@
     "@commitlint/types": "^19.8.0",
     "@emotion/babel-plugin": "^11.13.5",
     "@eslint/js": "^9.22.0",
-    "@iconify/json": "^2.2.316",
+    "@iconify/json": "^2.2.317",
     "@magicdawn/prettier-config": "^0.0.4",
     "@styled/typescript-styled-plugin": "^1.0.1",
     "@svgr/core": "^8.1.0",
@@ -59,6 +61,7 @@
     "lint-staged": "^15.5.0",
     "node-cjs-interop": "^0.1.7",
     "open": "^10.1.0",
+    "oxlint": "^0.16.0",
     "postcss-media-minmax": "^5.0.0",
     "prettier": "^3.5.3",
     "rollup-plugin-node-polyfills": "^0.2.1",
@@ -73,7 +76,7 @@
     "unocss": "^66.0.0",
     "unplugin-auto-import": "^19.1.1",
     "unplugin-icons": "^22.1.0",
-    "vite": "^6.2.1",
+    "vite": "^6.2.2",
     "vite-plugin-importer": "^0.2.5",
     "vite-plugin-inspect": "^11.0.0",
     "vite-plugin-monkey": "^5.0.8",
@@ -121,8 +124,8 @@
     "valtio": "^2.1.3"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
+    "**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue,astro,svelte}": [
+      "oxlint",
       "prettier --write"
     ],
     "*.{less,scss,md}": [

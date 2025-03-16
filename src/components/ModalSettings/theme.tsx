@@ -51,9 +51,10 @@ export function ThemesSelect() {
               {name}
               <HelpInfo
                 className='size-16px'
-                children={tooltip}
                 tooltipProps={{ color: 'rgba(0, 0, 0, 0.85)' }} // 默认使用 colorPrimary, 链接可能看不清
-              />
+              >
+                {tooltip}
+              </HelpInfo>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2px 8px' }}>
               {themes.map((t) => {

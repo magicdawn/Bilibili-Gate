@@ -114,7 +114,7 @@ export type ImagePreviewData = {
 }
 
 export async function fetchImagePreviewData(bvid: string): Promise<ImagePreviewData> {
-  const [videoshotJson] = await Promise.all([getVideoshotJson(bvid)])
+  const videoshotJson = await getVideoshotJson(bvid)
   return { videoshotJson }
 }
 

@@ -255,7 +255,7 @@ function apiIpadAppAdapter(item: IpadAppRecItemExtend): IVideoCardData {
     }
 
     if (target === 'danmaku') {
-      const text = arr.find((text) => /弹幕$/.test(text))
+      const text = arr.find((text) => text.endsWith('弹幕'))
       if (!text) return
       const rest = text.replace(/弹幕$/, '')
       return parseCount(rest)

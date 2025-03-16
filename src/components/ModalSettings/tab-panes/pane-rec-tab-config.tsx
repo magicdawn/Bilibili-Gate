@@ -377,6 +377,7 @@ function DynamicFeedWhenViewAllHideIdsPanel() {
       {hideIds.map((tag) => {
         return (
           <TagItemDisplay
+            key={tag}
             tag={tag}
             onDelete={onDelete}
             renderTag={(t) => <DynamicFeedWhenViewAllHideIdTag tag={t} followGroups={groups} />}

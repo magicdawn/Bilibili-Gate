@@ -8,6 +8,7 @@ import { limitTwoLines, videoGrid, videoGridBiliFeed4 } from '$components/video-
 import { EApiType } from '$define/index.shared'
 import { refreshForHome } from '$modules/rec-services'
 import type { ServiceMap } from '$modules/rec-services/service-map'
+import { range } from 'es-toolkit'
 import { RecHeader } from '../RecHeader'
 import { VideoCard } from '../VideoCard'
 
@@ -26,10 +27,7 @@ const TabContent = memo(function TabContent({
   tab: ETab
   servicesRegistry: RefStateBox<Partial<ServiceMap>>
 }) {
-  const skeletonPlaceholders = useMemo(
-    () => new Array(20).fill(0).map(() => crypto.randomUUID()),
-    [],
-  )
+  const skeletonPlaceholders = useMemo(() => range(20).map(() => crypto.randomUUID()), [])
 
   const {
     refreshingBox,

@@ -79,7 +79,8 @@ export const StatItemDisplay = memo(function ({ field, value }: StatItemType) {
       ...extraProps,
       className: clsx(svgClassName, extraProps?.className),
       style: {
-        ...{ width: size, height: size },
+        width: size,
+        height: size,
         ...extraProps?.style,
       },
     }

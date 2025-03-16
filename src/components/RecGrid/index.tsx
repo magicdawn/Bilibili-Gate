@@ -88,12 +88,12 @@ export const RecGrid = forwardRef<RecGridRef, RecGridProps>(function (props, ref
 
   return (
     <RecGridInner
-      {...props}
       key={tab}
       tab={tab}
       direction={direction}
       handlersRef={ref}
       servicesRegistry={servicesRegistry}
+      {...props}
     />
   )
 })
@@ -496,9 +496,11 @@ const RecGridInner = memo(function ({
   if (refreshing && showSkeleton) {
     const cardCount = getGridRefreshCount()
     return render({
-      gridChildren: new Array(cardCount).fill(0).map((_, index) => {
-        return <VideoCard key={index} loading={true} className={APP_CLS_CARD} tab={tab} />
-      }),
+      gridChildren: Array.from({ length: cardCount })
+        .fill(0)
+        .map((_, index) => {
+          return <VideoCard key={index} loading={true} className={APP_CLS_CARD} tab={tab} />
+        }),
     })
   }
 
