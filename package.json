@@ -1,6 +1,6 @@
 {
   "name": "bilibili-gate",
-  "version": "0.31.10",
+  "version": "0.31.11",
   "private": true,
   "type": "module",
   "scripts": {
