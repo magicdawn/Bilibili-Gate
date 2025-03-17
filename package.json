@@ -94,7 +94,7 @@
     "@mgdn/bvid": "^0.3.0",
     "@total-typescript/ts-reset": "^0.6.1",
     "ahooks": "3.8.4",
-    "antd": "5.24.3",
+    "antd": "5.24.4",
     "axios": "0",
     "axios-userscript-adapter": "0",
     "clsx": "^2.1.1",
