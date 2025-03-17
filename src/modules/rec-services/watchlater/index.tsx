@@ -1,3 +1,4 @@
+import { appWarn, IN_BILIBILI_HOMEPAGE } from '$common'
 import { type ItemsSeparator, type WatchlaterItemExtend } from '$define'
 import { EApiType } from '$define/index.shared'
 import { getHasLogined, getUid } from '$utility/cookie'
@@ -5,6 +6,7 @@ import { whenIdle } from '$utility/dom'
 import toast from '$utility/toast'
 import dayjs from 'dayjs'
 import { invariant, orderBy, shuffle } from 'es-toolkit'
+import pRetry from 'p-retry'
 import { proxy, useSnapshot } from 'valtio'
 import { proxySet } from 'valtio/utils'
 import { BaseTabService, type IService } from '../_base'
@@ -23,15 +25,27 @@ export function useWatchlaterState(bvid?: string) {
   return !!bvid && set.has(bvid)
 }
 
-if (getHasLogined() && getUid()) {
+export async function updateWatchlaterState() {
+  if (!getHasLogined() || !getUid()) return
+
+  const { items: allWatchlaterItems } = await getAllWatchlaterItemsV2()
+  if (!allWatchlaterItems.length) return
+
+  watchlaterState.updatedAt = Date.now()
+  watchlaterState.bvidSet = proxySet<string>(allWatchlaterItems.map((x) => x.bvid))
+}
+
+if (IN_BILIBILI_HOMEPAGE) {
   void (async () => {
     await whenIdle()
-
-    const { items: allWatchlaterItems } = await getAllWatchlaterItemsV2()
-    if (!allWatchlaterItems.length) return
-
-    watchlaterState.updatedAt = Date.now()
-    watchlaterState.bvidSet = proxySet<string>(allWatchlaterItems.map((x) => x.bvid))
+    await pRetry(updateWatchlaterState, {
+      retries: 3,
+      onFailedAttempt(error) {
+        appWarn(
+          `Try updateWatchlaterState ${error.attemptNumber} failed. There are ${error.retriesLeft} retries left`,
+        )
+      },
+    })
   })()
 }
 

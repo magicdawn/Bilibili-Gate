@@ -30,7 +30,8 @@ export function useWatchlaterRelated({
   watchlaterAdded: boolean
 }) {
   const { avid, bvid } = cardData
-  const hasWatchlaterEntry = (() => {
+
+  const hasWatchlaterEntry = useMemo(() => {
     if (isAppRecommend(item) || isPcRecommend(item)) {
       return item.goto === 'av'
     }
@@ -41,12 +42,13 @@ export function useWatchlaterRelated({
       return false
     }
     return true
-  })()
+  }, [item, cardData])
 
-  const $req = useRequest(
-    (usingAction: typeof watchlaterAdd | typeof watchlaterDel, avid: string) => usingAction(avid),
-    { manual: true },
-  )
+  type UsingAction = typeof watchlaterAdd | typeof watchlaterDel
+
+  const $req = useRequest((usingAction: UsingAction, avid: string) => usingAction(avid), {
+    manual: true,
+  })
 
   // watchlater added
   const watchlaterAddedPrevious = usePrevious(watchlaterAdded)
@@ -54,7 +56,7 @@ export function useWatchlaterRelated({
   const onToggleWatchlater = useMemoizedFn(
     async (
       e?: MouseEvent,
-      usingAction?: typeof watchlaterDel | typeof watchlaterAdd,
+      usingAction?: UsingAction,
     ): Promise<{ success: boolean; targetState?: boolean }> => {
       e?.preventDefault()
       e?.stopPropagation()
