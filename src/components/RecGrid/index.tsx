@@ -62,6 +62,7 @@ export const initHeaderState = (): HeaderState => ({
 })
 
 export type RecGridRef = { refresh: OnRefresh }
+
 export type RecGridProps = {
   className?: string
   shortcutEnabled: boolean
@@ -151,10 +152,10 @@ const RecGridInner = memo(function ({
     servicesRegistry,
     debug,
     fetcher: refreshForGrid,
-
     // actions
     preAction,
     postAction,
+    updateExtraInfo,
   })
 
   useImperativeHandle(handlersRef, () => ({ refresh }), [refresh])
@@ -246,7 +247,7 @@ const RecGridInner = memo(function ({
       const currentState = getState()
       if (!isEqual(startingState, currentState)) {
         debug(
-          'loadMore: skip update for mismatch refresh state, %s != %s',
+          'loadMore: skip update for mismatch refresh state, %o != %o',
           startingState,
           currentState,
         )

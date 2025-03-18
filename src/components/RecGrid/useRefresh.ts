@@ -2,7 +2,7 @@ import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
 import { TabConfig } from '$components/RecHeader/tab-config'
 import { ETab } from '$components/RecHeader/tab-enum'
 import type { RecItemTypeOrSeparator } from '$define'
-import { AsyncDisposableStackPolyfill } from '$modules/polyfills/explicit-resource-management'
+import { DisposableStackPolyfill } from '$modules/polyfills/explicit-resource-management'
 import { getGridRefreshCount } from '$modules/rec-services'
 import {
   getDynamicFeedServiceConfig,
@@ -36,6 +36,7 @@ export function useRefresh({
   fetcher,
   preAction,
   postAction,
+  updateExtraInfo,
 }: {
   tab: ETab
   servicesRegistry: RefStateBox<Partial<ServiceMap>>
@@ -43,6 +44,7 @@ export function useRefresh({
   fetcher: (opts: FetcherOptions) => Promise<RecItemTypeOrSeparator[]>
   preAction?: () => void | Promise<void>
   postAction?: () => void | Promise<void>
+  updateExtraInfo?: () => void
 }) {
   const hasMoreBox = useRefStateBox(true)
   const itemsBox = useRefStateBox<RecItemTypeOrSeparator[]>([])
@@ -63,7 +65,6 @@ export function useRefresh({
     setBeforeMount(false)
     refresh(true)
   })
-
   // switch away
   useUnmount(() => {
     refreshAbortController.abort()
@@ -71,7 +72,7 @@ export function useRefresh({
 
   const refresh: OnRefresh = useMemoizedFn(async (reuse = false) => {
     const start = performance.now()
-    await using stack = new AsyncDisposableStackPolyfill()
+    const stack = new DisposableStackPolyfill()
 
     // when already in refreshing
     if (refreshingBox.val) {
@@ -168,6 +169,12 @@ export function useRefresh({
         err = e
       }
 
+      // explicit aborted
+      if (_signal.aborted) {
+        debug('refresh(): tab=%s [aborted], ignoring rest code', tab)
+        return
+      }
+
       if (err) return onError(err)
       itemsBox.set(currentItems)
       return true // mark success
@@ -196,13 +203,17 @@ export function useRefresh({
     if (willRefresh) {
       const [err, service] = tryit(() => createServiceMap[tab]({ existingService }))()
       if (err) return onError(err)
+
       servicesRegistry.set({ ...servicesRegistry.val, [tab]: service })
+      updateExtraInfo?.()
 
       const success = await doFetch()
       if (!success) return
     }
 
+    stack.dispose() // Q: why not `using stack = new DisposableStackPolyfill()`  A: skip dispose when aborted
     await postAction?.()
+
     const cost = performance.now() - start
     debug('refresh(): tab=%s [success] cost %s ms', tab, cost.toFixed(0))
   })

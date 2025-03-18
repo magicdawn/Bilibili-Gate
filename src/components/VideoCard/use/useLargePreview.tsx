@@ -172,7 +172,7 @@ export function useLargePreviewRelated({
         css={css`
           width: 100%;
           height: 100%;
-          object-fit: cover;
+          object-fit: contain; /* avoid 'cover', this video may goto fullscreen */
         `}
       >
         {videoPreviewDataBox.state?.playUrls?.map((url, i) => <source key={i} src={url} />)}
