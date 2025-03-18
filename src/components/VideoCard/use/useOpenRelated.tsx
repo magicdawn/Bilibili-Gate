@@ -189,8 +189,12 @@ export function getRecItemDimension(item: RecItemType, dimensionFromApi?: VideoP
 
   // from API
   if (dimensionFromApi) {
-    width = dimensionFromApi.width
-    height = dimensionFromApi.height
+    // 0：正常, 1：对换
+    if (dimensionFromApi.rotate === 1) {
+      ;[width, height] = [dimensionFromApi.height, dimensionFromApi.width]
+    } else {
+      ;[width, height] = [dimensionFromApi.width, dimensionFromApi.height]
+    }
     aspectRatio = width / height
   }
 
