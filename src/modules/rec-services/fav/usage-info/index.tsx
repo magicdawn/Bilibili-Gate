@@ -2,6 +2,7 @@ import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
 import { defineAntMenus, type AntMenuItem } from '$modules/antd'
 import { settings, useSettingsSnapshot } from '$modules/settings'
+import { sortListByName } from '$utility/sort'
 import { css } from '@emotion/react'
 import { Button, Dropdown, Popover, Tag, Transfer } from 'antd'
 import type { TransferDirection } from 'antd/es/transfer'
@@ -49,11 +50,11 @@ export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
   const scopeSelectionDropdownMenus: AntMenuItem[] = useMemo(() => {
     const collectionSubMenus: AntMenuItem[] = []
     const collectionGrouped = groupBy(favCollections, (x) => x.upper.name)
-    const entries = Object.entries(collectionGrouped).map(([upName, collections]) => ({
+    let entries = Object.entries(collectionGrouped).map(([upName, collections]) => ({
       upName,
-      collections: collections.sort((a, b) => a.title.localeCompare(b.title, 'zh-CN')),
+      collections: sortListByName(collections, 'title'),
     }))
-    entries.sort((a, b) => a.upName.localeCompare(b.upName, 'zh-CN'))
+    entries = sortListByName(entries, 'upName')
     for (const { upName, collections } of entries) {
       collectionSubMenus.push(
         ...defineAntMenus([

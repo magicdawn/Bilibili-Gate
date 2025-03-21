@@ -4,6 +4,7 @@ import type { AntMenuItem } from '$modules/antd'
 import { IconForReset } from '$modules/icon'
 import { useSettingsSnapshot } from '$modules/settings'
 import { getAvatarSrc } from '$utility/image'
+import { localeComparer, mapNameForSort } from '$utility/sort'
 import { css } from '@emotion/react'
 import { Avatar, Badge, Button, Dropdown } from 'antd'
 import { delay } from 'es-toolkit'
@@ -76,6 +77,7 @@ export function DynamicFeedUsageInfo() {
     onSelect({ ...clearPayload })
   })
 
+  // #region scope dropdown menus
   const menuItems = useMemo((): AntMenuItem[] => {
     const itemAll: AntMenuItem = {
       key: 'all' satisfies DynamicFeedStoreSelectedKey,
@@ -98,24 +100,9 @@ export function DynamicFeedUsageInfo() {
       })
     }
 
-    function mapName(name: string) {
-      return (
-        name
-          .toLowerCase()
-          // 让字母在前面
-          .replace(/^([a-z])/, '999999$1')
-      )
-    }
-
     const upListSorted = fastSortWithOrders(upList, [
-      { prop: (it) => (it.has_update ? 1 : 0), order: 'desc' },
-      {
-        prop: 'uname',
-        order: (a: string, b: string) => {
-          ;[a, b] = [a, b].map(mapName)
-          return a.localeCompare(b, 'zh-CN')
-        },
-      },
+      { prop: (item) => (item.has_update ? 1 : 0), order: 'desc' },
+      { prop: (item) => mapNameForSort(item.uname), order: localeComparer },
     ])
 
     const items: AntMenuItem[] = upListSorted.map((up) => {
@@ -151,7 +138,6 @@ export function DynamicFeedUsageInfo() {
     return [itemAll, ...groupItems, ...items]
   }, [upList, dfSettings.followGroup.enabled, groups])
 
-  // #region scope dropdown menus
   const followGroupMidsCount = selectedGroup?.count
   const upIcon = <IconForUp {...size(14)} className='mt--2px' />
   const upAvtar = upFace ? <Avatar size={20} src={getAvatarSrc(upFace)} /> : undefined

@@ -33,7 +33,7 @@
     "@commitlint/types": "^19.8.0",
     "@emotion/babel-plugin": "^11.13.5",
     "@eslint/js": "^9.22.0",
-    "@iconify/json": "^2.2.318",
+    "@iconify/json": "^2.2.319",
     "@magicdawn/prettier-config": "^0.0.4",
     "@styled/typescript-styled-plugin": "^1.0.1",
     "@svgr/core": "^8.1.0",
@@ -48,7 +48,7 @@
     "@unocss/preset-rem-to-px": "^66.0.0",
     "@violentmonkey/types": "^0.2.0",
     "@vitejs/plugin-react": "^4.3.4",
-    "@vitejs/plugin-react-swc": "^3.8.0",
+    "@vitejs/plugin-react-swc": "^3.8.1",
     "@vitest/ui": "3.0.9",
     "chalk": "^5.4.1",
     "concurrently": "^9.1.2",
@@ -61,7 +61,7 @@
     "lint-staged": "^15.5.0",
     "node-cjs-interop": "^0.1.7",
     "open": "^10.1.0",
-    "oxlint": "^0.16.0",
+    "oxlint": "^0.16.2",
     "postcss-media-minmax": "^5.0.0",
     "prettier": "^3.5.3",
     "rollup-plugin-node-polyfills": "^0.2.1",
@@ -72,7 +72,7 @@
     "type-fest": "^4.37.0",
     "typed-scss-modules": "^8.1.1",
     "typescript": "5.8.2",
-    "typescript-eslint": "^8.26.1",
+    "typescript-eslint": "^8.27.0",
     "unocss": "^66.0.0",
     "unplugin-auto-import": "^19.1.1",
     "unplugin-icons": "^22.1.0",
@@ -144,5 +144,5 @@
       "esbuild"
     ]
   },
-  "packageManager": "pnpm@10.6.4+sha512.da3d715bfd22a9a105e6e8088cfc7826699332ded60c423b14ec613a185f1602206702ff0fe4c438cb15c979081ce4cb02568e364b15174503a63c7a8e2a5f6c"
+  "packageManager": "pnpm@10.6.5+sha512.cdf928fca20832cd59ec53826492b7dc25dc524d4370b6b4adbf65803d32efaa6c1c88147c0ae4e8d579a6c9eec715757b50d4fa35eea179d868eada4ed043af"
 }
