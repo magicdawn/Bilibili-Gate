@@ -299,6 +299,12 @@ export function TabPaneBasic() {
               <>{explainForFlag('使用 mp4, 最高 720p, 有声音', '使用 dash, 最高 1080p, 无声音')}</>
             }
           />
+
+          <CheckboxSettingItem
+            configPath='videoCard.videoPreview.useScale'
+            label='浮动预览使用放大效果'
+            tooltip={<>{explainForFlag('浮动预览面板 放大展开', '浮动预览面板 滑动展开')}</>}
+          />
         </Space>
       </SettingsGroup>
 

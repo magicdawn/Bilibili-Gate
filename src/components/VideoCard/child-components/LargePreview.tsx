@@ -229,33 +229,42 @@ export const LargePreview = forwardRef<
   useEventListener('resize', calculatePostionThrottled, { target: window })
   useEventListener('scroll', calculatePostionThrottled, { target: window })
 
-  const { disableScale } = useSettingsSnapshot().videoCard.videoPreview.__internal
+  const { useScale } = useSettingsSnapshot().videoCard.videoPreview
+
+  // default duration: 0.3
+  const animationDuration = useScale ? 0.2 : 0.3
 
   const initial = useMemo(() => {
     const direction = position?.direction
     if (!direction) return
 
     const { axis, multiplier, reverse } = DirectionConfig[direction]
-    const animateDistance = 20
-    const scale = disableScale ? 1 : 0.5
 
-    if (axis === 'x') {
-      return {
-        x: -multiplier * animateDistance,
-        y: 0,
-        transformOrigin: `${reverse} ${position.arrowTop}px`, // for scale
-        scale,
+    // no scale
+    if (!useScale) {
+      const animateDistance = 30
+      if (axis === 'x') {
+        return { x: -multiplier * animateDistance, y: 0 }
+      } else {
+        return { x: 0, y: -multiplier * animateDistance }
       }
     }
-    if (axis === 'y') {
-      return {
-        x: 0,
-        y: -multiplier * animateDistance,
-        transformOrigin: `${position.arrowLeft}px ${reverse}`, // for scale
-        scale,
+
+    // scale
+    else {
+      if (axis === 'x') {
+        return {
+          scale: 0.5,
+          transformOrigin: `${reverse} ${position.arrowTop}px`, // for scale
+        }
+      } else {
+        return {
+          scale: 0.5,
+          transformOrigin: `${position.arrowLeft}px ${reverse}`, // for scale
+        }
       }
     }
-  }, [position, disableScale])
+  }, [position, useScale])
 
   // as videoCardDescendant, to get cardRect
   const placeholderEl = <div ref={placeholderRef} data-role='video-card-descendant' />
@@ -281,13 +290,10 @@ export const LargePreview = forwardRef<
     >
       {visible && (
         <motion.div
+          className='relative h-100%'
           initial={{ opacity: 0, ...initial }}
           animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
-          transition={{ bounce: false, duration: 0.2 }} // default duration: 0.3
-          css={css`
-            position: relative;
-            height: 100%;
-          `}
+          transition={{ bounce: false, duration: animationDuration }}
         >
           {position?.direction && (
             <PopoverArrow
