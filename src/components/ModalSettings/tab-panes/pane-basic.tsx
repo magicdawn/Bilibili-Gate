@@ -263,6 +263,7 @@ export function TabPaneBasic() {
                 'autoPreviewWhenKeyboardSelect',
                 'autoPreviewWhenHover',
                 'videoCard.videoPreview.useMp4',
+                'videoCard.videoPreview.useScale',
               ]}
             />
           </>
