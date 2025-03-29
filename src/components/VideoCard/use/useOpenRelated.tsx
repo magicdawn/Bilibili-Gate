@@ -189,12 +189,9 @@ export function getRecItemDimension(item: RecItemType, dimensionFromApi?: VideoP
 
   // from API
   if (dimensionFromApi) {
+    ;[width, height] = [dimensionFromApi.height, dimensionFromApi.width]
     // 0：正常, 1：对换
-    if (dimensionFromApi.rotate === 1) {
-      ;[width, height] = [dimensionFromApi.height, dimensionFromApi.width]
-    } else {
-      ;[width, height] = [dimensionFromApi.width, dimensionFromApi.height]
-    }
+    if (dimensionFromApi.rotate === 1) [width, height] = [height, width]
     aspectRatio = width / height
   }
 
@@ -203,9 +200,10 @@ export function getRecItemDimension(item: RecItemType, dimensionFromApi?: VideoP
     const searchParams = new URL(item.uri).searchParams
     const playerWidth = Number(searchParams.get('player_width') || 0)
     const playerHeight = Number(searchParams.get('player_height') || 0)
+    const playerRotate = Number(searchParams.get('player_rotate') || 0)
     if (playerWidth && playerHeight && !isNaN(playerWidth) && !isNaN(playerHeight)) {
-      width = playerWidth
-      height = playerHeight
+      ;[width, height] = [playerWidth, playerHeight]
+      if (playerRotate === 1) [width, height] = [height, width]
       aspectRatio = width / height
     }
   }
@@ -214,9 +212,10 @@ export function getRecItemDimension(item: RecItemType, dimensionFromApi?: VideoP
   else if (item.api === EApiType.Ranking && isNormalRankingItem(item)) {
     const w = item.dimension.width
     const h = item.dimension.height
+    const rotate = item.dimension.rotate
     if (w && h && !isNaN(w) && !isNaN(h)) {
-      width = w
-      height = h
+      ;[width, height] = [w, h]
+      if (rotate === 1) [width, height] = [height, width]
       aspectRatio = width / height
     }
   }
