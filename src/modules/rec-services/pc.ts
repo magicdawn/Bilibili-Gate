@@ -35,7 +35,6 @@ export class PcRecService extends BaseTabService<PcRecItemExtend> {
 
   constructor(public isKeepFollowOnly: boolean) {
     super(PcRecService.PAGE_SIZE)
-    this.isKeepFollowOnly = isKeepFollowOnly
   }
 
   override fetchMore(abortSignal: AbortSignal): Promise<PcRecItemExtend[] | undefined> {
