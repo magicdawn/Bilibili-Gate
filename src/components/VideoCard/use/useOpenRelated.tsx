@@ -9,8 +9,7 @@ import { openNewTab } from '$modules/gm'
 import { isNormalRankingItem } from '$modules/rec-services/hot/ranking/category'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { delay } from 'es-toolkit'
-import type { ComponentProps, MouseEvent, MouseEventHandler, ReactNode, RefObject } from 'react'
-import type { PreviewImageRef } from '../child-components/PreviewImage'
+import type { ComponentProps, MouseEvent, MouseEventHandler, ReactNode } from 'react'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
 import {
   ForceAutoPlay,
@@ -35,19 +34,19 @@ export function useOpenRelated({
   item,
   cardData,
   actionButtonVisible,
-  previewImageRef,
   hasOpenInPopupActionButton,
   getLargePreviewCurrentTime,
   hideLargePreview,
+  shouldUseLargePreviewCurrentTime,
 }: {
   href: string
   item: RecItemType
   cardData: IVideoCardData
   actionButtonVisible: boolean
-  previewImageRef: RefObject<PreviewImageRef | null>
   hasOpenInPopupActionButton: boolean
   getLargePreviewCurrentTime: () => number | undefined
   hideLargePreview: () => void
+  shouldUseLargePreviewCurrentTime: () => boolean
 }) {
   const { videoLinkOpenMode } = useSettingsSnapshot()
 
@@ -75,10 +74,12 @@ export function useOpenRelated({
         }
       }
 
-      const largePreviewT = getLargePreviewCurrentTime()
-      if (largePreviewT) {
-        hideLargePreview()
-        u.searchParams.set('t', largePreviewT.toString())
+      if (shouldUseLargePreviewCurrentTime()) {
+        const largePreviewT = getLargePreviewCurrentTime()
+        if (largePreviewT) {
+          hideLargePreview()
+          u.searchParams.set('t', largePreviewT.toString())
+        }
       }
     })
 

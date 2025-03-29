@@ -76,6 +76,12 @@ export function useLargePreviewRelated({
     | 'popover-video-fullscreen-button'
   const triggerAction = useRefStateBox<TriggerAction | undefined>(undefined)
   const triggerElement = useRefStateBox<TriggerElement | undefined>(undefined)
+  const hideAt = useRefStateBox<number | undefined>(undefined)
+
+  const isRecentlyHidden = useMemoizedFn(() => {
+    if (!hideAt.val) return false
+    return Date.now() - hideAt.val < 1200 // 1.2s
+  })
 
   const enterTimer = useRef<Timer | undefined>(undefined)
   const leaveTimer = useRef<Timer | undefined>(undefined)
@@ -89,11 +95,13 @@ export function useLargePreviewRelated({
     triggerAction.set(action)
     triggerElement.set(el)
     sharedEmitter.emit('show-large-preview', uniqId)
+    hideAt.set(undefined)
   })
   const hide = useMemoizedFn(() => {
     setVisible(false)
     triggerAction.set(undefined)
     triggerElement.set(undefined)
+    hideAt.set(Date.now())
   })
   useMittOn(sharedEmitter, 'show-large-preview', (srcUniqId) => {
     if (srcUniqId === uniqId) return
@@ -130,9 +138,14 @@ export function useLargePreviewRelated({
   })
 
   const getLargePreviewCurrentTime = useMemoizedFn(() => {
-    if (!visible) return
     if (!currentTimeRef.current) return
     return Math.floor(currentTimeRef.current)
+  })
+
+  const shouldUseLargePreviewCurrentTime = useMemoizedFn(() => {
+    if (visible) return true
+    if (isRecentlyHidden()) return true
+    return false
   })
 
   const onOpenInNewTab = useMemoizedFn(() => {
@@ -292,6 +305,7 @@ export function useLargePreviewRelated({
     largePreviewActionButtonEl,
     largePreviewEl,
     getLargePreviewCurrentTime,
+    shouldUseLargePreviewCurrentTime,
     largePreviewVisible: visible,
     hideLargePreview: hide,
   }
