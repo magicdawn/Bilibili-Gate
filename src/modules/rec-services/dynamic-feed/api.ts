@@ -28,11 +28,16 @@ export async function fetchVideoDynamicFeeds({
   if (offset) {
     params.offset = offset
   }
+
+  const apiPath = '/x/polymer/web-dynamic/v1/feed/all'
   if (upMid) {
     params.host_mid = upMid
+    // 未关注, 也可以查询, 但有风控 (code -352) ...
+    // TODO: figure out how to query
+    // apiPath = '/x/polymer/web-dynamic/v1/feed/space'
   }
 
-  const res = await request.get('/x/polymer/web-dynamic/v1/feed/all', {
+  const res = await request.get(apiPath, {
     signal: abortSignal,
     params,
   })
