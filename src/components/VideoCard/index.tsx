@@ -27,7 +27,7 @@ import { useIsDarkMode } from '$modules/dark-mode'
 import { UserFavService } from '$modules/rec-services/fav/user-fav-service'
 import { ELiveStatus } from '$modules/rec-services/live/live-enum'
 import { useWatchlaterState } from '$modules/rec-services/watchlater'
-import { settings, useSettingsSnapshot } from '$modules/settings'
+import { CardDisplay, settings, useSettingsSnapshot } from '$modules/settings'
 import { isWebApiSuccess } from '$request'
 import { isFirefox, isSafari } from '$ua'
 import type { CssProp } from '$utility/type'
@@ -81,6 +81,7 @@ export type VideoCardProps = {
   sharedEmitter?: SharedEmitter
   tab: ETab
   baseCss?: CssProp
+  cardDisplay?: CardDisplay
 } & ComponentProps<'div'>
 
 export const VideoCard = memo(function VideoCard({
@@ -96,6 +97,7 @@ export const VideoCard = memo(function VideoCard({
   sharedEmitter,
   tab,
   baseCss,
+  cardDisplay,
   ...restProps
 }: VideoCardProps) {
   // loading defaults to
@@ -118,7 +120,14 @@ export const VideoCard = memo(function VideoCard({
       style={style}
       data-bvid={cardData?.bvid}
       className={clsx('bili-video-card', styles.biliVideoCard, className)}
-      css={[baseCss, inNormalCardCss]}
+      css={[
+        baseCss,
+        inNormalCardCss,
+        cardDisplay === CardDisplay.List &&
+          css`
+            grid-column: 1 / -1;
+          `,
+      ]}
       {...restProps}
     >
       {loading ? (
@@ -147,6 +156,7 @@ export const VideoCard = memo(function VideoCard({
             onMoveToFirst={onMoveToFirst}
             onRefresh={onRefresh}
             watchlaterAdded={watchlaterAdded}
+            cardDisplay={cardDisplay}
           />
         ))
       )}
@@ -165,6 +175,7 @@ export type VideoCardInnerProps = {
   sharedEmitter?: SharedEmitter
   watchlaterAdded: boolean
   tab: ETab
+  cardDisplay?: CardDisplay
 }
 const VideoCardInner = memo(function VideoCardInner({
   item,
@@ -177,6 +188,7 @@ const VideoCardInner = memo(function VideoCardInner({
   emitter = defaultEmitter,
   sharedEmitter = defaultSharedEmitter,
   watchlaterAdded,
+  cardDisplay,
 }: VideoCardInnerProps) {
   const {
     autoPreviewWhenHover,
@@ -220,6 +232,8 @@ const VideoCardInner = memo(function VideoCardInner({
   if (!allowed.includes(goto)) {
     appWarn(`none (${allowed.join(',')}) goto type %s`, goto, item)
   }
+
+  const displayAsListItem = cardDisplay === CardDisplay.List
 
   const imagePreviewDataBox = useRefStateBox<ImagePreviewData | undefined>(undefined)
   const videoPreviewDataBox = useRefStateBox<VideoPreviewData | undefined>(undefined)
@@ -531,6 +545,10 @@ const VideoCardInner = memo(function VideoCardInner({
         `,
         coverRoundCss,
         coverBorderCss,
+        displayAsListItem &&
+          css`
+            width: 20%;
+          `,
       ]}
       onClick={handleVideoLinkClick}
       onContextMenu={(e) => {
@@ -641,11 +659,18 @@ const VideoCardInner = memo(function VideoCardInner({
       <div
         className='bili-video-card__wrap'
         ref={(el) => (cardRef.current = el)}
-        css={css`
-          background-color: unset;
-          position: static;
-          height: 100%;
-        `}
+        css={[
+          css`
+            background-color: unset;
+            position: static;
+            height: 100%;
+          `,
+          displayAsListItem &&
+            css`
+              display: flex;
+              column-gap: 20px;
+            `,
+        ]}
         onClick={handleCardClick}
         onContextMenu={(e) => {
           if (cardUseBorder) {

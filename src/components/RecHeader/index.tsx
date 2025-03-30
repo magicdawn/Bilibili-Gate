@@ -10,11 +10,11 @@ import { bgValue } from '$components/css-vars'
 import { $headerHeight, $usingEvolevdHeader } from '$header'
 import { useIsDarkMode } from '$modules/dark-mode'
 import { IconForConfig } from '$modules/icon'
-import { useSettingsSnapshot } from '$modules/settings'
+import { CardDisplay, settings, useSettingsSnapshot } from '$modules/settings'
 import { isMac } from '$ua'
 import { getElementOffset, shouldDisableShortcut } from '$utility/dom'
 import { css } from '@emotion/react'
-import { Button, Space } from 'antd'
+import { Button } from 'antd'
 import { size } from 'polished'
 import { useSnapshot } from 'valtio'
 import { AccessKeyManage } from '../AccessKeyManage'
@@ -25,15 +25,6 @@ import { VideoSourceTab, useCurrentDisplayingTabKeys } from './tab'
 import { ETab } from './tab-enum'
 
 const debug = baseDebug.extend('RecHeader')
-
-const S = {
-  leftright: css`
-    height: 100%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-  `,
-}
 
 export type RecHeaderRef = {
   scrollToTop: () => void
@@ -50,6 +41,9 @@ export const RecHeader = forwardRef<
 >(function RecHeader({ onRefresh, refreshing, leftSlot, rightSlot }, ref) {
   const { accessKey, pureRecommend, showModalFeedEntry, style } = useSettingsSnapshot()
   const { modalFeedVisible, modalSettingsVisible } = useSnapshot(headerState)
+
+  // style sub
+  const { cardDisplay, useStickyTabbar } = style.pureRecommend
 
   useKeyPress(
     ['shift.comma'],
@@ -94,6 +88,13 @@ export const RecHeader = forwardRef<
 
   const expandToFullWidthCss = useExpandToFullWidthCss()
 
+  const toggleCardDisplay = useMemoizedFn(() => {
+    const list = [CardDisplay.Grid, CardDisplay.List]
+    const index = list.indexOf(settings.style.pureRecommend.cardDisplay)
+    const nextIndex = (index + 1) % list.length
+    settings.style.pureRecommend.cardDisplay = list[nextIndex]
+  })
+
   return (
     <>
       <OnRefreshContext.Provider value={onRefresh}>
@@ -102,7 +103,7 @@ export const RecHeader = forwardRef<
           className={clsx('area-header-wrapper', { sticky })}
           css={
             pureRecommend &&
-            style.pureRecommend.useStickyTabbar && [
+            useStickyTabbar && [
               css`
                 position: sticky;
                 top: ${headerHeight - 1}px; // 有缝隙, 故 -1 px
@@ -144,18 +145,7 @@ export const RecHeader = forwardRef<
           >
             <div
               data-class-name='left'
-              css={[
-                S.leftright,
-                css`
-                  /* as item */
-                  flex-shrink: 1;
-
-                  /* as container */
-                  flex-wrap: wrap;
-                  row-gap: 8px;
-                  column-gap: 15px;
-                `,
-              ]}
+              className='flex-shrink-1 h-100% flex items-center flex-wrap gap-y-8px gap-x-15px'
             >
               <VideoSourceTab onRefresh={onRefresh} />
               {leftSlot}
@@ -163,36 +153,41 @@ export const RecHeader = forwardRef<
 
             <div
               data-class-name='right'
-              css={[
-                S.leftright,
-                css`
-                  flex-shrink: 0;
-                `,
-              ]}
+              className='h-100% flex-shrink-0 flex items-center gap-x-8px'
             >
-              <Space size={'small'}>
-                {rightSlot}
+              {rightSlot}
 
-                {!accessKey && showAccessKeyManage && <AccessKeyManage style={{ marginLeft: 5 }} />}
-
-                <Button onClick={showModalSettings} css={iconOnlyRoundButtonCss}>
-                  <ModalSettingsHotkey />
-                  <IconForConfig {...size(14)} />
-                </Button>
-
-                <RefreshButton
-                  refreshing={refreshing}
-                  onRefresh={onRefresh}
-                  refreshHotkeyEnabled={!(modalSettingsVisible || modalFeedVisible)}
+              {cardDisplay === CardDisplay.Grid ? (
+                <IconTablerLayoutGrid
+                  className='cursor-pointer size-20px'
+                  onClick={toggleCardDisplay}
                 />
+              ) : (
+                <IconTablerListDetails
+                  className='cursor-pointer size-20px'
+                  onClick={toggleCardDisplay}
+                />
+              )}
 
-                {showModalFeedEntry && (
-                  <Button onClick={showModalFeed} className='gap-0'>
-                    <span className='relative top-1px'>查看更多</span>
-                    <IconParkOutlineRight />
-                  </Button>
-                )}
-              </Space>
+              {!accessKey && showAccessKeyManage && <AccessKeyManage style={{ marginLeft: 5 }} />}
+
+              <Button onClick={showModalSettings} css={iconOnlyRoundButtonCss}>
+                <ModalSettingsHotkey />
+                <IconForConfig {...size(14)} />
+              </Button>
+
+              <RefreshButton
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                refreshHotkeyEnabled={!(modalSettingsVisible || modalFeedVisible)}
+              />
+
+              {showModalFeedEntry && (
+                <Button onClick={showModalFeed} className='gap-0'>
+                  <span className='relative top-1px'>查看更多</span>
+                  <IconParkOutlineRight />
+                </Button>
+              )}
             </div>
           </div>
         </div>

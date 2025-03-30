@@ -61,6 +61,8 @@ declare global {
   const IconTablerCoinYen: typeof import('~icons/tabler/coin-yen.jsx')['default']
   const IconTablerFaceIdError: typeof import('~icons/tabler/face-id-error.jsx')['default']
   const IconTablerHeartFilled: typeof import('~icons/tabler/heart-filled.jsx')['default']
+  const IconTablerLayoutGrid: typeof import('~icons/tabler/layout-grid.jsx')['default']
+  const IconTablerListDetails: typeof import('~icons/tabler/list-details.jsx')['default']
   const IconTablerPlus: typeof import('~icons/tabler/plus.jsx')['default']
   const IconTablerSortAscending2: typeof import('~icons/tabler/sort-ascending2.jsx')['default']
   const IconTablerSortDescending2: typeof import('~icons/tabler/sort-descending2.jsx')['default']

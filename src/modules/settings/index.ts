@@ -19,6 +19,11 @@ import { saveToDraft } from './cloud-backup'
 
 const debug = baseDebug.extend('settings')
 
+export enum CardDisplay {
+  Grid = 'grid',
+  List = 'list',
+}
+
 /**
  * 命名: 模块/tab + 场景 + 功能
  */
@@ -207,6 +212,9 @@ export const initialSettings = {
 
       // 隐藏顶部分区
       hideTopChannel: false,
+
+      // grid | list
+      cardDisplay: CardDisplay.Grid,
     },
 
     videoCard: {

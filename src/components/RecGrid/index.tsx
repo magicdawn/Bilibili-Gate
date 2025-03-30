@@ -116,6 +116,7 @@ const RecGridInner = memo(function ({
   servicesRegistry: RefStateBox<Partial<ServiceMap>>
 }) {
   const unmountedRef = useUnmountedRef()
+  const cardDisplay = useSettingsSnapshot().style.pureRecommend.cardDisplay
 
   // 已加载完成的 load call count, 类似 page
   const loadCompleteCountBox = useRefStateBox(0)
@@ -548,6 +549,7 @@ const RecGridInner = memo(function ({
           onRefresh={refresh}
           emitter={videoCardEmitters[index]}
           sharedEmitter={sharedEmitter}
+          cardDisplay={cardDisplay}
         />
       )
     }
