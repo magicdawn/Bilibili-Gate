@@ -90,6 +90,11 @@ export const TabConfig: Record<ETab, TabConfigItem> = {
     desc: '直播~',
     swr: true,
   },
+  [ETab.SpaceUpload]: {
+    icon: <IconLineMdUploadingLoop {...size(16)} />,
+    label: '投稿',
+    desc: 'UP 视频投稿',
+  },
 }
 
 export function TabIcon({

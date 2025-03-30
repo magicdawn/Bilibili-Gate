@@ -25,6 +25,7 @@ export const recItemUniqer = (item: RecItemTypeOrSeparator) =>
         [EApiType.PopularWeekly]: (item) => item.bvid,
         [EApiType.Ranking]: (item) => item.uniqId,
         [EApiType.Live]: (item) => item.roomid,
+        [EApiType.SpaceUpload]: (item) => item.bvid,
       })
 
 export function concatThenUniq(

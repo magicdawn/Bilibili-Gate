@@ -114,7 +114,7 @@ export function useLargePreviewRelated({
     $req.run()
     clearTimers()
     if (triggerEl === 'video-card-action-button') {
-      enterTimer.current = setTimeout(() => showBy('hover', triggerEl), 400) // 不要太敏感啊~
+      enterTimer.current = setTimeout(() => showBy('hover', triggerEl), 200) // 不要太敏感啊~
     } else {
       showBy('hover', triggerEl)
     }

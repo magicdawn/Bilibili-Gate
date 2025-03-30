@@ -1,6 +1,7 @@
 import type { CategorySlug, CategoryType } from '$modules/rec-services/hot/ranking/category'
 import type { RankingItem } from '$modules/rec-services/hot/ranking/types'
 import type { LiveItem } from '$modules/rec-services/live/types/list-live'
+import type { SpaceUploadItem } from '$modules/rec-services/space-upload/types/space-upload'
 import type { FavItemExtend } from '../modules/rec-services/fav/types'
 import type { WatchlaterItem } from '../modules/rec-services/watchlater/types'
 import type { android } from './app-recommend.android'
@@ -21,6 +22,10 @@ export type { PcRecItem, PcRecommendJson } from './pc-recommend'
 export type { DmJson, PvideoJson }
 export type PvideoData = PvideoJson['data']
 export type DmData = DmJson['data']
+export type {
+  SpaceUploadItem,
+  SpaceUploadJson,
+} from '$modules/rec-services/space-upload/types/space-upload'
 
 /**
  * app
@@ -47,10 +52,13 @@ export type AppRecItem = AndroidAppRecItem | IpadAppRecItem
 export type AppRecItemExtend = AndroidAppRecItemExtend | IpadAppRecItemExtend
 export type AppRecommendJson = android.AppRecommendJson | ipad.AppRecommendJson
 
+export type RecItemTypeOrSeparator = RecItemType | ItemsSeparator
+
+export type ItemsSeparator = { uniqId: string; api: EApiType.Separator; content: ReactNode }
+
 /**
  * ItemExtend
  */
-
 export type RecItemType =
   | AndroidAppRecItemExtend
   | IpadAppRecItemExtend
@@ -62,11 +70,9 @@ export type RecItemType =
   | PopularWeeklyItemExtend
   | RankingItemExtend
   | LiveItemExtend
+  | SpaceUploadItemExtend
 
-export type RecItemTypeOrSeparator = RecItemType | ItemsSeparator
-
-export type ItemsSeparator = { uniqId: string; api: EApiType.Separator; content: ReactNode }
-
+// #region define ItemExtend
 export type PcRecItemExtend = PcRecItem & {
   uniqId: string
   api: EApiType.PcRecommend
@@ -106,6 +112,13 @@ export type LiveItemExtend = LiveItem & {
   api: EApiType.Live
 }
 
+export type SpaceUploadItemExtend = SpaceUploadItem & {
+  uniqId: string
+  api: EApiType.SpaceUpload
+}
+// #endregion
+
+// #region predicates
 export function isAppRecommend(item: RecItemType): item is AppRecItemExtend {
   return item.api === EApiType.AppRecommend
 }
@@ -133,3 +146,7 @@ export function isRanking(item: RecItemType): item is RankingItemExtend {
 export function isLive(item: RecItemType): item is LiveItemExtend {
   return item.api === EApiType.Live
 }
+export function isSpaceUpload(item: RecItemType): item is SpaceUploadItemExtend {
+  return item.api === EApiType.SpaceUpload
+}
+// #endregion

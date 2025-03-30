@@ -63,7 +63,7 @@ export function useRefresh({
   const [beforeMount, setBeforeMount] = useState(true)
   useMount(() => {
     setBeforeMount(false)
-    refresh(true)
+    refresh()
   })
   // switch away
   useUnmount(() => {

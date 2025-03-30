@@ -10,6 +10,7 @@ declare global {
   const IconIcOutlineCloud: typeof import('~icons/ic/outline-cloud.jsx')['default']
   const IconIonLayersOutline: typeof import('~icons/ion/layers-outline.jsx')['default']
   const IconLetsIconsViewHide: typeof import('~icons/lets-icons/view-hide.jsx')['default']
+  const IconLineMdUploadingLoop: typeof import('~icons/line-md/uploading-loop.jsx')['default']
   const IconLucideFolder: typeof import('~icons/lucide/folder.jsx')['default']
   const IconLucideFolderLock: typeof import('~icons/lucide/folder-lock.jsx')['default']
   const IconLucideList: typeof import('~icons/lucide/list.jsx')['default']

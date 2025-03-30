@@ -14,4 +14,5 @@ export enum EApiType {
   PopularWeekly = 'popular-weekly',
   Ranking = 'ranking',
   Live = 'live',
+  SpaceUpload = 'space-upload',
 }

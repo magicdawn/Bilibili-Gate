@@ -9,6 +9,7 @@ import {
   isPopularGeneral,
   isPopularWeekly,
   isRanking,
+  isSpaceUpload,
   isWatchlater,
   type AndroidAppRecItemExtend,
   type AppRecItemExtend,
@@ -20,6 +21,7 @@ import {
   type PopularWeeklyItemExtend,
   type RankingItemExtend,
   type RecItemType,
+  type SpaceUploadItemExtend,
   type WatchlaterItemExtend,
 } from '$define'
 import { EApiType } from '$define/index.shared'
@@ -38,6 +40,7 @@ import {
   isCinemaRankingItem,
 } from '$modules/rec-services/hot/ranking/category'
 import { ELiveStatus } from '$modules/rec-services/live/live-enum'
+import { spaceUploadAvatarCache } from '$modules/rec-services/space-upload'
 import { toHttps } from '$utility/url'
 import {
   formatDuration,
@@ -114,17 +117,19 @@ export function lookinto<T>(
     [EApiType.PopularWeekly]: (item: PopularWeeklyItemExtend) => T
     [EApiType.Ranking]: (item: RankingItemExtend) => T
     [EApiType.Live]: (item: LiveItemExtend) => T
+    [EApiType.SpaceUpload]: (item: SpaceUploadItemExtend) => T
   },
 ): T {
   if (isAppRecommend(item)) return opts[EApiType.AppRecommend](item)
   if (isPcRecommend(item)) return opts[EApiType.PcRecommend](item)
   if (isDynamicFeed(item)) return opts[EApiType.DynamicFeed](item)
-  if (isWatchlater(item)) return opts.watchlater(item)
-  if (isFav(item)) return opts.fav(item)
-  if (isPopularGeneral(item)) return opts['popular-general'](item)
-  if (isPopularWeekly(item)) return opts['popular-weekly'](item)
-  if (isRanking(item)) return opts['ranking'](item)
-  if (isLive(item)) return opts.live(item)
+  if (isWatchlater(item)) return opts[EApiType.Watchlater](item)
+  if (isFav(item)) return opts[EApiType.Fav](item)
+  if (isPopularGeneral(item)) return opts[EApiType.PopularGeneral](item)
+  if (isPopularWeekly(item)) return opts[EApiType.PopularWeekly](item)
+  if (isRanking(item)) return opts[EApiType.Ranking](item)
+  if (isLive(item)) return opts[EApiType.Live](item)
+  if (isSpaceUpload(item)) return opts[EApiType.SpaceUpload](item)
   throw new Error(`unknown api type`)
 }
 
@@ -139,6 +144,7 @@ export function normalizeCardData(item: RecItemType) {
     [EApiType.PopularWeekly]: apiPopularWeeklyAdapter,
     [EApiType.Ranking]: apiRankingAdapter,
     [EApiType.Live]: apiLiveAdapter,
+    [EApiType.SpaceUpload]: apiSpaceUploadAdapter,
   })
 
   // handle mixed content
@@ -732,5 +738,39 @@ function apiLiveAdapter(item: LiveItemExtend): IVideoCardData {
     authorName: item.uname,
     authorFace: item.face,
     authorMid: String(item.uid),
+  }
+}
+
+function apiSpaceUploadAdapter(item: SpaceUploadItemExtend): IVideoCardData {
+  return {
+    // video
+    avid: item.aid.toString(),
+    bvid: item.bvid,
+    cid: undefined,
+    goto: 'av',
+    href: `/video/${item.bvid}/`,
+    title: item.title,
+    cover: item.pic,
+    pubts: item.created,
+    pubdateDisplay: formatTimeStamp(item.created),
+    duration: parseDuration(item.length),
+    durationStr: item.length,
+    recommendReason: undefined,
+
+    // stat
+    play: item.play,
+    like: undefined,
+    coin: undefined,
+    danmaku: item.video_review,
+    favorite: undefined,
+    statItems: defineStatItems([
+      { field: 'play', value: item.play },
+      { field: 'danmaku', value: item.video_review },
+    ]),
+
+    // author
+    authorName: item.author,
+    authorFace: spaceUploadAvatarCache.get(item.mid.toString()),
+    authorMid: item.mid.toString(),
   }
 }

@@ -7,6 +7,7 @@ export enum ETab {
   Fav = 'fav',
   Hot = 'hot',
   Live = 'live',
+  SpaceUpload = 'space-upload',
 }
 
 export enum EHotSubTab {
