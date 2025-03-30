@@ -21,6 +21,7 @@ import {
   type ListSettingsPath,
   type Settings,
 } from '$modules/settings'
+import { advancedSearchHelpInfo } from '$utility/search'
 import { css } from '@emotion/react'
 import { useRequest } from 'ahooks'
 import { Badge, Button, Checkbox, Input, Popover, Radio } from 'antd'
@@ -411,14 +412,7 @@ function SearchCacheRelated() {
             <CheckboxSettingItem
               configPath='dynamicFeed.advancedSearch'
               label={'使用高级搜索'}
-              tooltip={
-                <>
-                  高级搜索 <br />
-                  1. 可以使用多个搜索词, 用空格分隔, 逻辑关系为且 (AND) <br />
-                  2. 可以使用引号包裹搜索词, 如 "word or sentence" <br />
-                  2. 可以使用 -"word or sentence" 排除关键词 <br />
-                </>
-              }
+              tooltip={advancedSearchHelpInfo}
             />
           </div>
         </div>

@@ -8,6 +8,7 @@ import {
 } from '$define'
 import { EApiType } from '$define/index.shared'
 import { settings } from '$modules/settings'
+import { parseSearchInput } from '$utility/search'
 import type { Nullable } from '$utility/type'
 import { parseDuration } from '$utility/video'
 import dayjs from 'dayjs'
@@ -23,7 +24,6 @@ import {
   localDynamicFeedCache,
   performIncrementalUpdateIfNeed,
 } from './cache'
-import { parseSearchInput } from './cache/search'
 import { getFollowGroupContent } from './group'
 import { FollowGroupMergeTimelineService } from './group/merge-timeline-service'
 import {
