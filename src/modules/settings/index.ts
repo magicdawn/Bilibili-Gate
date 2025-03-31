@@ -254,6 +254,7 @@ export const initialSettings = {
   __internalEnableCopyBvidInfoContextMenu: false,
   __internalAddCopyBvidButton: false,
   __internalHotSubUseDropdown: false,
+  __internalShowGridListSwitcher: false,
 }
 
 export type Settings = typeof initialSettings

@@ -39,11 +39,10 @@ export const RecHeader = forwardRef<
     rightSlot?: ReactNode
   }
 >(function RecHeader({ onRefresh, refreshing, leftSlot, rightSlot }, ref) {
-  const { accessKey, pureRecommend, showModalFeedEntry, style } = useSettingsSnapshot()
   const { modalFeedVisible, modalSettingsVisible } = useSnapshot(headerState)
-
-  // style sub
-  const { cardDisplay, useStickyTabbar } = style.pureRecommend
+  const { accessKey, pureRecommend, showModalFeedEntry, style, __internalShowGridListSwitcher } =
+    useSettingsSnapshot()
+  const { cardDisplay, useStickyTabbar } = style.pureRecommend // style sub
 
   useKeyPress(
     ['shift.comma'],
@@ -159,13 +158,15 @@ export const RecHeader = forwardRef<
 
               {!accessKey && showAccessKeyManage && <AccessKeyManage style={{ marginLeft: 5 }} />}
 
-              <Button css={iconOnlyRoundButtonCss} onClick={toggleCardDisplay}>
-                {cardDisplay === ECardDisplay.Grid ? (
-                  <IconTablerLayoutGrid className='cursor-pointer size-14px' />
-                ) : (
-                  <IconTablerListDetails className='cursor-pointer size-14px' />
-                )}
-              </Button>
+              {__internalShowGridListSwitcher && (
+                <Button css={iconOnlyRoundButtonCss} onClick={toggleCardDisplay}>
+                  {cardDisplay === ECardDisplay.Grid ? (
+                    <IconTablerLayoutGrid className='cursor-pointer size-14px' />
+                  ) : (
+                    <IconTablerListDetails className='cursor-pointer size-14px' />
+                  )}
+                </Button>
+              )}
 
               <Button onClick={showModalSettings} css={iconOnlyRoundButtonCss}>
                 <ModalSettingsHotkey />
