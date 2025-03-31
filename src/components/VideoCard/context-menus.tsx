@@ -6,7 +6,6 @@ import { appClsColorPrimary } from '$common/css-vars-export.module.scss'
 import { C } from '$common/emotion-css'
 import { currentGridItems, getBvidInfo } from '$components/RecGrid/unsafe-window-export'
 import type { OnRefresh } from '$components/RecGrid/useRefresh'
-import { videoSourceTabState } from '$components/RecHeader/tab'
 import { ETab } from '$components/RecHeader/tab-enum'
 import {
   isDynamicFeed,
@@ -38,10 +37,10 @@ import {
   QUERY_DYNAMIC_UP_MID,
   dfStore,
 } from '$modules/rec-services/dynamic-feed/store'
-import { dynamicFeedFilterSelectUp } from '$modules/rec-services/dynamic-feed/usage-info'
 import { formatFavCollectionUrl, formatFavFolderUrl } from '$modules/rec-services/fav/fav-url'
 import { FavQueryKey, favStore } from '$modules/rec-services/fav/store'
 import { UserFavService, defaultFavFolderName } from '$modules/rec-services/fav/user-fav-service'
+import { SpaceUploadQueryKey } from '$modules/rec-services/space-upload/store'
 import { settings, updateSettingsInnerArray } from '$modules/settings'
 import toast from '$utility/toast'
 import { delay } from 'es-toolkit'
@@ -155,10 +154,11 @@ export function useContextMenus({
   /**
    * unfollow
    */
-  const hasUnfollowEntry =
+  const followed =
     item.api === EApiType.DynamicFeed ||
     ((item.api === EApiType.AppRecommend || item.api === EApiType.PcRecommend) &&
       getFollowedStatus(recommendReason))
+  const hasUnfollowEntry = followed
   const onUnfollowUp = useMemoizedFn(async () => {
     if (!authorMid) return
     const success = await UserfollowService.unfollow(authorMid)
@@ -168,37 +168,13 @@ export function useContextMenus({
   })
 
   /**
-   * 查看 UP 的动态
+   * 查看 UP 的动态 或 投稿
    */
-  const hasDynamicFeedFilterSelectUpEntry =
-    (isNormalVideo || isLive(item)) && !!authorMid && !!authorName
-  const onDynamicFeedFilterSelectUp = useMemoizedFn(async (newWindow?: boolean) => {
-    if (!hasDynamicFeedFilterSelectUpEntry) return
-
-    async function openInCurrentWindow() {
-      dynamicFeedFilterSelectUp({
-        upMid: authorMid,
-        upName: authorName,
-        searchText: undefined,
-      })
-      videoSourceTabState.value = ETab.DynamicFeed
-      await delay(100)
-      await onRefresh?.()
-    }
-
-    function openInNewWindow() {
-      const u = `/?dyn-mid=${authorMid}`
-      openNewTab(u)
-    }
-
-    // newWindow ??= tab !== ETab.DynamicFeed
-    newWindow ??= true
-
-    if (newWindow) {
-      openInNewWindow()
-    } else {
-      openInCurrentWindow()
-    }
+  const hasViewUpVideoListEntry = (isNormalVideo || isLive(item)) && !!authorMid && !!authorName
+  const onViewUpVideoListEntry = useMemoizedFn(async () => {
+    if (!hasViewUpVideoListEntry) return
+    const u = `/?${followed ? DynamicFeedQueryKey.Mid : SpaceUploadQueryKey.Mid}=${authorMid}`
+    openNewTab(u)
   })
 
   /**
@@ -310,13 +286,11 @@ export function useContextMenus({
     // I'm interested in this video
     const interestedMenus = defineAntMenus([
       {
-        test: hasDynamicFeedFilterSelectUpEntry,
-        key: 'dymamic-feed-filter-select-up',
-        label: '查看 UP 的动态',
+        test: hasViewUpVideoListEntry,
+        key: 'view-up-video-list',
+        label: `查看 UP 的${followed ? '动态' : '投稿'}`,
         icon: <IconParkOutlinePeopleSearch className='size-15px' />,
-        onClick() {
-          onDynamicFeedFilterSelectUp()
-        },
+        onClick: onViewUpVideoListEntry,
       },
       {
         test: hasWatchlaterEntry,
@@ -512,7 +486,7 @@ export function useContextMenus({
     hasDislikeEntry,
     hasUnfollowEntry,
     hasBlacklistEntry,
-    hasDynamicFeedFilterSelectUpEntry,
+    hasViewUpVideoListEntry,
     hasEntry_addMidTo_dynamicFeedWhenViewAllHideIds,
     // others
     favFolderNames,
