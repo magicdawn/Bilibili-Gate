@@ -14,6 +14,7 @@ import { tweakLightness } from '$utility/css'
 import type { CssProp } from '$utility/type'
 import { css as _css, css } from '@emotion/react'
 import { bgValue, videoCardBorderRadiusValue } from '../css-vars'
+import { isDisplayAsList } from './index.shared'
 
 const c = tweakLightness(colorPrimaryValue, 0.1)
 const borderAndShadow = css`
@@ -64,6 +65,7 @@ export function useCardBorderCss(): CssProp {
     useDelayForHover,
     style: {
       videoCard: { useBorder, useBorderOnlyOnHover, useBoxShadow, usePadding },
+      pureRecommend: { cardDisplay },
     },
   } = useSettingsSnapshot()
 
@@ -76,37 +78,38 @@ export function useCardBorderCss(): CssProp {
         transition-timing-function: ease-in-out;
       `,
 
-      useBorder && [
-        css`
-          cursor: pointer;
-          border-radius: ${videoCardBorderRadiusValue};
-          &:hover {
-            border-color: ${borderColorValue};
-            background-color: ${bgLv1Value};
-            ${useBoxShadow && borderAndShadow}
-            ${useDelayForHover && coverZoom}
-          }
-        `,
-
-        !useBorderOnlyOnHover &&
+      useBorder &&
+        !isDisplayAsList(cardDisplay) && [
           css`
-            border-color: ${borderColorValue};
-          `,
-
-        // add padding & negative margin
-        useBorderOnlyOnHover &&
-          !useBoxShadow &&
-          usePadding &&
-          css`
-            margin-inline: -6px;
-            .bili-video-card__wrap {
-              padding: 6px;
-              padding-bottom: 0;
+            cursor: pointer;
+            border-radius: ${videoCardBorderRadiusValue};
+            &:hover {
+              border-color: ${borderColorValue};
+              background-color: ${bgLv1Value};
+              ${useBoxShadow && borderAndShadow}
+              ${useDelayForHover && coverZoom}
             }
           `,
-      ],
+
+          !useBorderOnlyOnHover &&
+            css`
+              border-color: ${borderColorValue};
+            `,
+
+          // add padding & negative margin
+          useBorderOnlyOnHover &&
+            !useBoxShadow &&
+            usePadding &&
+            css`
+              margin-inline: -6px;
+              .bili-video-card__wrap {
+                padding: 6px;
+                padding-bottom: 0;
+              }
+            `,
+        ],
     ]
-  }, [useBorder, useBorderOnlyOnHover, useBoxShadow, usePadding, useDelayForHover])
+  }, [useBorder, useBorderOnlyOnHover, useBoxShadow, usePadding, useDelayForHover, cardDisplay])
 }
 
 export function getActiveCardBorderCss(active: boolean): CssProp {

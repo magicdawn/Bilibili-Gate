@@ -6,16 +6,16 @@ import { useSticky } from '$common/hooks/useSticky'
 import { ModalSettingsHotkey } from '$components/ModalSettings'
 import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import { OnRefreshContext } from '$components/RecGrid/useRefresh'
+import { ECardDisplay } from '$components/VideoCard/index.shared'
 import { bgValue } from '$components/css-vars'
 import { $headerHeight, $usingEvolevdHeader } from '$header'
 import { useIsDarkMode } from '$modules/dark-mode'
 import { IconForConfig } from '$modules/icon'
-import { CardDisplay, settings, useSettingsSnapshot } from '$modules/settings'
+import { settings, useSettingsSnapshot } from '$modules/settings'
 import { isMac } from '$ua'
 import { getElementOffset, shouldDisableShortcut } from '$utility/dom'
 import { css } from '@emotion/react'
 import { Button } from 'antd'
-import { size } from 'polished'
 import { useSnapshot } from 'valtio'
 import { AccessKeyManage } from '../AccessKeyManage'
 import { RefreshButton } from './RefreshButton'
@@ -89,7 +89,7 @@ export const RecHeader = forwardRef<
   const expandToFullWidthCss = useExpandToFullWidthCss()
 
   const toggleCardDisplay = useMemoizedFn(() => {
-    const list = [CardDisplay.Grid, CardDisplay.List]
+    const list = [ECardDisplay.Grid, ECardDisplay.List]
     const index = list.indexOf(settings.style.pureRecommend.cardDisplay)
     const nextIndex = (index + 1) % list.length
     settings.style.pureRecommend.cardDisplay = list[nextIndex]
@@ -157,23 +157,19 @@ export const RecHeader = forwardRef<
             >
               {rightSlot}
 
-              {cardDisplay === CardDisplay.Grid ? (
-                <IconTablerLayoutGrid
-                  className='cursor-pointer size-20px'
-                  onClick={toggleCardDisplay}
-                />
-              ) : (
-                <IconTablerListDetails
-                  className='cursor-pointer size-20px'
-                  onClick={toggleCardDisplay}
-                />
-              )}
-
               {!accessKey && showAccessKeyManage && <AccessKeyManage style={{ marginLeft: 5 }} />}
+
+              <Button css={iconOnlyRoundButtonCss} onClick={toggleCardDisplay}>
+                {cardDisplay === ECardDisplay.Grid ? (
+                  <IconTablerLayoutGrid className='cursor-pointer size-14px' />
+                ) : (
+                  <IconTablerListDetails className='cursor-pointer size-14px' />
+                )}
+              </Button>
 
               <Button onClick={showModalSettings} css={iconOnlyRoundButtonCss}>
                 <ModalSettingsHotkey />
-                <IconForConfig {...size(14)} />
+                <IconForConfig className='size-14px' />
               </Button>
 
               <RefreshButton

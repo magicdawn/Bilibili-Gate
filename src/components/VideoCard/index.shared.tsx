@@ -1,7 +1,9 @@
 import { APP_SHORT_PREFIX } from '$common'
 import { antMessage } from '$modules/antd'
 import { IconForOpenExternalLink, IconForPlayer } from '$modules/icon'
+import { useSettingsSnapshot } from '$modules/settings'
 import { isMac } from '$ua'
+import { css } from '@emotion/react'
 import mitt, { type Emitter } from 'mitt'
 import { size } from 'polished'
 import type { ReactNode } from 'react'
@@ -142,3 +144,32 @@ export function createSharedEmitter() {
 
 export const defaultEmitter = createVideoCardEmitter()
 export const defaultSharedEmitter = createSharedEmitter()
+
+export enum ECardDisplay {
+  Grid = 'grid',
+  List = 'list',
+}
+
+export const displayAsListCss = {
+  card: css`
+    grid-column: 1 / -1;
+  `,
+
+  cardWrap: css`
+    display: flex;
+    column-gap: 20px;
+  `,
+
+  cover: css`
+    width: 20%;
+  `,
+}
+
+export function isDisplayAsList(cardDisplay: ECardDisplay | undefined) {
+  return cardDisplay === ECardDisplay.List
+}
+
+export function useIsDisplayAsList() {
+  const v = useSettingsSnapshot().style.pureRecommend.cardDisplay
+  return isDisplayAsList(v)
+}

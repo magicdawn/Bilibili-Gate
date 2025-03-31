@@ -27,7 +27,7 @@ import { useIsDarkMode } from '$modules/dark-mode'
 import { UserFavService } from '$modules/rec-services/fav/user-fav-service'
 import { ELiveStatus } from '$modules/rec-services/live/live-enum'
 import { useWatchlaterState } from '$modules/rec-services/watchlater'
-import { CardDisplay, settings, useSettingsSnapshot } from '$modules/settings'
+import { settings, useSettingsSnapshot } from '$modules/settings'
 import { isWebApiSuccess } from '$request'
 import { isFirefox, isSafari } from '$ua'
 import type { CssProp } from '$utility/type'
@@ -43,8 +43,13 @@ import { VideoCardBottom } from './child-components/VideoCardBottom'
 import { BlacklistCard, DislikedCard, SkeletonCard } from './child-components/other-type-cards'
 import { useContextMenus } from './context-menus'
 import styles, { zIndexWatchlaterProgressBar } from './index.module.scss'
-import type { SharedEmitter, VideoCardEmitter } from './index.shared'
-import { defaultEmitter, defaultSharedEmitter } from './index.shared'
+import type { ECardDisplay, SharedEmitter, VideoCardEmitter } from './index.shared'
+import {
+  defaultEmitter,
+  defaultSharedEmitter,
+  displayAsListCss,
+  isDisplayAsList,
+} from './index.shared'
 import type { IVideoCardData } from './process/normalize'
 import { normalizeCardData } from './process/normalize'
 import type { ImagePreviewData, VideoPreviewData } from './services'
@@ -81,7 +86,7 @@ export type VideoCardProps = {
   sharedEmitter?: SharedEmitter
   tab: ETab
   baseCss?: CssProp
-  cardDisplay?: CardDisplay
+  cardDisplay?: ECardDisplay
 } & ComponentProps<'div'>
 
 export const VideoCard = memo(function VideoCard({
@@ -120,14 +125,7 @@ export const VideoCard = memo(function VideoCard({
       style={style}
       data-bvid={cardData?.bvid}
       className={clsx('bili-video-card', styles.biliVideoCard, className)}
-      css={[
-        baseCss,
-        inNormalCardCss,
-        cardDisplay === CardDisplay.List &&
-          css`
-            grid-column: 1 / -1;
-          `,
-      ]}
+      css={[baseCss, inNormalCardCss, isDisplayAsList(cardDisplay) && displayAsListCss.card]}
       {...restProps}
     >
       {loading ? (
@@ -175,7 +173,7 @@ export type VideoCardInnerProps = {
   sharedEmitter?: SharedEmitter
   watchlaterAdded: boolean
   tab: ETab
-  cardDisplay?: CardDisplay
+  cardDisplay?: ECardDisplay
 }
 const VideoCardInner = memo(function VideoCardInner({
   item,
@@ -233,8 +231,6 @@ const VideoCardInner = memo(function VideoCardInner({
     appWarn(`none (${allowed.join(',')}) goto type %s`, goto, item)
   }
 
-  const displayAsListItem = cardDisplay === CardDisplay.List
-
   const imagePreviewDataBox = useRefStateBox<ImagePreviewData | undefined>(undefined)
   const videoPreviewDataBox = useRefStateBox<VideoPreviewData | undefined>(undefined)
 
@@ -289,7 +285,7 @@ const VideoCardInner = memo(function VideoCardInner({
   // single ref 与 useEventListener 配合不是很好, 故使用两个 ref
   const cardRef = useRef<ComponentRef<'div'> | null>(null)
   const coverRef = useRef<ComponentRef<'a'> | null>(null)
-  const videoPreviewWrapperRef = cardUseBorder ? cardRef : coverRef
+  const videoPreviewWrapperRef = cardUseBorder && !isDisplayAsList(cardDisplay) ? cardRef : coverRef
 
   const {
     onStartPreviewAnimation,
@@ -514,7 +510,9 @@ const VideoCardInner = memo(function VideoCardInner({
         border-radius: ${videoCardBorderRadiusValue};
       }
     `,
-    (isHovering || active || (cardUseBorder && !cardUseBorderOnlyOnHover)) && coverBottomNoRoundCss,
+    !isDisplayAsList(cardDisplay) &&
+      (isHovering || active || (cardUseBorder && !cardUseBorderOnlyOnHover)) &&
+      coverBottomNoRoundCss,
   ]
 
   // 防止看不清封面边界: (封面与背景色接近)
@@ -545,10 +543,7 @@ const VideoCardInner = memo(function VideoCardInner({
         `,
         coverRoundCss,
         coverBorderCss,
-        displayAsListItem &&
-          css`
-            width: 20%;
-          `,
+        isDisplayAsList(cardDisplay) && displayAsListCss.cover,
       ]}
       onClick={handleVideoLinkClick}
       onContextMenu={(e) => {
@@ -665,11 +660,7 @@ const VideoCardInner = memo(function VideoCardInner({
             position: static;
             height: 100%;
           `,
-          displayAsListItem &&
-            css`
-              display: flex;
-              column-gap: 20px;
-            `,
+          isDisplayAsList(cardDisplay) && displayAsListCss.cardWrap,
         ]}
         onClick={handleCardClick}
         onContextMenu={(e) => {
@@ -683,21 +674,22 @@ const VideoCardInner = memo(function VideoCardInner({
     )
   }
 
-  const wrappedContent: ReactNode = cardUseBorder
-    ? wrapDropdown(
-        wrapCardWrapper(
+  const wrappedContent: ReactNode =
+    cardUseBorder && !isDisplayAsList(cardDisplay)
+      ? wrapDropdown(
+          wrapCardWrapper(
+            <>
+              {coverContent}
+              {bottomContent}
+            </>,
+          ),
+        )
+      : wrapCardWrapper(
           <>
-            {coverContent}
+            {wrapDropdown(coverContent)}
             {bottomContent}
           </>,
-        ),
-      )
-    : wrapCardWrapper(
-        <>
-          {wrapDropdown(coverContent)}
-          {bottomContent}
-        </>,
-      )
+        )
 
   return (
     <>

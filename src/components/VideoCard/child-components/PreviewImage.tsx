@@ -53,6 +53,7 @@ export const PreviewImage = memo(
   ) {
     const rootElRef = useRef<ComponentRef<'div'>>(null)
     const [size, setSize] = useState(() => ({ width: 0, height: 0 }))
+
     useMount(() => {
       const rect = rootElRef.current?.getBoundingClientRect()
       if (!rect) return

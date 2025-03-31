@@ -1,6 +1,6 @@
 import { baseDebug, IN_BILIBILI_HOMEPAGE } from '$common'
 import { ETab } from '$components/RecHeader/tab-enum'
-import { VideoLinkOpenMode } from '$components/VideoCard/index.shared'
+import { ECardDisplay, VideoLinkOpenMode } from '$components/VideoCard/index.shared'
 import { EAppApiDevice } from '$define/index.shared'
 import { reciveGmValueUpdatesFromOtherTab } from '$modules/gm'
 import { WatchlaterItemsOrder } from '$modules/rec-services/watchlater/watchlater-enum'
@@ -18,11 +18,6 @@ import { proxy, snapshot, subscribe, useSnapshot } from 'valtio'
 import { saveToDraft } from './cloud-backup'
 
 const debug = baseDebug.extend('settings')
-
-export enum CardDisplay {
-  Grid = 'grid',
-  List = 'list',
-}
 
 /**
  * 命名: 模块/tab + 场景 + 功能
@@ -214,7 +209,7 @@ export const initialSettings = {
       hideTopChannel: false,
 
       // grid | list
-      cardDisplay: CardDisplay.Grid,
+      cardDisplay: ECardDisplay.Grid,
     },
 
     videoCard: {
