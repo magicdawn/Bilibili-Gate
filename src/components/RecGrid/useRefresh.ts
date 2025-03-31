@@ -63,7 +63,7 @@ export function useRefresh({
   const [beforeMount, setBeforeMount] = useState(true)
   useMount(() => {
     setBeforeMount(false)
-    refresh()
+    refresh(true) // Q: why `true`   A: when switch tab, set reuse to `true`
   })
   // switch away
   useUnmount(() => {
