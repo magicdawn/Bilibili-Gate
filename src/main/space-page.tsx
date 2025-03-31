@@ -2,7 +2,8 @@ import { APP_NAME, APP_NAMESPACE } from '$common'
 import { AntdTooltip } from '$modules/antd/custom'
 import { DynamicFeedQueryKey } from '$modules/rec-services/dynamic-feed/store'
 import { FavQueryKey } from '$modules/rec-services/fav/store'
-import { tryAction } from '$utility/dom'
+import { SpaceUploadQueryKey } from '$modules/rec-services/space-upload/store'
+import { poll, tryAction } from '$utility/dom'
 import { css } from '@emotion/react'
 import type { ComponentProps, ReactNode } from 'react'
 import { proxy, useSnapshot } from 'valtio'
@@ -37,6 +38,7 @@ async function addDynEntry() {
 const state = proxy({
   href: location.href,
   usingNewSpacePage: false,
+  followed: false,
 
   get mid() {
     return parseMid(this.href)
@@ -74,25 +76,29 @@ const state = proxy({
   },
 })
 
+async function getFollowedStatus() {
+  const followed = !!(await poll(
+    () => {
+      const list = Array.from(document.querySelectorAll('.space-follow-btn')).filter(
+        (el) => el.textContent?.trim() === '已关注',
+      )
+      return list[0]
+    },
+    { interval: 100, timeout: 5_000 },
+  ))
+  state.followed = followed
+}
+
 if (typeof window.navigation !== 'undefined') {
   window.navigation.addEventListener?.('navigatesuccess', () => {
     state.href = location.href
+    getFollowedStatus()
   })
 }
 
 function ActionButtons() {
-  const { mid, collectionId } = useSnapshot(state)
-
+  const { mid, collectionId, followed } = useSnapshot(state)
   if (!mid) return
-
-  const viewDynamicFeedButton = (
-    <ActionButton
-      href={`https://www.bilibili.com/?${DynamicFeedQueryKey.Mid}=${mid}`}
-      tooltip={`在「${APP_NAME}」中查看 UP 的动态`}
-    >
-      {APP_NAME} 动态
-    </ActionButton>
-  )
 
   const viewCollectionButton = typeof collectionId === 'number' && (
     <ActionButton
@@ -104,10 +110,24 @@ function ActionButtons() {
     </ActionButton>
   )
 
+  let viewUpVideoListButton: ReactNode // 动态 | 投稿
+  {
+    const queryKey = followed ? DynamicFeedQueryKey.Mid : SpaceUploadQueryKey.Mid
+    const label = followed ? '动态' : '投稿'
+    viewUpVideoListButton = (
+      <ActionButton
+        href={`https://www.bilibili.com/?${queryKey}=${mid}`}
+        tooltip={`在「${APP_NAME}」中查看 UP 的${label}`}
+      >
+        {APP_NAME} {label}
+      </ActionButton>
+    )
+  }
+
   return (
     <>
       {/* show 1 button */}
-      {viewCollectionButton || viewDynamicFeedButton}
+      {viewCollectionButton || viewUpVideoListButton}
     </>
   )
 }
