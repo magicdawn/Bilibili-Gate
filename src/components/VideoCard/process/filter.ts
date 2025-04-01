@@ -204,10 +204,7 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
       // https://github.com/magicdawn/bilibili-gate/issues/87
       // 反向推送, 蜜汁操作.
       if (recommendReason === '关注了你') {
-        debug('filter out by recommendReason-rule: %s %o', recommendReason, {
-          bvid,
-          title,
-        })
+        debug('filter out by recommendReason-rule: %s %o', recommendReason, { bvid, title })
         return false
       }
 
