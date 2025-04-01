@@ -242,26 +242,20 @@ export const LargePreview = forwardRef<
 
     // no scale
     if (!useScale) {
-      const animateDistance = 30
+      let animateDistance = 30
+      if (direction === 'top') animateDistance = 20 // 防止闪烁
       if (axis === 'x') {
         return { x: -multiplier * animateDistance, y: 0 }
       } else {
         return { x: 0, y: -multiplier * animateDistance }
       }
     }
-
     // scale
     else {
       if (axis === 'x') {
-        return {
-          scale: 0.5,
-          transformOrigin: `${reverse} ${position.arrowTop}px`, // for scale
-        }
+        return { scale: 0.5, transformOrigin: `${reverse} ${position.arrowTop}px` }
       } else {
-        return {
-          scale: 0.5,
-          transformOrigin: `${position.arrowLeft}px ${reverse}`, // for scale
-        }
+        return { scale: 0.5, transformOrigin: `${position.arrowLeft}px ${reverse}` }
       }
     }
   }, [position, useScale])
