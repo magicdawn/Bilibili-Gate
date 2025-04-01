@@ -12,7 +12,7 @@ import { Radio } from 'antd'
 import { useSnapshot } from 'valtio'
 import type { TabConfigItem } from './tab-config'
 import { TabConfig, TabIcon, toastNeedLogin } from './tab-config'
-import { ETab, TabKeys } from './tab-enum'
+import { ALL_TAB_KEYS, CONFIGURABLE_TAB_KEYS, ETab } from './tab-enum'
 
 /**
  * initial tab
@@ -32,11 +32,11 @@ if (SHOW_SPACE_UPLOAD_ONLY) {
 }
 
 function getSortedTabKeys(customTabKeysOrder: ETab[]) {
-  return TabKeys.slice().sort((a, b) => {
+  return CONFIGURABLE_TAB_KEYS.slice().sort((a, b) => {
     let aIndex = customTabKeysOrder.indexOf(a)
     let bIndex = customTabKeysOrder.indexOf(b)
-    if (aIndex === -1) aIndex = TabKeys.indexOf(a)
-    if (bIndex === -1) bIndex = TabKeys.indexOf(b)
+    if (aIndex === -1) aIndex = ALL_TAB_KEYS.indexOf(a)
+    if (bIndex === -1) bIndex = ALL_TAB_KEYS.indexOf(b)
     return aIndex - bIndex
   })
 }

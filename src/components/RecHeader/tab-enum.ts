@@ -16,4 +16,10 @@ export enum EHotSubTab {
   Ranking = 'ranking',
 }
 
-export const TabKeys = Object.values(ETab)
+export const ALL_TAB_KEYS = Object.values(ETab)
+
+export const NONE_CONFIGURABLE_TAB_KEYS = [ETab.SpaceUpload]
+
+export const CONFIGURABLE_TAB_KEYS = Array.from(
+  new Set(ALL_TAB_KEYS).difference(new Set(NONE_CONFIGURABLE_TAB_KEYS)),
+)

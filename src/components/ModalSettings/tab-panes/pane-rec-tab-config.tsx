@@ -2,7 +2,7 @@ import { inlineFlexVerticalCenterStyle } from '$common/emotion-css'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { useSortedTabKeys } from '$components/RecHeader/tab'
 import { TabConfig, TabIcon } from '$components/RecHeader/tab-config'
-import { ETab, TabKeys } from '$components/RecHeader/tab-enum'
+import { ALL_TAB_KEYS, CONFIGURABLE_TAB_KEYS, ETab } from '$components/RecHeader/tab-enum'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { bgLv2Value, bgLv3Value } from '$components/css-vars'
 import { EAppApiDevice } from '$define/index.shared'
@@ -224,7 +224,10 @@ export function TabPaneRecTabsConfig() {
 
 function useCurrentShowingTabKeys(): ETab[] {
   const { hidingTabKeys } = useSettingsSnapshot()
-  return useMemo(() => TabKeys.filter((key) => !hidingTabKeys.includes(key)), [hidingTabKeys])
+  return useMemo(
+    () => CONFIGURABLE_TAB_KEYS.filter((key) => !hidingTabKeys.includes(key)),
+    [hidingTabKeys],
+  )
 }
 
 function VideoSourceTabOrder({ className, style }: { className?: string; style?: CSSProperties }) {
@@ -257,7 +260,7 @@ function VideoSourceTabOrder({ className, style }: { className?: string; style?:
             return antMessage.error('至少选择一项!')
           }
           updateSettings({
-            hidingTabKeys: TabKeys.filter((k) => !newVal.includes(k)),
+            hidingTabKeys: ALL_TAB_KEYS.filter((k) => !newVal.includes(k)),
           })
         }}
       >
