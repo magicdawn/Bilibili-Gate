@@ -755,7 +755,7 @@ function apiSpaceUploadAdapter(item: SpaceUploadItemExtend): IVideoCardData {
     pubdateDisplay: formatTimeStamp(item.created),
     duration: parseDuration(item.length),
     durationStr: item.length,
-    recommendReason: undefined,
+    recommendReason: item.description || undefined,
 
     // stat
     play: item.play,

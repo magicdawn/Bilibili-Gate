@@ -357,7 +357,7 @@ export function TabPaneBasic() {
             更新日志
           </Button>
           <Button href='https://afdian.com/a/magicdawn' target='_blank'>
-            用 ❤️ 发电
+            去「爱发电」支持
           </Button>
         </Space>
       </SettingsGroup>

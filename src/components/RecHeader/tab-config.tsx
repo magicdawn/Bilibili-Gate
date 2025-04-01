@@ -7,6 +7,7 @@ import {
   IconForLive,
   IconForPc,
   IconForPhone,
+  IconForSpaceUpload,
   IconForWatchlater,
 } from '$modules/icon'
 import { favStore } from '$modules/rec-services/fav/store'
@@ -91,7 +92,7 @@ export const TabConfig: Record<ETab, TabConfigItem> = {
     swr: true,
   },
   [ETab.SpaceUpload]: {
-    icon: <IconLineMdUploadingLoop {...size(16)} />,
+    icon: <IconForSpaceUpload {...size(16)} />,
     label: '投稿',
     desc: 'UP 视频投稿',
   },

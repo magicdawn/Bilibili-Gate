@@ -1,6 +1,8 @@
 import type { SpaceUploadItemExtend } from '$define'
 import { EApiType } from '$define/index.shared'
+import { getUserNickname } from '$modules/bilibili/user/nickname'
 import { getSpaceAccInfo } from '$modules/bilibili/user/space-acc-info'
+import { setPageTitle } from '$utility/dom'
 import { parseSearchInput } from '$utility/search'
 import { invariant } from 'es-toolkit'
 import QuickLRU from 'quick-lru'
@@ -37,8 +39,19 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
     )
   }
 
+  private pageTitleSet = false
+  private async setPageTitle() {
+    if (this.pageTitleSet) return
+    const nickname = await getUserNickname(this.mid.toString())
+    if (!nickname) return
+    setPageTitle(`「${nickname}」的投稿`)
+    this.pageTitleSet = true
+  }
+
   page = 1
   override async fetchMore(abortSignal: AbortSignal): Promise<SpaceUploadItemExtend[] | undefined> {
+    await this.setPageTitle()
+
     let { items, hasMore } = await getSpaceUpload({
       mid: this.mid,
       order: this.order,

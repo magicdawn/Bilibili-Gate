@@ -24,6 +24,7 @@ export const IconForDynamicFeed = IconParkOutlineTumblr
 export const IconForFav = IconParkOutlineStar
 export const IconForFaved = IconParkSolidStar // faved variant
 export const IconForHot = IconParkOutlineFire
+export const IconForSpaceUpload = IconLineMdUploadingLoop
 
 // actions
 export const IconForBlacklist = IconParkOutlinePeopleDelete

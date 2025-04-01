@@ -25,9 +25,11 @@ import {
   IconForBlacklist,
   IconForCopy,
   IconForDislike,
+  IconForDynamicFeed,
   IconForFav,
   IconForFaved,
   IconForOpenExternalLink,
+  IconForSpaceUpload,
   IconForWatchlater,
 } from '$modules/icon'
 import {
@@ -171,9 +173,14 @@ export function useContextMenus({
    * 查看 UP 的动态 或 投稿
    */
   const hasViewUpVideoListEntry = (isNormalVideo || isLive(item)) && !!authorMid && !!authorName
-  const onViewUpVideoListEntry = useMemoizedFn(async () => {
+  const onViewUpDyn = useMemoizedFn(() => {
     if (!hasViewUpVideoListEntry) return
-    const u = `/?${followed ? DynamicFeedQueryKey.Mid : SpaceUploadQueryKey.Mid}=${authorMid}`
+    const u = `/?${DynamicFeedQueryKey.Mid}=${authorMid}`
+    openNewTab(u)
+  })
+  const onViewUpSpaceUpload = useMemoizedFn(() => {
+    if (!hasViewUpVideoListEntry) return
+    const u = `/?${SpaceUploadQueryKey.Mid}=${authorMid}`
     openNewTab(u)
   })
 
@@ -283,14 +290,21 @@ export function useContextMenus({
       },
     ])
 
-    // I'm interested in this video
+    // I'm interested in this video and video-author
     const interestedMenus = defineAntMenus([
       {
         test: hasViewUpVideoListEntry,
-        key: 'view-up-video-list',
-        label: `查看 UP 的${followed ? '动态' : '投稿'}`,
-        icon: <IconParkOutlinePeopleSearch className='size-15px' />,
-        onClick: onViewUpVideoListEntry,
+        key: 'view-up-space-upload',
+        label: `查看 UP 的投稿`,
+        icon: <IconForSpaceUpload className='size-15px' />,
+        onClick: onViewUpSpaceUpload,
+      },
+      {
+        test: hasViewUpVideoListEntry && followed,
+        key: 'view-up-dyn',
+        label: `查看 UP 的动态`,
+        icon: <IconForDynamicFeed className='size-15px' />,
+        onClick: onViewUpDyn,
       },
       {
         test: hasWatchlaterEntry,
