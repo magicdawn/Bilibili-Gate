@@ -240,3 +240,26 @@ export function ApiTypeTag({ item }: { item: RecItemType }) {
     </div>
   )
 }
+
+export function VolMark({ vol }: { vol: number }) {
+  const roundButtonCss = [
+    flexCenterStyle,
+    css`
+      position: relative;
+      color: #fff;
+      border-radius: 50%;
+      white-space: nowrap;
+      width: 28px;
+      height: 28px;
+      background-color: ${colorPrimaryValue};
+    `,
+  ]
+
+  return (
+    <div css={VideoCardActionStyle.topContainer('left')}>
+      <div css={roundButtonCss}>
+        <span style={{ marginLeft: -1 }}>{vol}</span>
+      </div>
+    </div>
+  )
+}

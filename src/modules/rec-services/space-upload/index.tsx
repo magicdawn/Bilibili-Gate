@@ -52,16 +52,27 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
   override async fetchMore(abortSignal: AbortSignal): Promise<SpaceUploadItemExtend[] | undefined> {
     await this.setPageTitle()
 
-    let { items, hasMore } = await getSpaceUpload({
+    const { items, hasMore, endVol } = await getSpaceUpload({
       mid: this.mid,
       order: this.order,
       pagenum: this.page,
       keyword: this.searchText || '',
     })
 
+    this.hasMoreExceptQueue = hasMore
+    this.page++
+
+    let list: SpaceUploadItemExtend[] = items.map((item, index) => {
+      return {
+        ...item,
+        api: EApiType.SpaceUpload,
+        uniqId: `${EApiType.SpaceUpload}-${item.bvid}`,
+        vol: endVol - index,
+      }
+    })
     if (this.filterText) {
       const { includes, excludes } = parseSearchInput(this.filterText)
-      items = items.filter((item) => {
+      list = list.filter((item) => {
         return (
           includes.every((include) => item.title.includes(include)) &&
           excludes.every((exclude) => !item.title.includes(exclude))
@@ -69,17 +80,7 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
       })
     }
 
-    await this.fetchAvatars(items.map((item) => item.mid.toString()))
-    this.hasMoreExceptQueue = hasMore
-    this.page++
-
-    const list: SpaceUploadItemExtend[] = items.map((item) => {
-      return {
-        ...item,
-        api: EApiType.SpaceUpload,
-        uniqId: `${EApiType.SpaceUpload}-${item.bvid}`,
-      }
-    })
+    await this.fetchAvatars(list.map((item) => item.mid.toString()))
     return list
   }
 }

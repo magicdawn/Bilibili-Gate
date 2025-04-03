@@ -37,7 +37,7 @@ const S = {
     height: var(--follow-icon-line-height);
 
     width: max-content;
-    max-width: 100%;
+    max-width: calc(100% - 6px);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

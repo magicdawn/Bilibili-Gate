@@ -53,10 +53,12 @@ export async function getSpaceUpload({
   const json = res.data as SpaceUploadJson
   const items = json.data.list.vlist || []
   let hasMore: boolean
+  let endVol: number
   {
     const { count, pn, ps } = json.data.page
     hasMore = pn * ps < count
+    endVol = count - (pn - 1) * ps
   }
 
-  return { items, hasMore }
+  return { items, hasMore, endVol }
 }

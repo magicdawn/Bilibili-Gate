@@ -1,3 +1,4 @@
+import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
 import { Input } from 'antd'
 import { useSnapshot } from 'valtio'
@@ -7,7 +8,7 @@ import { SpaceUploadOrder, SpaceUploadOrderConfig } from './api'
 import { spaceUploadStore } from './store'
 
 export function SpaceUploadUsageInfo() {
-  const { order, filterText } = useSnapshot(spaceUploadStore)
+  const { order } = useSnapshot(spaceUploadStore)
   const onRefresh = useOnRefreshContext()
 
   return (
@@ -36,6 +37,12 @@ export function SpaceUploadUsageInfo() {
           spaceUploadStore.filterText = value
           onRefresh?.()
         }}
+      />
+
+      <CheckboxSettingItem
+        configPath='spaceUpload.showVol'
+        label={'显示序号'}
+        className='flex-shrink-0'
       />
 
       <InternalAddCopyBvidButtons />

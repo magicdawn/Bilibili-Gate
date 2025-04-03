@@ -12,17 +12,19 @@ import {
 } from '$modules/icon'
 import { favStore } from '$modules/rec-services/fav/store'
 import { isHotTabUsingShuffle } from '$modules/rec-services/hot'
+import { advancedSearchHelpInfo } from '$utility/search'
 import toast from '$utility/toast'
 import type { CssProp } from '$utility/type'
 import { css } from '@emotion/react'
 import { size } from 'polished'
-import { cloneElement, type ReactElement } from 'react'
+import { cloneElement, type ReactElement, type ReactNode } from 'react'
 import { ETab } from './tab-enum'
 
 export type TabConfigItem = {
   icon: ReactElement
   label: string
   desc: string
+  extraHelpInfo?: ReactNode
   swr?: boolean // stale while revalidate
   anonymousUsage?: boolean // 游客可访问?
 }
@@ -95,6 +97,13 @@ export const TabConfig: Record<ETab, TabConfigItem> = {
     icon: <IconForSpaceUpload {...size(16)} />,
     label: '投稿',
     desc: 'UP 视频投稿',
+    extraHelpInfo: (
+      <div className='ml-20px'>
+        搜索词: 搜索相关作品 <br />
+        本地过滤词: 本地过滤搜索结果; 本地过滤词支持高级规则:
+        <div className='ml-20px'>{advancedSearchHelpInfo}</div>
+      </div>
+    ),
   },
 }
 

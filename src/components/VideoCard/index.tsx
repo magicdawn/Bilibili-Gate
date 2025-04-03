@@ -14,6 +14,7 @@ import {
   isLive,
   isPcRecommend,
   isRanking,
+  isSpaceUpload,
   isWatchlater,
   type AppRecItemExtend,
   type PvideoJson,
@@ -66,6 +67,7 @@ import {
   isChargeOnlyVideo,
   LiveBadge,
   RankingNumMark,
+  VolMark,
 } from './top-marks'
 import { useDislikeRelated } from './use/useDislikeRelated'
 import { useLargePreviewRelated } from './use/useLargePreview'
@@ -201,6 +203,7 @@ const VideoCardInner = memo(function VideoCardInner({
         __internal: { preferNormalCdn },
       },
     },
+    spaceUpload: { showVol },
   } = useSettingsSnapshot()
   const authed = !!accessKey
 
@@ -466,6 +469,7 @@ const VideoCardInner = memo(function VideoCardInner({
   const _isStreaming = // 直播中
     (isLive(item) && item.live_status === ELiveStatus.Streaming) ||
     (isPcRecommend(item) && item.goto === PcRecGoto.Live)
+  const _isSpaceUploadShowVol = isSpaceUpload(item) && showVol
   const topMarks: ReactNode = (
     <>
       {/* 动态: 充电专属 */}
@@ -481,6 +485,9 @@ const VideoCardInner = memo(function VideoCardInner({
       {tab === ETab.AppRecommend && !isAppRecommend(item) && !isLive(item) && (
         <ApiTypeTag item={item} />
       )}
+
+      {/* 投稿: 显示序号 */}
+      {_isSpaceUploadShowVol && <VolMark vol={item.vol} />}
     </>
   )
 

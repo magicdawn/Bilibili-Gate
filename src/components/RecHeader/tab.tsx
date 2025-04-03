@@ -194,18 +194,20 @@ export function VideoSourceTab({ onRefresh }: { onRefresh: OnRefresh }) {
       </Radio.Group>
       <HelpInfo className='size-16px ml-6px'>
         <>
-          {currentTabConfigList.map(({ key, label, desc }) => (
-            <div
-              key={key}
-              css={css`
-                display: flex;
-                align-items: center;
-                height: 22px;
-              `}
-            >
-              <TabIcon tabKey={key} moreCss={iconCss} active />
-              {label}: {desc}
-            </div>
+          {currentTabConfigList.map(({ key, label, desc, extraHelpInfo }) => (
+            <Fragment key={key}>
+              <div
+                css={css`
+                  display: flex;
+                  align-items: center;
+                  height: 22px;
+                `}
+              >
+                <TabIcon tabKey={key} moreCss={iconCss} active />
+                {label}: {desc}
+              </div>
+              {!!extraHelpInfo && extraHelpInfo}
+            </Fragment>
           ))}
         </>
       </HelpInfo>

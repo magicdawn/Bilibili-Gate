@@ -115,6 +115,7 @@ export type LiveItemExtend = LiveItem & {
 export type SpaceUploadItemExtend = SpaceUploadItem & {
   uniqId: string
   api: EApiType.SpaceUpload
+  vol: number
 }
 // #endregion
 

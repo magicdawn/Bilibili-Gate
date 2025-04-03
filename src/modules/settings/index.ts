@@ -143,6 +143,13 @@ export const initialSettings = {
    */
 
   /**
+   * tab=space-upload
+   */
+  spaceUpload: {
+    showVol: false,
+  },
+
+  /**
    * 过滤器模块
    */
   filter: {
