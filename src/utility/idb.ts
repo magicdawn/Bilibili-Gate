@@ -67,6 +67,14 @@ export function wrapWithIdbCache<T extends AnyAsyncFunction>({
     return Boolean(cached && cached.val && cached.ts && Date.now() - cached.ts <= ttl)
   }
 
+  async function queryCache(...args: A) {
+    const key = generateKey(...args)
+    const cached = await cache.get(key)
+    if (cached && shouldReuseCached(cached)) {
+      return cached.val
+    }
+  }
+
   const fnMemoized = pMemoize<T, string>(fn, {
     cacheKey(args) {
       return generateKey(...args)
@@ -98,6 +106,7 @@ export function wrapWithIdbCache<T extends AnyAsyncFunction>({
     cleanUp: { value: cleanUp },
     generateKey: { value: generateKey },
     shouldReuseCached: { value: shouldReuseCached },
+    queryCache: { value: queryCache },
   })
 
   return fnLimited as typeof fnLimited & {
@@ -105,5 +114,6 @@ export function wrapWithIdbCache<T extends AnyAsyncFunction>({
     cleanUp: typeof cleanUp
     generateKey: typeof generateKey
     shouldReuseCached: typeof shouldReuseCached
+    queryCache: typeof queryCache
   }
 }

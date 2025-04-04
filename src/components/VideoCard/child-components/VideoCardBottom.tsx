@@ -8,6 +8,7 @@ import { colorPrimaryValue } from '$components/css-vars'
 import { isAppRecommend, isLive, isPcRecommend, isRanking, type RecItemType } from '$define'
 import { EApiType, EAppApiDevice } from '$define/index.shared'
 import { PcRecGoto } from '$define/pc-recommend'
+import { getVideoPageList } from '$modules/bilibili/video/video-detail'
 import { IconForLive } from '$modules/icon'
 import { formatSpaceUrl } from '$modules/rec-services/dynamic-feed/shared'
 import { ELiveStatus } from '$modules/rec-services/live/live-enum'
@@ -15,11 +16,14 @@ import { settings } from '$modules/settings'
 import { getAvatarSrc } from '$utility/image'
 import type { CssProp } from '$utility/type'
 import { css } from '@emotion/react'
+import { useRequest } from 'ahooks'
 import { Avatar } from 'antd'
+import dayjs from 'dayjs'
 import { size } from 'polished'
 import { type MouseEventHandler } from 'react'
 import { Case, Switch } from 'react-if'
 import { useSnapshot } from 'valtio'
+import { getFollowedStatus } from '../process/filter'
 import type { IVideoCardData } from '../process/normalize'
 import { DESC_SEPARATOR } from '../process/normalize'
 import { useLinkTarget } from '../use/useOpenRelated'
@@ -80,7 +84,38 @@ const subtitleLineHeightCss = css`
   line-height: var(--subtitle-line-height);
 `
 
-export function VideoCardBottom({
+const getCurrentYear = () => dayjs().format('YYYY')
+const getCurrentDate = () => dayjs().format('YYYY-MM-DD')
+function customFormat(ts: number) {
+  if (!ts) return undefined
+  const t = dayjs.unix(ts)
+
+  const isToday = t.format('YYYY-MM-DD') === getCurrentDate()
+  if (isToday) return t.format('今日 HH:mm')
+
+  if (t.format('YYYY') === getCurrentYear()) {
+    return t.format('M月D日')
+  } else {
+    return t.format('YYYY年M月D日')
+  }
+}
+async function fetchAppRecommendFollowedPubDate(item: RecItemType, cardData: IVideoCardData) {
+  const { bvid, goto, recommendReason } = cardData
+  const isNormalVideo = goto === 'av'
+  const shouldFetch =
+    isAppRecommend(item) &&
+    item.device === EAppApiDevice.ipad &&
+    isNormalVideo &&
+    !!bvid &&
+    getFollowedStatus(recommendReason)
+  if (!shouldFetch) return
+
+  const pages = await getVideoPageList(bvid)
+  if (!pages.length) return
+  return customFormat(pages[0].ctime)
+}
+
+export const VideoCardBottom = memo(function ({
   item,
   cardData,
   handleVideoLinkClick,
@@ -139,6 +174,11 @@ export function VideoCardBottom({
       `,
   ]
 
+  const { data: pubDateDisplayFromApi } = useRequest(
+    () => fetchAppRecommendFollowedPubDate(item, cardData),
+    { refreshDeps: [item, cardData] },
+  )
+
   /**
    * avatar + line1: title
    *          line2: desc =
@@ -148,11 +188,11 @@ export function VideoCardBottom({
 
   let descTitleAttr: string | undefined
   if (isNormalVideo) {
-    if (authorName || pubdateDisplay || pubdateDisplayForTitleAttr) {
+    if (authorName || pubdateDisplay || pubdateDisplayForTitleAttr || pubDateDisplayFromApi) {
       descTitleAttr = [
         //
         authorName,
-        pubdateDisplayForTitleAttr || pubdateDisplay,
+        pubdateDisplayForTitleAttr || pubdateDisplay || pubDateDisplayFromApi,
       ]
         .filter(Boolean)
         .join(' · ')
@@ -260,6 +300,7 @@ export function VideoCardBottom({
 
   function renderDesc() {
     if (isNormalVideo) {
+      const date = pubdateDisplay || pubDateDisplayFromApi
       return (
         <>
           <a
@@ -270,9 +311,7 @@ export function VideoCardBottom({
             css={descOwnerCss}
           >
             <span className='bili-video-card__info--author'>{authorName}</span>
-            {pubdateDisplay && (
-              <span className='bili-video-card__info--date'>{DESC_SEPARATOR + pubdateDisplay}</span>
-            )}
+            {date && <span className='bili-video-card__info--date'>{DESC_SEPARATOR + date}</span>}
           </a>
           {!!recommendReason && (
             <span css={S.recommendReason} title={recommendReason}>
@@ -335,4 +374,4 @@ export function VideoCardBottom({
       </Switch>
     )
   }
-}
+})

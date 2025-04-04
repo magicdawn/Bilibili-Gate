@@ -1,5 +1,5 @@
 import { HOST_APP } from '$common'
-import type { AppRecItem, AppRecItemExtend, RecItemType } from '$define'
+import { type AppRecItem, type AppRecItemExtend, type RecItemType } from '$define'
 import type { ipad } from '$define/app-recommend.ipad'
 import { EApiType, EAppApiDevice } from '$define/index.shared'
 import { getSettingsSnapshot } from '$modules/settings'
@@ -211,14 +211,15 @@ class AppRecInnerService implements IService {
 
     // add uuid
     // add api
-    const _list = list.map((item) => {
+    const extendedList = list.map((item) => {
       return {
         ...item,
         api: EApiType.AppRecommend,
+        uniqId: `${EApiType.AppRecommend}-${item.param}`,
         device: this.deviceParamForApi, // android | ipad
-        uniqId: item.param + '-' + crypto.randomUUID(),
       } as AppRecItemExtend
     })
-    return _list
+
+    return extendedList
   }
 }

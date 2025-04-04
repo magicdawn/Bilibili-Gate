@@ -19,13 +19,15 @@ export const getVideoDetail = wrapWithIdbCache({
   generateKey: (bvid: string) => bvid,
   tableName: 'video_detail',
   ttl: ms('3M'),
+  concurrency: 3,
 })
 
 /**
- * 查询视频分P列表 (avid/bvid转cid)
- *
- * @note
- * 这个 API 比 `/x/web-interface/view` 轻量
+ * 查询视频分P列表 (avid/bvid 转 cid)
+ * 作用:
+ *  - 查询 cid, 用于 playurl API 参数
+ *  - 查询 dimension, 用于 LargePreview, PipWindow 等
+ *  - 查询 ctime, 用于获取 IpadAppRecommendItem, 已关注时的发布时间
  */
 async function __fetchVideoPageList(bvid: string) {
   const res = await request.get('/x/player/pagelist', { params: { bvid } })
@@ -37,4 +39,5 @@ export const getVideoPageList = wrapWithIdbCache({
   generateKey: (bvid: string) => bvid,
   tableName: 'video_page_list',
   ttl: ms('3M'),
+  concurrency: 3,
 })

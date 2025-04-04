@@ -61,7 +61,7 @@ export namespace ipad {
     idx: number
     mask?: Mask
     three_point_v2: ThreePointV2[]
-    track_id: TrackID
+    track_id: string
     report_flow_data?: string
     avatar: Avatar
     cover_left_text_1: string
@@ -69,204 +69,12 @@ export namespace ipad {
     cover_left_text_3: string
     desc: string
     can_play: number
-    ad_info?: AdInfo
+    ad_info?: any
     top_rcmd_reason?: string
     official_icon?: number
     top_rcmd_reason_style?: BottomRcmdReasonStyle
     bottom_rcmd_reason?: string
     bottom_rcmd_reason_style?: BottomRcmdReasonStyle
-  }
-
-  export interface AdInfo {
-    creative_id: number
-    creative_type: number
-    card_type: number
-    creative_content: CreativeContent
-    ad_cb: string
-    resource: number
-    source: number
-    request_id: string
-    is_ad: boolean
-    cm_mark: number
-    index: number
-    is_ad_loc: boolean
-    card_index: number
-    client_ip: string
-    extra: Extra
-    creative_style: number
-  }
-
-  export interface CreativeContent {
-    title: string
-    description: string
-    video_id: number
-    image_url: string
-    image_md5: string
-    url: string
-  }
-
-  export interface Extra {
-    abtest: string
-    act_img: string
-    ad_content_type: number
-    appstore_priority: number
-    appstore_url: string
-    bg_img: string
-    card: Card
-    click_area: number
-    click_urls: any[]
-    download_url_type: number
-    download_whitelist: any[]
-    enable_auto_callup: number
-    enable_double_jump: boolean
-    enable_h5_alert: boolean
-    enable_h5_pre_load: number
-    enable_share: boolean
-    enable_store_direct_launch: number
-    external_link_warning: string
-    feedback_panel_style: number
-    from_track_id: TrackID
-    h5_pre_load_url: string
-    hot_activity_id: number
-    landingpage_download_style: number
-    layout: string
-    macro_replace_priority: number
-    open_whitelist: any[]
-    preload_landingpage: number
-    product_id: number
-    report_time: number
-    sales_type: number
-    shop_id: number
-    show_1s_urls: any[]
-    show_urls: any[]
-    special_industry: boolean
-    special_industry_style: number
-    special_industry_tips: string
-    store_callup_card: boolean
-    store_dplink_xiaomi: string
-    top_live_stay_time_seconds: number
-    track_id: string
-    up_mid: number
-    upzone_entrance_report_id: number
-    upzone_entrance_type: number
-    use_ad_web_v2: boolean
-  }
-
-  export interface Card {
-    ad_tag: string
-    ad_tag_style: AdTagStyle
-    adver: Adver
-    adver_account_id: number
-    adver_logo: string
-    adver_mid: number
-    adver_name: string
-    adver_page_url: string
-    anim_in_enable: number
-    callup_url: string
-    card_style: number
-    card_type: number
-    covers: Cover[]
-    desc: string
-    download_area: number
-    duration: string
-    dynamic_text: string
-    extra_desc: string
-    extreme_team_icon: string
-    extreme_team_status: boolean
-    feedback_panel: FeedbackPanel
-    fold_time: number
-    goods_cur_price: string
-    goods_item_id: number
-    goods_ori_price: string
-    goods_panel_show: number
-    goods_pannel_show: number
-    grade_denominator: number
-    grade_level: number
-    imax_landing_page_v2: string
-    jump_url: string
-    live_auto_play: boolean
-    live_booking_population_threshold: number
-    live_room_area: string
-    live_room_popularity: number
-    live_room_title: string
-    live_streamer_face: string
-    live_streamer_name: string
-    live_tag_show: boolean
-    long_desc: string
-    ori_mark_hidden: number
-    ott_jump_url: string
-    price_desc: string
-    price_symbol: string
-    quality_infos: BottomRcmdReasonStyle[]
-    show_pop_window: number
-    star_level: number
-    story_interaction_style: number
-    support_transition: boolean
-    title: string
-    transition: string
-    under_player_interaction_style: number
-    underframe_card_style: number
-    universal_app: string
-    use_multi_cover: boolean
-    video: Video
-    yellow_cart_pannel_pullup: number
-    yellow_cart_pannel_version: number
-  }
-
-  export interface AdTagStyle {
-    bg_border_color: string
-    bg_color: string
-    bg_color_night: string
-    border_color: string
-    border_color_night: string
-    img_height: number
-    img_url: string
-    img_width: number
-    text: string
-    text_color: string
-    text_color_night: string
-    type: number
-  }
-
-  export interface Adver {
-    adver_desc: string
-    adver_id: number
-    adver_logo: string
-    adver_name: string
-    adver_page_url: string
-    adver_type: number
-  }
-
-  export interface Cover {
-    gif_tag_show: boolean
-    gif_url: string
-    image_height: number
-    image_width: number
-    loop: number
-    url: string
-  }
-
-  export interface FeedbackPanel {
-    close_rec_tips: string
-    feedback_panel_detail: FeedbackPanelDetail[]
-    open_rec_tips: string
-    panel_type_text: string
-    toast: string
-  }
-
-  export interface FeedbackPanelDetail {
-    icon_url: string
-    jump_type: number
-    jump_url: string
-    module_id: number
-    secondary_panel?: SecondaryPanel[]
-    sub_text: string
-    text: string
-  }
-
-  export interface SecondaryPanel {
-    reason_id: number
-    text: string
   }
 
   export interface BottomRcmdReasonStyle {
@@ -280,31 +88,6 @@ export namespace ipad {
     text: string
     text_color: string
     text_color_night: string
-  }
-
-  export interface Video {
-    auto_play: boolean
-    auto_play_value: number
-    avid: number
-    biz_id: number
-    btn_dyc_color: boolean
-    btn_dyc_time: number
-    cid: number
-    cover: string
-    egg_end_time: number
-    egg_start_time: number
-    ep_id: number
-    from: string
-    from_spmid: string
-    orientation: number
-    page: number
-    press_trigger_time: number
-    season_id: number
-    url: string
-  }
-
-  export enum TrackID {
-    All20RouterPegasus134197979F5Cf757DLvjbv1700248736644803 = 'all_20.router-pegasus-1341979-79f5cf757d-lvjbv.1700248736644.803',
   }
 
   export interface Args {

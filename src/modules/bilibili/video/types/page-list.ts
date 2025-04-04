@@ -15,6 +15,7 @@ export interface VideoPage {
   weblink: string
   dimension: Dimension
   first_frame: string
+  ctime: number
 }
 
 export interface Dimension {
