@@ -8,7 +8,7 @@ import { SpaceUploadOrder, SpaceUploadOrderConfig } from './api'
 import { spaceUploadStore } from './store'
 
 export function SpaceUploadUsageInfo() {
-  const { order } = useSnapshot(spaceUploadStore)
+  const { order, searchText } = useSnapshot(spaceUploadStore)
   const onRefresh = useOnRefreshContext()
 
   return (
@@ -23,6 +23,7 @@ export function SpaceUploadUsageInfo() {
         listDisplayConfig={SpaceUploadOrderConfig}
       />
       <Input.Search
+        defaultValue={searchText}
         placeholder='搜索词'
         allowClear
         onSearch={(value) => {
