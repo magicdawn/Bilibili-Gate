@@ -1,3 +1,5 @@
+import { difference } from 'es-toolkit'
+
 export enum ETab {
   AppRecommend = 'app-recommend',
   PcRecommend = 'pc-recommend',
@@ -20,6 +22,4 @@ export const ALL_TAB_KEYS = Object.values(ETab)
 
 export const NONE_CONFIGURABLE_TAB_KEYS = [ETab.SpaceUpload]
 
-export const CONFIGURABLE_TAB_KEYS = Array.from(
-  new Set(ALL_TAB_KEYS).difference(new Set(NONE_CONFIGURABLE_TAB_KEYS)),
-)
+export const CONFIGURABLE_TAB_KEYS = difference(ALL_TAB_KEYS, NONE_CONFIGURABLE_TAB_KEYS)
