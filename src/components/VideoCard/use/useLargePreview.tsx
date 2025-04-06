@@ -55,7 +55,7 @@ export function useLargePreviewRelated({
   actionButtonVisible: boolean
   hasLargePreviewActionButton: boolean
   shouldFetchPreviewData: boolean
-  tryFetchVideoPreviewData: () => void
+  tryFetchVideoPreviewData: () => Promise<void>
   videoPreviewDataBox: RefStateBox<VideoPreviewData | undefined>
   item: RecItemType
   cardData: IVideoCardData
@@ -65,7 +65,7 @@ export function useLargePreviewRelated({
   const { uniqId } = item
   const { cover, bvid } = cardData
 
-  const $req = useRequest(async () => tryFetchVideoPreviewData(), {
+  const $req = useRequest(tryFetchVideoPreviewData, {
     manual: true,
     loadingDelay: 100, // if request is fast, do not show loading at all
   })
