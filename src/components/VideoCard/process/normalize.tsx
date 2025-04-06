@@ -742,6 +742,9 @@ function apiLiveAdapter(item: LiveItemExtend): IVideoCardData {
 }
 
 function apiSpaceUploadAdapter(item: SpaceUploadItemExtend): IVideoCardData {
+  const duration = parseDuration(item.length)
+  const durationStr = formatDuration(duration) // 太蠢啦, 这个 API length 有时候会返回 '90:10', 表示 90分钟10秒, 不能直接用
+
   return {
     // video
     avid: item.aid.toString(),
@@ -753,8 +756,8 @@ function apiSpaceUploadAdapter(item: SpaceUploadItemExtend): IVideoCardData {
     cover: item.pic,
     pubts: item.created,
     pubdateDisplay: formatTimeStamp(item.created),
-    duration: parseDuration(item.length),
-    durationStr: item.length,
+    duration,
+    durationStr,
     recommendReason: item.description || undefined,
 
     // stat

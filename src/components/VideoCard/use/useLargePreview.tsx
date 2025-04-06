@@ -67,7 +67,7 @@ export function useLargePreviewRelated({
 
   const $req = useRequest(tryFetchVideoPreviewData, {
     manual: true,
-    loadingDelay: 150, // if request is fast, do not show loading at all
+    loadingDelay: 100, // if request is fast, do not show loading at all
   })
 
   const [visible, setVisible] = useState(false)
