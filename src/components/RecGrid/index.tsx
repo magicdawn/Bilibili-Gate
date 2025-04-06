@@ -40,7 +40,7 @@ import ms from 'ms'
 import type { ForwardedRef, ReactNode } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { VirtuosoGrid } from 'react-virtuoso'
-import * as scopedClsNames from '../video-grid.module.scss'
+import * as classNames from '../video-grid.module.scss'
 import type { OnRefresh } from './useRefresh'
 import { useRefresh } from './useRefresh'
 import { useShortcut } from './useShortcut'
@@ -441,12 +441,9 @@ const RecGridInner = memo(function ({
   const { useNarrowMode, style } = useSettingsSnapshot()
   const gridClassName = clsx(
     APP_CLS_GRID, // for customize css
-    scopedClsNames.videoGrid,
-    scopedClsNames.newCardStyle,
-    style.pureRecommend.useCustomGrid
-      ? scopedClsNames.videoGridCustom
-      : scopedClsNames.videoGridBiliFeed4,
-    useNarrowMode && scopedClsNames.narrowMode, // 居中
+    classNames.videoGrid,
+    style.pureRecommend.useCustomGrid ? classNames.videoGridCustom : classNames.videoGridBiliFeed4,
+    useNarrowMode && classNames.narrowMode, // 居中
     className,
   )
 
@@ -469,7 +466,7 @@ const RecGridInner = memo(function ({
     return (
       <div
         ref={containerRef}
-        className={scopedClsNames.videoGridContainer}
+        className={classNames.videoGridContainer}
         data-tab={tab}
         css={css`
           min-height: 100vh;
@@ -558,7 +555,7 @@ const RecGridInner = memo(function ({
   // virtual grid
   if (ENABLE_VIRTUAL_GRID) {
     return (
-      <div className={clsx(scopedClsNames.videoGridContainer, scopedClsNames.virtualGridEnabled)}>
+      <div className={clsx(classNames.videoGridContainer, classNames.virtualGridEnabled)}>
         <VirtuosoGrid
           useWindowScroll
           data={usingItems}

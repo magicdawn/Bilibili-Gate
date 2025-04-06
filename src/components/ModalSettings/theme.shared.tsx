@@ -155,7 +155,6 @@ const ALL_THEMES = ThemeGroups.map((x) => x.themes).flat()
 /**
  * use outside React
  */
-
 export function getCurrentTheme() {
   const theme =
     ALL_THEMES.find((t) => t.id === (settings.theme || DEFAULT_BILI_PINK_THEME.id)) ||
@@ -169,7 +168,6 @@ export function getCurrentTheme() {
 /**
  * react hook
  */
-
 export function useCurrentTheme() {
   let { theme: themeId, colorPickerThemeSelectedColor } = useSettingsSnapshot()
   themeId ||= DEFAULT_BILI_PINK_THEME.id
@@ -185,7 +183,6 @@ export function useCurrentTheme() {
 /**
  * colorPrimary hex 值, 需传入 antd
  */
-
 export function useColorPrimaryHex() {
   const currentTheme = useCurrentTheme()
   const evolvedThemeColor = $evolvedThemeColor.use()

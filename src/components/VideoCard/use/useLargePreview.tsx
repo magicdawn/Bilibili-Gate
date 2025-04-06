@@ -65,7 +65,10 @@ export function useLargePreviewRelated({
   const { uniqId } = item
   const { cover, bvid } = cardData
 
-  const $req = useRequest(async () => tryFetchVideoPreviewData(), { manual: true })
+  const $req = useRequest(async () => tryFetchVideoPreviewData(), {
+    manual: true,
+    loadingDelay: 100, // if request is fast, do not show loading at all
+  })
 
   const [visible, setVisible] = useState(false)
   type TriggerAction = 'hover' | 'click'

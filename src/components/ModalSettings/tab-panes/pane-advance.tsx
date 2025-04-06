@@ -23,9 +23,6 @@ import { articleDraft, restoreOmitPaths } from '$modules/settings/index.shared'
 import { css } from '@emotion/react'
 import { Button, Popconfirm, Slider, Space } from 'antd'
 import { startCase } from 'es-toolkit'
-import TablerFileExport from '~icons/tabler/file-export'
-import TablerFileImport from '~icons/tabler/file-import'
-import TablerRestore from '~icons/tabler/restore'
 import { set_HAS_RESTORED_SETTINGS } from '../../../modules/settings/restore-flag'
 import { toastAndReload } from '../index.shared'
 import { ResetPartialSettingsButton, SettingsGroup, sharedCss } from './shared'
@@ -67,7 +64,7 @@ export function TabPaneAdvance() {
             onConfirm={onResetSettings}
           >
             <Button danger type='primary'>
-              <TablerRestore />
+              <IconTablerRestore />
               恢复默认设置
             </Button>
           </Popconfirm>
@@ -75,13 +72,13 @@ export function TabPaneAdvance() {
           <Space size={5}>
             <AntdTooltip title='导出所有设置项到文件中, 包含 access_key 等数据, 请妥善保存'>
               <Button onClick={() => exportSettings()}>
-                <TablerFileExport />
+                <IconTablerFileExport />
                 导出设置
               </Button>
             </AntdTooltip>
             <AntdTooltip title='从文件中导入设置项, 将覆盖当前设置, 此操作不可逆!'>
               <Button onClick={() => importSettings()}>
-                <TablerFileImport />
+                <IconTablerFileImport />
                 导入设置
               </Button>
             </AntdTooltip>
@@ -120,7 +117,7 @@ export function TabPaneAdvance() {
             onConfirm={onRestoreSettings}
           >
             <Button danger type='primary'>
-              <TablerRestore />
+              <IconTablerRestore />
               从专栏草稿箱中恢复
             </Button>
           </Popconfirm>

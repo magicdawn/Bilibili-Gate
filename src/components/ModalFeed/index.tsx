@@ -13,12 +13,11 @@ import { useSettingsSnapshot } from '$modules/settings'
 import { css } from '@emotion/react'
 
 const S = {
-  modalMask: (narrowMode: boolean) => [
+  modalMask: (narrowMode: boolean) =>
     narrowMode &&
-      css`
-        background-color: rgba(0, 0, 0, 0.9);
-      `,
-  ],
+    css`
+      background-color: rgba(0, 0, 0, 0.9);
+    `,
 
   modal: (narrowMode: boolean, fullScreenMode: boolean) => [
     css`

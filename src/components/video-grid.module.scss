@@ -1,21 +1,11 @@
 @use '../common/css-vars' as *;
 
-/**
- * 新版首页
- * 使用的是 .video-card-body 的样式
- * 在B站自己的首页中, .bili-grid > 2200px 是分 7 列, .video-card-body > 2200px 分6列
- */
-
 .video-grid {
   display: grid;
   position: relative;
   width: 100%;
   grid-gap: 20px 12px;
   grid-template-columns: repeat(var(--col), minmax(0, 1fr));
-  #{$app-video-card-border-radius-id}: 6px;
-}
-
-.new-card-style {
   #{$app-video-card-border-radius-id}: 15px;
 }
 
@@ -23,7 +13,6 @@
  * bili-feed4
  * 取自 .battle-feed-area .battle-feed-body
  */
-
 .video-grid-bili-feed4 {
   // grid-gap: 60px 20px; // original
   grid-gap: 20px 20px;
@@ -58,9 +47,8 @@
 }
 
 /**
- * @container query
+ * @container 容器
  */
-
 .video-grid-container {
   container-type: inline-size;
 
@@ -128,7 +116,6 @@ $card-base-width: 300px;
 /**
  * 双列模式
  */
-
 .narrow-mode {
   --col: 2 !important;
 }

@@ -254,10 +254,10 @@ function customFormat(ts: number) {
 
   const FORMAT_YEAR = 'YYYY'
   const FORMAT_DATE = 'YYYY-MM-DD'
-  const isCurrentYear = t.format(FORMAT_YEAR) === dayjs().format(FORMAT_YEAR)
   const isToday = t.format(FORMAT_DATE) === dayjs().format(FORMAT_DATE)
   const isTodayRecent = isToday && Date.now() - ts * 1000 <= ms('12h')
   const isYesterday = t.format(FORMAT_DATE) === dayjs().subtract(1, 'day').format(FORMAT_DATE)
+  const isCurrentYear = t.format(FORMAT_YEAR) === dayjs().format(FORMAT_YEAR)
 
   if (isTodayRecent) {
     const minutes = dayjs().diff(t, 'minutes')
