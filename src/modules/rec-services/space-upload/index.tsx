@@ -9,6 +9,7 @@ import QuickLRU from 'quick-lru'
 import { BaseTabService } from '../_base'
 import { getSpaceUpload, SpaceUploadOrder } from './api'
 import { SpaceUploadUsageInfo } from './usage-info'
+import { isSpaceUploadItemChargeOnly } from './util'
 
 export const spaceUploadAvatarCache = new QuickLRU<string, string>({ maxSize: 100 })
 
@@ -70,6 +71,10 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
         vol: endVol - index,
       }
     })
+
+    // 直接去除"充电专属", 但保留它们的序号
+    list = list.filter((item) => !isSpaceUploadItemChargeOnly(item))
+
     if (this.filterText) {
       const { includes, excludes } = parseSearchInput(this.filterText)
       list = list.filter((item) => {

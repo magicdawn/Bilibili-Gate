@@ -242,24 +242,31 @@ export function ApiTypeTag({ item }: { item: RecItemType }) {
 }
 
 export function VolMark({ vol }: { vol: number }) {
+  const displayAsCircle = vol.toString().length <= 2
+  const circleCss = css`
+    height: 28px;
+    width: 28px;
+    border-radius: 50%;
+  `
+
   const roundButtonCss = [
     flexCenterStyle,
     css`
       position: relative;
-      color: #fff;
-      border-radius: 50%;
-      white-space: nowrap;
-      width: 28px;
-      height: 28px;
       background-color: ${colorPrimaryValue};
+      color: #fff;
+      white-space: nowrap;
+
+      height: 24px;
+      min-width: 24px;
+      border-radius: 8px;
+      padding-inline: 6px;
     `,
   ]
 
   return (
     <div css={VideoCardActionStyle.topContainer('left')}>
-      <div css={roundButtonCss}>
-        <span style={{ marginLeft: -1 }}>{vol}</span>
-      </div>
+      <div css={roundButtonCss}>{vol}</div>
     </div>
   )
 }
