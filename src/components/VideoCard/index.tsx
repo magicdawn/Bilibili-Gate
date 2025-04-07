@@ -37,7 +37,7 @@ import { useLockFn } from 'ahooks'
 import { Dropdown } from 'antd'
 import type { ComponentRef, CSSProperties, MouseEventHandler, ReactNode } from 'react'
 import { videoCardBorderRadiusValue } from '../css-vars'
-import { useInNormalCardCss } from './card-border-css'
+import { useBlockedCardCss } from './card-border-css'
 import { SimplePregressBar } from './child-components/PreviewImage'
 import { VideoCardActionStyle } from './child-components/VideoCardActions'
 import { VideoCardBottom } from './child-components/VideoCardBottom'
@@ -119,8 +119,8 @@ export const VideoCard = memo(function VideoCard({
 
   const showingDislikeCard = !!dislikedReason
   const showingBlacklistCard = blacklisted
-  const showingInNormalCard = showingDislikeCard || showingBlacklistCard
-  const inNormalCardCss = useInNormalCardCss(showingInNormalCard)
+  const isBlockedCard = showingDislikeCard || showingBlacklistCard
+  const inNormalCardCss = useBlockedCardCss(isBlockedCard)
 
   return (
     <div

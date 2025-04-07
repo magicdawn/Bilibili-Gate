@@ -37,12 +37,13 @@ const coverZoom = css`
  * - hover highlight bg
  * - hover highlight separator
  */
-export function useInNormalCardCss(showingInNormalCard: boolean): CssProp {
+export function useBlockedCardCss(isBlockedCard: boolean): CssProp {
   const sepIdentifier = `--${APP_NAMESPACE}-separator-color`
   return useMemo(() => {
-    if (!showingInNormalCard) return undefined
+    if (!isBlockedCard) return undefined
     return _css`
       border-color: ${borderColorValue};
+      border-radius: ${videoCardBorderRadiusValue};
 
       background-color: ${bgValue};
       ${sepIdentifier}:  ${bgLv1Value};
@@ -57,7 +58,7 @@ export function useInNormalCardCss(showingInNormalCard: boolean): CssProp {
         padding: 0;
       }
     `
-  }, [showingInNormalCard])
+  }, [isBlockedCard])
 }
 
 export function useCardBorderCss(): CssProp {

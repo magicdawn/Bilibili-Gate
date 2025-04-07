@@ -63,11 +63,9 @@ const blockedCardCss = {
   wrapper: css`
     /* grid align-items 默认为 stretch, 同 row 互相撑起高度 */
     height: 100%;
-
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    border-radius: var(--video-card-border-radius); /* note this is unscoped */
   `,
 
   cover: css`
