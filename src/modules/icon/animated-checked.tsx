@@ -15,10 +15,12 @@ import { motion } from 'framer-motion'
 export function IconAnimatedChecked({
   size = 18,
   useAnimation = false,
+  color = 'currentColor',
   ...restProps
 }: {
   size?: number
   useAnimation?: boolean
+  color?: string
 } & ComponentProps<'svg'>) {
   return (
     <svg
@@ -30,7 +32,7 @@ export function IconAnimatedChecked({
     >
       <motion.path
         fill='transparent'
-        stroke='currentColor'
+        stroke={color}
         strokeLinecap='round'
         strokeLinejoin='round'
         strokeWidth='2'

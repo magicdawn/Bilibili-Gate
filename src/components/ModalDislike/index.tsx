@@ -1,9 +1,13 @@
 import { APP_CLS_ROOT, OPERATION_FAIL_MSG } from '$common'
 import { BaseModal, BaseModalStyle, ModalClose } from '$components/_base/BaseModal'
+import { HelpInfo } from '$components/_base/HelpInfo'
+import { AppRoot } from '$components/AppRoot'
 import { borderColorValue, colorPrimaryValue } from '$components/css-vars'
 import type { AppRecItem, AppRecItemExtend } from '$define'
 import { antMessage } from '$modules/antd'
-import { IconForDislike, IconForInfo } from '$modules/icon'
+import { IconForDislike } from '$modules/icon'
+import { IconAnimatedChecked } from '$modules/icon/animated-checked'
+import { shouldDisableShortcut } from '$utility/dom'
 import { toastRequestFail } from '$utility/toast'
 import { css } from '@emotion/react'
 import { useLockFn, useRequest, useUpdateLayoutEffect } from 'ahooks'
@@ -42,7 +46,36 @@ export function delDislikeId(id: string) {
   dislikedIds.delete(id)
 }
 
-function ModalDislike({ show, onHide, item }: IProps) {
+const S = {
+  reason: css`
+    color: inherit;
+    position: relative;
+    text-align: center;
+    padding-inline: 25px; // for left & right
+    padding-block: 10px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    border-radius: 4px;
+    border: 2px solid ${borderColorValue};
+  `,
+
+  reasonActive: css`
+    /* to increase specificity */
+    &.active {
+      border-color: ${colorPrimaryValue};
+    }
+  `,
+
+  tips: css`
+    display: flex;
+    align-items: center;
+  `,
+}
+
+export function ModalDislike({ show, onHide, item }: IProps) {
   const $req = useRequest(async (item: AppRecItem, reason: Reason) => dislike(item, reason.id), {
     manual: true,
   })
@@ -101,20 +134,18 @@ function ModalDislike({ show, onHide, item }: IProps) {
     setActiveIndex(reasons.length - 1)
   }, [reasons])
 
-  const increaseIndex = (by: number) => {
-    return () => {
-      if (!keyPressEnabled()) return
-      const newIndex = activeIndex + by
-      if (newIndex < 0 || newIndex > reasons.length - 1) return
-      setActiveIndex(newIndex)
-    }
-  }
+  const increaseIndex = useMemoizedFn((by: number) => {
+    if (!keyPressEnabled()) return
+    if (shouldDisableShortcut()) return
+    const len = reasons.length
+    let newIndex = activeIndex + by
+    if (newIndex < 0) newIndex = (newIndex % len) + len
+    if (newIndex > len - 1) newIndex = newIndex % len
+    setActiveIndex(newIndex)
+  })
 
-  useKeyPress('leftarrow', increaseIndex(-1), { exactMatch: true })
-  useKeyPress('rightarrow', increaseIndex(1), { exactMatch: true })
-  useKeyPress('uparrow', increaseIndex(-2), { exactMatch: true })
-  useKeyPress('downarrow', increaseIndex(2), { exactMatch: true })
-
+  useKeyPress('uparrow', () => increaseIndex(-1), { exactMatch: true })
+  useKeyPress('downarrow', () => increaseIndex(1), { exactMatch: true })
   useKeyPress(
     'enter',
     (e) => {
@@ -139,22 +170,22 @@ function ModalDislike({ show, onHide, item }: IProps) {
       onHide={onHide}
       hideWhenMaskOnClick={true}
       hideWhenEsc={true}
-      width={500}
+      width={400}
     >
-      <div css={BaseModalStyle.modalHeader}>
+      <div css={BaseModalStyle.modalHeader} className='justify-between'>
         <div css={BaseModalStyle.modalTitle}>
-          <IconForDislike className='size-25' />
-          <span className='m-inline-5'>我不想看</span>
-          <span
-            css={css`
-              font-size: 60%;
-              margin-top: 7px;
-            `}
-          >
-            (选择后将减少相似内容推荐)
-          </span>
+          <IconForDislike className='size-25px' />
+          <span className='ml-5px'>我不想看</span>
+          <HelpInfo>
+            选择后将减少相似内容推荐 <br />
+            操作说明: <br />
+            <div className='ml-10px'>
+              1. 使用删除键打开弹窗, Esc 关闭 <br />
+              2. 数字键直接选择并提交 <br />
+              3. 也可以使用方向键选择, 回车键提交 <br />
+            </div>
+          </HelpInfo>
         </div>
-        <div className='flex-1' />
         <ModalClose onClick={onHide} />
       </div>
 
@@ -173,18 +204,9 @@ function ModalDislike({ show, onHide, item }: IProps) {
             />
           }
         >
-          <div
-            className='reason-list'
-            css={css`
-              display: flex;
-              flex-wrap: wrap;
-              align-items: center;
-              justify-content: space-between;
-            `}
-          >
+          <div className='reason-list flex flex-col gap-y-8px mt-20px mb-40px'>
             {reasons.map((reason, index) => {
               const active = index === activeIndex
-
               return (
                 <button
                   className={clsx('reason', { active })}
@@ -198,83 +220,28 @@ function ModalDislike({ show, onHide, item }: IProps) {
                   }}
                 >
                   <span
-                    className='reason-no'
-                    css={css`
-                      position: absolute;
-                      left: 6px;
-
-                      width: 20px;
-                      height: 20px;
-                      border-radius: 50%;
-                      top: ${(32 - 20) / 2}px;
-
-                      display: flex;
-                      align-items: center;
-                      justify-content: center;
-
-                      background-color: ${colorPrimaryValue};
-                      color: #fff;
-                    `}
+                    data-role='reason-no'
+                    className='absolute left-6px top-9px size-20px rounded-50% flex items-center justify-center color-white'
+                    style={{ backgroundColor: colorPrimaryValue }}
                   >
                     {index + 1}
                   </span>
                   {reason.name}
+                  {active && (
+                    <IconAnimatedChecked
+                      className='absolute right-6px top-9px size-20px'
+                      color={colorPrimaryValue}
+                      useAnimation
+                    />
+                  )}
                 </button>
               )
             })}
           </div>
         </Spin>
-
-        <div
-          className='tips-container'
-          css={css`
-            margin-top: 20px;
-          `}
-        >
-          <div className='tips' css={S.tips}>
-            <IconForInfo className='mr-5 size-15' />
-            使用删除键打开弹窗, 数字键选择, Esc 关闭
-          </div>
-          {activeReasonName && (
-            <div className='tips' css={S.tips}>
-              <IconForInfo className='mr-5 size-15' />
-              已选择「{activeReasonName}」, 回车键提交
-            </div>
-          )}
-        </div>
       </div>
     </BaseModal>
   )
-}
-
-const S = {
-  reason: css`
-    color: inherit;
-    width: 48%;
-    text-align: center;
-    line-height: 20px;
-    position: relative;
-
-    border-radius: 4px;
-    border: 2px solid ${borderColorValue};
-
-    padding-top: 5px;
-    padding-bottom: 5px;
-    margin-top: 5px;
-    margin-bottom: 5px;
-  `,
-
-  reasonActive: css`
-    /* to increase specificity */
-    &.active {
-      border-color: ${colorPrimaryValue};
-    }
-  `,
-
-  tips: css`
-    display: flex;
-    align-items: center;
-  `,
 }
 
 const currentProps: IProps = {
@@ -302,18 +269,22 @@ function onHide() {
 function updateProps(newProps: Partial<IProps>) {
   Object.assign(currentProps, newProps)
   modalDislikeVisibleState.value = currentProps.show
-  getRoot().render(<ModalDislike {...currentProps} onHide={onHide} />)
+  getRoot().render(
+    <AppRoot>
+      <ModalDislike {...currentProps} onHide={onHide} />
+    </AppRoot>,
+  )
 }
 
-let _root: Root
+let root: Root | undefined
 function getRoot() {
-  _root ||= (() => {
+  if (!root) {
     const container = document.createElement('div')
     container.classList.add('show-dislike-container', APP_CLS_ROOT)
     document.body.appendChild(container)
-    return createRoot(container)
-  })()
-  return _root
+    root = createRoot(container)
+  }
+  return root
 }
 
 export function showModalDislike(item: AppRecItemExtend) {
@@ -321,8 +292,3 @@ export function showModalDislike(item: AppRecItemExtend) {
   if (item?.param && dislikedIds.has(item.param)) return
   updateProps({ show: true, item })
 }
-
-// setTimeout(() => {
-//   // @ts-ignore
-//   showModalDislike(null)
-// }, 1000)
