@@ -12,7 +12,7 @@ import { $headerHeight, $usingEvolevdHeader } from '$header'
 import { useIsDarkMode } from '$modules/dark-mode'
 import { IconForConfig } from '$modules/icon'
 import { settings, useSettingsSnapshot } from '$modules/settings'
-import { isMac } from '$ua'
+import { isMac, isSafari } from '$ua'
 import { getElementOffset, shouldDisableShortcut } from '$utility/dom'
 import { css } from '@emotion/react'
 import { Button } from 'antd'
@@ -214,7 +214,7 @@ function useExpandToFullWidthCss() {
   return useMemo(() => {
     if (!xScrolling) {
       // https://github.com/magicdawn/bilibili-gate/issues/120
-      const scrollbarWidth = isMac ? '0px' : '20px'
+      const scrollbarWidth = isMac || isSafari ? '0px' : '20px'
       return css`
         margin-inline: calc((100% - 100vw + ${scrollbarWidth}) / 2);
         padding-inline: calc((100vw - ${scrollbarWidth} - 100%) / 2);
