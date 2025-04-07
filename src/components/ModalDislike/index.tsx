@@ -204,7 +204,7 @@ export function ModalDislike({ show, onHide, item }: IProps) {
             />
           }
         >
-          <div className='reason-list flex flex-col gap-y-8px mt-20px mb-40px'>
+          <div className='reason-list flex flex-col gap-y-8px mt-15px mb-15px'>
             {reasons.map((reason, index) => {
               const active = index === activeIndex
               return (
