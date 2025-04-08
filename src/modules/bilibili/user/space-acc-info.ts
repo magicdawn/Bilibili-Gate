@@ -21,7 +21,7 @@ async function __fetchSpaceAccInfo(mid: string | number) {
 export const getSpaceAccInfo = wrapWithIdbCache({
   fn: __fetchSpaceAccInfo,
   generateKey: (mid) => mid.toString(),
-  tableName: 'space_acc_info',
+  tableName: 'space-acc-info',
   ttl: ms('10d'),
   concurrency: 2, // 因在 react component 中使用, 可能会导致瞬时并发, 引发风控
 })

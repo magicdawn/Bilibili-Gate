@@ -11,7 +11,7 @@ async function __fetchUserNickname(mid: string | number) {
 export const getUserNickname = wrapWithIdbCache({
   fn: __fetchUserNickname,
   generateKey: (mid) => mid.toString(),
-  tableName: 'user_nickname',
+  tableName: 'user-nickname',
   ttl: ms('10d'),
 })
 

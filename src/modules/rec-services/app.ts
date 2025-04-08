@@ -4,7 +4,7 @@ import type { IVideoCardData } from '$components/VideoCard/process/normalize'
 import { isAppRecommend, type AppRecItem, type AppRecItemExtend, type RecItemType } from '$define'
 import type { ipad } from '$define/app-recommend.ipad'
 import { EApiType, EAppApiDevice } from '$define/index.shared'
-import { getVideoPageList } from '$modules/bilibili/video/video-detail'
+import { getVideoDetail } from '$modules/bilibili/video/video-detail'
 import { getSettingsSnapshot } from '$modules/settings'
 import { gmrequest } from '$request'
 import { getHasLogined } from '$utility/cookie'
@@ -229,6 +229,9 @@ class AppRecInnerService implements IService {
   }
 }
 
+/**
+ * 已关注作为重要的推荐理由, 值得使用详情 API 补充时间
+ */
 export async function fetchAppRecommendFollowedPubDate(
   item: RecItemType,
   cardData: IVideoCardData,
@@ -243,9 +246,10 @@ export async function fetchAppRecommendFollowedPubDate(
     getFollowedStatus(recommendReason)
   if (!shouldFetch) return
 
-  const pages = await getVideoPageList(bvid)
-  if (!pages.length) return
-  return customFormat(pages[0].ctime)
+  const detail = await getVideoDetail(bvid)
+  const ts = detail?.pubdate
+  if (!ts) return
+  return customFormat(ts)
 }
 
 function customFormat(ts: number) {
