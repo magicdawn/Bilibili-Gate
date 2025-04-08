@@ -32,47 +32,13 @@ const dislikedIds = proxyMap<string, Reason>()
 function useDislikedIds() {
   return useSnapshot(dislikedIds)
 }
-
 export function useDislikedReason(id?: string | false) {
   const map = useDislikedIds()
   if (!id) return undefined
   return map.get(id)
 }
-// 不能清理, 因为有两处在同时使用, refresh 之后清理影响其他地方比较奇怪
-function clearDislikedIds() {
-  dislikedIds.clear()
-}
 export function delDislikeId(id: string) {
   dislikedIds.delete(id)
-}
-
-const S = {
-  reason: css`
-    color: inherit;
-    position: relative;
-    text-align: center;
-    padding-inline: 25px; // for left & right
-    padding-block: 10px;
-
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-
-    border-radius: 4px;
-    border: 2px solid ${borderColorValue};
-  `,
-
-  reasonActive: css`
-    /* to increase specificity */
-    &.active {
-      border-color: ${colorPrimaryValue};
-    }
-  `,
-
-  tips: css`
-    display: flex;
-    align-items: center;
-  `,
 }
 
 export function ModalDislike({ show, onHide, item }: IProps) {
@@ -107,11 +73,7 @@ export function ModalDislike({ show, onHide, item }: IProps) {
     }
   })
 
-  const reasons = useMemo(() => {
-    // 此类内容过多 reason_id = 12
-    // 推荐过 reason_id = 13
-    return item?.three_point?.dislike_reasons || []
-  }, [item])
+  const reasons = useMemo(() => item?.three_point?.dislike_reasons || [], [item])
 
   const modalBodyRef = useRef<HTMLDivElement>(null)
 
@@ -123,6 +85,7 @@ export function ModalDislike({ show, onHide, item }: IProps) {
     if (!KEYS.includes(e.key)) return
 
     const index = Number(e.key) - 1
+    if (!(index >= 0 && index < reasons.length)) return
     setActiveIndex(index)
 
     const btn = modalBodyRef.current?.querySelectorAll<HTMLButtonElement>('.reason')[index]
@@ -170,7 +133,10 @@ export function ModalDislike({ show, onHide, item }: IProps) {
       onHide={onHide}
       hideWhenMaskOnClick={true}
       hideWhenEsc={true}
-      width={400}
+      width={350}
+      cssModal={css`
+        border-radius: 15px;
+      `}
     >
       <div css={BaseModalStyle.modalHeader} className='justify-between'>
         <div css={BaseModalStyle.modalTitle}>
@@ -204,15 +170,21 @@ export function ModalDislike({ show, onHide, item }: IProps) {
             />
           }
         >
-          <div className='reason-list flex flex-col gap-y-8px mt-15px mb-15px'>
+          <div className='reason-list flex flex-col gap-y-10px mt-20px mb-20px'>
             {reasons.map((reason, index) => {
               const active = index === activeIndex
               return (
                 <button
-                  className={clsx('reason', { active })}
-                  css={[S.reason, active && S.reasonActive]}
                   key={reason.id}
                   data-id={reason.id}
+                  className={clsx(
+                    'reason',
+                    { active },
+                    'relative flex items-center py-12px rounded-6px',
+                  )}
+                  css={css`
+                    border: 2px solid ${active ? colorPrimaryValue : borderColorValue};
+                  `}
                   disabled={$req.loading}
                   onClick={() => {
                     setActiveIndex(index)
@@ -220,20 +192,22 @@ export function ModalDislike({ show, onHide, item }: IProps) {
                   }}
                 >
                   <span
-                    data-role='reason-no'
-                    className='absolute left-6px top-9px size-20px rounded-50% flex items-center justify-center color-white'
+                    data-cls='reason-no'
+                    className='flex-none size-20px ml-6px rounded-50% flex items-center justify-center color-white'
                     style={{ backgroundColor: colorPrimaryValue }}
                   >
                     {index + 1}
                   </span>
-                  {reason.name}
-                  {active && (
-                    <IconAnimatedChecked
-                      className='absolute right-6px top-9px size-20px'
-                      color={colorPrimaryValue}
-                      useAnimation
-                    />
-                  )}
+                  <span className='flex-1 px-4px'>{reason.name}</span>
+                  <span className='flex-none size-20px mr-6px'>
+                    {active && (
+                      <IconAnimatedChecked
+                        className='w-100% h-100%'
+                        color={colorPrimaryValue}
+                        useAnimation
+                      />
+                    )}
+                  </span>
                 </button>
               )
             })}
