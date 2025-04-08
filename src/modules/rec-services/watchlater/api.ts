@@ -4,64 +4,43 @@ import { isWebApiSuccess, request } from '$request'
 import type { WatchlaterItem, WatchlaterJson } from './types'
 
 /**
- * 一次性获取所有「稍后再看」
- * request.get('/x/v2/history/toview/web')
+ * 一次性获取所有「稍后再看」/x/v2/history/toview/web
+ * next_key 分页 /x/v2/history/toview/v2/list
  * @history 2024-11-14 间歇性, 有 count, 但内容为空, {count: 123, items: []}
+ * @history 2025-04-09 B站新版页面由 toview/v2/list 切回 toview/web, toview/web 也支持分页了
  */
 
-/**
- * 分页
- */
-
-export async function getWatchlaterItemFrom(startKey = '', asc = false) {
-  const res = await request.get('/x/v2/history/toview/v2/list', {
+export async function fetchWatchlaterItems({
+  asc = false,
+  searchText = '',
+  abortSignal,
+  extraParams,
+}: {
+  asc?: boolean
+  searchText?: string
+  abortSignal?: AbortSignal
+  extraParams?: Record<string, string | number>
+} = {}) {
+  const res = await request.get('/x/v2/history/toview/web', {
+    signal: abortSignal,
     params: await encWbi({
-      start_key: startKey,
       asc,
-      sort_field: 1,
+      key: searchText,
+      viewed: 0, // 全部进度
       web_location: 333.881,
+      ...extraParams,
     }),
   })
 
   const json = res.data as WatchlaterJson
   if (!isWebApiSuccess(json)) {
-    appWarn('getAllWatchlaterItemsV2 error %s, fulljson %o', json.message, json)
+    appWarn('getAllWatchlaterItems error %s, fulljson %o', json.message, json)
     return { err: json.message }
   }
 
   return {
-    total: json.data.show_count,
-    hasMore: json.data.has_more,
-    nextKey: json.data.next_key,
+    total: json.data.count,
     items: filterOutApiReturnedRecent(json.data.list || []),
-  }
-}
-
-export async function getAllWatchlaterItemsV2(asc = false, abortSignal?: AbortSignal) {
-  let hasMore = true
-  let startKey = ''
-  let total = 0
-  let items: WatchlaterItem[] = []
-  let err: string | undefined
-
-  while (hasMore) {
-    if (abortSignal?.aborted) break
-
-    const result = await getWatchlaterItemFrom(startKey, asc)
-    if (typeof result.err !== 'undefined') {
-      err = result.err
-      break
-    }
-
-    items = items.concat(result.items)
-    startKey = result.nextKey
-    hasMore = result.hasMore
-    total = result.total
-  }
-
-  return {
-    err,
-    items,
   }
 }
 

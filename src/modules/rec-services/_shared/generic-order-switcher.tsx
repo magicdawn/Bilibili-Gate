@@ -18,6 +18,7 @@ const clsMenuRoot = styled.createClass`
 export type GenericOrderSwitcherProps<T extends string | number> = {
   value: T
   onChange: (value: T) => void
+  disabled?: boolean
   list: (T | 'divider')[]
   listDisplayConfig: Record<T, { icon?: ReactNode; label?: ReactNode }>
   dropdownProps?: Partial<DropdownProps>
@@ -28,6 +29,7 @@ export type GenericOrderSwitcherProps<T extends string | number> = {
 export const GenericOrderSwitcher = function <T extends string | number>({
   value,
   onChange,
+  disabled,
   list,
   listDisplayConfig,
   dropdownProps,
@@ -72,6 +74,7 @@ export const GenericOrderSwitcher = function <T extends string | number>({
         // open
         open={open}
         onOpenChange={setOpen}
+        disabled={disabled}
         menu={{
           items: dropdownMenuItems,
           style: dropdownStyle,
@@ -86,6 +89,7 @@ export const GenericOrderSwitcher = function <T extends string | number>({
           css={[open && buttonOpenCss]}
           icon={icon}
           className='gap-8px px-16px'
+          disabled={disabled}
         >
           {label}
         </Button>

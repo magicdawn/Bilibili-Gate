@@ -3,13 +3,14 @@ import type { ETab } from '$components/RecHeader/tab-enum'
 import { IconForShuffle, IconForTimestamp, withAscIcon, withDescIcon } from '$modules/icon'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import toast from '$utility/toast'
-import { Space, Tag } from 'antd'
+import { Input, Tag } from 'antd'
 import { delay } from 'es-toolkit'
 import type { ElementRef, ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
 import { usePopupContainer } from '../_base'
 import { GenericOrderSwitcher } from '../_shared/generic-order-switcher'
 import type { UsageInfoPropsFor } from '../UsageInfo'
+import { watchlaterStore } from './store'
 import { WatchlaterItemsOrder } from './watchlater-enum'
 
 export function WatchlaterUsageInfo({ service }: UsageInfoPropsFor<ETab.Watchlater>) {
@@ -44,10 +45,21 @@ export function WatchlaterUsageInfo({ service }: UsageInfoPropsFor<ETab.Watchlat
   )
 
   return (
-    <Space size={12}>
-      {totalTag}
+    <div className='flex items-center gap-x-12px'>
       <WatchlaterOrderSwitcher />
-    </Space>
+
+      {totalTag}
+
+      <Input.Search
+        allowClear
+        placeholder='搜索稍后再看'
+        style={{ width: 200 }}
+        onSearch={(val) => {
+          watchlaterStore.searchText = val
+          onRefresh?.()
+        }}
+      />
+    </div>
   )
 }
 
@@ -91,10 +103,13 @@ function WatchlaterOrderSwitcher() {
   const onRefresh = useOnRefreshContext()
   const { ref, getPopupContainer } = usePopupContainer<ElementRef<'span'>>()
   const { watchlaterItemsOrder } = useSettingsSnapshot()
+  const { searchText } = useSnapshot(watchlaterStore)
+  const disabled = !!searchText
 
   return (
     <GenericOrderSwitcher<WatchlaterItemsOrder>
-      value={watchlaterItemsOrder}
+      disabled={disabled}
+      value={disabled ? WatchlaterItemsOrder.AddTimeDesc : watchlaterItemsOrder}
       onChange={async (next) => {
         settings.watchlaterItemsOrder = next
         await delay(100)

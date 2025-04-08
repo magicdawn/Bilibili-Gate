@@ -2,6 +2,7 @@ import type { RefStateBox } from '$common/hooks/useRefState'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { settings } from '$modules/settings'
 import { invariant } from 'es-toolkit'
+import { snapshot } from 'valtio'
 import type { BaseTabService } from './_base'
 import { AppRecService, getAppRecServiceConfig } from './app'
 import { DynamicFeedRecService, getDynamicFeedServiceConfig } from './dynamic-feed'
@@ -12,6 +13,7 @@ import { PcRecService } from './pc'
 import { SpaceUploadService } from './space-upload'
 import { QUERY_SPACE_UPLOAD_MID, spaceUploadStore } from './space-upload/store'
 import { WatchlaterRecService } from './watchlater'
+import { watchlaterStore } from './watchlater/store'
 
 export const REC_TABS = [ETab.KeepFollowOnly, ETab.PcRecommend, ETab.AppRecommend] satisfies ETab[]
 
@@ -36,6 +38,7 @@ export const createServiceMap = {
       watchlaterItemsOrder,
       watchlaterAddSeparator,
       prevShuffleBvidIndexMap,
+      snapshot(watchlaterStore).searchText,
     )
   },
   [ETab.Fav]: () => new FavRecService(getFavServiceConfig()),

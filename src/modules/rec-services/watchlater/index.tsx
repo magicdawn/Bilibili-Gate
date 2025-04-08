@@ -10,7 +10,7 @@ import pRetry from 'p-retry'
 import { proxy, useSnapshot } from 'valtio'
 import { proxySet } from 'valtio/utils'
 import { BaseTabService, type IService } from '../_base'
-import { getAllWatchlaterItemsV2, getWatchlaterItemFrom } from './api'
+import { fetchWatchlaterItems } from './api'
 import { type WatchlaterItem } from './types'
 import { WatchlaterUsageInfo } from './usage-info'
 import { WatchlaterItemsOrder } from './watchlater-enum'
@@ -28,7 +28,7 @@ export function useWatchlaterState(bvid?: string) {
 export async function updateWatchlaterState() {
   if (!getHasLogined() || !getUid()) return
 
-  const { items: allWatchlaterItems } = await getAllWatchlaterItemsV2()
+  const { items: allWatchlaterItems = [] } = await fetchWatchlaterItems()
   if (!allWatchlaterItems.length) return
 
   watchlaterState.updatedAt = Date.now()
@@ -57,12 +57,13 @@ export class WatchlaterRecService extends BaseTabService<WatchlaterItemExtend | 
     order: WatchlaterItemsOrder,
     addSeparator: boolean,
     prevShuffleBvidIndexMap?: BvidIndexMap,
+    private searchText?: string,
   ) {
     super(WatchlaterRecService.PAGE_SIZE)
     this.innerService =
-      order === WatchlaterItemsOrder.Shuffle
+      order === WatchlaterItemsOrder.Shuffle && !this.searchText
         ? new ShuffleOrderService(addSeparator, prevShuffleBvidIndexMap)
-        : new NormalOrderService(order, addSeparator)
+        : new NormalOrderService(order, addSeparator, this.searchText)
   }
 
   override get hasMoreExceptQueue() {
@@ -168,7 +169,11 @@ class ShuffleOrderService implements IService {
 
   currentBvidIndexMap?: BvidIndexMap
   private async fetch(abortSignal: AbortSignal) {
-    const { items: rawItems, err } = await getAllWatchlaterItemsV2(false, abortSignal)
+    const { items: rawItems = [], err } = await fetchWatchlaterItems({
+      asc: false,
+      searchText: undefined,
+      abortSignal,
+    })
     if (typeof err !== 'undefined') {
       showApiRequestError(err)
     }
@@ -224,8 +229,14 @@ class NormalOrderService implements IService {
   constructor(
     private order: WatchlaterItemsOrder,
     private addSeparator: boolean,
+    private searchText?: string,
   ) {
-    invariant(order !== WatchlaterItemsOrder.Shuffle, 'shuffle not supported in NormalOrderService')
+    if (!this.searchText) {
+      invariant(
+        order !== WatchlaterItemsOrder.Shuffle,
+        'shuffle not supported in NormalOrderService',
+      )
+    }
   }
 
   firstPageLoaded = false
@@ -234,15 +245,20 @@ class NormalOrderService implements IService {
   })
 
   hasMore: boolean = true
-  nextKey: string = ''
+  page = 1
 
   async loadMore() {
     if (!this.hasMore) return
 
-    const result = await getWatchlaterItemFrom(
-      this.nextKey,
-      this.order === WatchlaterItemsOrder.AddTimeAsc,
-    )
+    const result = await fetchWatchlaterItems({
+      asc: this.order === WatchlaterItemsOrder.AddTimeAsc,
+      searchText: this.searchText,
+      extraParams: {
+        need_split: 'true',
+        ps: 20,
+        pn: this.page,
+      },
+    })
     // error
     if (typeof result.err !== 'undefined') {
       this.hasMore = false
@@ -250,13 +266,16 @@ class NormalOrderService implements IService {
       return
     }
 
+    const { items, total } = result
+    const maxPage = Math.ceil(total / 20)
+
     this.firstPageLoaded = true
     this.state.total = result.total
-    this.hasMore = result.hasMore
-    this.nextKey = result.nextKey
+    this.hasMore = this.page < maxPage
+    this.page++
 
-    const items: WatchlaterItemExtend[] = result.items.map(extendItem)
-    return this.insertSeparator(items)
+    const extendedItems: WatchlaterItemExtend[] = items.map(extendItem)
+    return this.insertSeparator(extendedItems)
   }
 
   private recentSeparatorInserted = false
