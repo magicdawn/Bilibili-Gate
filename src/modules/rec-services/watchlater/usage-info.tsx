@@ -16,6 +16,7 @@ import { WatchlaterItemsOrder } from './watchlater-enum'
 export function WatchlaterUsageInfo({ service }: UsageInfoPropsFor<ETab.Watchlater>) {
   const { watchlaterAddSeparator, watchlaterItemsOrder } = useSettingsSnapshot()
   const onRefresh = useOnRefreshContext()
+  const { searchText } = useSnapshot(watchlaterStore)
 
   // 切换 添加分割线 设置, 即时生效
   useUpdateEffect(() => {
@@ -26,7 +27,7 @@ export function WatchlaterUsageInfo({ service }: UsageInfoPropsFor<ETab.Watchlat
   }, [watchlaterAddSeparator, watchlaterItemsOrder])
 
   const { total } = useSnapshot(service.state)
-  const title = `共 ${total} 个视频`
+  const title = searchText ? `共 ${total} 条搜索结果` : `共 ${total} 个视频`
   const totalTag = typeof total === 'number' && (
     <Tag
       color='success'
@@ -48,8 +49,6 @@ export function WatchlaterUsageInfo({ service }: UsageInfoPropsFor<ETab.Watchlat
     <div className='flex items-center gap-x-12px'>
       <WatchlaterOrderSwitcher />
 
-      {totalTag}
-
       <Input.Search
         allowClear
         placeholder='搜索稍后再看'
@@ -59,6 +58,8 @@ export function WatchlaterUsageInfo({ service }: UsageInfoPropsFor<ETab.Watchlat
           onRefresh?.()
         }}
       />
+
+      {totalTag}
     </div>
   )
 }
