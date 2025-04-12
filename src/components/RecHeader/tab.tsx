@@ -8,7 +8,8 @@ import { useSettingsSnapshot } from '$modules/settings'
 import { checkLoginStatus, useHasLogined } from '$utility/cookie'
 import { proxyWithGmStorage } from '$utility/valtio'
 import { css } from '@emotion/react'
-import { Radio } from 'antd'
+import { Radio, Segmented } from 'antd'
+import type { ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
 import type { TabConfigItem } from './tab-config'
 import { TabConfig, TabIcon, toastNeedLogin } from './tab-config'
@@ -138,60 +139,85 @@ export function VideoSourceTab({ onRefresh }: { onRefresh: OnRefresh }) {
   const logined = useHasLogined()
   const tab = useCurrentUsingTab()
   const currentTabConfigList = useCurrentDisplayingTabConfigList()
+  const { __internalRecTabRenderAsSegments } = useSettingsSnapshot()
+
+  const onChangeTab = useMemoizedFn((newTab: ETab) => {
+    if (!logined) {
+      if (!TabConfig[newTab].anonymousUsage) {
+        if (!checkLoginStatus()) {
+          return toastNeedLogin()
+        }
+      }
+    }
+    videoSourceTabState.value = newTab
+  })
+
+  const renderAsRadio = (
+    <Radio.Group
+      optionType='button'
+      buttonStyle='solid'
+      size='middle'
+      value={tab}
+      css={css`
+        display: inline-flex;
+        align-items: center;
+        overflow: hidden;
+      `}
+      onFocus={(e) => {
+        // 不移除 focus, refresh `r` 无法响应
+        const target = e.target as HTMLElement
+        target.blur()
+      }}
+      onChange={async (e) => {
+        const newValue = e.target.value as ETab
+        onChangeTab(newValue)
+      }}
+    >
+      {currentTabConfigList.map(({ key, label }) => (
+        <Radio.Button
+          css={[radioBtnCss, radioBtnStandardCss]}
+          className='video-source-tab' // can be used to customize css
+          tabIndex={-1}
+          value={key}
+          key={key}
+        >
+          <span
+            css={css`
+              display: flex;
+              align-items: center;
+              line-height: unset;
+              height: 100%;
+            `}
+          >
+            <TabIcon tabKey={key} moreCss={iconCss} active={key === tab} />
+            {label}
+          </span>
+        </Radio.Button>
+      ))}
+    </Radio.Group>
+  )
+
+  let renderAsSegment: ReactNode
+  {
+    const options = useMemo(() => {
+      return currentTabConfigList.map(({ key, label }) => {
+        return {
+          value: key,
+          label: (
+            <div className='flex items-center gap-x-6px'>
+              <TabIcon tabKey={key} active={key === tab} />
+              {label}
+            </div>
+          ),
+        }
+      })
+    }, [currentTabConfigList, tab])
+    renderAsSegment = <Segmented<ETab> size='middle' options={options} onChange={onChangeTab} />
+  }
 
   return (
     <div css={flexVerticalCenterStyle}>
-      <Radio.Group
-        optionType='button'
-        buttonStyle='solid'
-        size='middle'
-        value={tab}
-        css={css`
-          display: inline-flex;
-          align-items: center;
-          overflow: hidden;
-        `}
-        onFocus={(e) => {
-          // 不移除 focus, refresh `r` 无法响应
-          const target = e.target as HTMLElement
-          target.blur()
-        }}
-        onChange={async (e) => {
-          const newValue = e.target.value as ETab
-
-          if (!logined) {
-            if (!TabConfig[newValue].anonymousUsage) {
-              if (!checkLoginStatus()) {
-                return toastNeedLogin()
-              }
-            }
-          }
-
-          videoSourceTabState.value = newValue
-        }}
-      >
-        {currentTabConfigList.map(({ key, label }) => (
-          <Radio.Button
-            css={[radioBtnCss, radioBtnStandardCss]}
-            className='video-source-tab' // can be used to customize css
-            tabIndex={-1}
-            value={key}
-            key={key}
-          >
-            <span
-              css={css`
-                display: flex;
-                align-items: center;
-                line-height: unset;
-                height: 100%;
-              `}
-            >
-              <TabIcon tabKey={key} moreCss={iconCss} active={key === tab} />
-              {label}
-            </span>
-          </Radio.Button>
-        ))}
-      </Radio.Group>
+      {__internalRecTabRenderAsSegments ? renderAsSegment : renderAsRadio}
       <HelpInfo className='size-16px ml-6px'>
         <>
           {currentTabConfigList.map(({ key, label, desc, extraHelpInfo }) => (

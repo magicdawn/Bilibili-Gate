@@ -262,6 +262,7 @@ export const initialSettings = {
   __internalAddCopyBvidButton: false,
   __internalHotSubUseDropdown: false,
   __internalShowGridListSwitcher: false,
+  __internalRecTabRenderAsSegments: false,
 }
 
 export type Settings = typeof initialSettings
