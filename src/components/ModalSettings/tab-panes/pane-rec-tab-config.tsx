@@ -2,7 +2,7 @@ import { inlineFlexVerticalCenterStyle } from '$common/emotion-css'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { useSortedTabKeys } from '$components/RecHeader/tab'
 import { TabConfig, TabIcon } from '$components/RecHeader/tab-config'
-import { ALL_TAB_KEYS, CONFIGURABLE_TAB_KEYS, ETab } from '$components/RecHeader/tab-enum'
+import { CONFIGURABLE_TAB_KEYS, ETab } from '$components/RecHeader/tab-enum'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { bgLv2Value, bgLv3Value } from '$components/css-vars'
 import { EAppApiDevice } from '$define/index.shared'
@@ -260,7 +260,7 @@ function VideoSourceTabOrder({ className, style }: { className?: string; style?:
             return antMessage.error('至少选择一项!')
           }
           updateSettings({
-            hidingTabKeys: ALL_TAB_KEYS.filter((k) => !newVal.includes(k)),
+            hidingTabKeys: CONFIGURABLE_TAB_KEYS.filter((k) => !newVal.includes(k)),
           })
         }}
       >
