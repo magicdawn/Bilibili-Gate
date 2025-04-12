@@ -516,19 +516,20 @@ function apiFavAdapter(item: FavItemExtend): IVideoCardData {
     item.from === 'fav-folder' ? (
       isFavFolderPrivate(item.folder.attr) ? (
         <IconForPrivateFolder
+          className={clsx('size-15px', fillWithColorPrimary)}
           style={iconInTitleStyle}
-          {...size(15)}
-          className={fillWithColorPrimary}
         />
       ) : (
         <IconForPublicFolder
+          className={clsx('size-15px', fillWithColorPrimary)}
           style={iconInTitleStyle}
-          {...size(15)}
-          className={fillWithColorPrimary}
         />
       )
     ) : (
-      <IconForCollection style={iconInTitleStyle} {...size(15)} className={fillWithColorPrimary} />
+      <IconForCollection
+        className={clsx('size-15px', fillWithColorPrimary)}
+        style={iconInTitleStyle}
+      />
     )
 
   return {

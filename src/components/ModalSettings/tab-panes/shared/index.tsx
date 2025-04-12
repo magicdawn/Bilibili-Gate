@@ -1,4 +1,3 @@
-import { C } from '$common/emotion-css'
 import {
   initialSettings,
   pickSettings,
@@ -9,7 +8,6 @@ import { useUnoSimpleMerge } from '$utility/css'
 import type { CssProp } from '$utility/type'
 import { css } from '@emotion/react'
 import { Button, Popconfirm } from 'antd'
-import { size } from 'polished'
 import type { ComponentProps, ReactNode } from 'react'
 import type { Merge } from 'type-fest'
 import IconParkOutlineReturn from '~icons/icon-park-outline/return'
@@ -107,7 +105,7 @@ export function ResetPartialSettingsButton({
           column-gap: 4px;
         `}
       >
-        <IconParkOutlineReturn {...size(12)} css={C.mt(-1)} />
+        <IconParkOutlineReturn className='size-12px mt--1px' />
         <span>重置</span>
       </Button>
     </Popconfirm>

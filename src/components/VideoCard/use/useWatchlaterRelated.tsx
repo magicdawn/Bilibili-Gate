@@ -6,7 +6,6 @@ import { IconAnimatedChecked } from '$modules/icon/animated-checked'
 import { watchlaterState } from '$modules/rec-services/watchlater'
 import { usePrevious, useRequest } from 'ahooks'
 import { delay } from 'es-toolkit'
-import { size } from 'polished'
 import type { MouseEvent } from 'react'
 import type { VideoCardInnerProps } from '..'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
@@ -103,12 +102,12 @@ export function useWatchlaterRelated({
   const addedSize = 18
   const icon = (() => {
     if ($req.loading) {
-      return <IconForLoading {...size(16)} />
+      return <IconForLoading className='size-16px' />
     }
 
     if (item.api === EApiType.Watchlater) {
       return watchlaterAdded ? (
-        <IconMaterialSymbolsDeleteOutlineRounded {...size(16)} />
+        <IconMaterialSymbolsDeleteOutlineRounded className='size-16px' />
       ) : (
         <IconAnimatedChecked size={addedSize} useAnimation={watchlaterAddedPrevious === true} />
       )
@@ -117,7 +116,7 @@ export function useWatchlaterRelated({
     return watchlaterAdded ? (
       <IconAnimatedChecked size={addedSize} useAnimation={watchlaterAddedPrevious === false} />
     ) : (
-      <IconForWatchlater {...size(addSize)} />
+      <IconForWatchlater className='size-20px' />
     )
   })()
 

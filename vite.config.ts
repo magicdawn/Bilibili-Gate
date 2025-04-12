@@ -170,7 +170,6 @@ export default defineConfig(({ command, mode }) => ({
         // { from: '@emotion/react', imports: ['css'] },
 
         { from: 'clsx', imports: ['clsx'] },
-        { from: 'polished', imports: ['size'] },
       ],
     }),
 

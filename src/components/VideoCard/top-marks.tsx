@@ -17,7 +17,6 @@ import {
 import type { NormalRankingItem } from '$modules/rec-services/hot/ranking/types'
 import { css } from '@emotion/react'
 import { Dropdown } from 'antd'
-import { size } from 'polished'
 import type { ReactNode } from 'react'
 import IconParkOutlineMore from '~icons/icon-park-outline/more'
 import PhCrownFill from '~icons/ph/crown-fill'
@@ -205,7 +204,11 @@ export function SomeBadge({
 
 export function LiveBadge({ className }: { className?: string }) {
   return (
-    <SomeBadge className={className} icon={<IconForLive active {...size(14)} />} label='直播中' />
+    <SomeBadge
+      className={className}
+      icon={<IconForLive active className='size-14px' />}
+      label='直播中'
+    />
   )
 }
 

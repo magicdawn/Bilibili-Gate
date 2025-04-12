@@ -1,5 +1,4 @@
 import { REQUEST_FAIL_MSG } from '$common'
-import { C } from '$common/emotion-css'
 import { CustomTargetLink } from '$components/VideoCard/use/useOpenRelated'
 import type { ItemsSeparator } from '$define'
 import { EApiType } from '$define/index.shared'
@@ -28,11 +27,11 @@ export function FavFolderSeparator({ service }: { service: FavFolderBasicService
         href={formatFavFolderUrl(service.entry.id, service.entry.attr)}
         css={favSeparatorCss.item}
       >
-        <IconForOpenExternalLink css={C.size(16)} />
+        <IconForOpenExternalLink className='size-16px' />
         {service.entry.title}
       </CustomTargetLink>
       <CustomTargetLink href={formatFavPlaylistUrl(service.entry.id)} css={favSeparatorCss.item}>
-        <IconForPlayer css={C.size(16)} />
+        <IconForPlayer className='size-16px' />
         播放全部
       </CustomTargetLink>
     </>

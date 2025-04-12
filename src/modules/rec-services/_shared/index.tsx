@@ -19,13 +19,13 @@ export function ShuffleSettingsItemFor({
       configPath={configPath}
       checkedChildren={
         <>
-          <IconForShuffle {...size(18)} />
+          <IconForShuffle className='size-18px' />
           随机顺序
         </>
       }
       unCheckedChildren={
         <>
-          <IconForDefaultOrder {...size(18)} className='position-relative top-[-1px]' />
+          <IconForDefaultOrder className='size-18px position-relative top-[-1px]' />
           默认顺序
         </>
       }

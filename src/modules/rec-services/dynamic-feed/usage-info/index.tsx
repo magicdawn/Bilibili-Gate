@@ -139,12 +139,12 @@ export function DynamicFeedUsageInfo() {
   }, [upList, dfSettings.followGroup.enabled, groups])
 
   const followGroupMidsCount = selectedGroup?.count
-  const upIcon = <IconForUp {...size(14)} className='mt--2px' />
+  const upIcon = <IconForUp className='size-14px mt--2px' />
   const upAvtar = upFace ? <Avatar size={20} src={getAvatarSrc(upFace)} /> : undefined
   const dropdownButtonIcon = viewingSomeUp ? (
     upAvtar || upIcon
   ) : selectedGroup ? (
-    <IconForGroup {...size(18)} />
+    <IconForGroup className='size-18px' />
   ) : undefined
   const dropdownButtonLabel = viewingSomeUp
     ? upName

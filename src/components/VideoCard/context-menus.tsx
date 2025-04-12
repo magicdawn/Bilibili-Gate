@@ -3,7 +3,6 @@
  */
 
 import { appClsColorPrimary } from '$common/css-vars-export.module.scss'
-import { C } from '$common/emotion-css'
 import { currentGridItems, getBvidInfo } from '$components/RecGrid/unsafe-window-export'
 import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import { ETab } from '$components/RecHeader/tab-enum'
@@ -46,7 +45,6 @@ import { SpaceUploadQueryKey } from '$modules/rec-services/space-upload/store'
 import { settings, updateSettingsInnerArray } from '$modules/settings'
 import toast from '$utility/toast'
 import { delay } from 'es-toolkit'
-import { size } from 'polished'
 import type { MouseEvent } from 'react'
 import { useSnapshot } from 'valtio'
 import { copyContent } from './index.shared'
@@ -217,7 +215,7 @@ export function useContextMenus({
       hasEntry_dynamicFeed_offsetAndMinId && {
         label: '动态: 从此项开始查看',
         key: '动态: 从此项开始查看',
-        icon: <IconTablerSortDescending2 {...size(17)} />,
+        icon: <IconTablerSortDescending2 className='size-17px' />,
         onClick() {
           const u = new URL('/', location.href)
           u.searchParams.set(DynamicFeedQueryKey.Mid, authorMid)
@@ -236,7 +234,7 @@ export function useContextMenus({
   const dynamicViewUpdateSinceThis: AntMenuItem | false = useMemo(
     () =>
       hasEntry_dynamicFeed_offsetAndMinId && {
-        icon: <IconTablerSortAscending2 {...size(17)} />,
+        icon: <IconTablerSortAscending2 className='size-17px' />,
         label: '动态: 从此项开始截止',
         key: '动态: 从此项开始截止',
         onClick() {
@@ -311,9 +309,9 @@ export function useContextMenus({
         key: 'watchlater',
         label: watchlaterAdded ? '移除稍后再看' : '稍后再看',
         icon: watchlaterAdded ? (
-          <IconMaterialSymbolsDeleteOutlineRounded {...size(15)} />
+          <IconMaterialSymbolsDeleteOutlineRounded className='size-15px' />
         ) : (
-          <IconForWatchlater {...size(15)} />
+          <IconForWatchlater className='size-15px' />
         ),
         onClick() {
           onToggleWatchlater()
@@ -393,7 +391,7 @@ export function useContextMenus({
         test: hasEntry_addMidTo_dynamicFeedWhenViewAllHideIds,
         key: 'hasEntry_addMidTo_dynamicFeedWhenViewAllHideIds',
         label: '在「全部」动态中隐藏 UP 的动态',
-        icon: <IconLetsIconsViewHide {...size(15)} />,
+        icon: <IconLetsIconsViewHide className='size-15px' />,
         onClick: onAddMidTo_dynamicFeedWhenViewAllHideIds,
       },
       {
@@ -421,7 +419,7 @@ export function useContextMenus({
                 {
                   key: 'open-fav-folder',
                   label: '浏览收藏夹',
-                  icon: <IconForOpenExternalLink css={C.size(15)} />,
+                  icon: <IconForOpenExternalLink className='size-15px' />,
                   onClick() {
                     if (!isFav(item)) return
                     const { id } = item.folder
@@ -435,7 +433,7 @@ export function useContextMenus({
                 {
                   key: 'remove-fav',
                   label: '移除收藏',
-                  icon: <IconMaterialSymbolsDeleteOutlineRounded {...size(15)} />,
+                  icon: <IconMaterialSymbolsDeleteOutlineRounded className='size-15px' />,
                   async onClick() {
                     if (!isFav(item)) return
                     const success = await UserFavService.removeFav(
@@ -457,7 +455,7 @@ export function useContextMenus({
                 {
                   key: 'open-fav-collection',
                   label: '浏览合集',
-                  icon: <IconForOpenExternalLink css={C.size(15)} />,
+                  icon: <IconForOpenExternalLink className='size-15px' />,
                   onClick() {
                     if (!isFav(item)) return
                     const { id } = item.collection

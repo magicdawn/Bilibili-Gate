@@ -3,7 +3,7 @@
  * https://greasyfork.org/zh-CN/scripts/479861-bilibili-%E9%A1%B5%E9%9D%A2%E5%87%80%E5%8C%96%E5%A4%A7%E5%B8%88/discussions/238294
  */
 
-import { C, flexCenterStyle } from '$common/emotion-css'
+import { flexCenterStyle } from '$common/emotion-css'
 import { colorPrimaryValue } from '$components/css-vars'
 import { isAppRecommend, isLive, isPcRecommend, isRanking, type RecItemType } from '$define'
 import { EApiType, EAppApiDevice } from '$define/index.shared'
@@ -18,7 +18,6 @@ import type { CssProp } from '$utility/type'
 import { css } from '@emotion/react'
 import { useRequest } from 'ahooks'
 import { Avatar } from 'antd'
-import { size } from 'polished'
 import { type MouseEventHandler } from 'react'
 import { Case, Switch } from 'react-if'
 import { useSnapshot } from 'valtio'
@@ -201,14 +200,10 @@ export const VideoCardBottom = memo(function ({
             )}
             {streaming && (
               <IconForLive
-                {...size(12)}
+                className='size-12px absolute bottom-0 right-0 rounded-50%'
                 active
                 css={css`
-                  position: absolute;
-                  bottom: 0;
-                  right: 0;
                   background-color: ${colorPrimaryValue};
-                  border-radius: 50%;
                 `}
               />
             )}
@@ -329,7 +324,7 @@ export const VideoCardBottom = memo(function ({
               title={(authorName || '') + (liveExtraDesc || '')}
             >
               {authorName}
-              {liveExtraDesc && <span css={[C.ml(4)]}>{liveExtraDesc}</span>}
+              {liveExtraDesc && <span className='ml-4px'>{liveExtraDesc}</span>}
             </a>
             {!!recommendReason && (
               <span css={S.recommendReason} title={recommendReason}>

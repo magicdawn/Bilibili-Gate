@@ -31,41 +31,6 @@ const antdBtnTextStyle = css`
   line-height: var(--ant-control-height);
 `
 
-export const antdCustomCss = {}
-
-/**
- * emotion css helper, `C` = css-helper
- */
-
-export const C = {
-  size(size: number) {
-    return css`
-      width: ${size}px;
-      height: ${size}px;
-    `
-  },
-  ml(size: number) {
-    return css`
-      margin-left: ${size}px;
-    `
-  },
-  mr(size: number) {
-    return css`
-      margin-right: ${size}px;
-    `
-  },
-  mt(size: number) {
-    return css`
-      margin-top: ${size}px;
-    `
-  },
-  mb(size: number) {
-    return css`
-      margin-bottom: ${size}px;
-    `
-  },
-}
-
 // https://github.com/magicdawn/magicdawn/issues/136#issuecomment-2170532246
 export const inlineContentHeightResetCss = css`
   line-height: 1;

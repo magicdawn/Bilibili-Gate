@@ -158,7 +158,7 @@ export function TabPaneAdvance() {
               css={[iconOnlyRoundButtonCss, internalKeysExpanded && buttonOpenCss]}
             >
               <IconParkOutlineDownC
-                {...size(16)}
+                className='size-16px'
                 css={css`
                   transition: transform 0.3s ease;
                   transform: ${internalKeysExpanded ? 'rotate(180deg)' : 'rotate(0deg)'};

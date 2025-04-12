@@ -1,4 +1,3 @@
-import { C } from '$common/emotion-css'
 import {
   IconForDynamicFeed,
   IconForFav,
@@ -16,7 +15,6 @@ import { advancedSearchHelpInfo } from '$utility/search'
 import toast from '$utility/toast'
 import type { CssProp } from '$utility/type'
 import { css } from '@emotion/react'
-import { size } from 'polished'
 import { cloneElement, type ReactElement, type ReactNode } from 'react'
 import { ETab } from './tab-enum'
 
@@ -31,24 +29,24 @@ export type TabConfigItem = {
 
 export const TabConfig: Record<ETab, TabConfigItem> = {
   [ETab.AppRecommend]: {
-    icon: <IconForPhone {...size(18)} />,
+    icon: <IconForPhone className='size-18px' />,
     label: '推荐',
     desc: '使用 Bilibili App 端推荐 API',
     anonymousUsage: true,
   },
   [ETab.PcRecommend]: {
-    icon: <IconForPc {...size(18)} />,
+    icon: <IconForPc className='size-18px' />,
     label: '推荐',
     desc: '使用新版首页顶部推荐 API',
     anonymousUsage: true,
   },
   [ETab.KeepFollowOnly]: {
-    icon: <IconForFollowedOnly {...size(18)} />,
+    icon: <IconForFollowedOnly className='size-18px' />,
     label: '已关注',
     desc: '从PC端推荐中筛选出「已关注」,可能比较慢; 关注的UP更新在动态~',
   },
   [ETab.DynamicFeed]: {
-    icon: <IconForDynamicFeed {...size(16)} />,
+    icon: <IconForDynamicFeed className='size-16px' />,
     label: '动态',
     desc: '视频投稿动态',
     swr: true,
@@ -56,7 +54,7 @@ export const TabConfig: Record<ETab, TabConfigItem> = {
   [ETab.Watchlater]: {
     icon: (
       <IconForWatchlater
-        {...size(17)}
+        className='size-17px'
         css={css`
           /* circle 使用的是 fill, 在 tab 中显示太细了 */
           .circle {
@@ -70,7 +68,7 @@ export const TabConfig: Record<ETab, TabConfigItem> = {
     swr: true,
   },
   [ETab.Fav]: {
-    icon: <IconForFav {...size(16)} css={C.mt(-1)} />,
+    icon: <IconForFav className='size-16px mt--1px' />,
     label: '收藏',
     desc: '你添加的收藏; 默认随机乱序, 可在设置中关闭乱序',
     get swr() {
@@ -78,7 +76,7 @@ export const TabConfig: Record<ETab, TabConfigItem> = {
     },
   },
   [ETab.Hot]: {
-    icon: <IconForHot {...size(16)} />,
+    icon: <IconForHot className='size-16px' />,
     label: '热门',
     desc: '各个领域中新奇好玩的优质内容都在这里~',
     anonymousUsage: true,
@@ -87,14 +85,13 @@ export const TabConfig: Record<ETab, TabConfigItem> = {
     },
   },
   [ETab.Live]: {
-    icon: <IconForLive {...size(16)} />,
-    // icon: <MaterialSymbolsBarChart {...size(16)} />,
+    icon: <IconForLive className='size-16px' />,
     label: '直播',
     desc: '直播~',
     swr: true,
   },
   [ETab.SpaceUpload]: {
-    icon: <IconForSpaceUpload {...size(16)} />,
+    icon: <IconForSpaceUpload className='size-16px' />,
     label: '投稿',
     desc: 'UP 视频投稿',
     extraHelpInfo: (
@@ -107,41 +104,23 @@ export const TabConfig: Record<ETab, TabConfigItem> = {
   },
 }
 
-export function TabIcon({
-  tabKey,
-  moreCss,
-  size: _size,
-  ml,
-  mr,
-  mt,
-  mb,
-  active,
-}: {
+type TabIconProps = {
   tabKey: ETab
   moreCss?: CssProp
   size?: number
-  ml?: number
-  mr?: number
-  mt?: number
-  mb?: number
   active?: boolean
-}) {
+  className?: string
+}
+
+export function TabIcon({ tabKey, moreCss, size: _size, active, className }: TabIconProps) {
   const { icon } = TabConfig[tabKey]
-  const newCssProp = [
-    icon.props.css as CssProp,
-    moreCss,
-    ml && C.ml(ml),
-    mr && C.mr(mr),
-    mt && C.mt(mt),
-    mb && C.mb(mb),
-  ]
-    .flat()
-    .filter(Boolean)
+  const newCssProp = [icon.props.css as CssProp, moreCss].flat().filter(Boolean)
   const cloned = cloneElement(icon, {
     css: newCssProp,
-    width: _size ? size(_size).width : icon.props.width,
-    height: _size ? size(_size).height : icon.props.height,
+    width: _size ? `${_size}px` : icon.props.width,
+    height: _size ? `${_size}px` : icon.props.height,
     active: tabKey === ETab.Live ? active : undefined, // 否则 warn: svg recived boolean props
+    className: clsx(icon.props.className, className),
   })
   return cloned
 }

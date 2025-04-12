@@ -164,15 +164,10 @@ export const TagItemDisplay = forwardRef<HTMLDivElement, TagItemDisplayProps>(
       >
         {renderTag ? renderTag(tag) : tag}
         <IconParkOutlineCloseSmall
+          className='size-16px ml-2px cursor-pointer text-size-12px'
           onClick={() => {
             onDelete?.(tag)
           }}
-          {...size(16)}
-          css={css`
-            margin-left: 2px;
-            cursor: pointer;
-            font-size: 12px;
-          `}
         />
       </div>
     )
@@ -244,7 +239,7 @@ function UpTagItemDisplay({ tag }: { tag: string }) {
             mid ? 'cursor-pointer' : 'cursor-[edit]',
           )}
         >
-          {mid && <IconRadixIconsPerson {...size(12)} className='mr-2' />}
+          {mid && <IconRadixIconsPerson className='size-12px mr-2' />}
           {mid ? (
             <a href={formatSpaceUrl(mid)} target='_blank' style={{ color: 'inherit' }}>
               {label}

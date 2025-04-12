@@ -19,7 +19,7 @@ export function createUpdateSearchCacheNotifyFns(upMid: UpMidType, upName: strin
 
   const _onProgress: OnProgress = (page: number, total: number) => {
     antNotification.info({
-      icon: <IconSvgSpinnersBarsRotateFade {...size(16)} />,
+      icon: <IconSvgSpinnersBarsRotateFade className='size-16px' />,
       key: notiKey(upMid),
       message: `搜索缓存更新中...`,
       description: `「${upName}」更新中: Page(${page}) Total(${total})`,

@@ -1,4 +1,3 @@
-import { C } from '$common/emotion-css'
 import { colorPrimaryValue } from '$components/css-vars'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
 import { EHotSubTab } from '$components/RecHeader/tab-enum'
@@ -10,7 +9,6 @@ import { settings, useSettingsSnapshot } from '$modules/settings'
 import { proxyWithGmStorage } from '$utility/valtio'
 import { css } from '@emotion/react'
 import { Button, Dropdown } from 'antd'
-import { size } from 'polished'
 import type { ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
 import type { IService } from '../_base'
@@ -34,8 +32,7 @@ export function isHotTabUsingShuffle(shuffleForPopularWeekly?: boolean) {
   return change
 }
 
-const iconSize = 18
-const imgOf = (src: string) => <img src={src} alt='' style={{ ...size(`${iconSize}px`) }} />
+const imgOf = (src: string) => <img src={src} alt='' className='size-18px' />
 const groupedButtonCss = css`
   .ant-btn-icon {
     line-height: 0;
@@ -150,7 +147,7 @@ function HotUsageInfo({ children }: { children?: ReactNode }) {
     >
       <Button ref={ref} className='w-114px gap-0 flex items-center justify-start pl-16px'>
         {icon}
-        <span css={C.ml(8)}>{label}</span>
+        <span className='ml-8px'>{label}</span>
       </Button>
     </Dropdown>
   )

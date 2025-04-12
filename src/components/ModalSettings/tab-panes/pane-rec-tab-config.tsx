@@ -79,7 +79,7 @@ export function TabPaneRecTabsConfig() {
             `}
           >
             <div className='flex items-center text-size-1.3em'>
-              <TabIcon tabKey={ETab.Watchlater} mr={5} mt={-1} />
+              <TabIcon tabKey={ETab.Watchlater} className='mr-5px mt--1px' />
               稍后再看
             </div>
             <Space size={10}>
@@ -98,7 +98,7 @@ export function TabPaneRecTabsConfig() {
             `}
           >
             <div className='flex items-center text-size-1.3em'>
-              <TabIcon tabKey={ETab.Fav} mr={5} mt={-2} />
+              <TabIcon tabKey={ETab.Fav} className='mr-5px mt--2px' />
               收藏
             </div>
             <Space size={10}>
@@ -117,7 +117,7 @@ export function TabPaneRecTabsConfig() {
             `}
           >
             <div className='flex items-center text-size-1.3em'>
-              <TabIcon tabKey={ETab.DynamicFeed} mr={5} mt={-2} />
+              <TabIcon tabKey={ETab.DynamicFeed} className='mr-5px mt--2px' />
               动态
             </div>
             <div className='flex flex-wrap  gap-x-10 gap-y-10'>
@@ -181,7 +181,7 @@ export function TabPaneRecTabsConfig() {
             `}
           >
             <div className='flex items-center text-size-1.3em'>
-              <TabIcon tabKey={ETab.AppRecommend} mr={5} />
+              <TabIcon tabKey={ETab.AppRecommend} className='mr-5px' />
               App 推荐
             </div>
             <div className='flex flex-col gap-y-5'>
@@ -323,7 +323,7 @@ function VideoSourceTabSortableItem({ id }: { id: ETab }) {
           }
         `}
       >
-        <TabIcon tabKey={id} mr={5} />
+        <TabIcon tabKey={id} className='mr-5px' />
         <AntdTooltip align={{ offset: [0, -6] }} title={desc}>
           {label}
         </AntdTooltip>
@@ -438,9 +438,9 @@ function DynamicFeedWhenViewAllHideIdTag({
   const icon = useMemo(
     () =>
       mid ? (
-        <IconForUp {...size(12)} className='mr-2' />
+        <IconForUp className='size-12px mr-2' />
       ) : followGroupId ? (
-        <IconForGroup {...size(16)} className='mr-2' />
+        <IconForGroup className='size-16px mr-2' />
       ) : undefined,
     [mid, followGroupId],
   )

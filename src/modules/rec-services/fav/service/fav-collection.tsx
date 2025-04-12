@@ -1,4 +1,3 @@
-import { C } from '$common/emotion-css'
 import { CustomTargetLink } from '$components/VideoCard/use/useOpenRelated'
 import { type ItemsSeparator } from '$define'
 import { EApiType } from '$define/index.shared'
@@ -156,13 +155,13 @@ export function FavCollectionSeparator({ service }: { service: FavCollectionServ
           href={formatFavCollectionUrl(service.collectionId)}
           css={favSeparatorCss.item}
         >
-          <IconForOpenExternalLink css={C.size(16)} />
+          <IconForOpenExternalLink className='size-16px' />
           {info?.title}
         </CustomTargetLink>
       </AntdTooltip>
       {firstBvid && (
         <CustomTargetLink href={formatBvidUrl(firstBvid)} css={favSeparatorCss.item}>
-          <IconForPlayer css={C.size(16)} />
+          <IconForPlayer className='size-16px' />
           播放全部
         </CustomTargetLink>
       )}

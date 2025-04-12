@@ -8,11 +8,10 @@ import { EApiType } from '$define/index.shared'
 import { antMessage } from '$modules/antd'
 import { IconForDislike } from '$modules/icon'
 import toast from '$utility/toast'
-import { size } from 'polished'
 import type { MouseEvent } from 'react'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
 
-export const dislikeIcon = <IconForDislike {...size(16)} />
+export const dislikeIcon = <IconForDislike className='size-16px' />
 
 export function useDislikeRelated({
   item,

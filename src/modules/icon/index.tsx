@@ -75,7 +75,7 @@ export function withDescIcon(label: string) {
   return (
     <span className={clsx(clsIconTextWrapper, 'gap-1px')}>
       {label}
-      <IconForDesc {...size(16)} />
+      <IconForDesc className='size-16px' />
     </span>
   )
 }
@@ -84,7 +84,7 @@ export function withAscIcon(label: string) {
   return (
     <span className={clsx(clsIconTextWrapper, 'gap-1px')}>
       {label}
-      <IconForAsc {...size(16)} />
+      <IconForAsc className='size-16px' />
     </span>
   )
 }

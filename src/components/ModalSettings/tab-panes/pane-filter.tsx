@@ -1,4 +1,3 @@
-import { C } from '$common/emotion-css'
 import { CheckboxSettingItem, SwitchSettingItem } from '$components/ModalSettings/setting-item'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { IconForInfo } from '$modules/icon'
@@ -64,7 +63,7 @@ export function TabPaneFilter() {
               视频/图文/影视: 仅推荐类 Tab 生效 <br />
               UP/标题: 推荐类 / 热门 等Tab 生效
             </HelpInfo>
-            <SwitchSettingItem configPath='filter.enabled' css={C.ml(10)} />
+            <SwitchSettingItem configPath='filter.enabled' className='ml-10px' />
           </>
         }
       >

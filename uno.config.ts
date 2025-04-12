@@ -9,13 +9,8 @@ export default defineConfig({
     }),
   ],
 
+  transformers: [transformerDirectives()],
+
   // https://github.com/unocss/unocss/issues/1620
   blocklist: ['container'],
-
-  rules: [
-    // `size-15` or `size-15px`
-    [/^size-([.\d]+)(?:px)?$/, ([_, num]) => ({ width: `${num}px`, height: `${num}px` })],
-  ],
-
-  transformers: [transformerDirectives()],
 })

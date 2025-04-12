@@ -54,11 +54,11 @@ export function TabPaneBasic() {
       <SettingsGroup
         title={
           <>
-            <TabIcon tabKey={ETab.AppRecommend} size={30} mr={5} /> 推荐 access_key
+            <TabIcon tabKey={ETab.AppRecommend} size={30} className='mr-5px' /> 推荐 access_key
             <HelpInfo className='size-18px mt-6px ml-5px' IconComponent={IconParkOutlineHelp}>
               <span css={inlineFlexVerticalCenterStyle}>
                 用于「
-                <TabIcon tabKey={ETab.AppRecommend} mr={5} />
+                <TabIcon tabKey={ETab.AppRecommend} className='mr-5px' />
                 推荐」Tab
               </span>
               <br />

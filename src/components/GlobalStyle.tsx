@@ -18,7 +18,6 @@ export function GlobalStyle() {
   // 会有多次变宽的效果, 看起来很诡异!!!
   // bilibili-default -> 90 % -> evolved宽度计算
   const width = $headerWidth.use() ?? 90
-  // const padding = width === 90 ? 0 : '0 10px'
   const padding = '0 10px'
 
   const more: CssProp = [useAntLinkColorGlobalCss()]
