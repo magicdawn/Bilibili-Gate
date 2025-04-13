@@ -438,9 +438,9 @@ function DynamicFeedWhenViewAllHideIdTag({
   const icon = useMemo(
     () =>
       mid ? (
-        <IconForUp className='size-12px mr-2' />
+        <IconForUp className='size-12px mr-2px' />
       ) : followGroupId ? (
-        <IconForGroup className='size-16px mr-2' />
+        <IconForGroup className='size-16px mr-2px' />
       ) : undefined,
     [mid, followGroupId],
   )

@@ -239,7 +239,7 @@ function UpTagItemDisplay({ tag }: { tag: string }) {
             mid ? 'cursor-pointer' : 'cursor-[edit]',
           )}
         >
-          {mid && <IconRadixIconsPerson className='size-12px mr-2' />}
+          {mid && <IconRadixIconsPerson className='size-12px mr-2px' />}
           {mid ? (
             <a href={formatSpaceUrl(mid)} target='_blank' style={{ color: 'inherit' }}>
               {label}

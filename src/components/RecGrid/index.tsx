@@ -660,16 +660,16 @@ function ErrorDetail({ err, tab }: { err: any; tab: ETab }) {
         }
       >
         <p className='cursor-pointer flex items-center justify-center'>
-          <IconTablerFaceIdError className='mr-4' />
+          <IconTablerFaceIdError className='mr-4px' />
           出错了, 请刷新重试!
         </p>
       </AntdTooltip>
 
       {tab === ETab.Hot && hotStore.subtab === EHotSubTab.PopularWeekly && (
-        <p className='mt-8 flex items-center justify-center'>
+        <p className='mt-8px flex items-center justify-center'>
           可能需手动输入验证码
-          <IconForOpenExternalLink className='ml-12' />
-          <a href='https://www.bilibili.com/v/popular/weekly' target={target} className='ml-2'>
+          <IconForOpenExternalLink className='ml-12px' />
+          <a href='https://www.bilibili.com/v/popular/weekly' target={target} className='ml-2px'>
             每周必看
           </a>
         </p>

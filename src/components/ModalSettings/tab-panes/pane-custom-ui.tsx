@@ -78,7 +78,7 @@ export function TabPaneCustomUI() {
           <>
             通用
             <ResetPartialSettingsButton
-              className='ml-10'
+              className='ml-10px'
               paths={['style.general.popoverBorderColorUseColorPrimary']}
             />
           </>
@@ -98,7 +98,7 @@ export function TabPaneCustomUI() {
           <>
             全屏模式
             <ResetPartialSettingsButton
-              className='ml-10'
+              className='ml-10px'
               paths={[
                 'style.pureRecommend.useStickyTabbar',
                 'style.pureRecommend.useCustomGrid',
@@ -149,7 +149,7 @@ export function TabPaneCustomUI() {
           <>
             视频卡片
             <ResetPartialSettingsButton
-              className='ml-10'
+              className='ml-10px'
               paths={[
                 'style.videoCard.useBorder',
                 'style.videoCard.useBorderOnlyOnHover',

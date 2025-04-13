@@ -79,7 +79,7 @@ export function ModalSettings({ show, onHide }: { show: boolean; onHide: () => v
     >
       <div css={BaseModalStyle.modalHeader}>
         <div css={BaseModalStyle.modalTitle}>
-          <IconForConfig className='size-26 mr-4 mt--2' />
+          <IconForConfig className='size-26px mr-4px mt--2px' />
           设置
         </div>
 

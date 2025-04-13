@@ -141,7 +141,7 @@ export function usePopoverRelated({
     >
       <Badge dot={showPopoverBadge} color={colorPrimaryValue} offset={[-5, 5]}>
         <Button css={[iconOnlyRoundButtonCss, popoverOpen && buttonOpenCss]}>
-          <IconForPopoverTrigger className='ml-1' />
+          <IconForPopoverTrigger className='ml-1px' />
         </Button>
       </Badge>
     </Popover>
@@ -152,7 +152,7 @@ export function usePopoverRelated({
 
 const classes = {
   wrapper: 'max-w-350px',
-  section: 'mt-10 first:mt-0 min-w-300px',
+  section: 'mt-10px first:mt-0px min-w-300px',
   sectionTilte: 'flex items-center text-20px pl-2px pb-2px',
   sectionContent: 'flex flex-col items-start gap-x-10px gap-y-6px',
 } as const
@@ -320,14 +320,14 @@ function PopoverContent({
             当前{viewingSomeGroup ? '分组' : viewingSomeUp ? 'UP' : '范围'}的一些操作~
           </HelpInfo>
           {viewingSomeGroup && selectedGroup && (
-            <span className='inline-flex items-center ml-15 font-size-14'>
+            <span className='inline-flex items-center ml-15px text-size-14px'>
               (
               <a
                 href={formatFollowGroupUrl(selectedGroup?.tagid || '')}
                 target='_blank'
-                className={`inline-flex items-center font-size-16 mx-4 ${APP_CLS_USE_ANT_LINK_COLOR}`}
+                className={`inline-flex items-center text-size-16px mx-4px ${APP_CLS_USE_ANT_LINK_COLOR}`}
               >
-                <IconForOpenExternalLink className='size-18 mr-2' />
+                <IconForOpenExternalLink className='size-18px mr-2px' />
                 {selectedGroup?.name}
               </a>
               )

@@ -398,14 +398,14 @@ export function useContextMenus({
         test: hasBlacklistEntry,
         key: 'blacklist-up',
         label: '将 UP 加入黑名单',
-        icon: <IconForBlacklist className='size-15' />,
+        icon: <IconForBlacklist className='size-15px' />,
         onClick: onBlacklistUp,
       },
       {
         test: hasBlacklistEntry,
         key: 'add-up-to-filterlist',
         label: '将 UP 加入过滤列表',
-        icon: <IconForBlacklist className='size-15' />,
+        icon: <IconForBlacklist className='size-15px' />,
         onClick: onAddUpToFilterList,
       },
     ])
