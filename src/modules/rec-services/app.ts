@@ -266,7 +266,9 @@ function customFormat(ts: number) {
   if (isTodayRecent) {
     const minutes = dayjs().diff(t, 'minutes')
     const hours = dayjs().diff(t, 'hours')
-    if (minutes < 60) {
+    if (minutes < 1) {
+      return '刚刚'
+    } else if (minutes < 60) {
       return `${minutes}分钟前`
     } else {
       return `${hours}小时前`
