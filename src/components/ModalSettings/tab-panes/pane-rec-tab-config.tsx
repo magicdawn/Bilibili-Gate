@@ -120,7 +120,7 @@ export function TabPaneRecTabsConfig() {
               <TabIcon tabKey={ETab.DynamicFeed} className='mr-5px mt--2px' />
               动态
             </div>
-            <div className='flex flex-wrap  gap-x-10 gap-y-10'>
+            <div className='flex flex-wrap  gap-x-10px gap-y-10px'>
               <CheckboxSettingItem
                 configPath='dynamicFeed.followGroup.enabled'
                 label='启用分组筛选'
@@ -184,7 +184,7 @@ export function TabPaneRecTabsConfig() {
               <TabIcon tabKey={ETab.AppRecommend} className='mr-5px' />
               App 推荐
             </div>
-            <div className='flex flex-col gap-y-5'>
+            <div className='flex flex-col gap-y-5px'>
               <div className='flex items-center'>
                 App API 设备类型
                 <HelpInfo className='ml-5px mr-10px'>
@@ -376,7 +376,7 @@ function DynamicFeedWhenViewAllHideIdsPanel() {
   }
 
   return (
-    <div className='flex flex-wrap gap-10 max-h-250px overflow-y-scroll'>
+    <div className='flex flex-wrap gap-10px max-h-250px overflow-y-scroll'>
       {hideIds.map((tag) => {
         return (
           <TagItemDisplay

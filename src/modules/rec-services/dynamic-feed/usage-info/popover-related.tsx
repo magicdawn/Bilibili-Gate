@@ -394,7 +394,7 @@ function SearchCacheRelated() {
             </HelpInfo>
           </div>
           <div className={classes.sectionContent}>
-            <div className='flex flex-wrap items-center gap-x-10 gap-y-3'>
+            <div className='flex flex-wrap items-center gap-x-10px gap-y-3px'>
               <Checkbox className='inline-flex items-center' checked={checked} onChange={onChange}>
                 <AntdTooltip title='只有开启此项, 搜索时才会使用缓存'>
                   <span>为「{upName}」开启</span>

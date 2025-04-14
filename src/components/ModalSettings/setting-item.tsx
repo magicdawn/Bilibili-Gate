@@ -155,7 +155,7 @@ export function ButtonSettingItem({
   return (
     <AntdTooltip title={tooltip} {...tooltipProps}>
       <Button onClick={onToggle}>
-        <span className='inline-flex items-center justify-center line-height-[1] gap-4'>
+        <span className='inline-flex items-center justify-center line-height-[1] gap-4px'>
           {checked ? (checkedChildren ?? '✅') : (unCheckedChildren ?? '❎')}
         </span>
       </Button>
