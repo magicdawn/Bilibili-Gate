@@ -19,7 +19,7 @@ export class FavAllService implements IFavInnerService {
     public excludedFolderIds: string[],
   ) {
     // validate
-    if (![FavItemsOrder.Default, FavItemsOrder.Shuffle].includes(this.itemsOrder)) {
+    if (![FavItemsOrder.Initial, FavItemsOrder.Shuffle].includes(this.itemsOrder)) {
       throw new Error('invalid items order')
     }
   }
@@ -113,7 +113,7 @@ export class FavAllService implements IFavInnerService {
     {
       const folders = favFolders.filter((f) => !this.excludedFolderIds.includes(f.id.toString()))
       let itemsOrder = this.itemsOrder
-      if (itemsOrder === FavItemsOrder.Default) itemsOrder = FavItemsOrder.FavTimeDesc // 收藏夹没有 `默认`
+      if (itemsOrder === FavItemsOrder.Initial) itemsOrder = FavItemsOrder.FavTimeDesc // 收藏夹没有 `默认`
       this.allServices.push(
         ...folders.map((f) => new FavFolderService(f.id, this.addSeparator, itemsOrder)),
       )

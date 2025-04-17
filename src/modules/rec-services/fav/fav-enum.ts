@@ -2,7 +2,7 @@ import { orderBy, shuffle } from 'es-toolkit'
 import type { FavItemExtend } from './types'
 
 export enum FavItemsOrder {
-  Default = 'default',
+  Initial = 'initial', // 初始顺序
   Shuffle = 'shuffle',
   PubTimeDesc = 'pub-time-desc',
   PubTimeAsc = 'pub-time-asc',
@@ -15,7 +15,7 @@ export enum FavItemsOrder {
 }
 
 export function handleItemsOrder(items: FavItemExtend[], itemsOrder: FavItemsOrder) {
-  if (itemsOrder === FavItemsOrder.Default) {
+  if (itemsOrder === FavItemsOrder.Initial) {
     return items
   }
   if (itemsOrder === FavItemsOrder.Shuffle) {

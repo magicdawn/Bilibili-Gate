@@ -20,9 +20,9 @@ import { favStore, type FavSelectedKeyPrefix } from '../store'
 const clsIconSize = 'size-16px'
 
 export const FavItemsOrderConfig: Record<FavItemsOrder, { icon: ReactNode; label: ReactNode }> = {
-  [FavItemsOrder.Default]: {
+  [FavItemsOrder.Initial]: {
     icon: <IconForDefaultOrder className={clsIconSize} />,
-    label: '默认顺序',
+    label: '初始顺序',
   },
   [FavItemsOrder.Shuffle]: {
     icon: <IconForShuffle className={clsIconSize} />,
@@ -55,7 +55,7 @@ export const FavItemsOrderConfig: Record<FavItemsOrder, { icon: ReactNode; label
 }
 
 const MenuItemsConfig: Record<FavSelectedKeyPrefix, (FavItemsOrder | 'divider')[]> = {
-  'all': [FavItemsOrder.Default, FavItemsOrder.Shuffle],
+  'all': [FavItemsOrder.Initial, FavItemsOrder.Shuffle],
   'fav-folder': [
     FavItemsOrder.FavTimeDesc,
     FavItemsOrder.PubTimeDesc,
@@ -68,7 +68,7 @@ const MenuItemsConfig: Record<FavSelectedKeyPrefix, (FavItemsOrder | 'divider')[
     FavItemsOrder.Shuffle,
   ] as const,
   'fav-collection': [
-    FavItemsOrder.Default,
+    FavItemsOrder.Initial,
     FavItemsOrder.PubTimeDesc,
     FavItemsOrder.PlayCountDesc,
     FavItemsOrder.CollectCountDesc,
@@ -79,14 +79,21 @@ const MenuItemsConfig: Record<FavSelectedKeyPrefix, (FavItemsOrder | 'divider')[
   ] as const,
 }
 
-function getMenuItemsFor(selectedKey: string) {
+function _getSelectedKeyPrefix(selectedKey: string) {
   const prefix = selectedKey.split(':')[0] as FavSelectedKeyPrefix
+  return prefix
+}
+
+function getMenuItemsFor(selectedKey: string) {
+  const prefix = _getSelectedKeyPrefix(selectedKey)
   return MenuItemsConfig[prefix] || Object.values(FavItemsOrder)
 }
 
 function _getFallbackOrder(selectedKey: string) {
-  if (selectedKey.startsWith('fav-folder:')) return FavItemsOrder.FavTimeDesc
-  return FavItemsOrder.Default
+  const prefix = _getSelectedKeyPrefix(selectedKey)
+  if (prefix === 'fav-folder') return FavItemsOrder.FavTimeDesc
+  if (prefix === 'fav-collection') return FavItemsOrder.PubTimeDesc
+  return FavItemsOrder.Initial
 }
 
 /**

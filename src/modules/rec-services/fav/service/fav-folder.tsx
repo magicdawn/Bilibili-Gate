@@ -57,7 +57,7 @@ export class FavFolderService implements IFavInnerService {
     public addSeparator: boolean,
     public itemsOrder: FavItemsOrder,
   ) {
-    if (this.itemsOrder === FavItemsOrder.Default) {
+    if (this.itemsOrder === FavItemsOrder.Initial) {
       throw new Error('this should not happen!')
     }
     if (isFavFolderApiSuppoetedOrder(this.itemsOrder)) {

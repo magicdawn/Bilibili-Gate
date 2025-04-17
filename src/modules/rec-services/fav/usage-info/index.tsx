@@ -1,6 +1,8 @@
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
 import { defineAntMenus, type AntMenuItem } from '$modules/antd'
+import { IconForOpenExternalLink } from '$modules/icon'
+import { formatSpaceUrl } from '$modules/rec-services/dynamic-feed/shared'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { sortListByName } from '$utility/sort'
 import { css } from '@emotion/react'
@@ -46,7 +48,7 @@ export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
     })()
   }, [fav.addSeparator])
 
-  // #region scope selection dropdown
+  // !#region scope selection dropdown
   const scopeSelectionDropdownMenus: AntMenuItem[] = useMemo(() => {
     const collectionSubMenus: AntMenuItem[] = []
     const collectionGrouped = groupBy(favCollections, (x) => x.upper.name)
@@ -56,11 +58,20 @@ export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
     }))
     entries = sortListByName(entries, 'upName')
     for (const { upName, collections } of entries) {
+      const upMid = collections[0]?.upper.mid
+      const upSpaceUrl = upMid ? formatSpaceUrl(upMid) : '#'
       collectionSubMenus.push(
         ...defineAntMenus([
           {
             type: 'group',
-            label: `@${upName}`,
+            label: (
+              <span className='flex items-center gap-x-4px'>
+                <IconForOpenExternalLink className='size-16px' />
+                <a target='_blank' href={upSpaceUrl}>
+                  @{upName}
+                </a>
+              </span>
+            ),
             children: collections.map((f) => {
               const key: FavStore['selectedKey'] = `fav-collection:${f.id}`
               const icon = <IconForCollection />

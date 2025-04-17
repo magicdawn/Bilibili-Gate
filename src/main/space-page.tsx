@@ -1,4 +1,5 @@
 import { APP_NAME, APP_NAMESPACE } from '$common'
+import { AppRoot } from '$components/AppRoot'
 import { AntdTooltip } from '$modules/antd/custom'
 import { DynamicFeedQueryKey } from '$modules/rec-services/dynamic-feed/store'
 import { FavQueryKey } from '$modules/rec-services/fav/store'
@@ -29,7 +30,11 @@ async function addDynEntry() {
       rootEl.id = rootElId
       container.insertAdjacentElement('afterbegin', rootEl)
       const root = createRoot(rootEl)
-      root.render(<ActionButtons />)
+      root.render(
+        <AppRoot>
+          <ActionButtons />
+        </AppRoot>,
+      )
     },
     { pollTimeout: 10_000, pollInterval: 1_000 },
   )
