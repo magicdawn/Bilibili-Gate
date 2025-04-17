@@ -6,4 +6,5 @@ export default defineConfig({
   project: ['src/**/*.{ts,tsx}', 'scripts/*.ts'],
   ignore: ['**/define/**/*.ts', '**/*.d.ts'],
   ignoreDependencies: ['virtual:*', '~icons/'],
+  vite: true,
 })
