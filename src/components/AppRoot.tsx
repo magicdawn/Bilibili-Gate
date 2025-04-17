@@ -1,7 +1,6 @@
 import { appUsingFont, zIndexAntdPopupBase } from '$common/css-vars-export.module.scss'
 import { AntdStaticFunctionsSetup } from '$modules/antd'
 import { useIsDarkMode } from '$modules/dark-mode'
-import { tweakLightness } from '$utility/css'
 import { StyleProvider, type StyleProviderProps } from '@ant-design/cssinjs'
 import { cache as emotionCssDefaultCache } from '@emotion/css'
 import { CacheProvider, type EmotionCache } from '@emotion/react'
@@ -61,15 +60,16 @@ export function AppRoot({
             Notification: {
               zIndexPopup: Number(zIndexAntdPopupBase),
             },
-            Segmented: {
-              trackPadding: 4,
-              itemSelectedBg: colorPrimary,
-              itemActiveBg: colorPrimary,
-              trackBg: tweakLightness(colorPrimary, -0.2),
-              itemSelectedColor: '#fff',
-              itemColor: '#fff',
-              itemHoverColor: '#fff',
-            },
+            // 也很难看~
+            // Segmented: {
+            //   trackPadding: 4,
+            //   itemSelectedBg: colorPrimary,
+            //   itemActiveBg: colorPrimary,
+            //   trackBg: tweakLightness(colorPrimary, -0.2),
+            //   itemSelectedColor: '#fff',
+            //   itemColor: '#fff',
+            //   itemHoverColor: '#fff',
+            // },
           },
         }}
       >
