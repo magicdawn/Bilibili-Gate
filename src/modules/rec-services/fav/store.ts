@@ -1,8 +1,10 @@
 import { baseDebug, IN_BILIBILI_HOMEPAGE } from '$common'
 import { reusePendingPromise } from '$utility/async'
 import { setPageTitle } from '$utility/dom'
-import { proxyMapWithGmStorage } from '$utility/valtio'
+import { proxyMapWithGmStorage, subscribeOnKeys } from '$utility/valtio'
+import { pick } from 'es-toolkit'
 import ms from 'ms'
+import pLimit from 'p-limit'
 import { proxy } from 'valtio'
 import { subscribeKey } from 'valtio/utils'
 import { fetchAllFavCollections } from './collection/api'
@@ -111,6 +113,39 @@ export const favStore = proxy({
   },
 })
 
+/**
+ * favStore: load and setup-persist
+ */
+async function setupFavStore() {
+  if (!IN_BILIBILI_HOMEPAGE) return
+  if (SHOW_FAV_TAB_ONLY) return
+
+  const storageKey = 'fav-store'
+  const persistStoreKeys = [
+    'selectedFavFolderId',
+    'selectedFavCollectionId',
+  ] as const satisfies (keyof FavStore)[]
+
+  // load
+  const val = await GM.getValue(storageKey)
+  if (val) {
+    const picked = pick(val as FavStore, persistStoreKeys)
+    for (const key of persistStoreKeys) {
+      favStore[key] = picked[key]
+    }
+  }
+
+  // persist
+  const runInSequence = pLimit(1)
+  subscribeOnKeys(favStore, persistStoreKeys, (snap) => {
+    if (SHOW_FAV_TAB_ONLY) return
+    const val = pick(snap, persistStoreKeys)
+    runInSequence(async () => {
+      await GM.setValue(storageKey, val)
+    })
+  })
+}
+
 export function updateFavFolderMediaCount(
   targetFavFolderId: number,
   count: number | ((old: number) => number),
@@ -164,10 +199,10 @@ async function updateCollectionList(force = false) {
 /**
  * side effects
  */
-
 if (SHOW_FAV_TAB_ONLY) {
   subscribeKey(favStore, 'selectedLabel', () => {
     if (!favStore.selectedLabel) return
     setPageTitle(favStore.selectedLabel)
   })
 }
+setupFavStore()
