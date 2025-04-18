@@ -6,7 +6,8 @@ import { FavQueryKey } from '$modules/rec-services/fav/store'
 import { SpaceUploadQueryKey } from '$modules/rec-services/space-upload/store'
 import { poll, tryAction } from '$utility/dom'
 import { css } from '@emotion/react'
-import type { ComponentProps, ReactNode } from 'react'
+import { useEventListener } from 'ahooks'
+import { type ComponentProps, type ReactNode } from 'react'
 import { proxy, useSnapshot } from 'valtio'
 
 export async function initSpacePage() {
@@ -101,7 +102,21 @@ if (typeof window.navigation !== 'undefined') {
   })
 }
 
+function useAltKeyState() {
+  const [altKeyPressing, setAltKeyPressing] = useState(false)
+  useEventListener('keydown', (e) => {
+    if (e.altKey) {
+      setAltKeyPressing(true)
+    }
+  })
+  useEventListener('keyup', (e) => {
+    setAltKeyPressing(false)
+  })
+  return altKeyPressing
+}
+
 function ActionButtons() {
+  const altKeyPressing = useAltKeyState()
   const { mid, collectionId, followed } = useSnapshot(state)
   if (!mid) return
 
@@ -117,12 +132,25 @@ function ActionButtons() {
 
   let viewUpVideoListButton: ReactNode // 动态 | 投稿
   {
-    const queryKey = followed ? DynamicFeedQueryKey.Mid : SpaceUploadQueryKey.Mid
-    const label = followed ? '动态' : '投稿'
+    const queryKey = followed
+      ? !altKeyPressing
+        ? DynamicFeedQueryKey.Mid
+        : SpaceUploadQueryKey.Mid
+      : !altKeyPressing
+        ? SpaceUploadQueryKey.Mid
+        : DynamicFeedQueryKey.Mid
+    const label = followed ? (!altKeyPressing ? '动态' : '投稿') : !altKeyPressing ? '投稿' : '动态'
+    const href = `https://www.bilibili.com/?${queryKey}=${mid}`
     viewUpVideoListButton = (
       <ActionButton
-        href={`https://www.bilibili.com/?${queryKey}=${mid}`}
+        href={href}
         tooltip={`在「${APP_NAME}」中查看 UP 的${label}`}
+        onClick={(e) => {
+          if (altKeyPressing) {
+            e.preventDefault()
+            window.open(href, '_blank')
+          }
+        }}
       >
         {APP_NAME} {label}
       </ActionButton>
