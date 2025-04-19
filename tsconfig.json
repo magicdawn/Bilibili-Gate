@@ -1,5 +1,5 @@
 {
-  "include": ["src"],
+  "include": ["src", "src/auto-imports.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }],
   "compilerOptions": {
     // generated .d.ts
@@ -53,8 +53,7 @@
       "unplugin-icons/types/react",
       // issue with GM.setClipboard API
       // "vite-plugin-monkey/global",
-      "@violentmonkey/types",
-      "src/auto-imports.d.ts"
+      "@violentmonkey/types"
     ]
   }
 }
