@@ -1,3 +1,4 @@
+import { usePopoverBorderColor } from '$common/emotion-css'
 import {
   copyBvidInfos,
   copyBvidsSingleLine,
@@ -22,7 +23,7 @@ export function useMultiSelectState(uniqId: string | undefined) {
 export function CopyBvidButtons() {
   const { __internalAddCopyBvidButton: enabled } = useSettingsSnapshot()
   const { multiSelecting } = useSnapshot(multiSelectStore)
-  if (!enabled) return null
+  const popoverBorderColor = usePopoverBorderColor()
 
   let btnMultiSelect: ReactNode = (
     <Button
@@ -37,6 +38,7 @@ export function CopyBvidButtons() {
   if (multiSelecting) {
     btnMultiSelect = (
       <Popover
+        styles={{ body: { border: `1px solid ${popoverBorderColor}` } }}
         content={
           <div className='flex items-center gap-x-10px'>
             <Button
@@ -86,6 +88,7 @@ export function CopyBvidButtons() {
     )
   }
 
+  if (!enabled) return null
   return (
     <>
       <Button
