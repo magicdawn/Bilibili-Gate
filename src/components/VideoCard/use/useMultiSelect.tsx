@@ -4,8 +4,8 @@ import { css } from '@emotion/react'
 import type { SyntheticEvent } from 'react'
 import { zIndexMultiSelect } from '../index.module.scss'
 
-export const IconForMultiSelectUnchecked = IconLucideSquare
-export const IconForMultiSelectChecked = IconLucideSquareCheck
+export const IconForMultiSelectUnchecked = IconLucideCircle
+export const IconForMultiSelectChecked = IconLucideCircleCheck
 
 export function useMultiSelectRelated({
   multiSelecting,
@@ -26,11 +26,12 @@ export function useMultiSelectRelated({
     }
   })
 
+  const iconClassName = 'size-30px absolute left-10px top-10px'
   const multiSelectEl = (
     <>
       {multiSelecting && (
         <div
-          className='absolute inset-0 flex items-center justify-center bg-black/10'
+          className='absolute inset-0 flex items-center justify-center bg-black/20'
           css={css`
             z-index: ${zIndexMultiSelect};
             color: ${multiSelected ? colorPrimaryValue : '#fff'};
@@ -38,9 +39,9 @@ export function useMultiSelectRelated({
           onClick={toggleMultiSelect}
         >
           {multiSelected ? (
-            <IconForMultiSelectChecked className='size-100px' />
+            <IconForMultiSelectChecked className={iconClassName} />
           ) : (
-            <IconForMultiSelectUnchecked className='size-100px' />
+            <IconForMultiSelectUnchecked className={iconClassName} />
           )}
         </div>
       )}

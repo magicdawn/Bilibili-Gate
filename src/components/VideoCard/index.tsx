@@ -490,26 +490,24 @@ const VideoCardInner = memo(function VideoCardInner({
     (isLive(item) && item.live_status === ELiveStatus.Streaming) ||
     (isPcRecommend(item) && item.goto === PcRecGoto.Live)
   const _isSpaceUploadShowVol = isSpaceUpload(item) && showVol
-  const topMarks: ReactNode = (
-    <>
-      {/* 动态: 充电专属 */}
-      {_isChargeOnly && <ChargeOnlyTag />}
+  const topMarks: ReactNode[] = [
+    // 动态: 充电专属
+    _isChargeOnly && <ChargeOnlyTag key='ChargeOnlyTag' />,
 
-      {/* 热门: 排行榜 */}
-      {_isRanking && <RankingNumMark item={item} />}
+    // 热门: 排行榜
+    _isRanking && <RankingNumMark key='RankingNumMark' item={item} />,
 
-      {/* 直播: 直播中 */}
-      {_isStreaming && <LiveBadge />}
+    // 直播: 直播中
+    _isStreaming && <LiveBadge key='LiveBadge' />,
 
-      {/* App推荐: 来自其他 Tab 的内容 */}
-      {tab === ETab.AppRecommend && !isAppRecommend(item) && !isLive(item) && (
-        <ApiTypeTag item={item} />
-      )}
+    // App推荐: 来自其他 Tab 的内容
+    tab === ETab.AppRecommend && !isAppRecommend(item) && !isLive(item) && (
+      <ApiTypeTag key='ApiTypeTag' item={item} />
+    ),
 
-      {/* 投稿: 显示序号 */}
-      {_isSpaceUploadShowVol && <VolMark vol={item.vol} />}
-    </>
-  )
+    // 投稿: 显示序号
+    _isSpaceUploadShowVol && <VolMark key='VolMark' vol={item.vol} />,
+  ].filter(Boolean)
 
   const watchlaterProgressBar =
     isWatchlater(item) && item.progress > 0 ? (
@@ -630,6 +628,17 @@ const VideoCardInner = memo(function VideoCardInner({
         </div>
       )}
 
+      {/* 标记 */}
+      {!!topMarks.length && (
+        <div
+          className='left-top-marks'
+          css={VideoCardActionStyle.topContainer('left')}
+          style={{ left: multiSelecting ? '50px' : undefined }}
+        >
+          {topMarks}
+        </div>
+      )}
+
       {!!(watchlaterButtonEl || openInPopupActionButtonEl || largePreviewActionButtonEl) && (
         <div className='right-actions' css={VideoCardActionStyle.topContainer('right')}>
           {/* 稍后再看 */}
@@ -640,9 +649,6 @@ const VideoCardInner = memo(function VideoCardInner({
           {largePreviewActionButtonEl}
         </div>
       )}
-
-      {/* 标记 */}
-      {topMarks}
     </a>
   )
 

@@ -66,8 +66,8 @@ export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
           {
             type: 'group',
             label: (
-              <span className='flex items-center gap-x-4px'>
-                <IconForOpenExternalLink className='size-16px' />
+              <span className='flex items-center gap-x-2px'>
+                <IconForOpenExternalLink className='size-15px' />
                 <a target='_blank' href={upSpaceUrl}>
                   @{upName}
                 </a>
@@ -75,11 +75,14 @@ export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
             ),
             children: collections.map((f) => {
               const key: FavStore['selectedKey'] = `fav-collection:${f.id}`
-              const icon = <IconForCollection />
-              const label = `${f.title} (${f.media_count})`
+              const label = (
+                <span className='flex items-center gap-x-4px ml-9px'>
+                  <IconForCollection className='size-15px' />
+                  {f.title} ({f.media_count})
+                </span>
+              )
               return {
                 key,
-                icon,
                 label,
                 async onClick() {
                   favStore.selectedFavFolderId = undefined
@@ -139,16 +142,18 @@ export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
     ])
   }, [favFolders, favCollections])
   const [scopeDropdownOpen, setScopeDropdownOpen] = useState(false)
+
+  const dropdownButtonClassName = 'size-15px relative top-[-0.5px]'
   const dropdownButtonIcon = selectedFavFolder ? (
     isFavFolderPrivate(selectedFavFolder.attr) ? (
-      <IconForPrivateFolder />
+      <IconForPrivateFolder className={dropdownButtonClassName} />
     ) : (
-      <IconForPublicFolder />
+      <IconForPublicFolder className={dropdownButtonClassName} />
     )
   ) : selectedFavCollection ? (
-    <IconForCollection />
+    <IconForCollection className={dropdownButtonClassName} />
   ) : (
-    <IconForAll />
+    <IconForAll className={dropdownButtonClassName} />
   )
   const dropdownButtonLabel = selectedLabel
   const scopeSelectionDropdown = (
@@ -163,12 +168,11 @@ export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
         selectedKeys: [selectedKey],
       }}
     >
-      <Button
-        className='gap-4px'
-        css={[scopeDropdownOpen && buttonOpenCss]}
-        icon={dropdownButtonIcon}
-      >
-        {dropdownButtonLabel}
+      <Button css={[scopeDropdownOpen && buttonOpenCss]}>
+        <span className='h-full flex items-center gap-x-4px'>
+          {dropdownButtonIcon}
+          {dropdownButtonLabel}
+        </span>
       </Button>
     </Dropdown>
   )

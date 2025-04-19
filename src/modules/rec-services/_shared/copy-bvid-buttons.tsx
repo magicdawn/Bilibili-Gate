@@ -1,5 +1,5 @@
 import { copyBvidInfos, copyBvidsSingleLine } from '$components/RecGrid/unsafe-window-export'
-import { antMessage } from '$modules/antd'
+import { antNotification } from '$modules/antd'
 import { useSettingsSnapshot } from '$modules/settings'
 import { Button } from 'antd'
 import { proxy, useSnapshot } from 'valtio'
@@ -18,29 +18,28 @@ export function useMultiSelectState(uniqId: string | undefined) {
 export function CopyBvidButtons() {
   const { __internalAddCopyBvidButton: enabled } = useSettingsSnapshot()
   const { multiSelecting } = useSnapshot(multiSelectStore)
-
   if (!enabled) return null
-
   return (
     <>
       <Button
         onClick={() => {
-          copyBvidsSingleLine()
-          antMessage.success('已复制')
+          const content = copyBvidsSingleLine()
+          antNotification.success({ message: '已复制', description: content })
         }}
       >
         Copy Bvids SingleLine
       </Button>
       <Button
         onClick={() => {
-          copyBvidInfos()
-          antMessage.success('已复制')
+          const content = copyBvidInfos()
+          antNotification.success({ message: '已复制', description: content })
         }}
       >
         Copy Bvid Infos
       </Button>
 
       <Button
+        type={multiSelecting ? 'primary' : 'default'}
         onClick={() => {
           multiSelectStore.multiSelecting = !multiSelectStore.multiSelecting
           if (multiSelectStore.multiSelecting) {
@@ -48,7 +47,7 @@ export function CopyBvidButtons() {
           }
         }}
       >
-        {multiSelecting ? 'Exit Multi-Select' : 'Multi-Select'}
+        Multi-Select{multiSelectStore.multiSelecting ? 'ing' : ''}
       </Button>
     </>
   )

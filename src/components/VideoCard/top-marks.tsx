@@ -1,4 +1,4 @@
-import { flexCenterStyle, flexVerticalCenterStyle } from '$common/emotion-css'
+import { flexCenterStyle } from '$common/emotion-css'
 import { colorPrimaryValue } from '$components/css-vars'
 import {
   isDynamicFeed,
@@ -20,7 +20,7 @@ import { Dropdown } from 'antd'
 import type { ReactNode } from 'react'
 import IconParkOutlineMore from '~icons/icon-park-outline/more'
 import PhCrownFill from '~icons/ph/crown-fill'
-import { VideoCardActionStyle, useTooltip } from './child-components/VideoCardActions'
+import { useTooltip } from './child-components/VideoCardActions'
 import { useLinkNewTab } from './use/useOpenRelated'
 
 export const CHARGE_ONLY_TEXT = '充电专属'
@@ -34,22 +34,15 @@ export function isChargeOnlyVideo(item: RecItemType, recommendReason?: string) {
 export function ChargeOnlyTag() {
   return (
     <div
-      css={[
-        VideoCardActionStyle.top('left'),
-        flexVerticalCenterStyle,
-        css`
-          padding: 1px 6px 1px 4px;
-          font-size: 10px;
-          color: #fff;
-          text-align: center;
-          line-height: 17px;
-          border-radius: 2px;
-          margin-left: 4px;
-          white-space: nowrap;
-          background-color: #f69;
-          background-color: ${colorPrimaryValue};
-        `,
-      ]}
+      className='
+        rounded-2px ml-4px
+        flex items-center justify-center
+        py-1px pl-4px pr-6px
+        color-white text-center text-size-10px line-height-[17px] whitespace-nowrap
+      '
+      css={css`
+        background-color: ${colorPrimaryValue};
+      `}
     >
       <svg
         width='16'
@@ -111,12 +104,11 @@ export function RankingNumMark({ item }: { item: RankingItemExtend }) {
   const newTab = useLinkNewTab()
 
   return (
-    <div css={VideoCardActionStyle.topContainer('left')}>
+    <>
       <div ref={triggerRef} css={roundButtonCss}>
         {hasMedal ? medalIcon : <span style={{ marginLeft: -1 }}>{item.rankingNo}</span>}
         {tooltipEl}
       </div>
-
       {hasOthers && (
         <Dropdown
           placement='bottomLeft'
@@ -148,7 +140,7 @@ export function RankingNumMark({ item }: { item: RankingItemExtend }) {
           </div>
         </Dropdown>
       )}
-    </div>
+    </>
   )
 }
 
@@ -164,20 +156,16 @@ export function SomeBadge({
   return (
     <span
       className={className}
-      css={[
-        VideoCardActionStyle.top('left'),
-        css`
-          height: 16px;
-          line-height: 16px;
-          border-radius: 16px;
-          padding-inline: 4px 6px;
-          background-color: ${colorPrimaryValue};
-
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-        `,
-      ]}
+      css={css`
+        height: 16px;
+        line-height: 16px;
+        border-radius: 16px;
+        padding-inline: 4px 6px;
+        background-color: ${colorPrimaryValue};
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      `}
     >
       {icon}
       {label && typeof label === 'string' ? (
@@ -222,22 +210,19 @@ export function ApiTypeTag({ item }: { item: RecItemType }) {
 
   return (
     <div
-      css={[
-        VideoCardActionStyle.top('left'),
-        flexVerticalCenterStyle,
-        css`
-          padding-inline: 6px;
-          padding-block: 1px;
-          font-size: 11px;
-          color: #fff;
-          text-align: center;
-          line-height: 17px;
-          border-radius: 2px;
-          margin-left: 4px;
-          white-space: nowrap;
-          background-color: ${colorPrimaryValue};
-        `,
-      ]}
+      className='flex items-center'
+      css={css`
+        padding-inline: 6px;
+        padding-block: 1px;
+        font-size: 11px;
+        color: #fff;
+        text-align: center;
+        line-height: 17px;
+        border-radius: 2px;
+        margin-left: 4px;
+        white-space: nowrap;
+        background-color: ${colorPrimaryValue};
+      `}
     >
       {text}
     </div>
@@ -245,13 +230,6 @@ export function ApiTypeTag({ item }: { item: RecItemType }) {
 }
 
 export function VolMark({ vol }: { vol: number }) {
-  const displayAsCircle = vol.toString().length <= 2
-  const circleCss = css`
-    height: 28px;
-    width: 28px;
-    border-radius: 50%;
-  `
-
   const roundButtonCss = [
     flexCenterStyle,
     css`
@@ -266,10 +244,5 @@ export function VolMark({ vol }: { vol: number }) {
       padding-inline: 6px;
     `,
   ]
-
-  return (
-    <div css={VideoCardActionStyle.topContainer('left')}>
-      <div css={roundButtonCss}>{vol}</div>
-    </div>
-  )
+  return <div css={roundButtonCss}>{vol}</div>
 }

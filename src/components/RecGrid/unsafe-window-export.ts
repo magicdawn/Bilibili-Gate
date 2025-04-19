@@ -48,12 +48,16 @@ function getGridCardData() {
 
 export function copyBvidsSingleLine() {
   const bvids = getGridCardData().map((cardData) => cardData.bvid)
-  GM.setClipboard(bvids.join(' '))
+  const content = bvids.join(' ')
+  GM.setClipboard(content)
+  return content
 }
 
 export function copyBvidInfos() {
   const lines = getGridCardData().map(getBvidInfo)
-  GM.setClipboard(lines.join('\n'))
+  const content = lines.join('\n')
+  GM.setClipboard(content)
+  return content
 }
 
 export function getBvidInfo(cardData: IVideoCardData) {

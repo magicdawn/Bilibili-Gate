@@ -4,17 +4,24 @@ import { css as _css, css } from '@emotion/react'
 import { useHover } from 'ahooks'
 import type { ComponentRef } from 'react'
 import { type ComponentProps, type ReactNode } from 'react'
-import { zIndexActions } from '../index.module.scss'
+import { zIndexLeftMarks, zIndexRightActions } from '../index.module.scss'
 
 export type InlinePosition = 'left' | 'right'
+
+const getZIndex = (inlinePosition: InlinePosition) => {
+  return {
+    left: zIndexLeftMarks,
+    right: zIndexRightActions,
+  }[inlinePosition]
+}
 
 const S = {
   top: (inlinePosition: InlinePosition) => css`
     position: absolute;
     top: 8px;
     ${inlinePosition}: 8px;
-    transform: translateZ(0);
-    z-index: ${zIndexActions};
+    /* transform: translateZ(0); */
+    z-index: ${getZIndex(inlinePosition)};
   `,
 
   topContainer: (inlinePosition: InlinePosition) => [
