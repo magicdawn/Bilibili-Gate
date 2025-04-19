@@ -26,9 +26,10 @@ import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconForOpenExternalLink } from '$modules/icon'
 import { concatThenUniq, getGridRefreshCount, refreshForGrid } from '$modules/rec-services'
+import { multiSelectStore } from '$modules/rec-services/_shared/copy-bvid-buttons'
 import { hotStore } from '$modules/rec-services/hot'
 import { getServiceFromRegistry, type ServiceMap } from '$modules/rec-services/service-map.ts'
-import { useSettingsSnapshot } from '$modules/settings'
+import { settings, useSettingsSnapshot } from '$modules/settings'
 import { isSafari } from '$ua'
 import { css } from '@emotion/react'
 import { useEventListener, useLatest, usePrevious, useUnmountedRef } from 'ahooks'
@@ -40,6 +41,7 @@ import ms from 'ms'
 import type { ForwardedRef, ReactNode } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { VirtuosoGrid } from 'react-virtuoso'
+import { useSnapshot } from 'valtio'
 import * as classNames from '../video-grid.module.scss'
 import type { OnRefresh } from './useRefresh'
 import { useRefresh } from './useRefresh'
@@ -116,7 +118,8 @@ const RecGridInner = memo(function ({
   servicesRegistry: RefStateBox<Partial<ServiceMap>>
 }) {
   const unmountedRef = useUnmountedRef()
-  const cardDisplay = useSettingsSnapshot().style.pureRecommend.cardDisplay
+  const { cardDisplay } = useSnapshot(settings.style.pureRecommend)
+  const { multiSelecting } = useSnapshot(multiSelectStore)
 
   // 已加载完成的 load call count, 类似 page
   const loadCompleteCountBox = useRefStateBox(0)
@@ -547,6 +550,7 @@ const RecGridInner = memo(function ({
           emitter={videoCardEmitters[index]}
           sharedEmitter={sharedEmitter}
           cardDisplay={cardDisplay}
+          multiSelecting={multiSelecting}
         />
       )
     }

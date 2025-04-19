@@ -6,6 +6,7 @@ import { APP_KEY_PREFIX } from '$common'
 import { normalizeCardData, type IVideoCardData } from '$components/VideoCard/process/normalize'
 import type { RecItemType, RecItemTypeOrSeparator } from '$define'
 import { EApiType } from '$define/index.shared'
+import { multiSelectStore } from '$modules/rec-services/_shared/copy-bvid-buttons'
 import dayjs from 'dayjs'
 import { tryit } from 'radash'
 
@@ -36,7 +37,13 @@ export function setGlobalGridItems(itemsWithSep: RecItemTypeOrSeparator[]) {
 }
 
 function getGridCardData() {
-  return currentGridItems.map((item) => normalizeCardData(item))
+  const { multiSelecting, selectedIdSet } = multiSelectStore
+  return currentGridItems
+    .filter((item) => {
+      if (!multiSelecting) return true
+      return selectedIdSet.has(item.uniqId)
+    })
+    .map((item) => normalizeCardData(item))
 }
 
 export function copyBvidsSingleLine() {

@@ -2,7 +2,7 @@ import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
 import { Input } from 'antd'
 import { useSnapshot } from 'valtio'
-import { InternalAddCopyBvidButtons } from '../_shared'
+import { CopyBvidButtons } from '../_shared/copy-bvid-buttons'
 import { GenericOrderSwitcher } from '../_shared/generic-order-switcher'
 import { SpaceUploadOrder, SpaceUploadOrderConfig } from './api'
 import { spaceUploadStore } from './store'
@@ -46,7 +46,7 @@ export function SpaceUploadUsageInfo() {
         className='flex-shrink-0'
       />
 
-      <InternalAddCopyBvidButtons />
+      <CopyBvidButtons />
     </div>
   )
 }

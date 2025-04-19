@@ -2,6 +2,7 @@ import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
 import { defineAntMenus, type AntMenuItem } from '$modules/antd'
 import { IconForOpenExternalLink } from '$modules/icon'
+import { CopyBvidButtons } from '$modules/rec-services/_shared/copy-bvid-buttons'
 import { formatSpaceUrl } from '$modules/rec-services/dynamic-feed/shared'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { sortListByName } from '$utility/sort'
@@ -12,7 +13,7 @@ import { delay, groupBy } from 'es-toolkit'
 import type { Key } from 'react'
 import { useSnapshot } from 'valtio'
 import { usePopupContainer } from '../../_base'
-import { dropdownMenuStyle, InternalAddCopyBvidButtons } from '../../_shared'
+import { dropdownMenuStyle } from '../../_shared'
 import { isFavFolderDefault, isFavFolderPrivate } from '../fav-util'
 import type { FavAllService } from '../service/fav-all'
 import type { FavFolderBasicService } from '../service/fav-folder'
@@ -181,7 +182,7 @@ export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
       {/* extra */}
       {extraContent}
 
-      <InternalAddCopyBvidButtons />
+      <CopyBvidButtons />
     </div>
   )
 }

@@ -25,6 +25,7 @@ import { PcRecGoto } from '$define/pc-recommend'
 import { antNotification } from '$modules/antd'
 import { useInBlacklist } from '$modules/bilibili/me/relations/blacklist'
 import { useIsDarkMode } from '$modules/dark-mode'
+import { useMultiSelectState } from '$modules/rec-services/_shared/copy-bvid-buttons'
 import { UserFavService } from '$modules/rec-services/fav/user-fav-service'
 import { ELiveStatus } from '$modules/rec-services/live/live-enum'
 import { useWatchlaterState } from '$modules/rec-services/watchlater'
@@ -71,6 +72,7 @@ import {
 } from './top-marks'
 import { useDislikeRelated } from './use/useDislikeRelated'
 import { useLargePreviewRelated } from './use/useLargePreview'
+import { useMultiSelectRelated } from './use/useMultiSelect'
 import { getRecItemDimension, useLinkTarget, useOpenRelated } from './use/useOpenRelated'
 import { usePreviewRelated } from './use/usePreviewRelated'
 import { useWatchlaterRelated } from './use/useWatchlaterRelated'
@@ -89,6 +91,7 @@ export type VideoCardProps = {
   tab: ETab
   baseCss?: CssProp
   cardDisplay?: ECardDisplay
+  multiSelecting?: boolean
 } & ComponentProps<'div'>
 
 export const VideoCard = memo(function VideoCard({
@@ -105,6 +108,7 @@ export const VideoCard = memo(function VideoCard({
   tab,
   baseCss,
   cardDisplay,
+  multiSelecting,
   ...restProps
 }: VideoCardProps) {
   // loading defaults to
@@ -114,8 +118,11 @@ export const VideoCard = memo(function VideoCard({
 
   const dislikedReason = useDislikedReason(item?.api === EApiType.AppRecommend && item.param)
   const cardData = useMemo(() => item && normalizeCardData(item), [item])
+
+  // state
   const blacklisted = useInBlacklist(cardData?.authorMid)
   const watchlaterAdded = useWatchlaterState(cardData?.bvid)
+  const multiSelected = useMultiSelectState(item?.uniqId)
 
   const showingDislikeCard = !!dislikedReason
   const showingBlacklistCard = blacklisted
@@ -157,6 +164,8 @@ export const VideoCard = memo(function VideoCard({
             onRefresh={onRefresh}
             watchlaterAdded={watchlaterAdded}
             cardDisplay={cardDisplay}
+            multiSelecting={multiSelecting}
+            multiSelected={multiSelected}
           />
         ))
       )}
@@ -176,6 +185,8 @@ export type VideoCardInnerProps = {
   watchlaterAdded: boolean
   tab: ETab
   cardDisplay?: ECardDisplay
+  multiSelecting?: boolean
+  multiSelected: boolean
 }
 const VideoCardInner = memo(function VideoCardInner({
   item,
@@ -189,6 +200,8 @@ const VideoCardInner = memo(function VideoCardInner({
   sharedEmitter = defaultSharedEmitter,
   watchlaterAdded,
   cardDisplay,
+  multiSelecting = false,
+  multiSelected,
 }: VideoCardInnerProps) {
   const {
     autoPreviewWhenHover,
@@ -401,6 +414,13 @@ const VideoCardInner = memo(function VideoCardInner({
     shouldUseLargePreviewCurrentTime,
   })
 
+  // 多选
+  const { multiSelectEl, toggleMultiSelect } = useMultiSelectRelated({
+    multiSelecting,
+    multiSelected,
+    uniqId: item.uniqId,
+  })
+
   const handleCardClick: MouseEventHandler<HTMLDivElement> = useMemoizedFn((e) => {
     if (!cardUseBorder) return
 
@@ -518,7 +538,7 @@ const VideoCardInner = memo(function VideoCardInner({
       }
     `,
     !isDisplayAsList(cardDisplay) &&
-      (isHovering || active || (cardUseBorder && !cardUseBorderOnlyOnHover)) &&
+      (isHovering || active || multiSelecting || (cardUseBorder && !cardUseBorderOnlyOnHover)) &&
       coverBottomNoRoundCss,
   ]
 
@@ -600,7 +620,8 @@ const VideoCardInner = memo(function VideoCardInner({
       </div>
 
       {watchlaterProgressBar}
-      {previewImageEl}
+      {!multiSelecting && previewImageEl}
+      {multiSelectEl}
 
       {!!dislikeButtonEl && (
         <div className='left-actions' css={VideoCardActionStyle.topContainer('left')}>
@@ -627,7 +648,11 @@ const VideoCardInner = memo(function VideoCardInner({
 
   /* bottom: after the cover */
   const bottomContent = (
-    <VideoCardBottom item={item} cardData={cardData} handleVideoLinkClick={handleVideoLinkClick} />
+    <VideoCardBottom
+      item={item}
+      cardData={cardData}
+      handleVideoLinkClick={multiSelecting ? toggleMultiSelect : handleVideoLinkClick}
+    />
   )
 
   const extraContent = <>{largePreviewEl}</>
@@ -669,7 +694,7 @@ const VideoCardInner = memo(function VideoCardInner({
           `,
           isDisplayAsList(cardDisplay) && displayAsListCss.cardWrap,
         ]}
-        onClick={handleCardClick}
+        onClick={multiSelecting ? toggleMultiSelect : handleCardClick}
         onContextMenu={(e) => {
           if (cardUseBorder) {
             e.preventDefault()

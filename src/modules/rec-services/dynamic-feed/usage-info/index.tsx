@@ -2,6 +2,7 @@ import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
 import type { AntMenuItem } from '$modules/antd'
 import { IconForReset } from '$modules/icon'
+import { CopyBvidButtons } from '$modules/rec-services/_shared/copy-bvid-buttons'
 import { useSettingsSnapshot } from '$modules/settings'
 import { getAvatarSrc } from '$utility/image'
 import { localeComparer, mapNameForSort } from '$utility/sort'
@@ -12,7 +13,7 @@ import { fastSortWithOrders } from 'fast-sort-lens'
 import type { ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
 import { usePopupContainer } from '../../_base'
-import { dropdownMenuStyle, InternalAddCopyBvidButtons } from '../../_shared'
+import { dropdownMenuStyle } from '../../_shared'
 import { IconForGroup, IconForUp } from '../shared'
 import {
   dfStore,
@@ -198,7 +199,7 @@ export function DynamicFeedUsageInfo() {
 
         {externalSearchInput && searchInput}
 
-        <InternalAddCopyBvidButtons />
+        <CopyBvidButtons />
       </div>
     </>
   )
