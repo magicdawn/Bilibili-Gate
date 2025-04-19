@@ -7,7 +7,11 @@
 export {}
 declare global {
   const Fragment: typeof import('react')['Fragment']
+  const IconBxStopCircle: typeof import('~icons/bx/stop-circle.jsx')['default']
+  const IconFluentSelectAll24Regular: typeof import('~icons/fluent/select-all24-regular.jsx')['default']
+  const IconFluentSelectAllOn16Regular: typeof import('~icons/fluent/select-all-on16-regular.jsx')['default']
   const IconIcOutlineCloud: typeof import('~icons/ic/outline-cloud.jsx')['default']
+  const IconIcOutlineSwapHoriz: typeof import('~icons/ic/outline-swap-horiz.jsx')['default']
   const IconIonLayersOutline: typeof import('~icons/ion/layers-outline.jsx')['default']
   const IconLetsIconsViewHide: typeof import('~icons/lets-icons/view-hide.jsx')['default']
   const IconLineMdUploadingLoop: typeof import('~icons/line-md/uploading-loop.jsx')['default']
@@ -34,6 +38,7 @@ declare global {
   const IconParkOutlineDownC: typeof import('~icons/icon-park-outline/down-c.jsx')['default']
   const IconParkOutlineDrag: typeof import('~icons/icon-park-outline/drag.jsx')['default']
   const IconParkOutlineFire: typeof import('~icons/icon-park-outline/fire.jsx')['default']
+  const IconParkOutlineFullSelection: typeof import('~icons/icon-park-outline/full-selection.jsx')['default']
   const IconParkOutlineHelp: typeof import('~icons/icon-park-outline/help.jsx')['default']
   const IconParkOutlineInfo: typeof import('~icons/icon-park-outline/info.jsx')['default']
   const IconParkOutlineIphone: typeof import('~icons/icon-park-outline/iphone.jsx')['default']

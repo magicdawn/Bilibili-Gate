@@ -258,6 +258,7 @@ const VideoCardInner = memo(function VideoCardInner({
   }, [bvid, goto])
   const tryFetchImagePreviewData = useLockFn(async () => {
     if (!shouldFetchPreviewData) return
+    if (multiSelecting) return
     if (isImagePreviewDataValid(imagePreviewDataBox.val)) return // already fetched
     const data = await fetchImagePreviewData(bvid!)
     imagePreviewDataBox.set(data)
