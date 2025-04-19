@@ -416,7 +416,7 @@ const VideoCardInner = memo(function VideoCardInner({
   })
 
   // 多选
-  const { multiSelectEl, toggleMultiSelect } = useMultiSelectRelated({
+  const { multiSelectBgEl, multiSelectEl, toggleMultiSelect } = useMultiSelectRelated({
     multiSelecting,
     multiSelected,
     uniqId: item.uniqId,
@@ -491,7 +491,13 @@ const VideoCardInner = memo(function VideoCardInner({
     (isLive(item) && item.live_status === ELiveStatus.Streaming) ||
     (isPcRecommend(item) && item.goto === PcRecGoto.Live)
   const _isSpaceUploadShowVol = isSpaceUpload(item) && showVol
-  const topMarks: ReactNode[] = [
+  const topLeftMarks: ReactNode[] = [
+    // 多选
+    multiSelecting && multiSelectEl,
+
+    // 我不想看
+    dislikeButtonEl,
+
     // 动态: 充电专属
     _isChargeOnly && <ChargeOnlyTag key='ChargeOnlyTag' />,
 
@@ -508,6 +514,12 @@ const VideoCardInner = memo(function VideoCardInner({
 
     // 投稿: 显示序号
     _isSpaceUploadShowVol && <VolMark key='VolMark' vol={item.vol} />,
+  ].filter(Boolean)
+
+  const topRightActions = [
+    watchlaterButtonEl, // 稍后再看
+    openInPopupActionButtonEl, // 小窗打开
+    largePreviewActionButtonEl, // 浮动预览
   ].filter(Boolean)
 
   const watchlaterProgressBar =
@@ -620,34 +632,23 @@ const VideoCardInner = memo(function VideoCardInner({
 
       {watchlaterProgressBar}
       {!multiSelecting && previewImageEl}
-      {multiSelectEl}
+      {multiSelectBgEl}
 
-      {!!dislikeButtonEl && (
-        <div className='left-actions' css={VideoCardActionStyle.topContainer('left')}>
-          {/* 我不想看 */}
-          {dislikeButtonEl}
-        </div>
-      )}
-
-      {/* 标记 */}
-      {!!topMarks.length && (
+      {/* left-marks */}
+      {!!topLeftMarks.length && (
         <div
           className='left-top-marks'
           css={VideoCardActionStyle.topContainer('left')}
-          style={{ left: multiSelecting ? '50px' : undefined }}
+          style={{ columnGap: multiSelecting ? 10 : undefined }}
         >
-          {topMarks}
+          {topLeftMarks}
         </div>
       )}
 
-      {!!(watchlaterButtonEl || openInPopupActionButtonEl || largePreviewActionButtonEl) && (
+      {/* right-actions */}
+      {!!topRightActions.length && (
         <div className='right-actions' css={VideoCardActionStyle.topContainer('right')}>
-          {/* 稍后再看 */}
-          {watchlaterButtonEl}
-          {/* 小窗打开 */}
-          {openInPopupActionButtonEl}
-          {/* 浮动预览 */}
-          {largePreviewActionButtonEl}
+          {topRightActions}
         </div>
       )}
     </a>

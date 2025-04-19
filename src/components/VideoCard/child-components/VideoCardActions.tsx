@@ -28,6 +28,7 @@ const S = {
     S.top(inlinePosition),
     css`
       display: flex;
+      align-items: center;
       flex-direction: ${inlinePosition === 'left' ? 'row' : 'row-reverse'};
       column-gap: 5px;
     `,

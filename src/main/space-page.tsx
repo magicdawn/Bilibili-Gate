@@ -80,6 +80,18 @@ const state = proxy({
   get isCollectionPage() {
     return typeof this.collectionId === 'number'
   },
+
+  get searchKeyword() {
+    const reg = new RegExp(String.raw`https://space.bilibili.com\/(?<mid>\d+)\/search`)
+    if (!reg.test(this.href)) return undefined
+    const searchParams = new URLSearchParams(location.search)
+    const keyword = searchParams.get('keyword')
+    return keyword ?? undefined
+  },
+
+  get isSearching() {
+    return !!this.searchKeyword?.trim()
+  },
 })
 
 async function getFollowedStatus() {
@@ -116,10 +128,10 @@ function useAltKeyState() {
 }
 
 function ActionButtons() {
-  const altKeyPressing = useAltKeyState()
   const { mid, collectionId, followed } = useSnapshot(state)
   if (!mid) return
 
+  // 合集
   const viewCollectionButton = typeof collectionId === 'number' && (
     <ActionButton
       href={`https://www.bilibili.com/?${FavQueryKey.CollectionIdFull}=${collectionId}`}
@@ -130,38 +142,55 @@ function ActionButtons() {
     </ActionButton>
   )
 
-  let viewUpVideoListButton: ReactNode // 动态 | 投稿
-  {
-    const queryKey = followed
-      ? !altKeyPressing
-        ? DynamicFeedQueryKey.Mid
-        : SpaceUploadQueryKey.Mid
-      : !altKeyPressing
-        ? SpaceUploadQueryKey.Mid
-        : DynamicFeedQueryKey.Mid
-    const label = followed ? (!altKeyPressing ? '动态' : '投稿') : !altKeyPressing ? '投稿' : '动态'
-    const href = `https://www.bilibili.com/?${queryKey}=${mid}`
-    viewUpVideoListButton = (
-      <ActionButton
-        href={href}
-        tooltip={`在「${APP_NAME}」中查看 UP 的${label}`}
-        onClick={(e) => {
-          if (altKeyPressing) {
-            e.preventDefault()
-            window.open(href, '_blank')
-          }
-        }}
-      >
-        {APP_NAME} {label}
-      </ActionButton>
-    )
-  }
+  // 动态 | 投稿
+  const viewUpVideoListButton = <ViewUpVideoListButton />
 
   return (
     <>
       {/* show 1 button */}
       {viewCollectionButton || viewUpVideoListButton}
     </>
+  )
+}
+
+/**
+ * 动态 | 投稿
+ */
+function ViewUpVideoListButton() {
+  const altKeyPressing = useAltKeyState()
+  const { mid, followed, isSearching, searchKeyword } = useSnapshot(state)
+  if (!mid) return
+
+  // 投稿
+  const showSpaceUpload = useMemo(() => {
+    if (isSearching) return true
+    if (followed) {
+      return altKeyPressing
+    } else {
+      return !altKeyPressing
+    }
+  }, [isSearching, followed, altKeyPressing])
+
+  const queryKey = showSpaceUpload ? SpaceUploadQueryKey.Mid : DynamicFeedQueryKey.Mid
+  const label = showSpaceUpload ? '投稿' : '动态'
+  let href = `https://www.bilibili.com/?${queryKey}=${mid}`
+  if (showSpaceUpload && isSearching) {
+    href += `&${SpaceUploadQueryKey.SearchText}=${searchKeyword}`
+  }
+
+  return (
+    <ActionButton
+      href={href}
+      tooltip={`在「${APP_NAME}」中查看 UP 的${label}`}
+      onClick={(e) => {
+        if (altKeyPressing) {
+          e.preventDefault()
+          window.open(href, '_blank')
+        }
+      }}
+    >
+      {APP_NAME} {label}
+    </ActionButton>
   )
 }
 
