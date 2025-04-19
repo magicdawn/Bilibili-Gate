@@ -1,4 +1,6 @@
 import { HOST_APP } from '$common'
+import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
+import { useOnRefreshContext, type OnRefresh } from '$components/RecGrid/useRefresh'
 import { getFollowedStatus } from '$components/VideoCard/process/filter'
 import type { IVideoCardData } from '$components/VideoCard/process/normalize'
 import { isAppRecommend, type AppRecItem, type AppRecItemExtend, type RecItemType } from '$define'
@@ -9,7 +11,7 @@ import { getSettingsSnapshot } from '$modules/settings'
 import { gmrequest } from '$request'
 import { getHasLogined } from '$utility/cookie'
 import dayjs from 'dayjs'
-import { randomInt, range, shuffle, uniqBy } from 'es-toolkit'
+import { delay, randomInt, range, shuffle, uniqBy } from 'es-toolkit'
 import { times } from 'es-toolkit/compat'
 import ms from 'ms'
 import { BaseTabService, type IService } from './_base'
@@ -36,10 +38,33 @@ export function getAppRecServiceConfig() {
   }
 }
 
+export const appRecShowContentFromOtherTabEl = (onRefresh?: OnRefresh) => (
+  <CheckboxSettingItem
+    configPath='appRecommend.addOtherTabContents'
+    label='显示来自其他 Tab 的内容'
+    tooltip={
+      <>
+        显示来自其他 Tab 的内容 <br />
+        如动态 / 收藏 / 稍后再看 <br />
+        但是: 刷新时间会更长
+      </>
+    }
+    extraAction={async () => {
+      await delay(100)
+      onRefresh?.()
+    }}
+  />
+)
+
+function AppRecUsageInfo() {
+  const onRefresh = useOnRefreshContext()
+  return <>{appRecShowContentFromOtherTabEl(onRefresh)}</>
+}
+
 export class AppRecService extends BaseTabService<RecItemType> {
   static readonly PAGE_SIZE = 20
 
-  override usageInfo = undefined
+  override usageInfo = (<AppRecUsageInfo />)
 
   innerService: AppRecInnerService
   allServices: IService[] = []

@@ -9,6 +9,7 @@ import { EAppApiDevice } from '$define/index.shared'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
 import { getUserNickname } from '$modules/bilibili/user/nickname'
+import { appRecShowContentFromOtherTabEl } from '$modules/rec-services/app'
 import type { FollowGroup } from '$modules/rec-services/dynamic-feed/group/types/groups'
 import {
   IconForGroup,
@@ -201,19 +202,7 @@ export function TabPaneRecTabsConfig() {
                   onChange={(e) => void (settings.appRecommend.deviceParamForApi = e.target.value)}
                 />
               </div>
-              <div className='flex items-center'>
-                <CheckboxSettingItem
-                  configPath='appRecommend.addOtherTabContents'
-                  label='显示来自其他 Tab 的内容'
-                  tooltip={
-                    <>
-                      显示来自其他 Tab 的内容 <br />
-                      如动态 / 收藏 / 稍后再看 <br />
-                      但是: 刷新时间会更长
-                    </>
-                  }
-                />
-              </div>
+              <div className='flex items-center'>{appRecShowContentFromOtherTabEl()}</div>
             </div>
           </div>
         </SettingsGroup>
