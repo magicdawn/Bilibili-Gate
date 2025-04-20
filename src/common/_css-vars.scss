@@ -44,7 +44,7 @@ $app-video-card-border-radius-id: --#{$app-name}--video-card--border-radius;
 //
 // z-index
 //
-$z-index-rec-header: 10002;
+$z-index-rec-header: 10000; // Evolved custom-header z-index:10001
 $z-index-base-modal: 10003;
 $z-index-antd-popup-base: 11000;
 $z-index-video-card-large-preview: 12000;

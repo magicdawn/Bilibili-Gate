@@ -504,12 +504,21 @@ const VideoCardInner = memo(function VideoCardInner({
     (isLive(item) && item.live_status === ELiveStatus.Streaming) ||
     (isPcRecommend(item) && item.goto === PcRecGoto.Live)
   const _isSpaceUploadShowVol = isSpaceUpload(item) && showVol
+
+  /**
+   * key is required for list rendering
+   */
+  const wrapWithFragment = (el: ReactNode, key: string) => {
+    if (!el) return
+    return <Fragment key={key}>{el}</Fragment>
+  }
+
   const topLeftMarks: ReactNode[] = [
     // 多选
-    multiSelecting && multiSelectEl,
+    multiSelecting && wrapWithFragment(multiSelectEl, 'multiSelectEl'),
 
     // 我不想看
-    dislikeButtonEl,
+    wrapWithFragment(dislikeButtonEl, 'dislikeButtonEl'),
 
     // 动态: 充电专属
     _isChargeOnly && <ChargeOnlyTag key='ChargeOnlyTag' />,
@@ -530,9 +539,9 @@ const VideoCardInner = memo(function VideoCardInner({
   ].filter(Boolean)
 
   const topRightActions = [
-    watchlaterButtonEl, // 稍后再看
-    openInPopupActionButtonEl, // 小窗打开
-    largePreviewActionButtonEl, // 浮动预览
+    wrapWithFragment(watchlaterButtonEl, 'watchlaterButtonEl'), // 稍后再看
+    wrapWithFragment(openInPopupActionButtonEl, 'openInPopupActionButtonEl'), // 小窗打开
+    wrapWithFragment(largePreviewActionButtonEl, 'largePreviewActionButtonEl'), // 浮动预览
   ].filter(Boolean)
 
   const watchlaterProgressBar =

@@ -40,15 +40,13 @@ export function useMultiSelectRelated({
   const iconCss = css`
     color: ${multiSelected ? colorPrimaryValue : '#fff'};
   `
-  const multiSelectEl = multiSelecting && (
-    <>
-      {multiSelected ? (
-        <IconForMultiSelectChecked className={iconClassName} css={iconCss} />
-      ) : (
-        <IconForMultiSelectUnchecked className={iconClassName} css={iconCss} />
-      )}
-    </>
-  )
+  const multiSelectEl =
+    multiSelecting &&
+    (multiSelected ? (
+      <IconForMultiSelectChecked className={iconClassName} css={iconCss} />
+    ) : (
+      <IconForMultiSelectUnchecked className={iconClassName} css={iconCss} />
+    ))
 
   return {
     toggleMultiSelect,
