@@ -301,8 +301,6 @@ function VideoSourceTabSortableItem({ id }: { id: ETab }) {
         </AntdTooltip>
       </Checkbox>
 
-      <div className='flex-1' />
-
       <div
         {...listeners}
         ref={setActivatorNodeRef}

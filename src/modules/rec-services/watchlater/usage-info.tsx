@@ -8,6 +8,7 @@ import { delay } from 'es-toolkit'
 import type { ElementRef, ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
 import { usePopupContainer } from '../_base'
+import { CopyBvidButtons } from '../_shared/copy-bvid-buttons'
 import { GenericOrderSwitcher } from '../_shared/generic-order-switcher'
 import type { UsageInfoPropsFor } from '../UsageInfo'
 import { watchlaterStore } from './store'
@@ -60,6 +61,8 @@ export function WatchlaterUsageInfo({ service }: UsageInfoPropsFor<ETab.Watchlat
       />
 
       {totalTag}
+
+      <CopyBvidButtons />
     </div>
   )
 }
