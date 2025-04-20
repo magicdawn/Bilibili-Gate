@@ -256,6 +256,13 @@ export const initialSettings = {
   customTabKeysOrder: [] satisfies ETab[] as ETab[],
 
   /**
+   * multi-select module
+   */
+  multiSelect: {
+    clearWhenExit: true,
+  },
+
+  /**
    * internal
    */
   __internalEnableCopyBvidInfoContextMenu: false,
