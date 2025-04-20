@@ -1,4 +1,3 @@
-import { inlineFlexVerticalCenterStyle } from '$common/emotion-css'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { useSortedTabKeys } from '$components/RecHeader/tab'
 import { TabConfig, TabIcon } from '$components/RecHeader/tab-config'
@@ -41,6 +40,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { css } from '@emotion/react'
 import { Checkbox, Collapse, Empty, Radio, Space } from 'antd'
+import type { CSSProperties } from 'react'
 import { useSnapshot } from 'valtio'
 import { TagItemDisplay } from '../EditableListSettingItem'
 import { explainForFlag } from '../index.shared'
@@ -49,6 +49,10 @@ import { ResetPartialSettingsButton, SettingsGroup, sharedCss } from './shared'
 export function TabPaneRecTabsConfig() {
   const { dynamicFeed, appRecommend } = useSettingsSnapshot()
   const sortedTabKeys = useSortedTabKeys()
+
+  const getCssOrderStyle = (tab: ETab): CSSProperties => {
+    return { order: sortedTabKeys.indexOf(tab) + 1 }
+  }
 
   return (
     <div css={sharedCss.tabPane}>
@@ -74,11 +78,7 @@ export function TabPaneRecTabsConfig() {
 
         <SettingsGroup title='更多设置' contentClassName='gap-y-15px'>
           {/* watchlater */}
-          <div
-            css={css`
-              order: ${sortedTabKeys.indexOf(ETab.Watchlater) + 1};
-            `}
-          >
+          <div style={getCssOrderStyle(ETab.Watchlater)}>
             <div className='flex items-center text-size-1.3em'>
               <TabIcon tabKey={ETab.Watchlater} className='mr-5px mt--1px' />
               稍后再看
@@ -93,11 +93,7 @@ export function TabPaneRecTabsConfig() {
           </div>
 
           {/* fav */}
-          <div
-            css={css`
-              order: ${sortedTabKeys.indexOf(ETab.Fav) + 1};
-            `}
-          >
+          <div style={getCssOrderStyle(ETab.Fav)}>
             <div className='flex items-center text-size-1.3em'>
               <TabIcon tabKey={ETab.Fav} className='mr-5px mt--2px' />
               收藏
@@ -112,11 +108,7 @@ export function TabPaneRecTabsConfig() {
           </div>
 
           {/* dynamic-feed */}
-          <div
-            css={css`
-              order: ${sortedTabKeys.indexOf(ETab.DynamicFeed) + 1};
-            `}
-          >
+          <div style={getCssOrderStyle(ETab.DynamicFeed)}>
             <div className='flex items-center text-size-1.3em'>
               <TabIcon tabKey={ETab.DynamicFeed} className='mr-5px mt--2px' />
               动态
@@ -160,9 +152,7 @@ export function TabPaneRecTabsConfig() {
               {dynamicFeed.whenViewAll.enableHideSomeContents && (
                 <Collapse
                   size='small'
-                  css={css`
-                    width: 100%;
-                  `}
+                  className='w-full'
                   items={[
                     {
                       key: '1',
@@ -176,11 +166,7 @@ export function TabPaneRecTabsConfig() {
           </div>
 
           {/* recommend */}
-          <div
-            css={css`
-              order: ${sortedTabKeys.indexOf(ETab.AppRecommend) + 1};
-            `}
-          >
+          <div style={getCssOrderStyle(ETab.AppRecommend)}>
             <div className='flex items-center text-size-1.3em'>
               <TabIcon tabKey={ETab.AppRecommend} className='mr-5px' />
               App 推荐
@@ -239,10 +225,7 @@ function VideoSourceTabOrder({ className, style }: { className?: string; style?:
   return (
     <div {...{ className, style }}>
       <Checkbox.Group
-        css={css`
-          display: block;
-          line-height: unset;
-        `}
+        className='block line-height-[unset]'
         value={currentShowingTabKeys}
         onChange={(newVal) => {
           if (!newVal.length) {
@@ -290,7 +273,7 @@ function VideoSourceTabSortableItem({ id }: { id: ETab }) {
       css={css`
         display: flex;
         align-items: center;
-        justify-content: flex-start;
+        justify-content: space-between;
         height: 35px;
 
         padding-left: 10px;
@@ -318,11 +301,7 @@ function VideoSourceTabSortableItem({ id }: { id: ETab }) {
         </AntdTooltip>
       </Checkbox>
 
-      <div
-        css={css`
-          flex: 1;
-        `}
-      />
+      <div className='flex-1' />
 
       <div
         {...listeners}
@@ -443,14 +422,7 @@ function DynamicFeedWhenViewAllHideIdTag({
   return (
     <>
       <AntdTooltip title={tooltip}>
-        <span
-          css={[
-            inlineFlexVerticalCenterStyle,
-            css`
-              cursor: ${mid ? 'pointer' : 'edit'};
-            `,
-          ]}
-        >
+        <span className={clsx('inline-flex items-center', mid ? 'cursor-pointer' : 'cursor-text')}>
           {icon}
           {href ? (
             <a href={href} target='_blank'>

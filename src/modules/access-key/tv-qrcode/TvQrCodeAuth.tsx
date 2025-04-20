@@ -61,10 +61,8 @@ export function TvQrCodeAuth() {
       cssModalMask={css`
         backdrop-filter: blur(10px);
       `}
-      cssModal={css`
-        width: 260px;
-        aspect-ratio: 10 / 16;
-      `}
+      width={260}
+      clsModal='aspect-ratio-10/16'
     >
       <div css={BaseModalStyle.modalHeader}>
         <div css={BaseModalStyle.modalTitle}></div>
@@ -84,39 +82,18 @@ export function TvQrCodeAuth() {
           `,
         ]}
       >
-        <div
-          css={css`
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 25px;
-            margin-bottom: 2px;
-          `}
-        >
-          {message || ''}
-        </div>
+        <div className='flex-center min-h-25px text-size-14px mb-2px'>{message || ''}</div>
 
         {qrcodeUrl && (
           <QRCode
-            css={css`
-              margin: 0 auto;
-              margin-bottom: 40px;
-              padding: 8px;
-              flex-shrink: 0;
-            `}
+            className='mx-auto mb-40px p-8px flex-shrink-0'
             value={qrcodeUrl}
             size={200}
             icon='https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/72/9c/b6/729cb6d8-75f5-0a56-0508-3a26cbba69ae/AppIcon-1x_U007emarketing-0-6-0-0-85-220-0.png/230x0w.webp'
           />
         )}
 
-        <div
-          className='footnote'
-          css={css`
-            font-size: 13px;
-          `}
-        >
+        <div className='footnote text-size-13px'>
           打开「哔哩哔哩」或「bilibili」App <br />
           扫码获取 access_key
         </div>

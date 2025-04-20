@@ -11,9 +11,9 @@ import {
 } from '$modules/icon'
 import { favStore } from '$modules/rec-services/fav/store'
 import { isHotTabUsingShuffle } from '$modules/rec-services/hot'
+import { useUnoSimpleMerge } from '$utility/css'
 import { advancedSearchHelpInfo } from '$utility/search'
 import toast from '$utility/toast'
-import type { CssProp } from '$utility/type'
 import { css } from '@emotion/react'
 import { cloneElement, type ReactElement, type ReactNode } from 'react'
 import { ETab } from './tab-enum'
@@ -106,21 +106,17 @@ export const TabConfig: Record<ETab, TabConfigItem> = {
 
 type TabIconProps = {
   tabKey: ETab
-  moreCss?: CssProp
-  size?: number
   active?: boolean
   className?: string
 }
 
-export function TabIcon({ tabKey, moreCss, size: _size, active, className }: TabIconProps) {
+export function TabIcon({ tabKey, active, className }: TabIconProps) {
   const { icon } = TabConfig[tabKey]
-  const newCssProp = [icon.props.css as CssProp, moreCss].flat().filter(Boolean)
+  const newClassName = useUnoSimpleMerge(icon.props.className, className)
   const cloned = cloneElement(icon, {
-    css: newCssProp,
-    width: _size ? `${_size}px` : icon.props.width,
-    height: _size ? `${_size}px` : icon.props.height,
+    css: icon.props.css,
     active: tabKey === ETab.Live ? active : undefined, // 否则 warn: svg recived boolean props
-    className: clsx(icon.props.className, className),
+    className: newClassName,
   })
   return cloned
 }

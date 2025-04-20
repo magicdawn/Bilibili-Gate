@@ -6,7 +6,6 @@
  * http://www.apache.org/licenses/
  */
 
-import { flexCenterStyle } from '$common/emotion-css'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { $evolvedThemeColor } from '$header'
 import { AntdTooltip } from '$modules/antd/custom'
@@ -40,14 +39,7 @@ export function ThemesSelect() {
       {ThemeGroups.map(({ name, themes, tooltip }) => {
         return (
           <Fragment key={name}>
-            <div
-              css={css`
-                font-size: 1.5em;
-                display: flex;
-                align-items: center;
-                margin-top: 10px;
-              `}
-            >
+            <div className='flex items-center mt-10px text-size-1.5em'>
               {name}
               <HelpInfo
                 className='size-16px'
@@ -56,7 +48,7 @@ export function ThemesSelect() {
                 {tooltip}
               </HelpInfo>
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2px 8px' }}>
+            <div className='flex flex-wrap gap-y-2px gap-x-8px'>
               {themes.map((t) => {
                 const isActive = activeId === t.id
                 const isCustom = t.isCustom
@@ -70,37 +62,21 @@ export function ThemesSelect() {
 
                 let previewWrapper: ReactNode = (
                   <div
-                    className='preview-wrapper'
-                    css={[
-                      css`
-                        aspect-ratio: 1;
-                        width: ${outerSize}px;
-                        border: 2px solid transparent;
-                        border-radius: 50%;
-                        /* border-radius: 6px; */
-                        margin: 0 auto;
-                        font-size: 0;
-                      `,
-                      flexCenterStyle,
-                      isActive &&
-                        css`
-                          border-color: ${t.colorPrimary};
-                        `,
-                    ]}
+                    data-role='preview-wrapper'
+                    style={{ width: outerSize }}
+                    className={clsx(
+                      'aspect-ratio-1 b-solid b-2px rounded-50% my-0 mx-auto',
+                      isActive ? 'b-gate-primary' : 'b-transparent',
+                      'flex items-center justify-center text-size-0',
+                    )}
                   >
                     <div
-                      className='preview'
-                      css={[
-                        css`
-                          aspect-ratio: 1;
-                          width: ${innerSize}px;
-                          background-color: ${isCustom ? customColorHex : t.colorPrimary};
-                          border-radius: 50%;
-                          color: #fff;
-                          /* border-radius: 4px; */
-                        `,
-                        flexCenterStyle,
-                      ]}
+                      data-role='preview'
+                      className='aspect-ratio-1 rounded-50% flex items-center justify-center text-white'
+                      css={css`
+                        width: ${innerSize}px;
+                        background-color: ${isCustom ? customColorHex : t.colorPrimary};
+                      `}
                     >
                       {isActive && <IconAnimatedChecked size={18} useAnimation={useAnimation} />}
                     </div>
@@ -129,11 +105,7 @@ export function ThemesSelect() {
 
                 let el = (
                   <div
-                    css={css`
-                      min-width: 60px;
-                      text-align: center;
-                      cursor: pointer;
-                    `}
+                    className='min-w-60px text-center cursor-pointer'
                     onClick={(e) => {
                       updateSettings({ theme: t.id })
                     }}

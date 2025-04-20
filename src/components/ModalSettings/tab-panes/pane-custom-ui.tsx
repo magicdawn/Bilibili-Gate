@@ -3,7 +3,6 @@ import { antMessage } from '$modules/antd'
 import type { Settings } from '$modules/settings'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { shouldDisableShortcut } from '$utility/dom'
-import { css } from '@emotion/react'
 import { Tag } from 'antd'
 import { isEqual } from 'es-toolkit'
 import { pick } from 'radash'
@@ -51,27 +50,16 @@ export function useHotkeyForConfigBorder() {
   )
 }
 
-const S = {
-  pane: css`
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    gap: 10px 30px;
-    align-content: flex-start;
-  `,
-
-  itemsContainer: css`
-    row-gap: 4px;
-    display: flex;
-    flex-direction: column;
-  `,
-}
-
 export function TabPaneCustomUI() {
   const { style } = useSettingsSnapshot()
 
+  const itemsContainerClassName = 'flex flex-col gap-y-4px'
+
   return (
-    <div css={[sharedCss.tabPane, S.pane]}>
+    <div
+      css={sharedCss.tabPane}
+      className='flex flex-col flex-wrap gap-y-10px gap-x-30px content-start'
+    >
       {/* 通用 */}
       <SettingsGroup
         title={
@@ -84,7 +72,7 @@ export function TabPaneCustomUI() {
           </>
         }
       >
-        <div css={S.itemsContainer}>
+        <div className={itemsContainerClassName}>
           <CheckboxSettingItem
             configPath='style.general.popoverBorderColorUseColorPrimary'
             label='下拉面板使用主题色边框'
@@ -109,7 +97,7 @@ export function TabPaneCustomUI() {
           </>
         }
       >
-        <div css={S.itemsContainer}>
+        <div className={itemsContainerClassName}>
           <CheckboxSettingItem
             configPath='style.pureRecommend.useStickyTabbar'
             label='全屏模式: sticky tab bar'
@@ -161,7 +149,7 @@ export function TabPaneCustomUI() {
           </>
         }
       >
-        <div css={S.itemsContainer}>
+        <div className={itemsContainerClassName}>
           <CheckboxSettingItem
             configPath='style.videoCard.useBorder'
             label='使用卡片边框'

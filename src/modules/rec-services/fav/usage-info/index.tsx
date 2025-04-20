@@ -6,7 +6,6 @@ import { CopyBvidButtons } from '$modules/rec-services/_shared/copy-bvid-buttons
 import { formatSpaceUrl } from '$modules/rec-services/dynamic-feed/shared'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { sortListByName } from '$utility/sort'
-import { css } from '@emotion/react'
 import { Button, Dropdown, Popover, Tag, Transfer } from 'antd'
 import type { TransferDirection } from 'antd/es/transfer'
 import { delay, groupBy } from 'es-toolkit'
@@ -256,15 +255,7 @@ export function ViewingAllExcludeFolderConfig({
         </>
       }
     >
-      <Tag
-        ref={ref}
-        color='success'
-        css={css`
-          cursor: pointer;
-          font-size: 12px;
-          margin-inline: 0;
-        `}
-      >
+      <Tag ref={ref} color='success' className='cursor-pointer text-size-12px mx-0'>
         收藏夹({foldersCount}) 收藏({totalCountInFavFolders})
       </Tag>
     </Popover>

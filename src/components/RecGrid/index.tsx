@@ -5,7 +5,6 @@
 import { APP_CLS_CARD, APP_CLS_CARD_ACTIVE, APP_CLS_GRID, baseDebug } from '$common'
 import { useMittOn } from '$common/hooks/useMitt'
 import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
-import { colorPrimaryValue } from '$components/css-vars'
 import { useModalDislikeVisible } from '$components/ModalDislike'
 import { useCurrentUsingTab, useSortedTabKeys } from '$components/RecHeader/tab'
 import { EHotSubTab, ETab } from '$components/RecHeader/tab-enum'
@@ -412,25 +411,13 @@ const RecGridInner = memo(function ({
   const footer = (
     <div
       ref={footerRef}
-      css={css`
-        grid-column: 1 / -1;
-        padding: 30px 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 120%;
-      `}
+      className='flex items-center justify-center py-30px text-size-120% grid-col-span-full'
     >
       {!refreshing && (
         <>
           {hasMore ? (
             <>
-              <IconParkOutlineLoading
-                className='size-40px animate-spin mr-10px'
-                css={css`
-                  color: ${colorPrimaryValue};
-                `}
-              />
+              <IconParkOutlineLoading className='size-40px animate-spin mr-10px color-gate-primary' />
               加载中~
             </>
           ) : (
@@ -469,11 +456,8 @@ const RecGridInner = memo(function ({
     return (
       <div
         ref={containerRef}
-        className={classNames.videoGridContainer}
+        className={clsx('min-h-100vh', classNames.videoGridContainer)}
         data-tab={tab}
-        css={css`
-          min-height: 100vh;
-        `}
       >
         <div className={gridClassName} data-tab={tab}>
           {gridChildren}
@@ -511,14 +495,12 @@ const RecGridInner = memo(function ({
       return (
         <Divider
           key={item.uniqId}
+          className='grid-col-span-full'
           css={css`
-            grid-column: 1 / -1;
-
             .ant-divider-inner-text {
               display: inline-flex;
               align-items: center;
               min-height: 30px;
-
               a {
                 color: var(--ant-color-link);
                 &:hover {
@@ -587,14 +569,10 @@ const isAxiosError = (err: any): err is AxiosError => {
   return err instanceof Error && err.name === 'AxiosError'
 }
 
-const errorParagraph = css`
-  margin-top: 10px;
-`
-
 function inspectErr(err: any): ReactNode {
   const nodes: ReactNode[] = []
 
-  const wrapParagraph = (node: ReactNode) => <p css={errorParagraph}>{node}</p>
+  const wrapParagraph = (node: ReactNode) => <p className='mt-10px'>{node}</p>
 
   if (!(err instanceof Error)) {
     nodes.push(JSON.stringify(err))
@@ -638,26 +616,12 @@ function ErrorDetail({ err, tab }: { err: any; tab: ETab }) {
   const target = useLinkTarget()
   const errDetail: ReactNode = useMemo(() => inspectErr(err), [err])
   return (
-    <div
-      css={css`
-        font-size: 20px;
-        padding: 20px;
-        text-align: center;
-      `}
-    >
+    <div className='text-center text-size-20px p-20px'>
       <AntdTooltip
         title={
-          <div className='p-block-10'>
+          <div className='py-10px'>
             <h3>错误详情</h3>
-            <div
-              css={css`
-                overflow: hidden;
-                white-space: pre-wrap;
-                word-break: normal;
-                max-height: 50vh;
-                overflow-y: auto;
-              `}
-            >
+            <div className='overflow-hidden whitespace-pre-wrap break-normal max-h-50vh overflow-y-auto'>
               {errDetail}
             </div>
           </div>

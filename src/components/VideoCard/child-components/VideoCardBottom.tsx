@@ -3,7 +3,6 @@
  * https://greasyfork.org/zh-CN/scripts/479861-bilibili-%E9%A1%B5%E9%9D%A2%E5%87%80%E5%8C%96%E5%A4%A7%E5%B8%88/discussions/238294
  */
 
-import { flexCenterStyle } from '$common/emotion-css'
 import { colorPrimaryValue } from '$components/css-vars'
 import { isAppRecommend, isLive, isPcRecommend, isRanking, type RecItemType } from '$define'
 import { EApiType, EAppApiDevice } from '$define/index.shared'
@@ -14,7 +13,6 @@ import { formatSpaceUrl } from '$modules/rec-services/dynamic-feed/shared'
 import { ELiveStatus } from '$modules/rec-services/live/live-enum'
 import { settings } from '$modules/settings'
 import { getAvatarSrc } from '$utility/image'
-import type { CssProp } from '$utility/type'
 import { css } from '@emotion/react'
 import { useRequest } from 'ahooks'
 import { Avatar } from 'antd'
@@ -126,20 +124,6 @@ export const VideoCardBottom = memo(function ({
 
   const streaming = item.api === EApiType.Live && item.live_status === ELiveStatus.Streaming
 
-  const avatarExtraCss: CssProp = [
-    css`
-      ${flexCenterStyle}
-      padding: 1px;
-      border: 1px solid transparent;
-      border-radius: 50%;
-      position: relative;
-    `,
-    streaming &&
-      css`
-        border-color: ${colorPrimaryValue};
-      `,
-  ]
-
   const { data: pubDateDisplayFromApi } = useRequest(
     () => fetchAppRecommendFollowedPubDate(item, cardData),
     { refreshDeps: [item, cardData] },
@@ -192,7 +176,12 @@ export const VideoCardBottom = memo(function ({
       {/* avatar */}
       {!!authorMid && !hideAvatar && (
         <a href={authorHref} target={target}>
-          <span css={avatarExtraCss}>
+          <span
+            className={clsx(
+              'flex-center p-1px b-1px b-solid rounded-50% relative',
+              streaming ? 'b-gate-primary' : 'b-transparent',
+            )}
+          >
             {authorFace ? (
               <Avatar src={getAvatarSrc(authorFace)} />
             ) : (

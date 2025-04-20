@@ -125,14 +125,7 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
             <VideoSourceTab onRefresh={onRefresh} />
             {extraInfo}
           </div>
-          <div
-            className='right'
-            css={css`
-              display: flex;
-              align-items: center;
-              flex-shrink: 0;
-            `}
-          >
+          <div className='right flex-shrink-0 flex items-center'>
             {useNarrowMode ? null : useFullScreen ? (
               <ModalFeedConfigChecks />
             ) : (

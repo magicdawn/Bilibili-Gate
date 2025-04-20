@@ -1,5 +1,4 @@
 import { isSafari } from '$ua'
-import { css } from '@emotion/react'
 import type { ComponentProps } from 'react'
 
 type IProps = {
@@ -9,33 +8,16 @@ type IProps = {
   imgProps?: ComponentProps<'img'>
 } & ComponentProps<'picture'>
 
-export function Picture({ src, avif, webp, imgProps, ...props }: IProps) {
+export function Picture({ src, avif, webp, imgProps, className, ...props }: IProps) {
   // safari avif 花屏
   avif ??= !isSafari
   webp ??= true
 
   return (
-    <picture
-      css={css`
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      `}
-      {...props}
-    >
+    <picture className={clsx('w-full h-full object-cover', className)} {...props}>
       {avif && <source srcSet={`${src}.avif`} type='image/avif' />}
       {webp && <source srcSet={`${src}.webp`} type='image/webp' />}
-      <img
-        src={src}
-        loading='lazy'
-        css={css`
-          display: block;
-          width: 100%;
-          height: 100%;
-          object-fit: inherit;
-        `}
-        {...imgProps}
-      />
+      <img src={src} loading='lazy' className='block w-full h-full' {...imgProps} />
     </picture>
   )
 }

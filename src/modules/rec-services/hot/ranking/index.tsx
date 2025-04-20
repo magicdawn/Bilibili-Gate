@@ -1,15 +1,13 @@
 import { REQUEST_FAIL_MSG } from '$common'
-import { buttonOpenCss, flexVerticalCenterStyle, usePopoverBorderColor } from '$common/emotion-css'
+import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
 import { HelpInfo } from '$components/_base/HelpInfo'
-import { colorPrimaryValue } from '$components/css-vars'
 import type { RankingItemExtend } from '$define'
 import { EApiType } from '$define/index.shared'
 import { usePopupContainer } from '$modules/rec-services/_base'
 import { isWebApiSuccess, request } from '$request'
 import toast from '$utility/toast'
 import { proxyWithGmStorage } from '$utility/valtio'
-import { css } from '@emotion/react'
 import { Button, Popover } from 'antd'
 import { useSnapshot } from 'valtio'
 import { QueueStrategy, type IService } from '../../_base'
@@ -93,55 +91,18 @@ function RankingUsageInfo() {
     label: string,
   ) => {
     return (
-      <div
-        css={css`
-          max-width: 500px;
-          margin-top: 15px;
-          padding-top: 5px;
-          &:first-child {
-            margin-top: 0;
-            padding-top: 0;
-          }
-        `}
-      >
-        <p
-          css={[
-            flexVerticalCenterStyle,
-            css`
-              margin-bottom: 8px;
-              color: #fff;
-              /* background-color: oklch(from ${colorPrimaryValue} calc(l * 0.8) c h); */
-              background-color: ${colorPrimaryValue};
-              padding: 5px 0;
-              padding-left: 6px;
-              border-radius: 5px;
-            `,
-          ]}
-        >
+      <div className='max-w-500px mt-15px pt-5px first:(mt-0 pt-0)'>
+        <p className='flex-v-center mb-8px text-white bg-gate-primary py-5px pl-6px rounded-5px'>
           {label}
           {key !== 'normal' && <HelpInfo>不能提供预览</HelpInfo>}
         </p>
-        <div
-          className='grid'
-          css={css`
-            display: grid;
-            grid-template-columns: repeat(5, minmax(0, 1fr));
-            gap: 8px 12px;
-            padding-inline: 2px;
-          `}
-        >
+        <div className='grid grid-cols-5 gap-y-8px  gap-x-12px px-2px'>
           {list.map((c) => {
             const active = c.slug === slug
             return (
               <Button
                 key={c.slug}
-                css={[
-                  active &&
-                    css`
-                      border-color: ${colorPrimaryValue};
-                      color: ${colorPrimaryValue};
-                    `,
-                ]}
+                className={clsx({ 'b-gate-primary': active, 'color-gate-primary': active })}
                 onClick={(e) => {
                   setPopoverOpen(false)
                   rankingStore.slug = c.slug as CategorySlug

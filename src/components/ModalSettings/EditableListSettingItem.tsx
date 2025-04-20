@@ -32,10 +32,7 @@ export function EditableListSettingItem({
   return (
     <>
       <Search
-        css={css`
-          margin-top: 5px;
-          margin-bottom: 5px;
-        `}
+        className='my-5px'
         enterButton='添加'
         allowClear
         disabled={disabled}
@@ -86,16 +83,11 @@ export function EditableListSettingItem({
       >
         {list.length ? (
           <div
-            css={css`
-              display: flex;
-              flex-wrap: wrap;
-              padding: 5px;
-              gap: 5px 10px;
-              align-items: flex-start;
-              max-height: 250px;
-              overflow-y: auto;
-              padding-right: 10px;
-            `}
+            className={clsx(
+              'flex flex-wrap items-start gap-y-5px gap-x-10px',
+              'py-5px pl-5px pr-10px',
+              'overflow-y-auto max-h-250px',
+            )}
           >
             {list.map((t) => {
               return (

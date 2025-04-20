@@ -1,5 +1,4 @@
 import { APP_NAME } from '$common'
-import { flexVerticalCenterStyle, inlineFlexVerticalCenterStyle } from '$common/emotion-css'
 import { AccessKeyManage } from '$components/AccessKeyManage'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { TabIcon } from '$components/RecHeader/tab-config'
@@ -27,9 +26,8 @@ export function TabPaneBasic() {
           value: mode,
           label: (
             <span
+              className='flex items-center'
               css={css`
-                display: flex;
-                align-items: center;
                 .label {
                   margin-left: 8px;
                 }
@@ -54,9 +52,10 @@ export function TabPaneBasic() {
       <SettingsGroup
         title={
           <>
-            <TabIcon tabKey={ETab.AppRecommend} size={30} className='mr-5px' /> 推荐 access_key
-            <HelpInfo className='size-18px mt-6px ml-5px' IconComponent={IconParkOutlineHelp}>
-              <span css={inlineFlexVerticalCenterStyle}>
+            <TabIcon tabKey={ETab.AppRecommend} className='size-30px mr-5px mt-2px' />
+            推荐 access_key
+            <HelpInfo className='size-18px ml-5px mt-6px' IconComponent={IconParkOutlineHelp}>
+              <span className='inline-flex-v-center'>
                 用于「
                 <TabIcon tabKey={ETab.AppRecommend} className='mr-5px' />
                 推荐」Tab
@@ -145,7 +144,7 @@ export function TabPaneBasic() {
         }
       >
         <Space size={20}>
-          <div css={flexVerticalCenterStyle}>
+          <div className='flex-v-center'>
             默认打开模式
             <HelpInfo
               tooltipProps={{ color: 'rgba(0, 0, 0, 0.85)' }} // 默认使用 colorPrimary, 链接可能看不清
@@ -185,10 +184,7 @@ export function TabPaneBasic() {
               })}
             </HelpInfo>
             <Select
-              css={css`
-                width: 160px;
-                margin-left: 8px;
-              `}
+              className='w-160px ml-8px'
               options={openModeOptions}
               value={videoLinkOpenMode}
               onChange={(v) => {
@@ -229,12 +225,7 @@ export function TabPaneBasic() {
                 1. 鼠标悬浮打开 「浮动预览」, 离开关闭 <br />
                 2. 点击固定「浮动预览」, 固定指: 不再随鼠标移出关闭预览 <br />
                 3. 可使用以下方式关闭固定的「浮动预览」
-                <ul
-                  css={css`
-                    list-style: circle;
-                    margin-left: 30px;
-                  `}
-                >
+                <ul className='list-circle ml-30px'>
                   <li>再次点击视频卡片按钮</li>
                   <li>点击预览视频右上方的「关闭」按钮</li>
                   <li>触发其他卡片的「浮动预览」</li>
@@ -327,11 +318,8 @@ export function TabPaneBasic() {
               当前版本
               <Tag
                 color='green'
+                className='cursor-pointer mx-4px'
                 onClick={handleCopyScriptVersion}
-                css={css`
-                  cursor: pointer;
-                  margin-inline: 4px;
-                `}
               >
                 {APP_NAME} v{__SCRIPT_VERSION__}
               </Tag>

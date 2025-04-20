@@ -2,7 +2,6 @@ import { __PROD__ } from '$common'
 import {
   APP_CLS_USE_ANT_LINK_COLOR,
   buttonOpenCss,
-  iconOnlyRoundButtonCss,
   usePopoverBorderColor,
 } from '$common/emotion-css'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
@@ -55,15 +54,6 @@ import {
   SHOW_DYNAMIC_FEED_ONLY,
   type UpMidType,
 } from '../store'
-
-const flexBreak = (
-  <div
-    css={css`
-      flex-basis: 100%;
-      height: 0;
-    `}
-  />
-)
 
 export function usePopoverRelated({
   externalSearchInput,
@@ -140,7 +130,7 @@ export function usePopoverRelated({
       styles={{ body: { border: `1px solid ${usePopoverBorderColor()}` } }}
     >
       <Badge dot={showPopoverBadge} color={colorPrimaryValue} offset={[-5, 5]}>
-        <Button css={[iconOnlyRoundButtonCss, popoverOpen && buttonOpenCss]}>
+        <Button className='icon-only-round-button' css={popoverOpen && buttonOpenCss}>
           <IconForPopoverTrigger className='ml-1px' />
         </Button>
       </Badge>
@@ -238,6 +228,7 @@ function PopoverContent({
           <div className={classes.sectionTilte}>充电专属</div>
           <div className={classes.sectionContent}>
             <Checkbox
+              className='ml-5px'
               checked={hideChargeOnlyVideos}
               onChange={async (e) => {
                 const val = e.target.checked
@@ -251,9 +242,6 @@ function PopoverContent({
                 await delay(100)
                 onRefresh?.()
               }}
-              css={css`
-                margin-left: 5px;
-              `}
             >
               <AntdTooltip
                 title={

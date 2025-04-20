@@ -13,6 +13,7 @@ $app-cls-color-primary: #{$app-name}-color-primary;
 $bili-pink: #ff6699;
 
 // app general
+// NOTE: uno.config.ts use this
 $app-color-primary-id: --#{$app-name}--color-primary;
 $app-border-color-id: --#{$app-name}--border-color;
 
@@ -29,8 +30,9 @@ $app-bg-lv3-id: --#{$app-name}--bg--lv3;
 // 由于 B站 默认 css, 加上了 !important, 这里如果需要自定义也需要加上
 // 优先使用 Bilibili-Evolved 的自定义字体
 $app-custom-font-id: --#{$app-name}--font;
-$app-custom-font-value: 'Alibaba PuHuiTi 3.0', 'PingFang SC', HarmonyOS_Regular, 'Helvetica Neue',
-  'Microsoft YaHei', sans-serif;
+$app-custom-font-value:
+  'Alibaba PuHuiTi 3.0', 'PingFang SC', HarmonyOS_Regular, 'Helvetica Neue', 'Microsoft YaHei',
+  sans-serif;
 $app-using-font: var(
   --custom-font-family--options--font-family,
   var(#{$app-custom-font-id})

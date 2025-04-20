@@ -2,7 +2,6 @@ import { CheckboxSettingItem, SwitchSettingItem } from '$components/ModalSetting
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { IconForInfo } from '$modules/icon'
 import { settings, useSettingsSnapshot } from '$modules/settings'
-import { css } from '@emotion/react'
 import { InputNumber, Tag } from 'antd'
 import { isNil } from 'es-toolkit'
 import type { ComponentProps } from 'react'
@@ -46,14 +45,7 @@ export function TabPaneFilter() {
   }
 
   return (
-    <div
-      css={[
-        sharedCss.tabPane,
-        css`
-          padding-right: 15px; // for scrollbar
-        `,
-      ]}
-    >
+    <div css={sharedCss.tabPane} className='pr-15px'>
       <SettingsGroup
         title={
           <>
@@ -67,14 +59,7 @@ export function TabPaneFilter() {
           </>
         }
       >
-        <div
-          css={css`
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            column-gap: 15px;
-            /* row-gap: 15px; */
-          `}
-        >
+        <div className='grid grid-cols-2 gap-x-15px'>
           <div className='col'>
             <div css={sharedCss.settingsGroupSubTitle}>视频</div>
             <div className='flex flex-col gap-y-5px'>
@@ -198,9 +183,7 @@ export function TabPaneFilter() {
               <SwitchSettingItem
                 configPath='filter.byAuthor.enabled'
                 disabled={!enabled}
-                css={css`
-                  margin-left: 10px;
-                `}
+                className='ml-10px'
               />
             </div>
             <EditableListSettingItem
@@ -221,9 +204,7 @@ export function TabPaneFilter() {
               <SwitchSettingItem
                 configPath='filter.byTitle.enabled'
                 disabled={!enabled}
-                css={css`
-                  margin-left: 10px;
-                `}
+                className='ml-10px'
               />
             </div>
             <EditableListSettingItem

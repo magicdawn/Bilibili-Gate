@@ -82,9 +82,7 @@ export function ModalSettings({ show, onHide }: { show: boolean; onHide: () => v
           <IconForConfig className='size-26px mr-4px mt--2px' />
           设置
         </div>
-
         <div className='space' style={{ flex: 1 }}></div>
-
         <ModalClose onClick={onHide} />
       </div>
 

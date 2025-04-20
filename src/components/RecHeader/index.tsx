@@ -1,6 +1,5 @@
 import { APP_CLS_TAB_BAR, baseDebug } from '$common'
 import { zIndexRecHeader } from '$common/css-vars-export.module.scss'
-import { iconOnlyRoundButtonCss } from '$common/emotion-css'
 import { useSizeExpression } from '$common/hooks/useResizeObserverExpression'
 import { useSticky } from '$common/hooks/useSticky'
 import { ModalSettingsHotkey } from '$components/ModalSettings'
@@ -126,25 +125,17 @@ export const RecHeader = forwardRef<
           }
         >
           <div
-            className={APP_CLS_TAB_BAR}
             data-raw-class='area-header'
-            css={css`
-              position: relative;
-              display: flex;
-              flex-direction: row;
-              justify-content: space-between;
-
-              align-items: center;
-              margin-bottom: 0;
-              height: auto;
-              column-gap: 20px; // gap between left & right
-              padding-inline: 0;
-              padding-block: 8px;
-            `}
+            className={clsx(
+              APP_CLS_TAB_BAR,
+              'relative',
+              'flex flex-row items-center justify-between gap-x-20px', // gap between left & right
+              'h-auto px-0 py-8px mb-0',
+            )}
           >
             <div
               data-class-name='left'
-              className='flex-shrink-1 h-100% flex items-center flex-wrap gap-y-8px gap-x-15px'
+              className='flex-shrink-1 h-full flex items-center flex-wrap gap-y-8px gap-x-15px'
             >
               <VideoSourceTab onRefresh={onRefresh} />
               {leftSlot}
@@ -152,14 +143,14 @@ export const RecHeader = forwardRef<
 
             <div
               data-class-name='right'
-              className='h-100% flex-shrink-0 flex items-center gap-x-8px'
+              className='h-full flex-shrink-0 flex items-center gap-x-8px'
             >
               {rightSlot}
 
               {!accessKey && showAccessKeyManage && <AccessKeyManage style={{ marginLeft: 5 }} />}
 
               {__internalShowGridListSwitcher && (
-                <Button css={iconOnlyRoundButtonCss} onClick={toggleCardDisplay}>
+                <Button className='icon-only-round-button' onClick={toggleCardDisplay}>
                   {cardDisplay === ECardDisplay.Grid ? (
                     <IconTablerLayoutGrid className='cursor-pointer size-14px' />
                   ) : (
@@ -168,7 +159,7 @@ export const RecHeader = forwardRef<
                 </Button>
               )}
 
-              <Button onClick={showModalSettings} css={iconOnlyRoundButtonCss}>
+              <Button onClick={showModalSettings} className='icon-only-round-button'>
                 <ModalSettingsHotkey />
                 <IconForConfig className='size-14px' />
               </Button>

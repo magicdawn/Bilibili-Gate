@@ -5,21 +5,6 @@ import { css } from '@emotion/react'
 import { theme } from 'antd'
 import { useSnapshot } from 'valtio'
 
-export const flexVerticalCenterStyle = css`
-  display: flex;
-  align-items: center;
-`
-
-export const inlineFlexVerticalCenterStyle = css`
-  display: inline-flex;
-  align-items: center;
-`
-
-export const flexCenterStyle = css`
-  ${flexVerticalCenterStyle}
-  justify-content: center;
-`
-
 // harmonyos_regular 没法对齐
 const antdBtnTextStyle = css`
   display: inline-block;
@@ -37,14 +22,6 @@ export const inlineContentHeightResetCss = css`
   > * {
     vertical-align: top;
   }
-`
-
-export const iconOnlyRoundButtonCss = css`
-  padding: 0;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  ${flexCenterStyle}
 `
 
 // some panel trigger by this button is Open, add style to this trigger button

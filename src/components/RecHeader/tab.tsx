@@ -1,4 +1,3 @@
-import { flexVerticalCenterStyle } from '$common/emotion-css'
 import { type OnRefresh } from '$components/RecGrid/useRefresh'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { SHOW_DYNAMIC_FEED_ONLY } from '$modules/rec-services/dynamic-feed/store'
@@ -112,13 +111,8 @@ export function useCurrentUsingTab(): ETab {
   return tab
 }
 
-const iconCss = css`
-  margin-right: 4px;
-  /* margin-top: -1px; */
-`
-
 const radioBtnCss = css`
-  height: 26px;
+  height: 32px;
   line-height: unset;
 
   &:has(:focus-visible) {
@@ -129,10 +123,6 @@ const radioBtnCss = css`
   > .ant-radio-button + span {
     height: 100%;
   }
-`
-
-const radioBtnStandardCss = css`
-  height: 32px;
 `
 
 export function VideoSourceTab({ onRefresh }: { onRefresh: OnRefresh }) {
@@ -158,11 +148,7 @@ export function VideoSourceTab({ onRefresh }: { onRefresh: OnRefresh }) {
       buttonStyle='solid'
       size='middle'
       value={tab}
-      css={css`
-        display: inline-flex;
-        align-items: center;
-        overflow: hidden;
-      `}
+      className='inline-flex items-center overflow-hidden'
       onFocus={(e) => {
         // 不移除 focus, refresh `r` 无法响应
         const target = e.target as HTMLElement
@@ -175,21 +161,14 @@ export function VideoSourceTab({ onRefresh }: { onRefresh: OnRefresh }) {
     >
       {currentTabConfigList.map(({ key, label }) => (
         <Radio.Button
-          css={[radioBtnCss, radioBtnStandardCss]}
+          css={radioBtnCss}
           className='video-source-tab' // can be used to customize css
           tabIndex={-1}
           value={key}
           key={key}
         >
-          <span
-            css={css`
-              display: flex;
-              align-items: center;
-              line-height: unset;
-              height: 100%;
-            `}
-          >
-            <TabIcon tabKey={key} moreCss={iconCss} active={key === tab} />
+          <span className='h-full flex items-center line-height-unset'>
+            <TabIcon tabKey={key} className='mr-4px' active={key === tab} />
             {label}
           </span>
         </Radio.Button>
@@ -218,20 +197,14 @@ export function VideoSourceTab({ onRefresh }: { onRefresh: OnRefresh }) {
   }
 
   return (
-    <div css={flexVerticalCenterStyle}>
+    <div className='flex-v-center'>
       {__internalRecTabRenderAsSegments ? renderAsSegment : renderAsRadio}
       <HelpInfo className='size-16px ml-6px'>
         <>
           {currentTabConfigList.map(({ key, label, desc, extraHelpInfo }) => (
             <Fragment key={key}>
-              <div
-                css={css`
-                  display: flex;
-                  align-items: center;
-                  height: 22px;
-                `}
-              >
-                <TabIcon tabKey={key} moreCss={iconCss} active />
+              <div className='flex items-center h-22px'>
+                <TabIcon tabKey={key} className='mr-4px' active />
                 {label}: {desc}
               </div>
               {!!extraHelpInfo && extraHelpInfo}

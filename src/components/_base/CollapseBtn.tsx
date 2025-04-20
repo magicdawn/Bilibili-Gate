@@ -1,7 +1,7 @@
-import { appClsDarkSelector } from '$common/css-vars-export.module.scss'
 import { css } from '@emotion/react'
 import { useToggle } from 'ahooks'
 import type { Actions } from 'ahooks/lib/useToggle'
+import { Button } from 'antd'
 
 interface IProps {
   children: ReactNode
@@ -19,25 +19,7 @@ export const CollapseBtn = forwardRef<CollapseBtnRef, IProps>(function CollapseB
   useImperativeHandle(ref, () => buttonsExpandedActions, [buttonsExpandedActions])
 
   const btn = (
-    <button
-      onClick={buttonsExpandedActions.toggle}
-      className='primary-btn'
-      css={css`
-        padding: 0;
-        width: 31px;
-        height: 31px;
-        border-radius: 50%;
-
-        ${appClsDarkSelector} & {
-          color: #eee !important;
-          border-color: transparent !important;
-          background-color: #333 !important;
-          &:hover {
-            background-color: #555 !important;
-          }
-        }
-      `}
-    >
+    <Button onClick={buttonsExpandedActions.toggle} className='icon-only-round-button'>
       <IconParkOutlineRight
         css={[
           css`
@@ -51,7 +33,7 @@ export const CollapseBtn = forwardRef<CollapseBtnRef, IProps>(function CollapseB
             `,
         ]}
       />
-    </button>
+    </Button>
   )
 
   return (

@@ -1,5 +1,5 @@
 import { APP_NAME } from '$common'
-import { buttonOpenCss, flexVerticalCenterStyle, iconOnlyRoundButtonCss } from '$common/emotion-css'
+import { buttonOpenCss } from '$common/emotion-css'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { CollapsePanel } from '$components/_base/CollapsePanel'
 import { HelpInfo } from '$components/_base/HelpInfo'
@@ -133,7 +133,7 @@ export function TabPaneAdvance() {
           </>
         }
       >
-        <div css={flexVerticalCenterStyle}>
+        <div className='flex-v-center'>
           自动预览更新间隔
           <Slider
             style={{ flex: 1, margin: '0 15px' }}
@@ -154,8 +154,8 @@ export function TabPaneAdvance() {
             <HelpInfo>这里是一些作者不愿意解释的设置项 😬</HelpInfo>
             <Button
               onClick={() => setInternalKeysExpanded((v) => !v)}
-              className='ml-10px'
-              css={[iconOnlyRoundButtonCss, internalKeysExpanded && buttonOpenCss]}
+              className='ml-10px inline-icon-only-round-button'
+              css={internalKeysExpanded && buttonOpenCss}
             >
               <IconParkOutlineDownC
                 className='size-16px'

@@ -1,4 +1,3 @@
-import { flexCenterStyle } from '$common/emotion-css'
 import { colorPrimaryValue } from '$components/css-vars'
 import {
   isDynamicFeed,
@@ -17,7 +16,7 @@ import {
 import type { NormalRankingItem } from '$modules/rec-services/hot/ranking/types'
 import { css } from '@emotion/react'
 import { Dropdown } from 'antd'
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import IconParkOutlineMore from '~icons/icon-park-outline/more'
 import PhCrownFill from '~icons/ph/crown-fill'
 import { useTooltip } from './child-components/VideoCardActions'
@@ -34,15 +33,11 @@ export function isChargeOnlyVideo(item: RecItemType, recommendReason?: string) {
 export function ChargeOnlyTag() {
   return (
     <div
-      className='
-        rounded-2px ml-4px
-        flex items-center justify-center
-        py-1px pl-4px pr-6px
-        color-white text-center text-size-10px line-height-[17px] whitespace-nowrap
-      '
-      css={css`
-        background-color: ${colorPrimaryValue};
-      `}
+      className={clsx(
+        'rounded-2px ml-4px',
+        'flex-center py-1px pl-4px pr-6px',
+        'bg-gate-primary color-white text-center text-size-10px line-height-[17px] whitespace-nowrap',
+      )}
     >
       <svg
         width='16'
@@ -88,24 +83,18 @@ export function RankingNumMark({ item }: { item: RankingItemExtend }) {
     tooltipOffset: 2,
   })
 
-  const roundButtonCss = [
-    flexCenterStyle,
-    css`
-      position: relative;
-      color: #fff;
-      border-radius: 50%;
-      white-space: nowrap;
-      width: 28px;
-      height: 28px;
-      background-color: ${getColor(item.rankingNo)};
-    `,
-  ]
+  const roundButtonClassName =
+    'flex-center size-28px rounded-50% color-white relative whitespace-nowrap'
+  const roundButtonStyle: CSSProperties = useMemo(
+    () => ({ backgroundColor: getColor(item.rankingNo) }),
+    [item.rankingNo],
+  )
 
   const newTab = useLinkNewTab()
 
   return (
     <>
-      <div ref={triggerRef} css={roundButtonCss}>
+      <div ref={triggerRef} className={roundButtonClassName} style={roundButtonStyle}>
         {hasMedal ? medalIcon : <span style={{ marginLeft: -1 }}>{item.rankingNo}</span>}
         {tooltipEl}
       </div>
@@ -135,7 +124,7 @@ export function RankingNumMark({ item }: { item: RankingItemExtend }) {
             ],
           }}
         >
-          <div css={roundButtonCss}>
+          <div className={roundButtonClassName} style={roundButtonStyle}>
             <IconParkOutlineMore />
           </div>
         </Dropdown>
@@ -230,19 +219,9 @@ export function ApiTypeTag({ item }: { item: RecItemType }) {
 }
 
 export function VolMark({ vol }: { vol: number }) {
-  const roundButtonCss = [
-    flexCenterStyle,
-    css`
-      position: relative;
-      background-color: ${colorPrimaryValue};
-      color: #fff;
-      white-space: nowrap;
-
-      height: 24px;
-      min-width: 24px;
-      border-radius: 8px;
-      padding-inline: 6px;
-    `,
-  ]
-  return <div css={roundButtonCss}>{vol}</div>
+  return (
+    <div className='h-24px min-w-24px rounded-8px relative flex-center bg-gate-primary color-white whitespace-nowrap px-6px'>
+      {vol}
+    </div>
+  )
 }

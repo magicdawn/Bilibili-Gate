@@ -6,7 +6,6 @@ import { CopyBvidButtons } from '$modules/rec-services/_shared/copy-bvid-buttons
 import { useSettingsSnapshot } from '$modules/settings'
 import { getAvatarSrc } from '$utility/image'
 import { localeComparer, mapNameForSort } from '$utility/sort'
-import { css } from '@emotion/react'
 import { Avatar, Badge, Button, Dropdown } from 'antd'
 import { delay } from 'es-toolkit'
 import { fastSortWithOrders } from 'fast-sort-lens'
@@ -119,13 +118,7 @@ export function DynamicFeedUsageInfo() {
         label: (
           <span
             title={up.uname}
-            css={css`
-              display: block;
-              max-width: 130px;
-              text-overflow: ellipsis;
-              white-space: nowrap;
-              overflow: hidden;
-            `}
+            className='block max-w-130px text-ellipsis whitespace-nowrap overflow-hidden'
           >
             {up.uname}
           </span>

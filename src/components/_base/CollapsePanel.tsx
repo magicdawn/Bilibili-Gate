@@ -27,12 +27,7 @@ export function CollapsePanel({
         grid-template-rows: ${expanded ? 1 : 0}fr;
       `}
     >
-      <div
-        data-classname='inner'
-        css={css`
-          overflow: hidden;
-        `}
-      >
+      <div data-classname='inner' className='overflow-hidden'>
         {children}
       </div>
     </div>

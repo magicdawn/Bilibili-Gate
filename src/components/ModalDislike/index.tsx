@@ -123,10 +123,6 @@ export function ModalDislike({ show, onHide, item }: IProps) {
     { exactMatch: true },
   )
 
-  const activeReasonName = useMemo(() => {
-    return reasons[activeIndex]?.name || ''
-  }, [reasons, activeIndex])
-
   return (
     <BaseModal
       show={show}
@@ -134,9 +130,7 @@ export function ModalDislike({ show, onHide, item }: IProps) {
       hideWhenMaskOnClick={true}
       hideWhenEsc={true}
       width={350}
-      cssModal={css`
-        border-radius: 15px;
-      `}
+      clsModal='rounded-15px'
     >
       <div css={BaseModalStyle.modalHeader} className='justify-between'>
         <div css={BaseModalStyle.modalTitle}>
