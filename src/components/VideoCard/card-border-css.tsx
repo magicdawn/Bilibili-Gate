@@ -19,8 +19,9 @@ import { bgValue, videoCardBorderRadiusValue } from '../css-vars'
 import { isDisplayAsList } from './index.shared'
 
 const c = tweakLightness(colorPrimaryValue, 0.1)
-const borderAndShadow = css`
-  border-color: ${c};
+
+export const borderAndShadowCss = css`
+  border-color: ${colorPrimaryValue};
   box-shadow: 0px 0px 9px 4px ${c};
 `
 
@@ -90,7 +91,7 @@ export function useCardBorderCss(): CssProp {
             &:hover {
               border-color: ${borderColorValue};
               background-color: ${bgLv1Value};
-              ${useBoxShadow && borderAndShadow}
+              ${useBoxShadow && borderAndShadowCss}
               ${useDelayForHover && coverZoom}
             }
           `,
@@ -129,7 +130,7 @@ export function getActiveCardBorderCss(active: boolean): CssProp {
     active &&
     css`
       border-radius: ${videoCardBorderRadiusValue};
-      ${borderAndShadow}
+      ${borderAndShadowCss}
     `
   )
 }

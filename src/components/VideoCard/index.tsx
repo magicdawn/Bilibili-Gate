@@ -8,7 +8,7 @@ import { setGlobalValue } from '$components/RecGrid/unsafe-window-export'
 import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { Picture } from '$components/_base/Picture'
-import { borderColorValue } from '$components/css-vars'
+import { borderColorValue, colorPrimaryValue } from '$components/css-vars'
 import {
   isAppRecommend,
   isLive,
@@ -38,7 +38,7 @@ import { useLockFn } from 'ahooks'
 import { Dropdown } from 'antd'
 import type { ComponentRef, CSSProperties, MouseEventHandler, ReactNode } from 'react'
 import { videoCardBorderRadiusValue } from '../css-vars'
-import { useBlockedCardCss } from './card-border-css'
+import { borderAndShadowCss, useBlockedCardCss } from './card-border-css'
 import { SimplePregressBar } from './child-components/PreviewImage'
 import { VideoCardActionStyle } from './child-components/VideoCardActions'
 import { VideoCardBottom } from './child-components/VideoCardBottom'
@@ -94,6 +94,14 @@ export type VideoCardProps = {
   multiSelecting?: boolean
 } & ComponentProps<'div'>
 
+const multiSelectedCss = css`
+  border-color: ${colorPrimaryValue};
+  ${borderAndShadowCss}
+  &:hover {
+    border-color: ${colorPrimaryValue};
+  }
+`
+
 export const VideoCard = memo(function VideoCard({
   style,
   className,
@@ -127,14 +135,19 @@ export const VideoCard = memo(function VideoCard({
   const showingDislikeCard = !!dislikedReason
   const showingBlacklistCard = blacklisted
   const isBlockedCard = showingDislikeCard || showingBlacklistCard
-  const inNormalCardCss = useBlockedCardCss(isBlockedCard)
+  const blockedCardCss = useBlockedCardCss(isBlockedCard)
 
   return (
     <div
       style={style}
       data-bvid={cardData?.bvid}
       className={clsx('bili-video-card', styles.biliVideoCard, className)}
-      css={[baseCss, inNormalCardCss, isDisplayAsList(cardDisplay) && displayAsListCss.card]}
+      css={[
+        baseCss,
+        blockedCardCss,
+        isDisplayAsList(cardDisplay) && displayAsListCss.card,
+        multiSelecting && multiSelected && multiSelectedCss,
+      ]}
       {...restProps}
     >
       {loading ? (
@@ -558,6 +571,8 @@ const VideoCardInner = memo(function VideoCardInner({
   const coverBorderCss: CssProp = (() => {
     // card has border always showing, so cover does not need
     if (cardUseBorder && !cardUseBorderOnlyOnHover) return undefined
+    // multiselecting
+    if (multiSelecting) return undefined
     const visible =
       !dark && (!cardUseBorder || (cardUseBorder && cardUseBorderOnlyOnHover && !isHovering))
     return css`

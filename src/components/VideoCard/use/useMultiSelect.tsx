@@ -28,11 +28,11 @@ export function useMultiSelectRelated({
 
   const multiSelectBgEl = multiSelecting && (
     <div
-      className='absolute inset-0 flex items-center justify-center bg-black/20'
+      onClick={toggleMultiSelect}
+      className='absolute inset-0 flex items-center justify-center bg-black/10'
       css={css`
         z-index: ${zIndexMultiSelectBg};
       `}
-      onClick={toggleMultiSelect}
     />
   )
 
