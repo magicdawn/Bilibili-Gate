@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import ms from 'ms'
 
 /**
  * '01:23' -> 83 (s)
@@ -74,6 +75,44 @@ export function formatTimeStamp(unixTs?: number, includeTime = false) {
     return t.format('M-D' + extraFormat)
   } else {
     return t.format('YY-M-D' + extraFormat)
+  }
+}
+
+/**
+ * zhDate:
+ *   - `true`:  `2022年01月01日`
+ *   - `false`: `22-1-1`
+ */
+export function formatRecentTimeStamp(ts: number, zhDate: boolean) {
+  if (!ts) return undefined
+  const t = dayjs.unix(ts)
+
+  const FORMAT_YEAR = 'YYYY'
+  const FORMAT_DATE = 'YYYY-MM-DD'
+  const isToday = t.format(FORMAT_DATE) === dayjs().format(FORMAT_DATE)
+  const isTodayRecent = isToday && Date.now() - ts * 1000 <= ms('12h')
+  const isYesterday = t.format(FORMAT_DATE) === dayjs().subtract(1, 'day').format(FORMAT_DATE)
+  const isCurrentYear = t.format(FORMAT_YEAR) === dayjs().format(FORMAT_YEAR)
+
+  if (isTodayRecent) {
+    const minutes = dayjs().diff(t, 'minutes')
+    const hours = dayjs().diff(t, 'hours')
+    if (minutes < 1) {
+      return '刚刚'
+    } else if (minutes < 60) {
+      return `${minutes}分钟前`
+    } else {
+      return `${hours}小时前`
+    }
+  }
+
+  if (isToday) return t.format('今天 HH:mm')
+  if (isYesterday) return t.format('昨天 HH:mm')
+
+  if (isCurrentYear) {
+    return t.format(zhDate ? 'M月D日' : 'M-D')
+  } else {
+    return t.format(zhDate ? 'YYYY年M月D日' : 'YY-M-D')
   }
 }
 

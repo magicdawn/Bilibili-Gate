@@ -44,6 +44,7 @@ import { spaceUploadAvatarCache } from '$modules/rec-services/space-upload'
 import { toHttps } from '$utility/url'
 import {
   formatDuration,
+  formatRecentTimeStamp,
   formatTimeStamp,
   getVideoInvalidReason,
   parseCount,
@@ -756,7 +757,7 @@ function apiSpaceUploadAdapter(item: SpaceUploadItemExtend): IVideoCardData {
     title: item.title,
     cover: item.pic,
     pubts: item.created,
-    pubdateDisplay: formatTimeStamp(item.created),
+    pubdateDisplay: formatRecentTimeStamp(item.created, false),
     duration,
     durationStr,
     recommendReason: item.description || undefined,

@@ -10,10 +10,9 @@ import { getVideoDetail } from '$modules/bilibili/video/video-detail'
 import { getSettingsSnapshot } from '$modules/settings'
 import { gmrequest } from '$request'
 import { getHasLogined } from '$utility/cookie'
-import dayjs from 'dayjs'
+import { formatRecentTimeStamp } from '$utility/video'
 import { delay, randomInt, range, shuffle, uniqBy } from 'es-toolkit'
 import { times } from 'es-toolkit/compat'
-import ms from 'ms'
 import { BaseTabService, type IService } from './_base'
 import { DynamicFeedRecService, getDynamicFeedServiceConfig } from './dynamic-feed'
 import { createDfStore } from './dynamic-feed/store'
@@ -274,38 +273,5 @@ export async function fetchAppRecommendFollowedPubDate(
   const detail = await getVideoDetail(bvid)
   const ts = detail?.pubdate
   if (!ts) return
-  return customFormat(ts)
-}
-
-function customFormat(ts: number) {
-  if (!ts) return undefined
-  const t = dayjs.unix(ts)
-
-  const FORMAT_YEAR = 'YYYY'
-  const FORMAT_DATE = 'YYYY-MM-DD'
-  const isToday = t.format(FORMAT_DATE) === dayjs().format(FORMAT_DATE)
-  const isTodayRecent = isToday && Date.now() - ts * 1000 <= ms('12h')
-  const isYesterday = t.format(FORMAT_DATE) === dayjs().subtract(1, 'day').format(FORMAT_DATE)
-  const isCurrentYear = t.format(FORMAT_YEAR) === dayjs().format(FORMAT_YEAR)
-
-  if (isTodayRecent) {
-    const minutes = dayjs().diff(t, 'minutes')
-    const hours = dayjs().diff(t, 'hours')
-    if (minutes < 1) {
-      return '刚刚'
-    } else if (minutes < 60) {
-      return `${minutes}分钟前`
-    } else {
-      return `${hours}小时前`
-    }
-  }
-
-  if (isToday) return t.format('今天 HH:mm')
-  if (isYesterday) return t.format('昨天 HH:mm')
-
-  if (isCurrentYear) {
-    return t.format('M月D日')
-  } else {
-    return t.format('YYYY年M月D日')
-  }
+  return formatRecentTimeStamp(ts, true)
 }
