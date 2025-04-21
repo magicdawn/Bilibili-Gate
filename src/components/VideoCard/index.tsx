@@ -8,7 +8,7 @@ import { setGlobalValue } from '$components/RecGrid/unsafe-window-export'
 import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { Picture } from '$components/_base/Picture'
-import { borderColorValue, colorPrimaryValue } from '$components/css-vars'
+import { borderColorValue } from '$components/css-vars'
 import {
   isAppRecommend,
   isLive,
@@ -38,7 +38,7 @@ import { useLockFn } from 'ahooks'
 import { Dropdown } from 'antd'
 import type { ComponentRef, CSSProperties, MouseEventHandler, ReactNode } from 'react'
 import { videoCardBorderRadiusValue } from '../css-vars'
-import { borderAndShadowCss, useBlockedCardCss } from './card-border-css'
+import { multiSelectedCss, useBlockedCardCss } from './card-border-css'
 import { SimplePregressBar } from './child-components/PreviewImage'
 import { VideoCardActionStyle } from './child-components/VideoCardActions'
 import { VideoCardBottom } from './child-components/VideoCardBottom'
@@ -93,14 +93,6 @@ export type VideoCardProps = {
   cardDisplay?: ECardDisplay
   multiSelecting?: boolean
 } & ComponentProps<'div'>
-
-const multiSelectedCss = css`
-  border-color: ${colorPrimaryValue};
-  ${borderAndShadowCss}
-  &:hover {
-    border-color: ${colorPrimaryValue};
-  }
-`
 
 export const VideoCard = memo(function VideoCard({
   style,

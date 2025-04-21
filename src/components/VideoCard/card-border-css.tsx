@@ -20,17 +20,34 @@ import { isDisplayAsList } from './index.shared'
 
 const c = tweakLightness(colorPrimaryValue, 0.1)
 
-export const borderAndShadowCss = css`
-  border-color: ${colorPrimaryValue};
-  box-shadow: 0px 0px 9px 4px ${c};
-`
+const Styles = {
+  normalBorder: css`
+    border-color: ${borderColorValue};
+  `,
+  activeBorder: css`
+    border-color: ${colorPrimaryValue};
+    box-shadow: 0px 0px 9px 4px ${c};
+  `,
+  rounded: css`
+    border-radius: ${videoCardBorderRadiusValue};
+  `,
+  bgLv1: css`
+    background-color: ${bgLv1Value};
+  `,
+  // make cover zoom
+  coverZoomEffect: css`
+    .bili-video-card__cover {
+      transform-origin: center center;
+      transition: transform 0.2s ease-out;
+      transform: scale(1.05);
+    }
+  `,
+}
 
-/* cover zoom */
-const coverZoom = css`
-  .bili-video-card__cover {
-    transform-origin: center center;
-    transition: transform 0.2s ease-out;
-    transform: scale(1.05);
+export const multiSelectedCss = css`
+  ${Styles.activeBorder}
+  &:hover {
+    ${Styles.activeBorder}
   }
 `
 
@@ -45,8 +62,8 @@ export function useBlockedCardCss(isBlockedCard: boolean): CssProp {
   return useMemo(() => {
     if (!isBlockedCard) return undefined
     return _css`
-      border-color: ${borderColorValue};
-      border-radius: ${videoCardBorderRadiusValue};
+      ${Styles.rounded}
+      ${Styles.normalBorder}
 
       background-color: ${bgValue};
       ${sepIdentifier}:  ${bgLv1Value};
@@ -83,36 +100,33 @@ export function useCardBorderCss(): CssProp {
         transition-timing-function: ease-in-out;
       `,
 
-      useBorder &&
-        !isDisplayAsList(cardDisplay) && [
+      (multiSelecting || (useBorder && !isDisplayAsList(cardDisplay))) && [
+        css`
+          cursor: pointer;
+          ${Styles.rounded}
+          &:hover {
+            ${Styles.bgLv1}
+            ${Styles.normalBorder}
+              ${useBoxShadow && Styles.activeBorder}
+              ${useDelayForHover && Styles.coverZoomEffect}
+          }
+        `,
+
+        // show border not:hover
+        (multiSelecting || !useBorderOnlyOnHover) && Styles.normalBorder,
+
+        // add padding & negative margin
+        useBorderOnlyOnHover &&
+          !useBoxShadow &&
+          usePadding &&
           css`
-            cursor: pointer;
-            border-radius: ${videoCardBorderRadiusValue};
-            &:hover {
-              border-color: ${borderColorValue};
-              background-color: ${bgLv1Value};
-              ${useBoxShadow && borderAndShadowCss}
-              ${useDelayForHover && coverZoom}
+            margin-inline: -6px;
+            .bili-video-card__wrap {
+              padding: 6px;
+              padding-bottom: 0;
             }
           `,
-
-          (!useBorderOnlyOnHover || multiSelecting) &&
-            css`
-              border-color: ${borderColorValue};
-            `,
-
-          // add padding & negative margin
-          useBorderOnlyOnHover &&
-            !useBoxShadow &&
-            usePadding &&
-            css`
-              margin-inline: -6px;
-              .bili-video-card__wrap {
-                padding: 6px;
-                padding-bottom: 0;
-              }
-            `,
-        ],
+      ],
     ]
   }, [
     useBorder,
@@ -126,11 +140,5 @@ export function useCardBorderCss(): CssProp {
 }
 
 export function getActiveCardBorderCss(active: boolean): CssProp {
-  return (
-    active &&
-    css`
-      border-radius: ${videoCardBorderRadiusValue};
-      ${borderAndShadowCss}
-    `
-  )
+  return active && [Styles.rounded, Styles.activeBorder]
 }
