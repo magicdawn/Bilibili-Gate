@@ -6,7 +6,6 @@ import { openNewTab } from '$modules/gm'
 import { IconForLoading } from '$modules/icon'
 import { shouldDisableShortcut } from '$utility/dom'
 import { proxyWithGmStorage } from '$utility/valtio'
-import { css } from '@emotion/react'
 import { useClickAway, useEventListener, useRequest } from 'ahooks'
 import type { ComponentRef, MutableRefObject } from 'react'
 import { LargePreview } from '../child-components/LargePreview'
@@ -185,27 +184,12 @@ export function useLargePreviewRelated({
         controls
         loop
         poster={cover}
-        css={css`
-          width: 100%;
-          height: 100%;
-          object-fit: contain; /* avoid 'cover', this video may goto fullscreen */
-        `}
+        className='size-full object-contain' // avoid 'cover', this video may goto fullscreen
       >
         {videoPreviewDataBox.state?.playUrls?.map((url, i) => <source key={i} src={url} />)}
       </RecoverableVideo>
       {/* action buttons */}
-      <div
-        css={css`
-          position: absolute;
-          right: 10px;
-          top: 10px;
-          display: flex;
-          flex-direction: row-reverse;
-          align-items: center;
-          justify-content: flex-start;
-          column-gap: 5px;
-        `}
-      >
+      <div className='absolute right-10px top-10px flex flex-row-reverse items-center justify-start gap-x-5px'>
         {triggerAction.state === 'click' ? (
           <VideoCardActionButton
             inlinePosition={'right'}

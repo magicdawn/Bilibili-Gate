@@ -8,7 +8,6 @@ import { HelpInfo } from '$components/_base/HelpInfo'
 import { antMessage } from '$modules/antd'
 import { IconForCopy } from '$modules/icon'
 import { updateSettings, useSettingsSnapshot } from '$modules/settings'
-import { css } from '@emotion/react'
 import { Button, Select, Space, Tag } from 'antd'
 import { explainForFlag, toastAndReload } from '../index.shared'
 import { ResetPartialSettingsButton, SettingsGroup, sharedCss } from './shared'
@@ -25,16 +24,9 @@ export function TabPaneBasic() {
           config,
           value: mode,
           label: (
-            <span
-              className='flex items-center'
-              css={css`
-                .label {
-                  margin-left: 8px;
-                }
-              `}
-            >
+            <span className='flex-v-center gap-x-8px'>
               {config.icon}
-              <span className='label'>{config.label}</span>
+              <span>{config.label}</span>
             </span>
           ),
         }
@@ -160,29 +152,10 @@ export function TabPaneBasic() {
               {openModeOptions.map(({ value, config }) => {
                 return (
                   !!config.desc && (
-                    <div
-                      key={value}
-                      css={css`
-                        display: flex;
-                        align-items: flex-start;
-                        margin-top: 10px;
-                        &:first-child {
-                          margin-top: 0;
-                        }
-                        .label {
-                          display: inline-flex;
-                          align-items: center;
-                          .text {
-                            min-width: 95px;
-                            margin-left: 4px;
-                            margin-right: 10px;
-                          }
-                        }
-                      `}
-                    >
-                      <span className='label'>
+                    <div key={value} className='flex items-start mt-10px first:mt-0'>
+                      <span className='inline-flex-v-center'>
                         {config.icon}
-                        <span className='text'>{config.label}</span>
+                        <span className='min-w-95px ml-4px mr-10px'>{config.label}</span>
                       </span>
                       <span className='desc'>{config.desc}</span>
                     </div>
@@ -311,17 +284,7 @@ export function TabPaneBasic() {
         title={
           <>
             帮助
-            <span
-              css={css`
-                margin-left: 8px;
-                margin-right: 4px;
-                font-size: 14px;
-                position: relative;
-                top: 4px;
-                display: inline-flex;
-                align-items: center;
-              `}
-            >
+            <span className='ml-8px mr-4px text-size-14px relative top-4px inline-flex items-center'>
               当前版本
               <Tag
                 color='green'

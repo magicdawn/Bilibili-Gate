@@ -3,7 +3,7 @@ import { defineConfig, presetWind3, transformerDirectives, transformerVariantGro
 
 export default defineConfig({
   presets: [
-    presetWind3({ preflight: false }),
+    presetWind3({ preflight: 'on-demand' }),
     presetRemToPx({
       // baseFontSize: 4, // mr-4 = 1rem;
     }),
@@ -18,6 +18,8 @@ export default defineConfig({
     colors: {
       gate: {
         primary: 'var(--bilibili-gate--color-primary)',
+        bg: 'var(--bilibili-gate--bg)',
+        border: 'var(--bilibili-gate--border-color)',
       },
     },
   },

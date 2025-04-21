@@ -1,4 +1,4 @@
-import { borderColorValue, colorPrimaryValue } from '$components/css-vars'
+import { borderColorValue } from '$components/css-vars'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
 import { getUserNickname } from '$modules/bilibili/user/nickname'
@@ -129,30 +129,15 @@ type TagItemDisplayProps = {
 } & Omit<ComponentPropsWithoutRef<'div'>, 'children'>
 
 export const TagItemDisplay = forwardRef<HTMLDivElement, TagItemDisplayProps>(
-  ({ tag, renderTag, onDelete, ...restProps }, ref) => {
+  ({ tag, renderTag, onDelete, className, ...restProps }, ref) => {
     return (
       <div
-        {...restProps}
         ref={ref}
-        css={[
-          css`
-            border-radius: 5px;
-            padding: 2px 6px;
-            position: relative;
-            border: 1px solid ${borderColorValue};
-
-            display: inline-flex;
-            align-items: center;
-
-            &:hover {
-              border-color: ${colorPrimaryValue};
-              color: ${colorPrimaryValue};
-              .anticon {
-                visibility: visible;
-              }
-            }
-          `,
-        ]}
+        className={clsx(
+          'b-1px b-solid b-gate-border rounded-5px relative inline-flex items-center px-6px py-2px hover:(b-gate-primary color-gate-primary)',
+          className,
+        )}
+        {...restProps}
       >
         {renderTag ? renderTag(tag) : tag}
         <IconParkOutlineCloseSmall

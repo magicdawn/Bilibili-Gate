@@ -2,7 +2,7 @@ import { APP_CLS_ROOT, OPERATION_FAIL_MSG } from '$common'
 import { BaseModal, BaseModalStyle, ModalClose } from '$components/_base/BaseModal'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { AppRoot } from '$components/AppRoot'
-import { borderColorValue, colorPrimaryValue } from '$components/css-vars'
+import { colorPrimaryValue } from '$components/css-vars'
 import type { AppRecItem, AppRecItemExtend } from '$define'
 import { antMessage } from '$modules/antd'
 import { IconForDislike } from '$modules/icon'
@@ -154,8 +154,8 @@ export function ModalDislike({ show, onHide, item }: IProps) {
           spinning={$req.loading}
           indicator={
             <IconSvgSpinnersBarsRotateFade
+              className='text-gate-primary'
               css={css`
-                color: ${colorPrimaryValue};
                 .ant-spin .ant-spin-dot& {
                   width: 25px;
                   height: 25px;
@@ -174,11 +174,9 @@ export function ModalDislike({ show, onHide, item }: IProps) {
                   className={clsx(
                     'reason',
                     { active },
-                    'relative flex items-center py-12px rounded-6px',
+                    'relative flex items-center py-12px rounded-6px b-2px b-solid',
+                    active ? 'b-gate-primary' : 'b-gate-border',
                   )}
-                  css={css`
-                    border: 2px solid ${active ? colorPrimaryValue : borderColorValue};
-                  `}
                   disabled={$req.loading}
                   onClick={() => {
                     setActiveIndex(index)

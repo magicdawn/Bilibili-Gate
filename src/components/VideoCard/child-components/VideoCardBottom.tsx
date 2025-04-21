@@ -163,15 +163,11 @@ export const VideoCardBottom = memo(function ({
    */
   return (
     <div
-      className={className}
-      css={css`
-        margin-top: 15px;
-        margin-bottom: ${useBorder ? 10 : 5}px;
-        padding-inline: 5px;
-        display: flex;
-        column-gap: 5px;
-        overflow: hidden;
-      `}
+      className={clsx(
+        'mt-15px px-5px flex gap-x-5px overflow-hidden',
+        useBorder ? 'mb-10px' : 'mb-5px',
+        className,
+      )}
     >
       {/* avatar */}
       {!!authorMid && !hideAvatar && (

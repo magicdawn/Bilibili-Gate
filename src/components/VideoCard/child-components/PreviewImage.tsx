@@ -1,4 +1,4 @@
-import { bgLv1Value, colorPrimaryValue } from '$components/css-vars'
+import { bgLv1Value } from '$components/css-vars'
 import type { PvideoData } from '$define'
 import { minmax } from '$utility/num'
 import { css } from '@emotion/react'
@@ -22,11 +22,6 @@ const S = {
     border-top-right-radius: ${videoCardBorderRadiusValue};
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
-  `,
-
-  previewImageInner: css`
-    width: 100%;
-    height: 100%;
   `,
 }
 
@@ -151,7 +146,7 @@ const PreviewImageInner = memo(function PreviewImageInner({
 
   return (
     <div
-      css={S.previewImageInner}
+      className='size-full'
       style={{
         backgroundColor: 'black', // 防止加载过程中闪屏
         backgroundImage: `url(${snapshotUrl})`,
@@ -172,23 +167,16 @@ export function SimplePregressBar({
   return (
     <div
       {...rest}
-      className={clsx('track', rest.className)}
+      data-role='track'
+      className={clsx('absolute bottom-0 left-0 right-0 h-2px', rest.className)}
       css={css`
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
         background-color: ${backgroundColor};
-        height: 2px;
       `}
     >
       <div
-        className='bar'
-        style={{
-          backgroundColor: colorPrimaryValue,
-          height: '100%',
-          width: `${progress * 100}%`,
-        }}
+        data-role='bar'
+        className='h-full bg-gate-primary'
+        style={{ width: `${progress * 100}%` }}
       />
     </div>
   )

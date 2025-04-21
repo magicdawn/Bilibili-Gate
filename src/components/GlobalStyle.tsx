@@ -29,7 +29,7 @@ export function GlobalStyle() {
           _css`
             :root {
               ${appColorPrimaryId}: ${colorPrimary};
-              ${appBgId}: ${dark ? '#222' : style.pureRecommend.useWhiteBackground ? `var(--bg1)` : `var(--bg2)`};
+              ${appBgId}: ${dark ? '#222' : style.pureRecommend.useWhiteBackground ? `var(--bg1, #fff)` : `var(--bg2, #F6F7F8)`};
             }
           `,
           more,

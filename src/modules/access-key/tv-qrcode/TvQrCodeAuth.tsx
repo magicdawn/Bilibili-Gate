@@ -71,16 +71,8 @@ export function TvQrCodeAuth() {
       </div>
 
       <div
-        css={[
-          BaseModalStyle.modalBody,
-          css`
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-          `,
-        ]}
+        css={BaseModalStyle.modalBody}
+        className='flex flex-col items-center justify-center text-center'
       >
         <div className='flex-center min-h-25px text-size-14px mb-2px'>{message || ''}</div>
 

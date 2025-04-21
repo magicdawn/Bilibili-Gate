@@ -285,9 +285,8 @@ function VideoSourceTabSortableItem({ id }: { id: ETab }) {
     >
       <Checkbox
         value={id}
+        className='inline-flex items-center'
         css={css`
-          display: inline-flex;
-          align-items: center;
           .ant-checkbox + span {
             user-select: none;
             display: inline-flex;

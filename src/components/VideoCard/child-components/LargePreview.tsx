@@ -298,14 +298,11 @@ export const LargePreview = forwardRef<
             />
           )}
           <div
+            className='h-full overflow-hidden rounded-20px'
             css={css`
               background-color: rgba(255 255 255 / 0.5);
               backdrop-filter: blur(10px);
-              /* border: 1px solid ${colorPrimaryValue}; */
               box-shadow: 0px 0px 1px 1px ${colorPrimaryValue};
-              border-radius: 20px;
-              height: 100%;
-              overflow: hidden;
             `}
           >
             {children}

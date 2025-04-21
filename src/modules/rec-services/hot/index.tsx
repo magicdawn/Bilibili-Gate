@@ -1,4 +1,3 @@
-import { colorPrimaryValue } from '$components/css-vars'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
 import { EHotSubTab } from '$components/RecHeader/tab-enum'
 import type { RecItemTypeOrSeparator } from '$define'
@@ -109,18 +108,7 @@ function HotUsageInfo({ children }: { children?: ReactNode }) {
             index > 0 && { type: 'divider' as const },
             {
               key: subtab,
-              label: (
-                <span
-                  css={[
-                    active &&
-                      css`
-                        color: ${colorPrimaryValue};
-                      `,
-                  ]}
-                >
-                  {config.label}
-                </span>
-              ),
+              label: <span className={clsx({ 'color-gate-primary': active })}>{config.label}</span>,
               icon: config.icon,
               onClick() {
                 if (subtab === hotStore.subtab) return

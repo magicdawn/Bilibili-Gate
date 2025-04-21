@@ -3,7 +3,6 @@ import { buttonOpenCss } from '$common/emotion-css'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { CollapsePanel } from '$components/_base/CollapsePanel'
 import { HelpInfo } from '$components/_base/HelpInfo'
-import { borderColorValue } from '$components/css-vars'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconForOpenExternalLink } from '$modules/icon'
@@ -20,7 +19,6 @@ import {
 } from '$modules/settings'
 import { exportSettings, importSettings } from '$modules/settings/file-backup'
 import { articleDraft, restoreOmitPaths } from '$modules/settings/index.shared'
-import { css } from '@emotion/react'
 import { Button, Popconfirm, Slider, Space } from 'antd'
 import { startCase } from 'es-toolkit'
 import { set_HAS_RESTORED_SETTINGS } from '../../../modules/settings/restore-flag'
@@ -158,29 +156,19 @@ export function TabPaneAdvance() {
               css={internalKeysExpanded && buttonOpenCss}
             >
               <IconParkOutlineDownC
-                className='size-16px'
-                css={css`
-                  transition: transform 0.3s ease;
-                  transform: ${internalKeysExpanded ? 'rotate(180deg)' : 'rotate(0deg)'};
-                `}
+                className={clsx(
+                  'size-16px transition-transform transition-300',
+                  internalKeysExpanded ? 'rotate-180' : 'rotate-0',
+                )}
               />
             </Button>
           </>
         }
       >
         <CollapsePanel expanded={internalKeysExpanded}>
-          <div
-            css={css`
-              border: 1px solid ${borderColorValue};
-              padding: 10px;
-              width: 100%;
-              border-radius: 6px;
-              display: flex;
-              column-gap: 20px;
-            `}
-          >
-            <ResetPartialSettingsButton paths={internalBooleanPaths} />
-            <Space size={[20, 10]} wrap>
+          <div className='b-1px b-solid b-gate-border rounded-6px p-10px w-full flex gap-x-20px'>
+            <ResetPartialSettingsButton paths={internalBooleanPaths} className='flex-none' />
+            <div className='flex-1 flex flex-wrap gap-x-20px gap-y-10px items-start'>
               {internalBooleanPaths.map((k) => (
                 <CheckboxSettingItem
                   key={k}
@@ -193,7 +181,7 @@ export function TabPaneAdvance() {
                   )}
                 />
               ))}
-            </Space>
+            </div>
           </div>
         </CollapsePanel>
       </SettingsGroup>

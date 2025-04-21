@@ -1,4 +1,3 @@
-import { css } from '@emotion/react'
 import { useToggle } from 'ahooks'
 import type { Actions } from 'ahooks/lib/useToggle'
 import { Button } from 'antd'
@@ -21,17 +20,7 @@ export const CollapseBtn = forwardRef<CollapseBtnRef, IProps>(function CollapseB
   const btn = (
     <Button onClick={buttonsExpandedActions.toggle} className='icon-only-round-button'>
       <IconParkOutlineRight
-        css={[
-          css`
-            width: 13px;
-            height: 13px;
-            transform: rotateZ(180deg);
-          `,
-          buttonsExpanded &&
-            css`
-              transform: rotateZ(0deg);
-            `,
-        ]}
+        className={clsx('size-13px', buttonsExpanded ? 'rotate-z-0' : 'rotate-z-180deg')}
       />
     </Button>
   )

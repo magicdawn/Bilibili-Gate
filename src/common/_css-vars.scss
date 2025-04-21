@@ -13,10 +13,9 @@ $app-cls-color-primary: #{$app-name}-color-primary;
 $bili-pink: #ff6699;
 
 // app general
-// NOTE: uno.config.ts use this
+// NOTE: uno.config.ts use these variables
 $app-color-primary-id: --#{$app-name}--color-primary;
 $app-border-color-id: --#{$app-name}--border-color;
-
 $app-bg-id: --#{$app-name}--bg;
 $app-bg-lv1-id: --#{$app-name}--bg--lv1;
 $app-bg-lv2-id: --#{$app-name}--bg--lv2;

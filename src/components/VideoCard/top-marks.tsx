@@ -14,7 +14,6 @@ import {
   isNormalRankingItem,
 } from '$modules/rec-services/hot/ranking/category'
 import type { NormalRankingItem } from '$modules/rec-services/hot/ranking/types'
-import { css } from '@emotion/react'
 import { Dropdown } from 'antd'
 import type { CSSProperties, ReactNode } from 'react'
 import IconParkOutlineMore from '~icons/icon-park-outline/more'
@@ -144,31 +143,15 @@ export function SomeBadge({
 }) {
   return (
     <span
-      className={className}
-      css={css`
-        height: 16px;
-        line-height: 16px;
-        border-radius: 16px;
-        padding-inline: 4px 6px;
-        background-color: ${colorPrimaryValue};
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-      `}
+      className={clsx(
+        'h-16px line-height-16px rounded-8px pl-4px pr-6px bg-gate-primary inline-flex items-center justify-center',
+        className,
+      )}
     >
       {icon}
       {label && typeof label === 'string' ? (
         <>
-          <span
-            css={css`
-              font-weight: normal;
-              font-size: 11px;
-              color: #fff;
-              line-height: 1;
-              position: relative;
-              top: 1px;
-            `}
-          >
+          <span className='font-normal font-size-11px line-height-[1] color-white relative top-1px'>
             {label}
           </span>
         </>
@@ -196,23 +179,8 @@ export function ApiTypeTag({ item }: { item: RecItemType }) {
     if (isFav(item)) return item.from === 'fav-folder' ? '收藏夹' : '合集'
     return item.api
   })()
-
   return (
-    <div
-      className='flex items-center'
-      css={css`
-        padding-inline: 6px;
-        padding-block: 1px;
-        font-size: 11px;
-        color: #fff;
-        text-align: center;
-        line-height: 17px;
-        border-radius: 2px;
-        margin-left: 4px;
-        white-space: nowrap;
-        background-color: ${colorPrimaryValue};
-      `}
-    >
+    <div className='rounded-2px ml-4px bg-gate-primary flex-center px-6px py-1px text-size-11px line-height-[17px] text-white text-center whitespace-nowrap'>
       {text}
     </div>
   )

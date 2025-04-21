@@ -35,9 +35,7 @@ export function useMultiSelectRelated({
     <div
       onClick={toggleMultiSelect}
       className='absolute inset-0 flex items-center justify-center bg-black/10'
-      css={css`
-        z-index: ${zIndexMultiSelectBg};
-      `}
+      style={{ zIndex: zIndexMultiSelectBg }}
     />
   )
 
