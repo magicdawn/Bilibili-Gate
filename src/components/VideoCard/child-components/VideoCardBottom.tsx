@@ -174,7 +174,7 @@ export const VideoCardBottom = memo(function ({
         <a href={authorHref} target={target}>
           <span
             className={clsx(
-              'flex-center p-1px b-1px b-solid rounded-50% relative',
+              'flex-center p-1px b-1px b-solid rounded-full relative',
               streaming ? 'b-gate-primary' : 'b-transparent',
             )}
           >
@@ -185,7 +185,7 @@ export const VideoCardBottom = memo(function ({
             )}
             {streaming && (
               <IconForLive
-                className='size-12px absolute bottom-0 right-0 rounded-50%'
+                className='size-12px absolute bottom-0 right-0 rounded-full'
                 active
                 css={css`
                   background-color: ${colorPrimaryValue};

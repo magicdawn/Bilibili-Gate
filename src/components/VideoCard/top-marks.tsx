@@ -83,7 +83,7 @@ export function RankingNumMark({ item }: { item: RankingItemExtend }) {
   })
 
   const roundButtonClassName =
-    'flex-center size-28px rounded-50% color-white relative whitespace-nowrap'
+    'flex-center size-28px rounded-full color-white relative whitespace-nowrap'
   const roundButtonStyle: CSSProperties = useMemo(
     () => ({ backgroundColor: getColor(item.rankingNo) }),
     [item.rankingNo],

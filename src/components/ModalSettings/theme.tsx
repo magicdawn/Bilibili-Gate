@@ -65,14 +65,14 @@ export function ThemesSelect() {
                     data-role='preview-wrapper'
                     style={{ width: outerSize }}
                     className={clsx(
-                      'aspect-ratio-1 b-solid b-2px rounded-50% my-0 mx-auto',
+                      'aspect-1 b-solid b-2px rounded-full my-0 mx-auto',
                       isActive ? 'b-gate-primary' : 'b-transparent',
                       'flex items-center justify-center text-size-0',
                     )}
                   >
                     <div
                       data-role='preview'
-                      className='aspect-ratio-1 rounded-50% flex items-center justify-center text-white'
+                      className='aspect-1 rounded-full flex items-center justify-center text-white'
                       css={css`
                         width: ${innerSize}px;
                         background-color: ${isCustom ? customColorHex : t.colorPrimary};

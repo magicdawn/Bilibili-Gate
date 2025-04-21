@@ -29,7 +29,7 @@ export const SkeletonCard = memo(function SkeletonCard({ loading }: { loading: b
         style={{ borderRadius: videoCardBorderRadiusValue }}
       />
       <div className='bili-video-card__skeleton--info px-5px'>
-        <div className='bili-video-card__skeleton--avatar size-32px rounded-50%' />
+        <div className='bili-video-card__skeleton--avatar size-32px rounded-full' />
         <div className='bili-video-card__skeleton--right flex-1 ml-10px'>
           <p className='bili-video-card__skeleton--text'></p>
           <p className='bili-video-card__skeleton--text short'></p>

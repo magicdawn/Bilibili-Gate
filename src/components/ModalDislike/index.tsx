@@ -185,7 +185,7 @@ export function ModalDislike({ show, onHide, item }: IProps) {
                 >
                   <span
                     data-cls='reason-no'
-                    className='flex-none size-20px ml-6px rounded-50% flex items-center justify-center color-white'
+                    className='flex-none size-20px ml-6px rounded-full flex items-center justify-center color-white'
                     style={{ backgroundColor: colorPrimaryValue }}
                   >
                     {index + 1}

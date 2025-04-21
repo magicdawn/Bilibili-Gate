@@ -47,7 +47,7 @@ export function TabPaneBasic() {
             <TabIcon tabKey={ETab.AppRecommend} className='size-30px mr-5px mt-2px' />
             推荐 access_key
             <HelpInfo className='size-18px ml-5px mt-6px' IconComponent={IconParkOutlineHelp}>
-              <span className='inline-flex-v-center'>
+              <span className='inline-flex items-center'>
                 用于「
                 <TabIcon tabKey={ETab.AppRecommend} className='mr-5px' />
                 推荐」Tab
@@ -153,7 +153,7 @@ export function TabPaneBasic() {
                 return (
                   !!config.desc && (
                     <div key={value} className='flex items-start mt-10px first:mt-0'>
-                      <span className='inline-flex-v-center'>
+                      <span className='inline-flex items-center'>
                         {config.icon}
                         <span className='min-w-95px ml-4px mr-10px'>{config.label}</span>
                       </span>

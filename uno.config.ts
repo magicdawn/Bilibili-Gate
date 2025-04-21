@@ -27,8 +27,6 @@ export default defineConfig({
   shortcuts: {
     'flex-v-center': 'flex items-center',
     'flex-center': 'flex items-center justify-center',
-
-    'inline-flex-v-center': 'inline-flex items-center',
     'inline-flex-center': 'inline-flex items-center justify-center',
 
     'icon-only-round-button': 'flex-center size-32px p-0 rounded-50%',
