@@ -25,7 +25,7 @@ import { PcRecGoto } from '$define/pc-recommend'
 import { antNotification } from '$modules/antd'
 import { useInBlacklist } from '$modules/bilibili/me/relations/blacklist'
 import { useIsDarkMode } from '$modules/dark-mode'
-import { useMultiSelectState } from '$modules/rec-services/_shared/copy-bvid-buttons'
+import { useMultiSelectState } from '$modules/multi-select/store'
 import { UserFavService } from '$modules/rec-services/fav/user-fav-service'
 import { ELiveStatus } from '$modules/rec-services/live/live-enum'
 import { useWatchlaterState } from '$modules/rec-services/watchlater'
@@ -468,19 +468,12 @@ const VideoCardInner = memo(function VideoCardInner({
     item,
     cardData,
     tab,
-    // details
-    href,
-    authorMid,
-    authorName,
-    recommendReason,
     isNormalVideo,
     onRefresh,
     watchlaterAdded,
-    bvid,
     hasWatchlaterEntry,
     onToggleWatchlater,
     favFolderNames,
-    avid,
     favFolderUrls,
     onMoveToFirst,
     hasDislikeEntry,
@@ -488,6 +481,7 @@ const VideoCardInner = memo(function VideoCardInner({
     onRemoveCurrent,
     consistentOpenMenus,
     conditionalOpenMenus,
+    multiSelecting,
   })
 
   const onContextMenuOpenChange = useMemoizedFn((open: boolean) => {

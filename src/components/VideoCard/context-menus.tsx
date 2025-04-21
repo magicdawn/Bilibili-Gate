@@ -3,7 +3,13 @@
  */
 
 import { appClsColorPrimary } from '$common/css-vars-export.module.scss'
-import { currentGridItems, getBvidInfo } from '$components/RecGrid/unsafe-window-export'
+import {
+  copyBvidInfos,
+  copyBvidsSingleLine,
+  copyVideoLinks,
+  currentGridItems,
+  getBvidInfo,
+} from '$components/RecGrid/unsafe-window-export'
 import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import { ETab } from '$components/RecHeader/tab-enum'
 import {
@@ -31,6 +37,7 @@ import {
   IconForSpaceUpload,
   IconForWatchlater,
 } from '$modules/icon'
+import { multiSelectStore } from '$modules/multi-select/store'
 import {
   DF_SELECTED_KEY_ALL,
   DF_SELECTED_KEY_PREFIX_UP,
@@ -59,38 +66,35 @@ export function useContextMenus({
   cardData,
   tab,
 
-  href,
-  authorMid,
-  authorName,
-  recommendReason,
   isNormalVideo,
   onRefresh,
+
   watchlaterAdded,
-  bvid,
   hasWatchlaterEntry,
   onToggleWatchlater,
-  favFolderNames,
-  avid,
-  favFolderUrls,
-  onMoveToFirst,
+
   hasDislikeEntry,
   onTriggerDislike,
+
+  favFolderNames,
+  favFolderUrls,
+
+  onMoveToFirst,
   onRemoveCurrent,
+
   consistentOpenMenus,
   conditionalOpenMenus,
+
+  multiSelecting,
 }: {
   item: RecItemType
   cardData: IVideoCardData
   tab: ETab
 
-  href: string
-  authorMid: string | undefined
-  authorName: string | undefined
-  recommendReason: string | undefined
   isNormalVideo: boolean
   onRefresh: OnRefresh | undefined
+
   watchlaterAdded: boolean
-  bvid: string | undefined
   hasWatchlaterEntry: boolean
   onToggleWatchlater: (
     e?: MouseEvent,
@@ -99,17 +103,32 @@ export function useContextMenus({
     success: boolean
     targetState?: boolean
   }>
+
   favFolderNames: string[] | undefined
-  avid: string | undefined
   favFolderUrls: string[] | undefined
-  onMoveToFirst: ((item: RecItemType, data: IVideoCardData) => void | Promise<void>) | undefined
+
   hasDislikeEntry: boolean
   onTriggerDislike: () => unknown
+
+  onMoveToFirst: ((item: RecItemType, data: IVideoCardData) => void | Promise<void>) | undefined
   onRemoveCurrent: ((item: RecItemType, data: IVideoCardData) => void | Promise<void>) | undefined
+
   consistentOpenMenus: AntMenuItem[]
   conditionalOpenMenus: AntMenuItem[]
+
+  multiSelecting?: boolean
 }): AntMenuItem[] {
-  const { cover } = cardData
+  const {
+    avid,
+    bvid,
+    cover,
+    href,
+    recommendReason,
+
+    // author
+    authorName,
+    authorMid,
+  } = cardData
 
   const { enableHideSomeContents } = useSnapshot(settings.dynamicFeed.whenViewAll)
 
@@ -250,29 +269,45 @@ export function useContextMenus({
   return useMemo(() => {
     const divider: AntMenuItem = { type: 'divider' }
 
+    const multiSelectingAppendix = multiSelecting ? ' (多选)' : ''
+
     const copyMenus = defineAntMenus([
       {
         key: 'copy-link',
-        label: '复制视频链接',
+        label: '复制视频链接' + multiSelectingAppendix,
         icon: <IconForCopy className='size-15px' />,
-        onClick: onCopyLink,
+        onClick() {
+          if (multiSelectStore.multiSelecting) {
+            copyVideoLinks()
+          } else {
+            onCopyLink()
+          }
+        },
       },
       {
         test: !!bvid,
         key: 'copy-bvid',
-        label: '复制 BVID',
+        label: '复制 BVID' + multiSelectingAppendix,
         icon: <IconForCopy className='size-15px' />,
         onClick() {
-          copyContent(bvid!)
+          if (multiSelectStore.multiSelecting) {
+            copyBvidsSingleLine()
+          } else {
+            copyContent(bvid!)
+          }
         },
       },
       {
-        test: !!bvid && settings.__internalEnableCopyBvidInfoContextMenu,
+        test: !!bvid && settings.__internalEnableCopyBvidInfo,
         key: 'copy-bvid-info',
-        label: '复制 BVID 信息',
+        label: '复制 BVID 信息' + multiSelectingAppendix,
         icon: <IconForCopy className='size-15px' />,
         onClick() {
-          copyContent(getBvidInfo(cardData))
+          if (multiSelectStore.multiSelecting) {
+            copyBvidInfos()
+          } else {
+            copyContent(getBvidInfo(cardData))
+          }
         },
       },
       {
@@ -505,5 +540,7 @@ export function useContextMenus({
     favFolderUrls,
     consistentOpenMenus,
     conditionalOpenMenus,
+    //
+    multiSelecting,
   ])
 }

@@ -80,6 +80,7 @@ export function TabPaneBasic() {
                 'useNarrowMode',
                 'showModalFeedOnLoad',
                 'showModalFeedEntry',
+                'multiSelect.showIcon',
               ]}
             />
           </>
@@ -129,7 +130,13 @@ export function TabPaneBasic() {
           <CheckboxSettingItem
             configPath={'showModalFeedEntry'}
             label='「查看更多」按钮'
-            tooltip='是否展示「查看更多」按钮'
+            tooltip='是否显示「查看更多」按钮'
+          />
+
+          <CheckboxSettingItem
+            configPath={'multiSelect.showIcon'}
+            label='「多选」按钮'
+            tooltip='是否显示「多选」按钮'
           />
         </Space>
       </SettingsGroup>

@@ -2,7 +2,7 @@ import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { styled } from '$libs'
 import { defineAntMenus } from '$modules/antd'
-import { Button, Dropdown, type DropdownProps } from 'antd'
+import { Button, Divider, Dropdown, type DropdownProps } from 'antd'
 import type { ElementRef, MouseEvent } from 'react'
 
 const clsMenuRoot = styled.createClass`
@@ -96,7 +96,7 @@ export const GenericOrderSwitcher = function <T extends string | number>({
       </Dropdown>
       <HelpInfo>
         {extraHelpInfo}
-        {extraHelpInfo && <div className='mt-8px'></div>}
+        {extraHelpInfo && <Divider variant='solid' className='my-7px' />}
         操作说明: <br />
         1. 点击/下拉切换 <br />
         2. 按住 <kbd>Shift</kbd> 键点击逆序切换 <br />

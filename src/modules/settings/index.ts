@@ -260,12 +260,13 @@ export const initialSettings = {
    */
   multiSelect: {
     clearWhenExit: true,
+    showIcon: true,
   },
 
   /**
    * internal
    */
-  __internalEnableCopyBvidInfoContextMenu: false,
+  __internalEnableCopyBvidInfo: false, // ContextMenu | Button
   __internalAddCopyBvidButton: false,
   __internalHotSubUseDropdown: false,
   __internalShowGridListSwitcher: false,

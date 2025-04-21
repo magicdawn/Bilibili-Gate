@@ -1,11 +1,16 @@
-import { colorPrimaryValue } from '$components/css-vars'
-import { multiSelectStore } from '$modules/rec-services/_shared/copy-bvid-buttons'
-import { css } from '@emotion/react'
+import { multiSelectStore } from '$modules/multi-select/store'
+import { css } from '@emotion/css'
 import type { SyntheticEvent } from 'react'
 import { zIndexMultiSelectBg } from '../index.module.scss'
 
 export const IconForMultiSelectUnchecked = IconLucideCircle
 export const IconForMultiSelectChecked = IconLucideCircleCheck
+
+const clsForIconChecked = css`
+  g {
+    fill: inherit;
+  }
+`
 
 export function useMultiSelectRelated({
   multiSelecting,
@@ -36,17 +41,17 @@ export function useMultiSelectRelated({
     />
   )
 
-  const iconClassName = 'size-30px'
-  const iconCss = css`
-    color: ${multiSelected ? colorPrimaryValue : '#fff'};
-  `
-  const multiSelectEl =
-    multiSelecting &&
-    (multiSelected ? (
-      <IconForMultiSelectChecked className={iconClassName} css={iconCss} />
-    ) : (
-      <IconForMultiSelectUnchecked className={iconClassName} css={iconCss} />
-    ))
+  const Icon = multiSelected ? IconForMultiSelectChecked : IconForMultiSelectUnchecked
+  const multiSelectEl = multiSelecting && (
+    <Icon
+      onClick={toggleMultiSelect}
+      className={clsx(
+        clsForIconChecked,
+        'size-30px cursor-pointer text-white',
+        multiSelected ? 'fill-gate-primary' : 'fill-none',
+      )}
+    />
+  )
 
   return {
     toggleMultiSelect,

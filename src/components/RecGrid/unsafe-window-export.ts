@@ -6,7 +6,8 @@ import { APP_KEY_PREFIX } from '$common'
 import { normalizeCardData, type IVideoCardData } from '$components/VideoCard/process/normalize'
 import type { RecItemType, RecItemTypeOrSeparator } from '$define'
 import { EApiType } from '$define/index.shared'
-import { multiSelectStore } from '$modules/rec-services/_shared/copy-bvid-buttons'
+import { antNotification } from '$modules/antd'
+import { multiSelectStore } from '$modules/multi-select/store'
 import dayjs from 'dayjs'
 import { tryit } from 'radash'
 
@@ -50,14 +51,28 @@ export function copyBvidsSingleLine() {
   const bvids = getGridCardData().map((cardData) => cardData.bvid)
   const content = bvids.join(' ')
   GM.setClipboard(content)
-  return content
+  antNotification.success({ message: '已复制', description: content })
 }
 
 export function copyBvidInfos() {
   const lines = getGridCardData().map(getBvidInfo)
   const content = lines.join('\n')
   GM.setClipboard(content)
-  return content
+  antNotification.success({ message: '已复制', description: content })
+}
+
+export function copyVideoLinks() {
+  const lines = getGridCardData()
+    .map((cardData) => {
+      let href = cardData.href
+      if (!href) return
+      if (href.startsWith('/')) href = new URL(href, location.href).href
+      return href
+    })
+    .filter(Boolean)
+  const content = lines.join('\n')
+  GM.setClipboard(content)
+  antNotification.success({ message: '已复制', description: content })
 }
 
 export function getBvidInfo(cardData: IVideoCardData) {

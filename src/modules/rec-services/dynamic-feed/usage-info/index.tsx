@@ -2,7 +2,7 @@ import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
 import type { AntMenuItem } from '$modules/antd'
 import { IconForReset } from '$modules/icon'
-import { CopyBvidButtons } from '$modules/rec-services/_shared/copy-bvid-buttons'
+import { CopyBvidButtonsUsageInfo } from '$modules/rec-services/_shared/copy-bvid-buttons'
 import { useSettingsSnapshot } from '$modules/settings'
 import { getAvatarSrc } from '$utility/image'
 import { localeComparer, mapNameForSort } from '$utility/sort'
@@ -192,7 +192,7 @@ export function DynamicFeedUsageInfo() {
 
         {externalSearchInput && searchInput}
 
-        <CopyBvidButtons />
+        <CopyBvidButtonsUsageInfo />
       </div>
     </>
   )

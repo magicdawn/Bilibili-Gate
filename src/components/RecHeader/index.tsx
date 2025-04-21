@@ -8,8 +8,10 @@ import { OnRefreshContext } from '$components/RecGrid/useRefresh'
 import { ECardDisplay } from '$components/VideoCard/index.shared'
 import { bgValue } from '$components/css-vars'
 import { $headerHeight, $usingEvolevdHeader } from '$header'
+import { AntdTooltip } from '$modules/antd/custom'
 import { useIsDarkMode } from '$modules/dark-mode'
 import { IconForConfig } from '$modules/icon'
+import { MultiSelectButton } from '$modules/multi-select'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { isMac, isSafari } from '$ua'
 import { getElementOffset, shouldDisableShortcut } from '$utility/dom'
@@ -20,7 +22,7 @@ import { AccessKeyManage } from '../AccessKeyManage'
 import { RefreshButton } from './RefreshButton'
 import { headerState } from './index.shared'
 import { showModalFeed, showModalSettings, toggleModalSettings } from './modals'
-import { VideoSourceTab, useCurrentDisplayingTabKeys } from './tab'
+import { VideoSourceTab, useCurrentUsingTab } from './tab'
 import { ETab } from './tab-enum'
 
 const debug = baseDebug.extend('RecHeader')
@@ -39,8 +41,14 @@ export const RecHeader = forwardRef<
   }
 >(function RecHeader({ onRefresh, refreshing, leftSlot, rightSlot }, ref) {
   const { modalFeedVisible, modalSettingsVisible } = useSnapshot(headerState)
-  const { accessKey, pureRecommend, showModalFeedEntry, style, __internalShowGridListSwitcher } =
-    useSettingsSnapshot()
+  const {
+    accessKey,
+    pureRecommend,
+    showModalFeedEntry,
+    style,
+    __internalShowGridListSwitcher,
+    multiSelect: { showIcon: multiSelectShowIcon },
+  } = useSettingsSnapshot()
   const { cardDisplay, useStickyTabbar } = style.pureRecommend // style sub
 
   useKeyPress(
@@ -150,19 +158,25 @@ export const RecHeader = forwardRef<
               {!accessKey && showAccessKeyManage && <AccessKeyManage style={{ marginLeft: 5 }} />}
 
               {__internalShowGridListSwitcher && (
-                <Button className='icon-only-round-button' onClick={toggleCardDisplay}>
-                  {cardDisplay === ECardDisplay.Grid ? (
-                    <IconTablerLayoutGrid className='cursor-pointer size-14px' />
-                  ) : (
-                    <IconTablerListDetails className='cursor-pointer size-14px' />
-                  )}
-                </Button>
+                <AntdTooltip title='切换卡片显示模式' arrow={false}>
+                  <Button className='icon-only-round-button' onClick={toggleCardDisplay}>
+                    {cardDisplay === ECardDisplay.Grid ? (
+                      <IconTablerLayoutGrid className='cursor-pointer size-14px' />
+                    ) : (
+                      <IconTablerListDetails className='cursor-pointer size-14px' />
+                    )}
+                  </Button>
+                </AntdTooltip>
               )}
 
-              <Button onClick={showModalSettings} className='icon-only-round-button'>
-                <ModalSettingsHotkey />
-                <IconForConfig className='size-14px' />
-              </Button>
+              {multiSelectShowIcon && <MultiSelectButton iconOnly addCopyActions />}
+
+              <AntdTooltip title='设置' arrow={false}>
+                <Button onClick={showModalSettings} className='icon-only-round-button'>
+                  <ModalSettingsHotkey />
+                  <IconForConfig className='size-14px' />
+                </Button>
+              </AntdTooltip>
 
               <RefreshButton
                 refreshing={refreshing}
@@ -221,6 +235,6 @@ function useExpandToFullWidthCss() {
 }
 
 function useShouldShowAccessKeyManage() {
-  const tabKeys = useCurrentDisplayingTabKeys()
-  return tabKeys.includes(ETab.AppRecommend)
+  const tab = useCurrentUsingTab()
+  return tab === ETab.AppRecommend
 }

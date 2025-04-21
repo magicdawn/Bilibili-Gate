@@ -2,7 +2,7 @@ import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
 import { defineAntMenus, type AntMenuItem } from '$modules/antd'
 import { IconForOpenExternalLink } from '$modules/icon'
-import { CopyBvidButtons } from '$modules/rec-services/_shared/copy-bvid-buttons'
+import { CopyBvidButtonsUsageInfo } from '$modules/rec-services/_shared/copy-bvid-buttons'
 import { formatSpaceUrl } from '$modules/rec-services/dynamic-feed/shared'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { sortListByName } from '$utility/sort'
@@ -185,7 +185,7 @@ export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
       {/* extra */}
       {extraContent}
 
-      <CopyBvidButtons />
+      <CopyBvidButtonsUsageInfo />
     </div>
   )
 }

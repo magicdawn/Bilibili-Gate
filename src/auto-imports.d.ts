@@ -7,11 +7,13 @@
 export {}
 declare global {
   const Fragment: typeof import('react')['Fragment']
+  const IconBiUiChecksGrid: typeof import('~icons/bi/ui-checks-grid.jsx')['default']
   const IconBxStopCircle: typeof import('~icons/bx/stop-circle.jsx')['default']
   const IconFluentSelectAll24Regular: typeof import('~icons/fluent/select-all24-regular.jsx')['default']
   const IconFluentSelectAllOn16Regular: typeof import('~icons/fluent/select-all-on16-regular.jsx')['default']
   const IconIcOutlineCloud: typeof import('~icons/ic/outline-cloud.jsx')['default']
   const IconIcOutlineSwapHoriz: typeof import('~icons/ic/outline-swap-horiz.jsx')['default']
+  const IconIonExitOutline: typeof import('~icons/ion/exit-outline.jsx')['default']
   const IconIonLayersOutline: typeof import('~icons/ion/layers-outline.jsx')['default']
   const IconLetsIconsViewHide: typeof import('~icons/lets-icons/view-hide.jsx')['default']
   const IconLineMdUploadingLoop: typeof import('~icons/line-md/uploading-loop.jsx')['default']

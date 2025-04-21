@@ -9,7 +9,7 @@
 
 import { APP_NAMESPACE } from '$common'
 import { bgLv1Value, bgLv2Value, borderColorValue, colorPrimaryValue } from '$components/css-vars'
-import { multiSelectStore } from '$modules/rec-services/_shared/copy-bvid-buttons'
+import { multiSelectStore } from '$modules/multi-select/store'
 import { useSettingsSnapshot } from '$modules/settings'
 import { tweakLightness } from '$utility/css'
 import type { CssProp } from '$utility/type'
