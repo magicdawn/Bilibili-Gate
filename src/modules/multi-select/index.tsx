@@ -46,6 +46,7 @@ export function MultiSelectButton({
   const wrapPopoverActions = (btn: ReactNode) => {
     return (
       <Popover
+        // will cause z-index issue, so not used
         // getPopupContainer={getPopupContainer}
         styles={{ body: { border: `1px solid ${popoverBorderColor}` } }}
         content={
