@@ -1,8 +1,7 @@
 import { usePopoverBorderColor } from '$common/emotion-css'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { currentGridItems } from '$components/RecGrid/unsafe-window-export'
-import { wrapTooltip } from '$modules/antd/custom'
-import { usePopupContainer } from '$modules/rec-services/_base'
+import { AntdTooltip } from '$modules/antd/custom'
 import { CopyBvidButtons } from '$modules/rec-services/_shared/copy-bvid-buttons'
 import { settings } from '$modules/settings'
 import { Button, Divider, Popover } from 'antd'
@@ -20,7 +19,6 @@ export function MultiSelectButton({
 }) {
   const { multiSelecting } = useSnapshot(multiSelectStore)
   const popoverBorderColor = usePopoverBorderColor()
-  const { ref, getPopupContainer } = usePopupContainer<HTMLButtonElement>()
 
   const exitCheck = useMemoizedFn(() => {
     if (!multiSelectStore.multiSelecting && settings.multiSelect.clearWhenExit) {
@@ -30,7 +28,6 @@ export function MultiSelectButton({
 
   const btn: ReactNode = (
     <Button
-      ref={ref}
       type={multiSelecting ? 'primary' : 'default'}
       className={clsx(iconOnly ? 'icon-only-round-button' : 'inline-flex-center')}
       onClick={() => {
@@ -39,15 +36,13 @@ export function MultiSelectButton({
       }}
     >
       <IconBiUiChecksGrid className='size-12px' />
-      {!iconOnly && <>Multi-Select{multiSelectStore.multiSelecting ? 'ing' : ''}</>}
+      {!iconOnly && <>多选{multiSelectStore.multiSelecting ? '中' : ''}</>}
     </Button>
   )
 
   const wrapPopoverActions = (btn: ReactNode) => {
     return (
       <Popover
-        // will cause z-index issue, so not used
-        // getPopupContainer={getPopupContainer}
         styles={{ body: { border: `1px solid ${popoverBorderColor}` } }}
         content={
           <div className='max-w-280px'>
@@ -102,7 +97,7 @@ export function MultiSelectButton({
             {addCopyActions && (
               <>
                 <Divider variant='solid' className='my-7px' />
-                <div className='flex flex-wrap gap-x-15px gap-y-5px'>
+                <div className='flex flex-wrap gap-x-10px gap-y-5px'>
                   <CopyBvidButtons />
                 </div>
               </>
@@ -118,6 +113,12 @@ export function MultiSelectButton({
   if (multiSelecting) {
     return wrapPopoverActions(btn)
   } else {
-    return wrapTooltip(btn, '多选', { arrow: iconOnly ? false : undefined })
+    return iconOnly ? (
+      <AntdTooltip title='多选' arrow={false}>
+        {btn}
+      </AntdTooltip>
+    ) : (
+      btn
+    )
   }
 }
