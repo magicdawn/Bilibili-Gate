@@ -1,12 +1,15 @@
 import { APP_NAME, APP_NAMESPACE } from '$common'
 import { AppRoot } from '$components/AppRoot'
+import { borderColorValue, colorPrimaryValue } from '$components/css-vars'
 import { AntdTooltip } from '$modules/antd/custom'
+import { IconForDynamicFeed, IconForSpaceUpload } from '$modules/icon'
 import { DynamicFeedQueryKey } from '$modules/rec-services/dynamic-feed/store'
 import { FavQueryKey } from '$modules/rec-services/fav/store'
 import { SpaceUploadQueryKey } from '$modules/rec-services/space-upload/store'
+import { reusePendingPromise } from '$utility/async'
+import { useUnoSimpleMerge } from '$utility/css'
 import { poll, tryAction } from '$utility/dom'
 import { css } from '@emotion/react'
-import { useEventListener } from 'ahooks'
 import { type ComponentProps, type ReactNode } from 'react'
 import { proxy, useSnapshot } from 'valtio'
 
@@ -26,13 +29,15 @@ async function addDynEntry() {
     (container) => {
       state.href = location.href
       state.usingNewSpacePage = container.matches(newSelector)
+      getFollowedStatus()
 
       const rootEl = document.createElement('span')
       rootEl.id = rootElId
+      rootEl.classList.add('mr-24px')
       container.insertAdjacentElement('afterbegin', rootEl)
       const root = createRoot(rootEl)
       root.render(
-        <AppRoot>
+        <AppRoot injectGlobalStyle>
           <ActionButtons />
         </AppRoot>,
       )
@@ -94,18 +99,18 @@ const state = proxy({
   },
 })
 
-async function getFollowedStatus() {
-  const followed = !!(await poll(
+const getFollowedStatus = reusePendingPromise(async () => {
+  const followed = await poll(
     () => {
       const list = Array.from(document.querySelectorAll('.space-follow-btn')).filter(
         (el) => el.textContent?.trim() === '已关注',
       )
-      return list[0]
+      if (list.length > 0) return true
     },
     { interval: 100, timeout: 5_000 },
-  ))
-  state.followed = followed
-}
+  )
+  state.followed = !!followed
+})
 
 if (typeof window.navigation !== 'undefined') {
   window.navigation.addEventListener?.('navigatesuccess', () => {
@@ -114,21 +119,8 @@ if (typeof window.navigation !== 'undefined') {
   })
 }
 
-function useAltKeyState() {
-  const [altKeyPressing, setAltKeyPressing] = useState(false)
-  useEventListener('keydown', (e) => {
-    if (e.altKey) {
-      setAltKeyPressing(true)
-    }
-  })
-  useEventListener('keyup', (e) => {
-    setAltKeyPressing(false)
-  })
-  return altKeyPressing
-}
-
 function ActionButtons() {
-  const { mid, collectionId, followed } = useSnapshot(state)
+  const { mid, collectionId } = useSnapshot(state)
   if (!mid) return
 
   // 合集
@@ -142,55 +134,70 @@ function ActionButtons() {
     </ActionButton>
   )
 
-  // 动态 | 投稿
-  const viewUpVideoListButton = <ViewUpVideoListButton />
+  // 动态 & 投稿
+  const viewUpVideoListButtons = <ViewUpVideoListButtons />
 
   return (
-    <>
-      {/* show 1 button */}
-      {viewCollectionButton || viewUpVideoListButton}
-    </>
+    <span className='inline-flex items-center gap-x-8px'>
+      {viewCollectionButton || viewUpVideoListButtons}
+    </span>
   )
 }
 
-/**
- * 动态 | 投稿
- */
-function ViewUpVideoListButton() {
-  const altKeyPressing = useAltKeyState()
+function ViewUpVideoListButtons() {
   const { mid, followed, isSearching, searchKeyword } = useSnapshot(state)
   if (!mid) return
 
-  // 投稿
-  const showSpaceUpload = useMemo(() => {
-    if (isSearching) return true
-    if (followed) {
-      return altKeyPressing
-    } else {
-      return !altKeyPressing
+  const btnCss = css`
+    border-color: ${borderColorValue};
+    &:hover {
+      border-color: ${colorPrimaryValue};
+      background-color: ${colorPrimaryValue};
     }
-  }, [isSearching, followed, altKeyPressing])
+  `
 
-  const queryKey = showSpaceUpload ? SpaceUploadQueryKey.Mid : DynamicFeedQueryKey.Mid
-  const label = showSpaceUpload ? '投稿' : '动态'
-  let href = `https://www.bilibili.com/?${queryKey}=${mid}`
-  if (showSpaceUpload && isSearching) {
-    href += `&${SpaceUploadQueryKey.SearchText}=${searchKeyword}`
+  // 投稿
+  let btnSpaceUpload: ReactNode
+  {
+    let href = `https://www.bilibili.com/?${SpaceUploadQueryKey.Mid}=${mid}`
+    if (isSearching && searchKeyword) {
+      href += '&' + SpaceUploadQueryKey.SearchText + '=' + searchKeyword
+    }
+    btnSpaceUpload = (
+      <ActionButton
+        key='btnSpaceUpload'
+        href={href}
+        tooltip={`在「${APP_NAME}」中查看 UP 的投稿`}
+        className='w-34px rounded-full'
+        css={btnCss}
+      >
+        <IconForSpaceUpload />
+      </ActionButton>
+    )
+  }
+
+  // 动态
+  let btnDynamicFeed: ReactNode
+  if (followed) {
+    const href = `https://www.bilibili.com/?${DynamicFeedQueryKey.Mid}=${mid}`
+    btnDynamicFeed = (
+      <ActionButton
+        key='btnDynamicFeed'
+        href={href}
+        tooltip={`在「${APP_NAME}」中查看 UP 的动态`}
+        className='w-34px rounded-full'
+        css={btnCss}
+      >
+        <IconForDynamicFeed />
+      </ActionButton>
+    )
   }
 
   return (
-    <ActionButton
-      href={href}
-      tooltip={`在「${APP_NAME}」中查看 UP 的${label}`}
-      onClick={(e) => {
-        if (altKeyPressing) {
-          e.preventDefault()
-          window.open(href, '_blank')
-        }
-      }}
-    >
-      {APP_NAME} {label}
-    </ActionButton>
+    <>
+      {btnSpaceUpload}
+      {btnDynamicFeed}
+    </>
   )
 }
 
@@ -203,10 +210,11 @@ function ActionButton({
   ...restProps
 }: ComponentProps<'a'> & { tooltip?: ReactNode }) {
   const { usingNewSpacePage } = useSnapshot(state)
+  const _className = useUnoSimpleMerge('w-150px rounded-6px', className)
   const btn = usingNewSpacePage ? (
     <a
       href={href}
-      className={className}
+      className={_className}
       style={style}
       {...restProps}
       css={css`
@@ -214,18 +222,15 @@ function ActionButton({
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 150px;
         height: 34px;
-        border-radius: 6px;
         font-size: 14px;
         font-weight: 700;
         color: var(--text_white);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        background-color: rgba(255, 255, 255, 0.14);
         transition: all 0.3s;
-        margin-right: 24px;
+        border: 1px solid rgb(255 255 255 / 20%);
+        background-color: rgb(255 255 255 / 14%);
         &:hover {
-          background-color: rgba(255, 255, 255, 0.4);
+          background-color: rgb(255 255 255 / 40%);
         }
       `}
     >

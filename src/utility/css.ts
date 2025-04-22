@@ -46,9 +46,19 @@ export function unoSimpleMerge(...classNames: Array<string | undefined>) {
   const classList = classNames.map(getClassList).flat().filter(Boolean)
   const map = new Map<string, string>()
   for (const cls of classList) {
-    const segs = cls.split('-')
-    const numIndex = segs.findIndex((x) => !isNaN(parseFloat(x)))
-    const key = numIndex === -1 ? cls : segs.slice(0, numIndex).join('-')
+    let clsSanitize = cls
+    if (/\[[\w-]+\]$/.test(cls)) {
+      clsSanitize = cls.replace(/(\[[\w-]+\])$/, function (match, p1) {
+        return '*'.repeat(p1.length)
+      })
+    }
+
+    const lastHyphenIndex = clsSanitize.lastIndexOf('-')
+    if (lastHyphenIndex === -1) {
+      map.set(cls, cls)
+      continue
+    }
+    const key = cls.slice(0, lastHyphenIndex)
     map.set(key, cls)
   }
   return Array.from(map.values()).join(' ')
