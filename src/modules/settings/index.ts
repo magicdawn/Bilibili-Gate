@@ -245,8 +245,10 @@ export const initialSettings = {
   // 默认打开模式
   videoLinkOpenMode: VideoLinkOpenMode.Normal,
 
-  // 小窗默认锁定
-  pipWindowDefaultLocked: true,
+  pipWindow: {
+    defaultLocked: true, // 小窗默认锁定
+    autoWebFullscreen: true, // 自动网页全屏
+  },
 
   /**
    * 隐藏的 tab, 使用黑名单, 功能迭代之后新增的 tab, 默认开启.
@@ -410,6 +412,9 @@ export function runSettingsMigration(val: object | undefined) {
 
     // 2024-12-17
     ['appRecommend.deviceParamForApi', 'appApiDecice'],
+
+    // 2025-04-23
+    ['pipWindow.defaultLocked', 'pipWindowDefaultLocked'],
   ]
   // 伪代码: savedConfig[newName] = savedConfig[legacyName]
   for (const [configPath, legacyConfigPath] of config) {

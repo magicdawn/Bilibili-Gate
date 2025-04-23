@@ -67,7 +67,10 @@ export function useOpenRelated({
     mode ||= settings.videoLinkOpenMode
 
     const newHref = getHref((u) => {
-      if (mode === Mode.Popup || mode === Mode.NormalWebFullscreen) {
+      if (
+        mode === Mode.NormalWebFullscreen ||
+        (mode === Mode.Popup && settings.pipWindow.autoWebFullscreen)
+      ) {
         u.searchParams.set(QueryKey.PlayerScreenMode, PlayerScreenMode.WebFullscreen)
         if (mode === Mode.Popup && !getBiliPlayerConfigAutoPlay()) {
           u.searchParams.set(QueryKey.ForceAutoPlay, ForceAutoPlay.ON)

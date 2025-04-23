@@ -39,7 +39,7 @@ export function renderInPipWindow(newHref: string, pipWindow: Window) {
 
 export function PipWindowContent({ newHref, pipWindow }: { pipWindow: Window; newHref: string }) {
   const hovering = useHover(pipWindow.document.documentElement)
-  const [locked, setLocked] = useState(() => settings.pipWindowDefaultLocked)
+  const [locked, setLocked] = useState(() => settings.pipWindow.defaultLocked)
 
   return (
     <>

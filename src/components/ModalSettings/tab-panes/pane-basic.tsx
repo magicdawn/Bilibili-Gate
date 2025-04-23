@@ -138,7 +138,13 @@ export function TabPaneBasic() {
         title={
           <>
             视频链接
-            <ResetPartialSettingsButton paths={['videoLinkOpenMode', 'pipWindowDefaultLocked']} />
+            <ResetPartialSettingsButton
+              paths={[
+                'videoLinkOpenMode',
+                'pipWindow.defaultLocked',
+                'pipWindow.autoWebFullscreen',
+              ]}
+            />
           </>
         }
       >
@@ -174,9 +180,15 @@ export function TabPaneBasic() {
           </div>
 
           <CheckboxSettingItem
-            configPath='pipWindowDefaultLocked'
-            label='小窗默认锁定'
-            tooltip='开启后, 小窗打开时默认为锁定状态'
+            configPath='pipWindow.defaultLocked'
+            label='小窗: 默认锁定'
+            tooltip={explainForFlag('小窗打开时: 默认锁定', '小窗打开时: 不锁定')}
+          />
+
+          <CheckboxSettingItem
+            configPath='pipWindow.autoWebFullscreen'
+            label='小窗: 自动网页全屏'
+            tooltip={explainForFlag('自动网页全屏', '不启用')}
           />
         </Space>
       </SettingsGroup>
