@@ -76,6 +76,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
+      # delay, for action-gh-release cann't detect existing release
+      - run: sleep 3
+
       # release assets
       - name: Upload *.user.js to Release
         uses: softprops/action-gh-release@v2
