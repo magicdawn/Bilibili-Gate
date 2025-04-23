@@ -1,10 +1,11 @@
 import { APP_NAME, APP_NAMESPACE } from '$common'
 import { AppRoot } from '$components/AppRoot'
-import { borderColorValue, colorPrimaryValue } from '$components/css-vars'
+import { colorPrimaryValue } from '$components/css-vars'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconForDynamicFeed, IconForSpaceUpload } from '$modules/icon'
 import { DynamicFeedQueryKey } from '$modules/rec-services/dynamic-feed/store'
 import { FavQueryKey } from '$modules/rec-services/fav/store'
+import { IconForCollection } from '$modules/rec-services/fav/usage-info'
 import { SpaceUploadQueryKey } from '$modules/rec-services/space-upload/store'
 import { reusePendingPromise } from '$utility/async'
 import { useUnoSimpleMerge } from '$utility/css'
@@ -120,36 +121,12 @@ if (typeof window.navigation !== 'undefined') {
 }
 
 function ActionButtons() {
-  const { mid, collectionId } = useSnapshot(state)
+  const { mid, collectionId, followed, isSearching, searchKeyword } = useSnapshot(state)
   if (!mid) return
 
-  // 合集
-  const viewCollectionButton = typeof collectionId === 'number' && (
-    <ActionButton
-      href={`https://www.bilibili.com/?${FavQueryKey.CollectionIdFull}=${collectionId}`}
-      target='_blank'
-      tooltip={`在「${APP_NAME}」中查看合集`}
-    >
-      {APP_NAME} 合集
-    </ActionButton>
-  )
-
-  // 动态 & 投稿
-  const viewUpVideoListButtons = <ViewUpVideoListButtons />
-
-  return (
-    <span className='inline-flex items-center gap-x-8px'>
-      {viewCollectionButton || viewUpVideoListButtons}
-    </span>
-  )
-}
-
-function ViewUpVideoListButtons() {
-  const { mid, followed, isSearching, searchKeyword } = useSnapshot(state)
-  if (!mid) return
-
+  const btnClassName = 'w-34px rounded-full'
   const btnCss = css`
-    border-color: ${borderColorValue};
+    border-color: rgb(255 255 255 / 33%);
     &:hover {
       border-color: ${colorPrimaryValue};
       background-color: ${colorPrimaryValue};
@@ -166,10 +143,10 @@ function ViewUpVideoListButtons() {
     btnSpaceUpload = (
       <ActionButton
         key='btnSpaceUpload'
+        className={btnClassName}
+        css={btnCss}
         href={href}
         tooltip={`在「${APP_NAME}」中查看 UP 的投稿`}
-        className='w-34px rounded-full'
-        css={btnCss}
       >
         <IconForSpaceUpload />
       </ActionButton>
@@ -183,21 +160,39 @@ function ViewUpVideoListButtons() {
     btnDynamicFeed = (
       <ActionButton
         key='btnDynamicFeed'
+        className={btnClassName}
+        css={btnCss}
         href={href}
         tooltip={`在「${APP_NAME}」中查看 UP 的动态`}
-        className='w-34px rounded-full'
-        css={btnCss}
       >
         <IconForDynamicFeed />
       </ActionButton>
     )
   }
 
+  // 合集
+  let btnViewCollection: ReactNode
+  if (typeof collectionId === 'number') {
+    btnViewCollection = (
+      <ActionButton
+        key='btnViewCollection'
+        className={btnClassName}
+        css={btnCss}
+        href={`https://www.bilibili.com/?${FavQueryKey.CollectionIdFull}=${collectionId}`}
+        target='_blank'
+        tooltip={`在「${APP_NAME}」中查看合集`}
+      >
+        <IconForCollection />
+      </ActionButton>
+    )
+  }
+
   return (
-    <>
+    <span className='inline-flex items-center gap-x-8px'>
+      {btnViewCollection}
       {btnSpaceUpload}
       {btnDynamicFeed}
-    </>
+    </span>
   )
 }
 
