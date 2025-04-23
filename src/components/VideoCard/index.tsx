@@ -8,7 +8,7 @@ import { setGlobalValue } from '$components/RecGrid/unsafe-window-export'
 import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { Picture } from '$components/_base/Picture'
-import { borderColorValue } from '$components/css-vars'
+import { borderColorValue, colorPrimaryValue } from '$components/css-vars'
 import {
   isAppRecommend,
   isLive,
@@ -563,17 +563,22 @@ const VideoCardInner = memo(function VideoCardInner({
 
   // 防止看不清封面边界: (封面与背景色接近)
   const dark = useIsDarkMode()
-  const coverBorderCss: CssProp = (() => {
-    // card has border always showing, so cover does not need
+  const makeCoverClearCss: CssProp = useMemo(() => {
+    // case: no-need, card has border always showing, so cover does not need
     if (cardUseBorder && !cardUseBorderOnlyOnHover) return undefined
-    // multiselecting
-    if (multiSelecting) return undefined
-    const visible =
-      !dark && (!cardUseBorder || (cardUseBorder && cardUseBorderOnlyOnHover && !isHovering))
+    const visible = (() => {
+      if (dark) return false
+      if (multiSelecting) return false
+      return !cardUseBorder || (cardUseBorder && cardUseBorderOnlyOnHover && !isHovering)
+    })()
+    const borderColor = (() => {
+      if (multiSelecting) return multiSelected ? colorPrimaryValue : borderColorValue
+      return visible ? borderColorValue : 'transparent'
+    })()
     return css`
-      border: 1px solid ${visible ? borderColorValue : 'transparent'};
+      border: 1px solid ${borderColor};
     `
-  })()
+  }, [cardUseBorder, cardUseBorderOnlyOnHover, isHovering, multiSelecting, multiSelected, dark])
 
   const target = useLinkTarget()
   const coverContent = (
@@ -590,7 +595,7 @@ const VideoCardInner = memo(function VideoCardInner({
           isolation: isolate; // new stacking context
         `,
         coverRoundCss,
-        coverBorderCss,
+        makeCoverClearCss,
         isDisplayAsList(cardDisplay) && displayAsListCss.cover,
       ]}
       onClick={handleVideoLinkClick}
