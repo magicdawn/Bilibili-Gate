@@ -8,7 +8,7 @@ import { setGlobalValue } from '$components/RecGrid/unsafe-window-export'
 import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { Picture } from '$components/_base/Picture'
-import { borderColorValue, colorPrimaryValue } from '$components/css-vars'
+import { borderColorValue } from '$components/css-vars'
 import {
   isAppRecommend,
   isLive,
@@ -568,13 +568,11 @@ const VideoCardInner = memo(function VideoCardInner({
     if (cardUseBorder && !cardUseBorderOnlyOnHover) return undefined
     const visible = (() => {
       if (dark) return false
+      // TODO: 还是有 1px 间隙, 为了高度不变, 还得保留 border, 咋改都不合适, 不知道咋改了...
       if (multiSelecting) return false
       return !cardUseBorder || (cardUseBorder && cardUseBorderOnlyOnHover && !isHovering)
     })()
-    const borderColor = (() => {
-      if (multiSelecting) return multiSelected ? colorPrimaryValue : borderColorValue
-      return visible ? borderColorValue : 'transparent'
-    })()
+    const borderColor = visible ? borderColorValue : 'transparent'
     return css`
       border: 1px solid ${borderColor};
     `
