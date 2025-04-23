@@ -99,7 +99,7 @@
     "debug": "^4.4.0",
     "es-toolkit": "^1.35.0",
     "fast-sort-lens": "^0.0.3",
-    "framer-motion": "^12.7.4",
+    "framer-motion": "^12.7.5",
     "localforage": "^1.10.0",
     "mitt": "^3.0.1",
     "ms": "^2.1.3",
