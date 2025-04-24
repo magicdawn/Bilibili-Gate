@@ -16,7 +16,6 @@ import './modules/polyfills/explicit-resource-management'
 // styles
 import '$common/global.scss'
 // css modules 与 emtion 混用, 先 import 作为 base 的 css modules
-import '$components/VideoCard/index.module.scss'
 import '$components/video-grid.module.scss'
 import 'virtual:uno.css'
 
