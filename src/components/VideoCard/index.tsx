@@ -8,7 +8,6 @@ import { setGlobalValue } from '$components/RecGrid/unsafe-window-export'
 import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { Picture } from '$components/_base/Picture'
-import { borderColorValue } from '$components/css-vars'
 import {
   isAppRecommend,
   isLive,
@@ -24,7 +23,6 @@ import { EApiType } from '$define/index.shared'
 import { PcRecGoto } from '$define/pc-recommend'
 import { antNotification } from '$modules/antd'
 import { useInBlacklist } from '$modules/bilibili/me/relations/blacklist'
-import { useIsDarkMode } from '$modules/dark-mode'
 import { useMultiSelectState } from '$modules/multi-select/store'
 import { UserFavService } from '$modules/rec-services/fav/user-fav-service'
 import { ELiveStatus } from '$modules/rec-services/live/live-enum'
@@ -562,21 +560,12 @@ const VideoCardInner = memo(function VideoCardInner({
   ]
 
   // 防止看不清封面边界: (封面与背景色接近)
-  const dark = useIsDarkMode()
-  const makeCoverClearCss: CssProp = useMemo(() => {
+  const shouldMakeCoverClear = useMemo(() => {
     // case: no-need, card has border always showing, so cover does not need
-    if (cardUseBorder && !cardUseBorderOnlyOnHover) return undefined
-    const visible = (() => {
-      if (dark) return false
-      // TODO: 还是有 1px 间隙, 为了高度不变, 还得保留 border, 咋改都不合适, 不知道咋改了...
-      if (multiSelecting) return false
-      return !cardUseBorder || (cardUseBorder && cardUseBorderOnlyOnHover && !isHovering)
-    })()
-    const borderColor = visible ? borderColorValue : 'transparent'
-    return css`
-      border: 1px solid ${borderColor};
-    `
-  }, [cardUseBorder, cardUseBorderOnlyOnHover, isHovering, multiSelecting, multiSelected, dark])
+    if (cardUseBorder && !cardUseBorderOnlyOnHover) return false
+    if (multiSelecting) return false
+    return !cardUseBorder || (cardUseBorder && cardUseBorderOnlyOnHover && !isHovering)
+  }, [cardUseBorder, cardUseBorderOnlyOnHover, isHovering, multiSelecting])
 
   const target = useLinkTarget()
   const coverContent = (
@@ -584,7 +573,7 @@ const VideoCardInner = memo(function VideoCardInner({
       ref={(el) => (coverRef.current = el)}
       href={href}
       target={target}
-      className={APP_CLS_CARD_COVER}
+      className={clsx(APP_CLS_CARD_COVER, shouldMakeCoverClear && 'ring-1px ring-gate-border')}
       css={[
         css`
           display: block; /* firefox need this */
@@ -593,7 +582,6 @@ const VideoCardInner = memo(function VideoCardInner({
           isolation: isolate; // new stacking context
         `,
         coverRoundCss,
-        makeCoverClearCss,
         isDisplayAsList(cardDisplay) && displayAsListCss.cover,
       ]}
       onClick={handleVideoLinkClick}
