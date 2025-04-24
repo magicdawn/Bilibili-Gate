@@ -140,8 +140,6 @@ export type BvidIndexMap = Map<string, number>
 
 class ShuffleOrderService implements IService {
   hasMore = true
-
-  loaded = false
   state = proxy({ total: undefined as number | undefined })
 
   // shuffle related
@@ -161,9 +159,8 @@ class ShuffleOrderService implements IService {
 
   async loadMore(abortSignal: AbortSignal) {
     if (!this.hasMore) return
-    if (this.loaded) return
     const items = await this.fetch(abortSignal)
-    this.loaded = true
+    this.hasMore = false
     return items
   }
 
