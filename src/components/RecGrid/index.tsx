@@ -2,7 +2,7 @@
  * 推荐内容, 无限滚动
  */
 
-import { APP_CLS_CARD, APP_CLS_CARD_ACTIVE, APP_CLS_GRID, baseDebug } from '$common'
+import { APP_CLS_GRID, baseDebug } from '$common'
 import { useMittOn } from '$common/hooks/useMitt'
 import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
 import { useModalDislikeVisible } from '$components/ModalDislike'
@@ -485,7 +485,7 @@ const RecGridInner = memo(function ({
       gridChildren: Array.from({ length: cardCount })
         .fill(0)
         .map((_, index) => {
-          return <VideoCard key={index} loading={true} className={APP_CLS_CARD} tab={tab} />
+          return <VideoCard key={index} loading={true} tab={tab} />
         }),
     })
   }
@@ -521,7 +521,6 @@ const RecGridInner = memo(function ({
       return (
         <VideoCard
           key={item.uniqId}
-          className={clsx(APP_CLS_CARD, { [APP_CLS_CARD_ACTIVE]: active })}
           baseCss={[cardBorderCss, getActiveCardBorderCss(active)]}
           tab={tab}
           item={item}

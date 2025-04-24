@@ -172,3 +172,10 @@ export function useIsDisplayAsList() {
   const v = useSettingsSnapshot().style.pureRecommend.cardDisplay
   return isDisplayAsList(v)
 }
+
+// video-card 内部 z-index
+export const zIndexWatchlaterProgressBar = 2
+export const zIndexPreviewImageWrapper = 3
+export const zIndexMultiSelectBg = 4
+export const zIndexLeftMarks = 5 // top-left Marks
+export const zIndexRightActions = 6 // top-right Actions

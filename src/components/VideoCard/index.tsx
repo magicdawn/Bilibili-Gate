@@ -1,4 +1,11 @@
-import { APP_CLS_CARD, APP_CLS_CARD_COVER, APP_CLS_ROOT, APP_KEY_PREFIX, appWarn } from '$common'
+import {
+  APP_CLS_CARD,
+  APP_CLS_CARD_ACTIVE,
+  APP_CLS_CARD_COVER,
+  APP_CLS_ROOT,
+  APP_KEY_PREFIX,
+  appWarn,
+} from '$common'
 import { zIndexVideoCardContextMenu } from '$common/css-vars-export.module.scss'
 import { useLessFrequentFn } from '$common/hooks/useLessFrequentFn'
 import { useMittOn } from '$common/hooks/useMitt'
@@ -42,13 +49,13 @@ import { VideoCardActionStyle } from './child-components/VideoCardActions'
 import { VideoCardBottom } from './child-components/VideoCardBottom'
 import { BlacklistCard, DislikedCard, SkeletonCard } from './child-components/other-type-cards'
 import { useContextMenus } from './context-menus'
-import styles, { zIndexWatchlaterProgressBar } from './index.module.scss'
 import type { ECardDisplay, SharedEmitter, VideoCardEmitter } from './index.shared'
 import {
   defaultEmitter,
   defaultSharedEmitter,
   displayAsListCss,
   isDisplayAsList,
+  zIndexWatchlaterProgressBar,
 } from './index.shared'
 import type { IVideoCardData } from './process/normalize'
 import { normalizeCardData } from './process/normalize'
@@ -127,19 +134,22 @@ export const VideoCard = memo(function VideoCard({
   const isBlockedCard = showingDislikeCard || showingBlacklistCard
   const blockedCardCss = useBlockedCardCss(isBlockedCard)
 
+  const _className = clsx(
+    'bili-video-card',
+    APP_CLS_CARD,
+    { [APP_CLS_CARD_ACTIVE]: active },
+    'relative',
+    className,
+  )
+  const _css = [
+    baseCss,
+    blockedCardCss,
+    isDisplayAsList(cardDisplay) && displayAsListCss.card,
+    multiSelecting && multiSelected && multiSelectedCss,
+  ]
+
   return (
-    <div
-      style={style}
-      data-bvid={cardData?.bvid}
-      className={clsx('bili-video-card', styles.biliVideoCard, className)}
-      css={[
-        baseCss,
-        blockedCardCss,
-        isDisplayAsList(cardDisplay) && displayAsListCss.card,
-        multiSelecting && multiSelected && multiSelectedCss,
-      ]}
-      {...restProps}
-    >
+    <div data-bvid={cardData?.bvid} style={style} className={_className} css={_css} {...restProps}>
       {loading ? (
         <SkeletonCard loading={loading} />
       ) : (

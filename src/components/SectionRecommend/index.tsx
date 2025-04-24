@@ -1,4 +1,4 @@
-import { APP_CLS_CARD, baseDebug } from '$common'
+import { baseDebug } from '$common'
 import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
 import { useRefresh } from '$components/RecGrid/useRefresh'
 import { useCurrentUsingTab } from '$components/RecHeader/tab'
@@ -60,13 +60,7 @@ const TabContent = memo(function TabContent({
           ? skeletonPlaceholders.map((id) => <VideoCard key={id} tab={tab} />)
           : items.map((item) => {
               return item.api === EApiType.Separator ? null : (
-                <VideoCard
-                  key={item.uniqId}
-                  item={item}
-                  tab={tab}
-                  className={clsx(APP_CLS_CARD)}
-                  baseCss={cardBorderCss}
-                />
+                <VideoCard key={item.uniqId} item={item} tab={tab} baseCss={cardBorderCss} />
               )
             })}
       </div>

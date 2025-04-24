@@ -4,7 +4,7 @@ import { minmax } from '$utility/num'
 import { css } from '@emotion/react'
 import type { ComponentProps, ComponentPropsWithoutRef, ComponentRef } from 'react'
 import { videoCardBorderRadiusValue } from '../../css-vars'
-import { zIndexPreviewImageWrapper } from '../index.module.scss'
+import { zIndexPreviewImageWrapper } from '../index.shared'
 
 const S = {
   previewImageWrapper: css`

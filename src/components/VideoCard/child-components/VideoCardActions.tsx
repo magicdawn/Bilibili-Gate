@@ -4,7 +4,7 @@ import { css as _css, css } from '@emotion/react'
 import { useHover } from 'ahooks'
 import type { ComponentRef } from 'react'
 import { type ComponentProps, type ReactNode } from 'react'
-import { zIndexLeftMarks, zIndexRightActions } from '../index.module.scss'
+import { zIndexLeftMarks, zIndexRightActions } from '../index.shared'
 
 export type InlinePosition = 'left' | 'right'
 
