@@ -17,7 +17,7 @@ import { WatchlaterItemsOrder } from './watchlater-enum'
 export function WatchlaterUsageInfo({ service }: UsageInfoPropsFor<ETab.Watchlater>) {
   const { watchlaterAddSeparator, watchlaterItemsOrder } = useSettingsSnapshot()
   const onRefresh = useOnRefreshContext()
-  const { searchText } = useSnapshot(watchlaterStore)
+  const { searchText } = useSnapshot(watchlaterStore, { sync: true })
 
   // 切换 添加分割线 设置, 即时生效
   useUpdateEffect(() => {
@@ -53,7 +53,9 @@ export function WatchlaterUsageInfo({ service }: UsageInfoPropsFor<ETab.Watchlat
       <Input.Search
         allowClear
         placeholder='搜索稍后再看'
-        style={{ width: 200 }}
+        style={{ width: 180 }}
+        value={searchText}
+        onChange={(e) => (watchlaterStore.searchText = e.target.value)}
         onSearch={(val) => {
           watchlaterStore.searchText = val
           onRefresh?.()

@@ -65,9 +65,7 @@ export function SpaceUploadUsageInfo() {
           </AntdTooltip>
         }
         value={searchText}
-        onChange={(e) => {
-          spaceUploadStore.searchText = e.target.value
-        }}
+        onChange={(e) => (spaceUploadStore.searchText = e.target.value)}
         onSearch={(value) => {
           spaceUploadStore.searchText = value
           onRefresh?.()
@@ -78,9 +76,7 @@ export function SpaceUploadUsageInfo() {
         placeholder='本地过滤词'
         allowClear
         value={filterText}
-        onChange={(e) => {
-          spaceUploadStore.filterText = e.target.value
-        }}
+        onChange={(e) => (spaceUploadStore.filterText = e.target.value)}
         onSearch={(value) => {
           spaceUploadStore.filterText = value
           onRefresh?.()
