@@ -41,32 +41,3 @@ export function hasMarginLeft(className?: string) {
   const classList = getClassList(className)
   return classList.some((x) => x.startsWith('ml-') || x.startsWith('mx-'))
 }
-
-export function unoSimpleMerge(...classNames: Array<string | undefined>) {
-  const classList = classNames.map(getClassList).flat().filter(Boolean)
-  const map = new Map<string, string>()
-  for (const cls of classList) {
-    let clsSanitize = cls
-    if (/\[[\w-]+\]$/.test(cls)) {
-      clsSanitize = cls.replace(/(\[[\w-]+\])$/, function (match, p1) {
-        return '*'.repeat(p1.length)
-      })
-    }
-
-    const lastHyphenIndex = clsSanitize.lastIndexOf('-')
-    if (lastHyphenIndex === -1) {
-      map.set(cls, cls)
-      continue
-    }
-    const key = cls.slice(0, lastHyphenIndex)
-    map.set(key, cls)
-  }
-  return Array.from(map.values()).join(' ')
-}
-
-/**
- * @note 注意 `useMemo` deps array.length 不能变化
- */
-export function useUnoSimpleMerge(...classNames: Array<string | undefined>) {
-  return useMemo(() => unoSimpleMerge(...classNames), [...classNames])
-}

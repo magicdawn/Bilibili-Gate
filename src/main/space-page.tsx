@@ -8,10 +8,10 @@ import { FavQueryKey } from '$modules/rec-services/fav/store'
 import { IconForCollection } from '$modules/rec-services/fav/usage-info'
 import { SpaceUploadQueryKey } from '$modules/rec-services/space-upload/store'
 import { reusePendingPromise } from '$utility/async'
-import { useUnoSimpleMerge } from '$utility/css'
 import { poll, tryAction } from '$utility/dom'
 import { css } from '@emotion/react'
 import { type ComponentProps, type ReactNode } from 'react'
+import { useUnoMerge } from 'unocss-merge/react'
 import { proxy, useSnapshot } from 'valtio'
 
 export async function initSpacePage() {
@@ -205,7 +205,7 @@ function ActionButton({
   ...restProps
 }: ComponentProps<'a'> & { tooltip?: ReactNode }) {
   const { usingNewSpacePage } = useSnapshot(state)
-  const _className = useUnoSimpleMerge('w-150px rounded-6px', className)
+  const _className = useUnoMerge('w-150px rounded-6px', className)
   const btn = usingNewSpacePage ? (
     <a
       href={href}

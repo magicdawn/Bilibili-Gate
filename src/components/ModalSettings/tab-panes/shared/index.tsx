@@ -4,12 +4,12 @@ import {
   updateSettings,
   type LeafSettingsPath,
 } from '$modules/settings'
-import { useUnoSimpleMerge } from '$utility/css'
 import type { CssProp } from '$utility/type'
 import { css } from '@emotion/react'
 import { Button, Popconfirm } from 'antd'
 import type { ComponentProps, ReactNode } from 'react'
 import type { Merge } from 'type-fest'
+import { useUnoMerge } from 'unocss-merge/react'
 import IconParkOutlineReturn from '~icons/icon-park-outline/return'
 
 const S = {
@@ -76,7 +76,7 @@ export function SettingsGroup({
       <div
         css={[S.settingsGroupContent, contentCss]}
         data-role='settings-group-content'
-        className={useUnoSimpleMerge('flex flex-col gap-y-5px', contentClassName)}
+        className={useUnoMerge('flex flex-col gap-y-5px', contentClassName)}
       >
         {/* the content */}
         {children}

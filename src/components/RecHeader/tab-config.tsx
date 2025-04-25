@@ -11,11 +11,11 @@ import {
 } from '$modules/icon'
 import { favStore } from '$modules/rec-services/fav/store'
 import { isHotTabUsingShuffle } from '$modules/rec-services/hot'
-import { useUnoSimpleMerge } from '$utility/css'
 import { advancedSearchHelpInfo } from '$utility/search'
 import toast from '$utility/toast'
 import { css } from '@emotion/react'
 import { cloneElement, type ReactElement, type ReactNode } from 'react'
+import { useUnoMerge } from 'unocss-merge/react'
 import { ETab } from './tab-enum'
 
 export type TabConfigItem = {
@@ -112,7 +112,7 @@ type TabIconProps = {
 
 export function TabIcon({ tabKey, active, className }: TabIconProps) {
   const { icon } = TabConfig[tabKey]
-  const newClassName = useUnoSimpleMerge(icon.props.className, className)
+  const newClassName = useUnoMerge(icon.props.className, className)
   const cloned = cloneElement(icon, {
     css: icon.props.css,
     active: tabKey === ETab.Live ? active : undefined, // 否则 warn: svg recived boolean props
