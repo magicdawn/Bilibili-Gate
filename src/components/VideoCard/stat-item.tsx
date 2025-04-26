@@ -87,12 +87,11 @@ export const StatItemDisplay = memo(function ({ field, value }: StatItemType) {
     return <Component {...props} />
   }, [field])
 
+  // moveTextDown && 'relative top-0.5px'
   return (
     <span className='bili-video-card__stats--item inline-flex! justify-center items-center! mr-8px!'>
       {icon}
-      <span className={clsx('bili-video-card__stats--text', moveTextDown && 'relative top-0.5px')}>
-        {usingText}
-      </span>
+      <span className={clsx('bili-video-card__stats--text')}>{usingText}</span>
     </span>
   )
 })

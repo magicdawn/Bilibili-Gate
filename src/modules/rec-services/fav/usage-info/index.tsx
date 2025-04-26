@@ -66,7 +66,7 @@ export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
             type: 'group',
             label: (
               <span className='flex items-center gap-x-2px'>
-                <IconForOpenExternalLink className='size-15px' />
+                <IconForOpenExternalLink className='size-15px mt-2px' />
                 <a target='_blank' href={upSpaceUrl}>
                   @{upName}
                 </a>
@@ -75,7 +75,7 @@ export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
             children: collections.map((f) => {
               const key: FavStore['selectedKey'] = `fav-collection:${f.id}`
               const label = (
-                <span className='flex items-center gap-x-4px ml-9px'>
+                <span className='flex items-center gap-x-2px ml-8px'>
                   <IconForCollection className='size-15px' />
                   {f.title} ({f.media_count})
                 </span>
