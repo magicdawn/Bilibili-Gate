@@ -16,8 +16,6 @@ import {
 import type { NormalRankingItem } from '$modules/rec-services/hot/ranking/types'
 import { Dropdown } from 'antd'
 import type { CSSProperties, ReactNode } from 'react'
-import IconParkOutlineMore from '~icons/icon-park-outline/more'
-import PhCrownFill from '~icons/ph/crown-fill'
 import { useTooltip } from './child-components/VideoCardActions'
 import { useLinkNewTab } from './use/useOpenRelated'
 
@@ -66,7 +64,7 @@ export function RankingNumMark({ item }: { item: RankingItemExtend }) {
 
   const hasMedal = item.rankingNo <= 3
   const medalSymbols = ['🥇', '🥈', '🥉'] // emoji builtin, 可以换, 但是丑
-  const medalIcon = <PhCrownFill />
+  const medalIcon = <IconPhCrownFill />
 
   let hasOthers = false
   let others: NormalRankingItem[] = []

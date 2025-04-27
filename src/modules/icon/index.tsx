@@ -21,8 +21,8 @@ export const IconForPhone = IconParkOutlineIphone
 export const IconForPc = IconParkOutlineComputer
 export const IconForFollowedOnly = IconParkOutlineConcern
 export const IconForDynamicFeed = IconParkOutlineTumblr
-export const IconForFav = IconParkOutlineStar
-export const IconForFaved = IconParkSolidStar // faved variant
+export const IconForFav = IconCarbonStar
+export const IconForFaved = IconCarbonStarFilled // faved variant
 export const IconForHot = IconParkOutlineFire
 export const IconForSpaceUpload = IconLineMdUploadingLoop
 

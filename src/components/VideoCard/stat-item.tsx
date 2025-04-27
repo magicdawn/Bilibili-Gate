@@ -1,7 +1,7 @@
 import { IconForFav } from '$modules/icon'
 import { IconForStatDanmaku, IconForStatPlay } from '$modules/icon/stat-icons'
 import { formatCount } from '$utility/video'
-import type { ComponentProps, ComponentType, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { STAT_NUMBER_FALLBACK } from './index.shared'
 
 export const AllowedStatItemFields = [
@@ -30,22 +30,16 @@ export function defineStatItems(items: StatItemType[]) {
 /**
  * how to render these stat items
  */
-export const StatFieldIconConfig: Record<
-  StatItemField,
-  {
-    Component: ComponentType<ComponentProps<'svg'>>
-    size?: number
-    extraProps?: ComponentProps<'svg'>
-    moveTextDown?: boolean
-  }
-> = {
-  'play': { Component: IconForStatPlay }, // or #widget-play-count,
-  'danmaku': { Component: IconForStatDanmaku },
-  'like': { Component: IconParkOutlineThumbsUp, size: 15 },
-  'bangumi:follow': { Component: IconTablerHeartFilled, size: 15 },
-  'favorite': { Component: IconForFav, size: 15 },
-  'coin': { Component: IconTablerCoinYen, size: 15 },
-  'live:viewed-by': { Component: IconParkOutlinePreviewOpen },
+const clsForBiliIcon = 'size-18px'
+const clsForThirdPartyIcon = 'size-16px'
+export const StatFieldIconConfig: Record<StatItemField, ReactNode> = {
+  'play': <IconForStatPlay className={clsForBiliIcon} />, // or #widget-play-count,
+  'danmaku': <IconForStatDanmaku className={clsForBiliIcon} />,
+  'like': <IconParkOutlineThumbsUp className={clsForThirdPartyIcon} />,
+  'bangumi:follow': <IconTablerHeartFilled className={clsForThirdPartyIcon} />,
+  'favorite': <IconForFav className={clsForThirdPartyIcon} />,
+  'coin': <IconTablerCoinYen className={clsForThirdPartyIcon} />,
+  'live:viewed-by': <IconParkOutlinePreviewOpen className={clsForThirdPartyIcon} />,
 }
 
 /**
@@ -63,35 +57,21 @@ export function getField(id: number) {
 }
 
 export const StatItemDisplay = memo(function ({ field, value }: StatItemType) {
-  const text = value
-  const usingText = useMemo(() => {
-    if (typeof text === 'number' || (text && /^\d+$/.test(text))) {
-      return formatCount(Number(text)) ?? STAT_NUMBER_FALLBACK
+  const text = useMemo(() => {
+    if (typeof value === 'number' || (value && /^\d+$/.test(value))) {
+      return formatCount(Number(value)) ?? STAT_NUMBER_FALLBACK
     } else {
-      return text ?? STAT_NUMBER_FALLBACK
+      return value ?? STAT_NUMBER_FALLBACK
     }
-  }, [text])
+  }, [value])
 
-  const { Component, size, extraProps, moveTextDown = true } = StatFieldIconConfig[field]
-  const svgClassName = 'bili-video-card__stats--icon'
-  const icon: ReactNode = useMemo(() => {
-    const props: ComponentProps<'svg'> = {
-      ...extraProps,
-      className: clsx(svgClassName, extraProps?.className),
-      style: {
-        width: size,
-        height: size,
-        ...extraProps?.style,
-      },
-    }
-    return <Component {...props} />
-  }, [field])
+  const icon = StatFieldIconConfig[field]
 
-  // moveTextDown && 'relative top-0.5px'
+  // 对齐真难, 不同字体表现不同...
   return (
-    <span className='bili-video-card__stats--item inline-flex! justify-center items-center! mr-8px!'>
+    <span data-field={field} className='bili-video-card__stats--item mr-0! gap-x-2px'>
       {icon}
-      <span className={clsx('bili-video-card__stats--text')}>{usingText}</span>
+      <span className={clsx('bili-video-card__stats--text line-height-18px')}>{text}</span>
     </span>
   )
 })

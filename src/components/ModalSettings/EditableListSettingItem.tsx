@@ -13,7 +13,6 @@ import { css } from '@emotion/react'
 import { Empty, Input } from 'antd'
 import { uniq } from 'es-toolkit'
 import type { ComponentPropsWithoutRef } from 'react'
-import IconParkOutlineCloseSmall from '~icons/icon-park-outline/close-small'
 
 const { Search } = Input
 

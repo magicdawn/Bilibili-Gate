@@ -6,9 +6,6 @@ import { isMac } from '$ua'
 import { css } from '@emotion/react'
 import mitt, { type Emitter } from 'mitt'
 import type { ReactNode } from 'react'
-import AkarIconsMiniplayer from '~icons/akar-icons/miniplayer'
-import EosIconsBackgroundTasks from '~icons/eos-icons/background-tasks'
-import RiFullscreenFill from '~icons/ri/fullscreen-fill'
 
 export const STAT_NUMBER_FALLBACK = '0'
 
@@ -71,12 +68,12 @@ export const VideoLinkOpenModeConfig: Record<VideoLinkOpenMode, VideoLinkOpenMod
     desc: '不打开新标签页, 使用当前标签页打开, 适用于将网站作为应用安装场景',
   },
   [VideoLinkOpenMode.NormalWebFullscreen]: {
-    icon: <RiFullscreenFill className='size-15px' />,
+    icon: <IconRiFullscreenFill className='size-15px' />,
     label: '打开-网页全屏',
     desc: <>默认在新标签页中打开, 打开后自动网页全屏</>,
   },
   [VideoLinkOpenMode.Popup]: {
-    icon: <AkarIconsMiniplayer className='size-15px' />,
+    icon: <IconAkarIconsMiniplayer className='size-15px' />,
     label: '小窗打开',
     desc: (
       <>
@@ -94,7 +91,7 @@ export const VideoLinkOpenModeConfig: Record<VideoLinkOpenMode, VideoLinkOpenMod
     ),
   },
   [VideoLinkOpenMode.Background]: {
-    icon: <EosIconsBackgroundTasks className='size-15px' />,
+    icon: <IconEosIconsBackgroundTasks className='size-15px' />,
     label: '后台打开',
   },
   [VideoLinkOpenMode.Iina]: {

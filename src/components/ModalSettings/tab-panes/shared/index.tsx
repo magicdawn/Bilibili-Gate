@@ -10,7 +10,6 @@ import { Button, Popconfirm } from 'antd'
 import type { ComponentProps, ReactNode } from 'react'
 import type { Merge } from 'type-fest'
 import { useUnoMerge } from 'unocss-merge/react'
-import IconParkOutlineReturn from '~icons/icon-park-outline/return'
 
 const S = {
   tabPane: css`

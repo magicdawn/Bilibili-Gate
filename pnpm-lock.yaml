@@ -250,8 +250,8 @@ importers:
         specifier: ^2.5.2
         version: 2.5.2
       type-fest:
-        specifier: ^4.40.0
-        version: 4.40.0
+        specifier: ^4.40.1
+        version: 4.40.1
       typed-scss-modules:
         specifier: ^8.1.1
         version: 8.1.1(sass@1.87.0)
@@ -4184,8 +4184,8 @@ packages:
     resolution: {integrity: sha512-tLq3bSNx+xSpwvAJnzrK0Ep5CLNWjvFTOp71URMaAEWBfRb9nnJiBoUe0tF8bI4ZFO3omgBR6NvnbzVUT3Ly4g==}
     engines: {node: '>=14.16'}
 
-  type-fest@4.40.0:
-    resolution: {integrity: sha512-ABHZ2/tS2JkvH1PEjxFDTUWC8dB5OsIGZP4IFLhR293GqT5Y5qB1WwL2kMPYhQW9DVgVD8Hd7I8gjwPIf5GFkw==}
+  type-fest@4.40.1:
+    resolution: {integrity: sha512-9YvLNnORDpI+vghLU/Nf+zSv0kL47KbVJ1o3sKgoTefl6i+zebxbiDQWoe/oWWqPhIgQdRZRT1KA9sCPL810SA==}
     engines: {node: '>=16'}
 
   typed-scss-modules@8.1.1:
@@ -8470,7 +8470,7 @@ snapshots:
 
   type-fest@3.13.1: {}
 
-  type-fest@4.40.0: {}
+  type-fest@4.40.1: {}
 
   typed-scss-modules@8.1.1(sass@1.87.0):
     dependencies:

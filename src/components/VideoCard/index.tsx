@@ -629,7 +629,7 @@ const VideoCardInner = memo(function VideoCardInner({
           `,
         ]}
       >
-        <div className='bili-video-card__stats--left'>
+        <div className='bili-video-card__stats--left gap-x-4px xl:gap-x-8px'>
           {statItems.map(({ field, value }) => (
             <StatItemDisplay key={field} field={field} value={value} />
           ))}
