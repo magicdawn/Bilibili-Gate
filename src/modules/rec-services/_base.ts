@@ -1,9 +1,9 @@
 import { APP_CLS_TAB_BAR } from '$common'
 import type { RecItemTypeOrSeparator } from '$define'
 
-export type IService = {
+export type IService<T = RecItemTypeOrSeparator> = {
   hasMore: boolean
-  loadMore(abortSignal: AbortSignal): Promise<RecItemTypeOrSeparator[] | undefined>
+  loadMore(abortSignal: AbortSignal): Promise<T[] | undefined>
   usageInfo?: ReactNode
 }
 
@@ -12,9 +12,7 @@ export type ITabService = IService & {
   usageInfo: ReactNode
 }
 
-export abstract class BaseTabService<T extends RecItemTypeOrSeparator = RecItemTypeOrSeparator>
-  implements ITabService
-{
+export abstract class BaseTabService<T extends RecItemTypeOrSeparator = RecItemTypeOrSeparator> implements ITabService {
   abstract usageInfo: ReactNode
   abstract hasMoreExceptQueue: boolean
   abstract fetchMore(abortSignal: AbortSignal): Promise<T[] | undefined>
@@ -83,6 +81,10 @@ export class QueueStrategy<T = RecItemTypeOrSeparator> {
   restore() {
     this.bufferQueue = [...this.returnQueue, ...this.bufferQueue]
     this.returnQueue = []
+  }
+
+  get fetchedCount() {
+    return this.returnQueue.length + this.bufferQueue.length
   }
 }
 

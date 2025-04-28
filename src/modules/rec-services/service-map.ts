@@ -10,16 +10,13 @@ import { FavRecService, getFavServiceConfig } from './fav'
 import { HotRecService } from './hot'
 import { LiveRecService } from './live'
 import { PcRecService } from './pc'
-import { SpaceUploadService } from './space-upload'
-import { QUERY_SPACE_UPLOAD_MID, spaceUploadStore } from './space-upload/store'
+import { getSpaceUploadServiceConfig, SpaceUploadService } from './space-upload'
 import { WatchlaterRecService } from './watchlater'
 import { watchlaterStore } from './watchlater/store'
 
 export const REC_TABS = [ETab.KeepFollowOnly, ETab.PcRecommend, ETab.AppRecommend] satisfies ETab[]
 
-export function isRecTab(
-  tab: ETab,
-): tab is ETab.AppRecommend | ETab.PcRecommend | ETab.KeepFollowOnly {
+export function isRecTab(tab: ETab): tab is ETab.AppRecommend | ETab.PcRecommend | ETab.KeepFollowOnly {
   return REC_TABS.includes(tab)
 }
 
@@ -44,13 +41,7 @@ export const createServiceMap = {
   [ETab.Fav]: () => new FavRecService(getFavServiceConfig()),
   [ETab.Hot]: () => new HotRecService(),
   [ETab.Live]: () => new LiveRecService(),
-  [ETab.SpaceUpload]: () =>
-    new SpaceUploadService(
-      QUERY_SPACE_UPLOAD_MID!,
-      spaceUploadStore.order,
-      spaceUploadStore.searchText,
-      spaceUploadStore.filterText,
-    ),
+  [ETab.SpaceUpload]: () => new SpaceUploadService(getSpaceUploadServiceConfig()),
 } satisfies Record<ETab, (options: { existingService?: BaseTabService }) => BaseTabService>
 
 export type ServiceMapKey = keyof typeof createServiceMap

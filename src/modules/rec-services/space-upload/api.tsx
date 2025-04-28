@@ -2,8 +2,10 @@
  * https://socialsisteryi.github.io/bilibili-API-collect/docs/user/space.html#查询用户投稿视频明细
  */
 
+import { OPERATION_FAIL_MSG } from '$common'
 import { IconForFav, IconForPlayer, IconForTimestamp } from '$modules/icon'
-import { request } from '$request'
+import { isWebApiSuccess, request } from '$request'
+import pRetry from 'p-retry'
 import type { SpaceUploadJson } from './types/space-upload'
 
 export enum SpaceUploadOrder {
@@ -51,7 +53,12 @@ export async function getSpaceUpload({
   })
 
   const json = res.data as SpaceUploadJson
+  if (!isWebApiSuccess(json)) {
+    throw new Error('request json error: ' + json.message || OPERATION_FAIL_MSG)
+  }
+
   const items = json.data.list.vlist || []
+  const count = json.data.page.count
   let hasMore: boolean
   let endVol: number
   {
@@ -60,5 +67,13 @@ export async function getSpaceUpload({
     endVol = count - (pn - 1) * ps
   }
 
-  return { items, hasMore, endVol }
+  return { items, hasMore, count, endVol }
+}
+
+export async function tryGetSpaceUpload(...args: Parameters<typeof getSpaceUpload>) {
+  return await pRetry(() => getSpaceUpload(...args), {
+    retries: 5,
+    factor: 1.5,
+    onFailedAttempt: (err) => console.error(err),
+  })
 }

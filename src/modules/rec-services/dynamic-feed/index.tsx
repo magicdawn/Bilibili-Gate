@@ -1,12 +1,8 @@
 import { baseDebug } from '$common'
 import { CHARGE_ONLY_TEXT } from '$components/VideoCard/top-marks'
-import {
-  type DynamicFeedItem,
-  type DynamicFeedItemExtend,
-  type ItemsSeparator,
-  type LiveItemExtend,
-} from '$define'
+import { type DynamicFeedItem, type DynamicFeedItemExtend, type ItemsSeparator, type LiveItemExtend } from '$define'
 import { EApiType } from '$define/index.shared'
+import { getFollowGroupContent } from '$modules/bilibili/me/follow-group'
 import { settings } from '$modules/settings'
 import { parseSearchInput } from '$utility/search'
 import type { Nullable } from '$utility/type'
@@ -19,12 +15,7 @@ import { BaseTabService, QueueStrategy } from '../_base'
 import { LiveRecService } from '../live'
 import { ELiveStatus } from '../live/live-enum'
 import { fetchVideoDynamicFeeds } from './api'
-import {
-  hasLocalDynamicFeedCache,
-  localDynamicFeedCache,
-  performIncrementalUpdateIfNeed,
-} from './cache'
-import { getFollowGroupContent } from './group'
+import { hasLocalDynamicFeedCache, localDynamicFeedCache, performIncrementalUpdateIfNeed } from './cache'
 import { FollowGroupMergeTimelineService } from './group/merge-timeline-service'
 import {
   DF_SELECTED_KEY_ALL,
@@ -211,8 +202,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
   private shouldEnableMergeTimeline(midCount: number) {
     return (
       this.config.forceUseMergeTime ||
-      (midCount > 0 &&
-        midCount <= FollowGroupMergeTimelineService.ENABLE_MERGE_TIMELINE_UPMID_COUNT_THRESHOLD) // <- 太多了则从全部过滤
+      (midCount > 0 && midCount <= FollowGroupMergeTimelineService.ENABLE_MERGE_TIMELINE_UPMID_COUNT_THRESHOLD) // <- 太多了则从全部过滤
     )
   }
   private groupMergeTimelineService: FollowGroupMergeTimelineService | undefined
@@ -225,9 +215,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
       const mids = await getFollowGroupContent(this.groupId)
       this.groupMids = new Set(mids)
       if (this.shouldEnableMergeTimeline(mids.length)) {
-        this.groupMergeTimelineService = new FollowGroupMergeTimelineService(
-          mids.map((x) => x.toString()),
-        )
+        this.groupMergeTimelineService = new FollowGroupMergeTimelineService(mids.map((x) => x.toString()))
       }
     } finally {
       this.groupMidsLoaded = true
@@ -308,9 +296,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
       if (!this._queueForSearchCache) {
         await performIncrementalUpdateIfNeed(this.upMid)
         this._queueForSearchCache = new QueueStrategy<DynamicFeedItem>(20)
-        this._queueForSearchCache.bufferQueue = (
-          (await localDynamicFeedCache.get(this.upMid)) || []
-        ).filter((x) => {
+        this._queueForSearchCache.bufferQueue = ((await localDynamicFeedCache.get(this.upMid)) || []).filter((x) => {
           const title = x?.modules?.module_dynamic?.major?.archive?.title || ''
           return filterBySearchText({
             searchText: this.searchText!,
@@ -396,8 +382,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
       // by 充电专属
       .filter((x) => {
         if (!this.hideChargeOnlyVideos) return true
-        const chargeOnly =
-          (x.modules?.module_dynamic?.major?.archive?.badge?.text as string) === CHARGE_ONLY_TEXT
+        const chargeOnly = (x.modules?.module_dynamic?.major?.archive?.badge?.text as string) === CHARGE_ONLY_TEXT
         return !chargeOnly
       })
 
@@ -572,9 +557,7 @@ function insertIndexFinderViaPubTsRange(lower: number, upper: number) {
 }
 
 function getTodaySeparatorInsertIndex(items: AllowedItemType[]) {
-  const index = items.findIndex(
-    (x) => x.api === EApiType.Live && x.live_status === ELiveStatus.Streaming,
-  )
+  const index = items.findIndex((x) => x.api === EApiType.Live && x.live_status === ELiveStatus.Streaming)
   if (index !== -1) return index
   const todayInsertIndexFinder = insertIndexFinderViaPubTsRange(
     dayjs().startOf('day').unix(),

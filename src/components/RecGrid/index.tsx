@@ -10,11 +10,7 @@ import { useCurrentUsingTab, useSortedTabKeys } from '$components/RecHeader/tab'
 import { EHotSubTab, ETab } from '$components/RecHeader/tab-enum'
 import { VideoCard } from '$components/VideoCard'
 import { getActiveCardBorderCss, useCardBorderCss } from '$components/VideoCard/card-border-css'
-import {
-  createSharedEmitter,
-  type VideoCardEmitter,
-  type VideoCardEvents,
-} from '$components/VideoCard/index.shared'
+import { createSharedEmitter, type VideoCardEmitter, type VideoCardEvents } from '$components/VideoCard/index.shared'
 import { filterRecItems } from '$components/VideoCard/process/filter'
 import type { IVideoCardData } from '$components/VideoCard/process/normalize'
 import { useLinkTarget } from '$components/VideoCard/use/useOpenRelated'
@@ -81,11 +77,7 @@ export const RecGrid = forwardRef<RecGridRef, RecGridProps>(function (props, ref
 
   const tabOrders = useSortedTabKeys()
   const direction = useMemo(() => {
-    return prevTab
-      ? tabOrders.indexOf(tab) > tabOrders.indexOf(prevTab)
-        ? 'right'
-        : 'left'
-      : undefined
+    return prevTab ? (tabOrders.indexOf(tab) > tabOrders.indexOf(prevTab) ? 'right' : 'left') : undefined
   }, [tabOrders, tab]) // only SYNC with `tab`
 
   return (
@@ -249,22 +241,13 @@ const RecGridInner = memo(function ({
     {
       const currentState = getState()
       if (!isEqual(startingState, currentState)) {
-        debug(
-          'loadMore: skip update for mismatch refresh state, %o != %o',
-          startingState,
-          currentState,
-        )
+        debug('loadMore: skip update for mismatch refresh state, %o != %o', startingState, currentState)
         unlock(lockKey)
         return
       }
     }
 
-    debug(
-      'loadMore: seq(%s) len %s -> %s',
-      loadCompleteCountBox.val + 1,
-      itemsBox.val.length,
-      newItems.length,
-    )
+    debug('loadMore: seq(%s) len %s -> %s', loadCompleteCountBox.val + 1, itemsBox.val.length, newItems.length)
     hasMoreBox.set(newHasMore)
     itemsBox.set(newItems)
     loadCompleteCountBox.set((c) => c + 1)
@@ -317,9 +300,7 @@ const RecGridInner = memo(function ({
 
   const sharedEmitter = useMemo(() => createSharedEmitter(), [])
 
-  const [activeLargePreviewUniqId, setActiveLargePreviewUniqId] = useState<string | undefined>(
-    undefined,
-  )
+  const [activeLargePreviewUniqId, setActiveLargePreviewUniqId] = useState<string | undefined>(undefined)
   useMittOn(sharedEmitter, 'show-large-preview', setActiveLargePreviewUniqId)
   const activeLargePreviewItemIndex = useMemo(() => {
     if (!activeLargePreviewUniqId) return
@@ -409,10 +390,7 @@ const RecGridInner = memo(function ({
   })
   const footerInViewRef = useLatest(__footerInView)
   const footer = (
-    <div
-      ref={footerRef}
-      className='flex items-center justify-center py-30px text-size-120% grid-col-span-full'
-    >
+    <div ref={footerRef} className='flex items-center justify-center py-30px text-size-120% grid-col-span-full'>
       {!refreshing && (
         <>
           {hasMore ? (
@@ -449,16 +427,9 @@ const RecGridInner = memo(function ({
   }, [footer, containerRef, gridClassName])
 
   // 总是 render grid, getColumnCount 依赖 grid columns
-  const render = ({
-    gridChildren,
-    gridSiblings,
-  }: { gridChildren?: ReactNode; gridSiblings?: ReactNode } = {}) => {
+  const render = ({ gridChildren, gridSiblings }: { gridChildren?: ReactNode; gridSiblings?: ReactNode } = {}) => {
     return (
-      <div
-        ref={containerRef}
-        className={clsx('min-h-100vh', classNames.videoGridContainer)}
-        data-tab={tab}
-      >
+      <div ref={containerRef} className={clsx('min-h-100vh', classNames.videoGridContainer)} data-tab={tab}>
         <div className={gridClassName} data-tab={tab}>
           {gridChildren}
         </div>
@@ -571,10 +542,10 @@ const isAxiosError = (err: any): err is AxiosError => {
 function inspectErr(err: any): ReactNode {
   const nodes: ReactNode[] = []
 
-  const wrapParagraph = (node: ReactNode) => <p className='mt-10px'>{node}</p>
+  const wrapParagraph = (key: string, node: ReactNode) => <p className='mt-10px'>{node}</p>
 
   if (!(err instanceof Error)) {
-    nodes.push(JSON.stringify(err))
+    nodes.push(<Fragment key='json-stringify-err'>{JSON.stringify(err)}</Fragment>)
   }
   // Error
   else {
@@ -582,6 +553,7 @@ function inspectErr(err: any): ReactNode {
     if (err.stack) {
       nodes.push(
         wrapParagraph(
+          'error-stack',
           <>
             Error Stack: <br />
             {err.stack}
@@ -589,12 +561,12 @@ function inspectErr(err: any): ReactNode {
         ),
       )
     } else {
-      nodes.push(wrapParagraph(<>Error Message: {err.message}</>))
+      nodes.push(wrapParagraph('error-message', <>Error Message: {err.message}</>))
     }
 
     // add error cause
     if (err.cause) {
-      nodes.push(wrapParagraph(<>Error Cause: {inspectErr(err.cause)}</>))
+      nodes.push(wrapParagraph('error-cause', <>Error Cause: {inspectErr(err.cause)}</>))
     }
 
     // if it's axios error
@@ -604,7 +576,7 @@ function inspectErr(err: any): ReactNode {
       if (_err.config?.params?.access_key) {
         _err.config.params.access_key = '*'.repeat(_err.config.params.access_key.length)
       }
-      nodes.push(wrapParagraph(<>axios config: {JSON.stringify(_err.config, null, 2)}</>))
+      nodes.push(wrapParagraph('axios-config', <>axios config: {JSON.stringify(_err.config, null, 2)}</>))
     }
   }
 

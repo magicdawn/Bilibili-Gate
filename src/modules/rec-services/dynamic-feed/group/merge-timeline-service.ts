@@ -43,11 +43,7 @@ export class FollowGroupUpService {
   }
 
   async fillQueue(minimalQueueSize: number, abortSignal: AbortSignal) {
-    while (
-      !abortSignal?.aborted &&
-      this.hasMoreForApi &&
-      this.bufferQueue.length < minimalQueueSize
-    ) {
+    while (!abortSignal?.aborted && this.hasMoreForApi && this.bufferQueue.length < minimalQueueSize) {
       const items = await this.loadMore()
       this.bufferQueue.push(...items)
     }
@@ -63,8 +59,7 @@ export class FollowGroupMergeTimelineService {
 
   upServices: FollowGroupUpService[] = []
   constructor(public upMids: UpMidType[]) {
-    const enableHeadCache =
-      upMids.length > FollowGroupMergeTimelineService.ENABLE_HEAD_CACHE_UPMID_COUNT_THRESHOLD
+    const enableHeadCache = upMids.length > FollowGroupMergeTimelineService.ENABLE_HEAD_CACHE_UPMID_COUNT_THRESHOLD
     this.upServices = upMids.map((upMid) => new FollowGroupUpService(upMid, enableHeadCache))
   }
 

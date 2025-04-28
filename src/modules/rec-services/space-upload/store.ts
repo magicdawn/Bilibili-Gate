@@ -3,20 +3,31 @@ import { SpaceUploadOrder } from './api'
 
 export enum SpaceUploadQueryKey {
   Mid = 'space-mid',
+  GroupId = 'space-group-id',
   SearchText = 'space-search-text',
+  FilterText = 'space-filter-text',
 }
 
 const searchParams = new URLSearchParams(location.search)
 export const QUERY_SPACE_UPLOAD_MID = searchParams.get(SpaceUploadQueryKey.Mid) || undefined
-export const QUERY_SPACE_UPLOAD_SEARCH_TEXT =
-  searchParams.get(SpaceUploadQueryKey.SearchText) || undefined
+export const QUERY_SPACE_UPLOAD_GROUP_ID = searchParams.get(SpaceUploadQueryKey.GroupId) || undefined
+export const QUERY_SPACE_UPLOAD_SEARCH_TEXT = searchParams.get(SpaceUploadQueryKey.SearchText) || undefined
+export const QUERY_SPACE_UPLOAD_FILTER_TEXT = searchParams.get(SpaceUploadQueryKey.FilterText) || undefined
 
-export const SHOW_SPACE_UPLOAD_ONLY = !!QUERY_SPACE_UPLOAD_MID
+const mids = (QUERY_SPACE_UPLOAD_MID || '')
+  .split(/[,_-]/) // `-` / `_` 不需要 url encode, `,` 需要
+  .map((x) => x.trim())
+  .filter(Boolean)
+  .filter((x) => /^\d+$/.test(x))
+const groupId = QUERY_SPACE_UPLOAD_GROUP_ID ? Number(QUERY_SPACE_UPLOAD_GROUP_ID) : undefined
+export const SHOW_SPACE_UPLOAD_ONLY = !!(mids.length || groupId)
 
 const store = proxy({
+  mids,
+  groupId,
   order: SpaceUploadOrder.Latest,
   searchText: QUERY_SPACE_UPLOAD_SEARCH_TEXT as string | undefined,
-  filterText: undefined as string | undefined,
+  filterText: QUERY_SPACE_UPLOAD_FILTER_TEXT as string | undefined,
 })
 
 export { store as spaceUploadStore }

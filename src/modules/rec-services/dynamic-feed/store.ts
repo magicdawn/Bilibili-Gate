@@ -1,4 +1,5 @@
 import { IN_BILIBILI_HOMEPAGE } from '$common'
+import { getAllFollowGroups } from '$modules/bilibili/me/follow-group'
 import { settings } from '$modules/settings'
 import { getUid } from '$utility/cookie'
 import { setPageTitle, whenIdle } from '$utility/dom'
@@ -6,7 +7,6 @@ import { proxyMapWithGmStorage, proxySetWithGmStorage, subscribeOnKeys } from '$
 import { delay } from 'es-toolkit'
 import ms from 'ms'
 import { proxy } from 'valtio'
-import { getAllFollowGroups } from './group'
 import type { FollowGroup } from './group/types/groups'
 import { getRecentUpdateUpList } from './up'
 import type { DynamicPortalUp } from './up/portal-types'
@@ -99,9 +99,7 @@ const hideChargeOnlyVideosForKeysSet = (
   await proxySetWithGmStorage<string>('dynamic-feed:hide-charge-only-videos-for-keys')
 ).set
 
-const addSeparatorsMap = (
-  await proxyMapWithGmStorage<string, boolean>('dynamic-feed:add-separators')
-).map
+const addSeparatorsMap = (await proxyMapWithGmStorage<string, boolean>('dynamic-feed:add-separators')).map
 
 /**
  * df expand to `dynamic-feed`
@@ -177,10 +175,7 @@ export const dfInfoStore = proxy<{ followGroupInfo: FollowGroupInfo }>({
 
 async function updateUpList(force = false) {
   const cacheHit =
-    !force &&
-    dfStore.upList.length &&
-    dfStore.upListUpdatedAt &&
-    dfStore.upListUpdatedAt - Date.now() < ms('5min')
+    !force && dfStore.upList.length && dfStore.upListUpdatedAt && dfStore.upListUpdatedAt - Date.now() < ms('5min')
   if (cacheHit) return
 
   const list = await getRecentUpdateUpList()
@@ -192,20 +187,15 @@ async function updateGroups(force = false) {
   {
     const { followGroup, whenViewAll } = settings.dynamicFeed
     const enabled =
-      followGroup.enabled ||
-      !!whenViewAll.hideIds.filter((x) => x.startsWith(DF_SELECTED_KEY_PREFIX_GROUP)).length
+      followGroup.enabled || !!whenViewAll.hideIds.filter((x) => x.startsWith(DF_SELECTED_KEY_PREFIX_GROUP)).length
     if (!enabled) return
   }
 
   const cacheHit =
-    !force &&
-    dfStore.groups.length &&
-    dfStore.groupsUpdatedAt &&
-    dfStore.groupsUpdatedAt - Date.now() < ms('1h')
+    !force && dfStore.groups.length && dfStore.groupsUpdatedAt && dfStore.groupsUpdatedAt - Date.now() < ms('1h')
   if (cacheHit) return
 
-  const groups = await getAllFollowGroups()
-  dfStore.groups = groups.filter((x) => !!x.count)
+  dfStore.groups = await getAllFollowGroups({ removeEmpty: true })
   dfStore.groupsUpdatedAt = Date.now()
 }
 
@@ -231,11 +221,7 @@ if (QUERY_DYNAMIC_UP_MID) {
     dfStore,
     ['upName', 'searchText', 'selectedGroup', 'viewingSomeUp', 'viewingAll'],
     ({ upName, searchText, selectedGroup, viewingSomeUp, viewingAll }) => {
-      let title = viewingAll
-        ? '动态'
-        : viewingSomeUp
-          ? `「${upName}」的动态`
-          : `「${selectedGroup?.name}」分组动态`
+      let title = viewingAll ? '动态' : viewingSomeUp ? `「${upName}」的动态` : `「${selectedGroup?.name}」分组动态`
       if (searchText) {
         title = `🔍【${searchText}】 - ` + title
       }

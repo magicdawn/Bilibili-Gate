@@ -26,30 +26,38 @@ const fixAntdInputSearchAddonCss = css`
 `
 
 export function SpaceUploadUsageInfo() {
-  const { searchText, filterText } = useSnapshot(spaceUploadStore, { sync: true })
+  const { searchText, filterText, mids, groupId } = useSnapshot(spaceUploadStore, { sync: true })
   const { order } = useSnapshot(spaceUploadStore)
   const onRefresh = useOnRefreshContext()
 
-  const onSyncSearchTextToUrl = useMemoizedFn(() => {
+  const onSyncStoreToUrl = useMemoizedFn(() => {
     const u = new URL(location.href)
-    const { searchText } = spaceUploadStore
-    if (searchText) {
-      u.searchParams.set(SpaceUploadQueryKey.SearchText, searchText)
-    } else {
-      u.searchParams.delete(SpaceUploadQueryKey.SearchText)
-    }
+    const { searchText, filterText } = spaceUploadStore
+    searchText
+      ? u.searchParams.set(SpaceUploadQueryKey.SearchText, searchText)
+      : u.searchParams.delete(SpaceUploadQueryKey.SearchText)
+    filterText
+      ? u.searchParams.set(SpaceUploadQueryKey.FilterText, filterText)
+      : u.searchParams.delete(SpaceUploadQueryKey.FilterText)
     location.href = u.href
   })
+
+  const isMultiple = mids.length > 1 || !!groupId
+  const allowedOrders = useMemo(
+    () => [SpaceUploadOrder.Latest, SpaceUploadOrder.View, !isMultiple && SpaceUploadOrder.Fav].filter(Boolean),
+    [isMultiple],
+  )
+  const switcherValue = allowedOrders.includes(order) ? order : allowedOrders[0]
 
   return (
     <div className='flex items-center gap-x-10px'>
       <GenericOrderSwitcher<SpaceUploadOrder>
-        value={order}
+        value={switcherValue}
         onChange={(value) => {
           spaceUploadStore.order = value
           onRefresh?.()
         }}
-        list={[SpaceUploadOrder.Latest, SpaceUploadOrder.View, SpaceUploadOrder.Fav]}
+        list={allowedOrders}
         listDisplayConfig={SpaceUploadOrderConfig}
       />
       <Input.Search
@@ -59,7 +67,7 @@ export function SpaceUploadUsageInfo() {
         css={fixAntdInputSearchAddonCss}
         addonAfter={
           <AntdTooltip title='同步搜索词到 URL'>
-            <Button className='size-32px inline-flex-center p-0' onClick={onSyncSearchTextToUrl}>
+            <Button className='size-32px inline-flex-center p-0' onClick={onSyncStoreToUrl}>
               <IconCarbonUrl className='size-20px' />
             </Button>
           </AntdTooltip>
@@ -72,9 +80,17 @@ export function SpaceUploadUsageInfo() {
         }}
       />
       <Input.Search
-        style={{ width: 180 }}
+        style={{ width: 200 }}
         placeholder='本地过滤词'
         allowClear
+        css={fixAntdInputSearchAddonCss}
+        addonAfter={
+          <AntdTooltip title='同步过滤词到 URL'>
+            <Button className='size-32px inline-flex-center p-0' onClick={onSyncStoreToUrl}>
+              <IconCarbonUrl className='size-20px' />
+            </Button>
+          </AntdTooltip>
+        }
         value={filterText}
         onChange={(e) => (spaceUploadStore.filterText = e.target.value)}
         onSearch={(value) => {
@@ -83,11 +99,7 @@ export function SpaceUploadUsageInfo() {
         }}
       />
 
-      <CheckboxSettingItem
-        configPath='spaceUpload.showVol'
-        label={'显示序号'}
-        className='flex-none'
-      />
+      <CheckboxSettingItem configPath='spaceUpload.showVol' label={'显示序号'} className='flex-none' />
 
       <CopyBvidButtonsUsageInfo />
     </div>

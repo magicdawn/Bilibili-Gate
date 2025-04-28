@@ -9,8 +9,7 @@ import type { FollowGroupsJson } from './types/groups'
 /**
  * 其中返回的没有 "悄悄关注", 而且悄悄关注使用 API /x/relation/whispers
  */
-
-export async function getAllFollowGroups() {
+export async function getAllFollowGroups({ removeEmpty = true }: { removeEmpty?: boolean } = {}) {
   const params = await encWbi({
     web_location: '0.0',
     w_webid: (await get_w_webId()) || '',
@@ -18,6 +17,9 @@ export async function getAllFollowGroups() {
   const res = await request.get('/x/relation/tags', { params })
   const json = res.data as FollowGroupsJson
   const groups = json.data || []
+  if (removeEmpty) {
+    return groups.filter((x) => !!x.count)
+  }
   return groups
 }
 
