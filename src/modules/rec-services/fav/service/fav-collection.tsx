@@ -13,10 +13,7 @@ import { formatBvidUrl, formatFavCollectionUrl } from '../fav-url'
 import { type IFavInnerService } from '../index'
 import { favStore } from '../store'
 import type { FavItemExtend } from '../types'
-import type {
-  FavCollectionDetailInfo,
-  FavCollectionDetailMedia,
-} from '../types/collections/collection-detail'
+import type { FavCollectionDetailInfo, FavCollectionDetailMedia } from '../types/collections/collection-detail'
 import { FavItemsOrderSwitcher } from '../usage-info/fav-items-order'
 import { FAV_PAGE_SIZE, favSeparatorCss } from './_base'
 
@@ -54,9 +51,7 @@ export class FavCollectionService implements IFavInnerService {
     info: undefined as FavCollectionDetailInfo | undefined,
   })
 
-  async loadMore(
-    abortSignal: AbortSignal,
-  ): Promise<(FavItemExtend | ItemsSeparator)[] | undefined> {
+  async loadMore(abortSignal: AbortSignal): Promise<(FavItemExtend | ItemsSeparator)[] | undefined> {
     if (!this.hasMore) return
 
     if (this.addSeparator && !this.separatorAdded) {
@@ -96,18 +91,12 @@ export class FavCollectionService implements IFavInnerService {
     }
 
     let sliced: FavItemExtend[]
-    ;[sliced, this.bufferQueue] = [
-      this.bufferQueue.slice(0, FAV_PAGE_SIZE),
-      this.bufferQueue.slice(FAV_PAGE_SIZE),
-    ]
+    ;[sliced, this.bufferQueue] = [this.bufferQueue.slice(0, FAV_PAGE_SIZE), this.bufferQueue.slice(FAV_PAGE_SIZE)]
     return sliced
   }
 
   // 合集返回的数据没有头像, 这里通过 space-acc-info 补全
-  private async loadUserAvatarFromSpaceAccInfo(
-    items: FavCollectionDetailMedia[],
-    abortSignal: AbortSignal,
-  ) {
+  private async loadUserAvatarFromSpaceAccInfo(items: FavCollectionDetailMedia[], abortSignal: AbortSignal) {
     if (!items.length) return
 
     const midsCount = countBy(items, (x) => x.upper.mid)
@@ -151,10 +140,7 @@ export function FavCollectionSeparator({ service }: { service: FavCollectionServ
           </>
         }
       >
-        <CustomTargetLink
-          href={formatFavCollectionUrl(service.collectionId)}
-          css={favSeparatorCss.item}
-        >
+        <CustomTargetLink href={formatFavCollectionUrl(service.collectionId)} css={favSeparatorCss.item}>
           <IconForOpenExternalLink className='size-16px' />
           {info?.title}
         </CustomTargetLink>

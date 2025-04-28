@@ -4,10 +4,7 @@ import { ETab } from '$components/RecHeader/tab-enum'
 import type { RecItemTypeOrSeparator } from '$define'
 import { DisposableStackPolyfill } from '$modules/polyfills/explicit-resource-management'
 import { getGridRefreshCount } from '$modules/rec-services'
-import {
-  getDynamicFeedServiceConfig,
-  type DynamicFeedRecService,
-} from '$modules/rec-services/dynamic-feed'
+import { getDynamicFeedServiceConfig, type DynamicFeedRecService } from '$modules/rec-services/dynamic-feed'
 import { getFavServiceConfig, type FavRecService } from '$modules/rec-services/fav'
 import { hotStore, type HotRecService } from '$modules/rec-services/hot'
 import { useUnmount } from 'ahooks'
@@ -54,9 +51,7 @@ export function useRefresh({
 
   const refreshingBox = useRefStateBox(false)
   const refreshTsBox = useRefStateBox<number>(() => Date.now())
-  const [refreshAbortController, setRefreshAbortController] = useState<AbortController>(
-    () => new AbortController(),
-  )
+  const [refreshAbortController, setRefreshAbortController] = useState<AbortController>(() => new AbortController())
   const [showSkeleton, setShowSkeleton] = useState(false)
   const [error, setError] = useState<any>(undefined)
 
@@ -82,10 +77,7 @@ export function useRefresh({
       let s: DynamicFeedRecService | FavRecService | HotRecService | undefined
 
       const debugSameTabConditionsChange = () =>
-        debug(
-          'refresh(): tab=%s [start], current refreshing, sametab but conditions change, abort existing',
-          tab,
-        )
+        debug('refresh(): tab=%s [start], current refreshing, sametab but conditions change, abort existing', tab)
 
       // dynamic-feed: conditions changed
       if (
@@ -97,25 +89,14 @@ export function useRefresh({
         refreshAbortController.abort()
       }
       // fav: conditions changed
-      else if (
-        tab === ETab.Fav &&
-        (s = servicesRegistry.val[ETab.Fav]) &&
-        !isEqual(s.config, getFavServiceConfig())
-      ) {
+      else if (tab === ETab.Fav && (s = servicesRegistry.val[ETab.Fav]) && !isEqual(s.config, getFavServiceConfig())) {
         debugSameTabConditionsChange()
         refreshAbortController.abort()
       }
 
       // has sub-tabs
-      else if (
-        tab === ETab.Hot &&
-        (s = servicesRegistry.val[ETab.Hot]) &&
-        s.subtab !== hotStore.subtab
-      ) {
-        debug(
-          'refresh(): tab=%s [start], current refreshing, sametab but subtab changed, abort existing',
-          tab,
-        )
+      else if (tab === ETab.Hot && (s = servicesRegistry.val[ETab.Hot]) && s.subtab !== hotStore.subtab) {
+        debug('refresh(): tab=%s [start], current refreshing, sametab but subtab changed, abort existing', tab)
         refreshAbortController.abort()
       }
 

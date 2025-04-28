@@ -4,12 +4,7 @@ import { ECardDisplay, VideoLinkOpenMode } from '$components/VideoCard/index.sha
 import { EAppApiDevice } from '$define/index.shared'
 import { reciveGmValueUpdatesFromOtherTab } from '$modules/gm'
 import { WatchlaterItemsOrder } from '$modules/rec-services/watchlater/watchlater-enum'
-import {
-  getLeafPaths,
-  type BooleanPaths,
-  type LeafPaths,
-  type ListPaths,
-} from '$utility/object-paths'
+import { getLeafPaths, type BooleanPaths, type LeafPaths, type ListPaths } from '$utility/object-paths'
 import toast from '$utility/toast'
 import { cloneDeep, isNil } from 'es-toolkit'
 import { get, set } from 'es-toolkit/compat'
@@ -286,11 +281,7 @@ export const allowedLeafSettingsPaths = getLeafPaths(initialSettings)
 export const internalBooleanPaths = allowedLeafSettingsPaths.filter(
   (p) => p.includes('__internal') && typeof get(initialSettings, p) === 'boolean',
 ) as BooleanSettingsPath[]
-debug(
-  'allowedLeafSettingsPaths = %O, internalBooleanPaths = %O',
-  allowedLeafSettingsPaths,
-  internalBooleanPaths,
-)
+debug('allowedLeafSettingsPaths = %O, internalBooleanPaths = %O', allowedLeafSettingsPaths, internalBooleanPaths)
 
 export function useSettingsSnapshot() {
   return useSnapshot(settings)
@@ -371,14 +362,8 @@ export function runSettingsMigration(val: object | undefined) {
   const config: Array<[configPath: LeafSettingsPath, legacyConfigPath: string]> = [
     ['dynamicFeed.showLive', 'dynamicFeedShowLive'],
     ['dynamicFeed.followGroup.enabled', 'dynamicFeedFollowGroupEnabled'],
-    [
-      'dynamicFeed.followGroup.forceUseMergeTimelineIds',
-      'dynamicFeedFollowGroupForceUseMergeTimelineIds',
-    ],
-    [
-      'dynamicFeed.whenViewAll.enableHideSomeContents',
-      'dynamicFeedWhenViewAllEnableHideSomeContents',
-    ],
+    ['dynamicFeed.followGroup.forceUseMergeTimelineIds', 'dynamicFeedFollowGroupForceUseMergeTimelineIds'],
+    ['dynamicFeed.whenViewAll.enableHideSomeContents', 'dynamicFeedWhenViewAllEnableHideSomeContents'],
     ['dynamicFeed.whenViewAll.hideIds', 'dynamicFeedWhenViewAllHideIds'],
     ['dynamicFeed.advancedSearch', 'dynamicFeedAdvancedSearch'],
 
@@ -467,10 +452,7 @@ export async function getNewestValueOfSettingsInnerArray<P extends ListSettingsP
   return (get(newest, path) || get(getSettingsSnapshot(), path)) as SettingsInnerArrayItem<P>[]
 }
 
-export function setSettingsInnerArray<P extends ListSettingsPath>(
-  path: P,
-  value: SettingsInnerArrayItem<P>[],
-) {
+export function setSettingsInnerArray<P extends ListSettingsPath>(path: P, value: SettingsInnerArrayItem<P>[]) {
   set(settings, path, value)
 }
 

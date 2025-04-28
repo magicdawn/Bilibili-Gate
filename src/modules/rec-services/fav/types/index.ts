@@ -1,8 +1,5 @@
 import type { EApiType } from '$define/index.shared'
-import type {
-  FavCollectionDetailInfo,
-  FavCollectionDetailMedia,
-} from './collections/collection-detail'
+import type { FavCollectionDetailInfo, FavCollectionDetailMedia } from './collections/collection-detail'
 import type { FavFolderDetailInfo, FavFolderDetailMedia } from './folders/list-folder-items'
 
 export type FavItem =

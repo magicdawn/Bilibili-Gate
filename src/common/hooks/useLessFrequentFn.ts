@@ -4,11 +4,7 @@ import type { AnyFunction } from '$utility/type'
  * harder: 越来越难触发
  */
 
-export function createLessFrequentFn<T extends AnyFunction>(
-  fn: T,
-  initialTargetTimes: number,
-  harder = true,
-) {
+export function createLessFrequentFn<T extends AnyFunction>(fn: T, initialTargetTimes: number, harder = true) {
   let times = 0
   let targetTimes = initialTargetTimes
   return (...args: Parameters<T>): ReturnType<T> | undefined => {
@@ -21,11 +17,7 @@ export function createLessFrequentFn<T extends AnyFunction>(
   }
 }
 
-export function useLessFrequentFn<T extends AnyFunction>(
-  fn: T,
-  initialTargetTimes: number,
-  harder = true,
-) {
+export function useLessFrequentFn<T extends AnyFunction>(fn: T, initialTargetTimes: number, harder = true) {
   const _fn = useMemoizedFn(fn)
   return useMemo(() => {
     return createLessFrequentFn(_fn, initialTargetTimes, harder)

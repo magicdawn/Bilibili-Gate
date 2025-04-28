@@ -44,8 +44,7 @@ export const QUERY_FAV_FOLDER_ID = parseId(
 )
 
 export const SHOW_FAV_TAB_ONLY =
-  IN_BILIBILI_HOMEPAGE &&
-  (typeof QUERY_FAV_FOLDER_ID === 'number' || typeof QUERY_FAV_COLLECTION_ID === 'number')
+  IN_BILIBILI_HOMEPAGE && (typeof QUERY_FAV_FOLDER_ID === 'number' || typeof QUERY_FAV_COLLECTION_ID === 'number')
 
 export const favStore = proxy({
   // methods
@@ -121,10 +120,7 @@ async function setupFavStore() {
   if (SHOW_FAV_TAB_ONLY) return
 
   const storageKey = 'fav-store'
-  const persistStoreKeys = [
-    'selectedFavFolderId',
-    'selectedFavCollectionId',
-  ] as const satisfies (keyof FavStore)[]
+  const persistStoreKeys = ['selectedFavFolderId', 'selectedFavCollectionId'] as const satisfies (keyof FavStore)[]
 
   // load
   const val = await GM.getValue(storageKey)
@@ -146,10 +142,7 @@ async function setupFavStore() {
   })
 }
 
-export function updateFavFolderMediaCount(
-  targetFavFolderId: number,
-  count: number | ((old: number) => number),
-) {
+export function updateFavFolderMediaCount(targetFavFolderId: number, count: number | ((old: number) => number)) {
   const folder = favStore.favFolders.find((x) => x.id === targetFavFolderId)
   if (!folder) return
 
@@ -186,11 +179,7 @@ const _updateCollectionList = reusePendingPromise(async () => {
 async function updateCollectionList(force = false) {
   if (force) return
   const { favCollections, favCollectionsUpdateAt } = favStore
-  if (
-    favCollections.length &&
-    favCollectionsUpdateAt &&
-    Date.now() - favCollectionsUpdateAt < ms('5min')
-  ) {
+  if (favCollections.length && favCollectionsUpdateAt && Date.now() - favCollectionsUpdateAt < ms('5min')) {
     return
   }
   return _updateCollectionList()

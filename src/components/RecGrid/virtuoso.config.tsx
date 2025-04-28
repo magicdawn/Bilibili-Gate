@@ -26,9 +26,7 @@ export type CustomGridContext = {
 type __PropsOf<TComponent> = TComponent extends ComponentType<infer P> ? P : never
 export type CustomGridComponents = GridComponents<CustomGridContext>
 type CustomGridComponentsContextRequired = {
-  [key in keyof CustomGridComponents]: ComponentType<
-    SetRequired<__PropsOf<CustomGridComponents[key]>, 'context'>
-  >
+  [key in keyof CustomGridComponents]: ComponentType<SetRequired<__PropsOf<CustomGridComponents[key]>, 'context'>>
 }
 
 // Ensure that this stays out of the component,

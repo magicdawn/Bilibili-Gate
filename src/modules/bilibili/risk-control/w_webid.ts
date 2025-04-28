@@ -32,9 +32,7 @@ const __fetch_w_webId = reusePendingPromise(async () => {
   const parser = new DOMParser()
   const parsed = parser.parseFromString(html, 'text/html')
 
-  const jsonText = decodeURIComponent(
-    parsed.getElementById('__RENDER_DATA__')?.innerText.trim() || '',
-  )
+  const jsonText = decodeURIComponent(parsed.getElementById('__RENDER_DATA__')?.innerText.trim() || '')
   if (!jsonText) return
 
   const id = (JSON.parse(jsonText) as any)?.access_id

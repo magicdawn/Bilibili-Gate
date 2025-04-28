@@ -10,8 +10,7 @@ import type { DraftListJSON } from './types/draft-list'
 import type { DraftViewJSON } from './types/draft-view'
 
 async function listAll() {
-  const json = (await request.get('https://member.bilibili.com/x/web/draft/list'))
-    .data as DraftListJSON
+  const json = (await request.get('https://member.bilibili.com/x/web/draft/list')).data as DraftListJSON
   const drafts = json.artlist?.drafts || []
   return drafts
 }
@@ -46,8 +45,7 @@ async function addupdate(
     ...payload,
   })
 
-  const json = (await request.post('/x/article/creative/draft/addupdate', form))
-    .data as AddUpdateJSON
+  const json = (await request.post('/x/article/creative/draft/addupdate', form)).data as AddUpdateJSON
   const aid = json?.data?.aid?.toString()
   const success = isWebApiSuccess(json)
   if (!success) {

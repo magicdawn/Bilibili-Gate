@@ -12,13 +12,7 @@ const btnAccessKeyHelpLink = (
   </Button>
 )
 
-export function AccessKeyManage({
-  style,
-  className,
-}: {
-  style?: CSSProperties
-  className?: string
-}) {
+export function AccessKeyManage({ style, className }: { style?: CSSProperties; className?: string }) {
   const { runAsync, loading } = useRequest(getAccessKey, { manual: true })
   const { accessKey } = useSettingsSnapshot()
   const onDeleteAccessKey = deleteAccessKey

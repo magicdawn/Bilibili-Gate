@@ -125,10 +125,7 @@ export function useTooltip({
   const triggerRef = useRef<ComponentRef<'div'> | null>(null)
   const hovering = useHover(triggerRef)
   const tooltipEl = (
-    <span
-      style={{ display: hovering ? 'block' : 'none' }}
-      css={S.tooltip(inlinePosition, tooltipOffset)}
-    >
+    <span style={{ display: hovering ? 'block' : 'none' }} css={S.tooltip(inlinePosition, tooltipOffset)}>
       {tooltip}
     </span>
   )

@@ -98,8 +98,7 @@ export function wrapWithIdbCache<T extends AnyAsyncFunction>({
     },
   })
 
-  const fnLimited =
-    concurrency && concurrency > 0 ? (limitFunction(fnMemoized, { concurrency }) as T) : fnMemoized
+  const fnLimited = concurrency && concurrency > 0 ? (limitFunction(fnMemoized, { concurrency }) as T) : fnMemoized
 
   Object.defineProperties(fnLimited, {
     cache: { value: cache },

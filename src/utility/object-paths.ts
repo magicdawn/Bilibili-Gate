@@ -42,9 +42,7 @@ export type Paths<T, D extends number = 10> = [D] extends [never]
     ? ''
     : T extends object
       ? {
-          [K in keyof T]-?: K extends string | number
-            ? `${K}` | Join<K, Paths<T[K], Prev[D]>>
-            : never
+          [K in keyof T]-?: K extends string | number ? `${K}` | Join<K, Paths<T[K], Prev[D]>> : never
         }[keyof T]
       : ''
 
@@ -199,11 +197,7 @@ export type LeafPaths<T, D extends number = 10> = [D] extends [never]
  * ```
  */
 
-export function getPaths<T extends object>(
-  obj: T,
-  parentPath = '',
-  result: string[] = [],
-): Paths<T>[] {
+export function getPaths<T extends object>(obj: T, parentPath = '', result: string[] = []): Paths<T>[] {
   // Add current path if it's not empty (not root level)
   if (parentPath) {
     result.push(parentPath)
@@ -299,12 +293,7 @@ export function getListPaths<T extends object>(obj: T, parentPath = ''): ListPat
 
     if (Array.isArray(value)) {
       result.push(currentPath)
-    } else if (
-      value &&
-      typeof value === 'object' &&
-      !(value instanceof Date) &&
-      !(value instanceof RegExp)
-    ) {
+    } else if (value && typeof value === 'object' && !(value instanceof Date) && !(value instanceof RegExp)) {
       result.push(...getListPaths(value as object, currentPath))
     }
   }

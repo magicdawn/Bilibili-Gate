@@ -1,5 +1,6 @@
 import { IN_BILIBILI_HOMEPAGE } from '$common'
 import { getAllFollowGroups } from '$modules/bilibili/me/follow-group'
+import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 import { settings } from '$modules/settings'
 import { getUid } from '$utility/cookie'
 import { setPageTitle, whenIdle } from '$utility/dom'
@@ -7,7 +8,6 @@ import { proxyMapWithGmStorage, proxySetWithGmStorage, subscribeOnKeys } from '$
 import { delay } from 'es-toolkit'
 import ms from 'ms'
 import { proxy } from 'valtio'
-import type { FollowGroup } from './group/types/groups'
 import { getRecentUpdateUpList } from './up'
 import type { DynamicPortalUp } from './up/portal-types'
 

@@ -24,10 +24,7 @@ export const SkeletonCard = memo(function SkeletonCard({ loading }: { loading: b
         [clsSkeletonActive]: loading,
       })}
     >
-      <div
-        className='bili-video-card__skeleton--cover'
-        style={{ borderRadius: videoCardBorderRadiusValue }}
-      />
+      <div className='bili-video-card__skeleton--cover' style={{ borderRadius: videoCardBorderRadiusValue }} />
       <div className='bili-video-card__skeleton--info px-5px'>
         <div className='bili-video-card__skeleton--avatar size-32px rounded-full' />
         <div className='bili-video-card__skeleton--right flex-1 ml-10px'>
@@ -151,9 +148,7 @@ export const DislikedCard = memo(function DislikedCard({
         <div css={blockedCardCss.coverInner}>
           <IconParkOutlineDistraughtFace className='size-32px mb-5px' />
           <div css={blockedCardCss.dislikeReason}>{dislikedReason?.name}</div>
-          <div css={blockedCardCss.dislikeDesc}>
-            {dislikedReason?.toast || '将减少此类内容推荐'}
-          </div>
+          <div css={blockedCardCss.dislikeDesc}>{dislikedReason?.toast || '将减少此类内容推荐'}</div>
         </div>
       </div>
       <__BottomRevertAction item={item} cardData={cardData} onClick={onCancelDislike} />

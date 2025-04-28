@@ -12,14 +12,7 @@ import {
 } from '$components/RecGrid/unsafe-window-export'
 import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import { ETab } from '$components/RecHeader/tab-enum'
-import {
-  isDynamicFeed,
-  isFav,
-  isLive,
-  isWatchlater,
-  type DynamicFeedItemExtend,
-  type RecItemType,
-} from '$define'
+import { isDynamicFeed, isFav, isLive, isWatchlater, type DynamicFeedItemExtend, type RecItemType } from '$define'
 import { EApiType } from '$define/index.shared'
 import { antMessage, defineAntMenus, type AntMenuItem } from '$modules/antd'
 import { UserBlacklistService } from '$modules/bilibili/me/relations/blacklist'
@@ -175,8 +168,7 @@ export function useContextMenus({
    */
   const followed =
     item.api === EApiType.DynamicFeed ||
-    ((item.api === EApiType.AppRecommend || item.api === EApiType.PcRecommend) &&
-      getFollowedStatus(recommendReason))
+    ((item.api === EApiType.AppRecommend || item.api === EApiType.PcRecommend) && getFollowedStatus(recommendReason))
   const hasUnfollowEntry = followed
   const onUnfollowUp = useMemoizedFn(async () => {
     if (!authorMid) return
@@ -207,10 +199,7 @@ export function useContextMenus({
 
   // 不再 stick on camelCase 后, 腰不酸了, 腿不疼了~
   const hasEntry_addMidTo_dynamicFeedWhenViewAllHideIds =
-    enableHideSomeContents &&
-    isDynamicFeed(item) &&
-    dfStore.selectedKey === DF_SELECTED_KEY_ALL &&
-    !!authorMid
+    enableHideSomeContents && isDynamicFeed(item) && dfStore.selectedKey === DF_SELECTED_KEY_ALL && !!authorMid
   const onAddMidTo_dynamicFeedWhenViewAllHideIds = useMemoizedFn(async () => {
     if (!hasEntry_addMidTo_dynamicFeedWhenViewAllHideIds) return
     await updateSettingsInnerArray('dynamicFeed.whenViewAll.hideIds', {
@@ -242,8 +231,7 @@ export function useContextMenus({
             (x) => x.api === EApiType.DynamicFeed && x.id_str === item.id_str,
           )
           const prevIdStr =
-            (currentGridItems[currentIndexInGrid - 1] as DynamicFeedItemExtend | undefined)
-              ?.id_str || item.id_str // 上一项的 id_str
+            (currentGridItems[currentIndexInGrid - 1] as DynamicFeedItemExtend | undefined)?.id_str || item.id_str // 上一项的 id_str
           u.searchParams.set(DynamicFeedQueryKey.Offset, prevIdStr)
           openNewTab(u.href)
         },
@@ -374,9 +362,7 @@ export function useContextMenus({
         ) : (
           <IconForFav className='size-15px' />
         ),
-        label: favFolderNames?.length
-          ? `已收藏 ${favFolderNames.map((n) => `「${n}」`).join('')}`
-          : '快速收藏',
+        label: favFolderNames?.length ? `已收藏 ${favFolderNames.map((n) => `「${n}」`).join('')}` : '快速收藏',
         async onClick() {
           if (!avid) return
 
@@ -471,10 +457,7 @@ export function useContextMenus({
                   icon: <IconMaterialSymbolsDeleteOutlineRounded className='size-15px' />,
                   async onClick() {
                     if (!isFav(item)) return
-                    const success = await UserFavService.removeFav(
-                      item.folder.id,
-                      `${item.id}:${item.type}`,
-                    )
+                    const success = await UserFavService.removeFav(item.folder.id, `${item.id}:${item.type}`)
                     if (success) {
                       await delay(1000)
                       onRemoveCurrent?.(item, cardData)

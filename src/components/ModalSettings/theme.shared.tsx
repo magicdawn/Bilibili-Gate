@@ -157,8 +157,7 @@ const ALL_THEMES = ThemeGroups.map((x) => x.themes).flat()
  */
 export function getCurrentTheme() {
   const theme =
-    ALL_THEMES.find((t) => t.id === (settings.theme || DEFAULT_BILI_PINK_THEME.id)) ||
-    DEFAULT_BILI_PINK_THEME
+    ALL_THEMES.find((t) => t.id === (settings.theme || DEFAULT_BILI_PINK_THEME.id)) || DEFAULT_BILI_PINK_THEME
   if (theme.id === COLOR_PICKER_THEME.id && settings.colorPickerThemeSelectedColor) {
     theme.colorPrimary = settings.colorPickerThemeSelectedColor
   }

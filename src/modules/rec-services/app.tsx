@@ -112,18 +112,12 @@ export class AppRecService extends BaseTabService<RecItemType> {
     const allServices: IService[] = []
     const rate = 7 / 3
     allServices.push(...this.otherTabServices)
-    times(Math.round(rate * this.otherTabServices.length), () =>
-      allServices.push(this.innerService),
-    )
+    times(Math.round(rate * this.otherTabServices.length), () => allServices.push(this.innerService))
     this.allServices = shuffle(allServices)
   }
 
   override get hasMore() {
-    return (
-      !!this.qs.bufferQueue.length ||
-      this.innerService.hasMore ||
-      this.otherTabServices.some((s) => s.hasMore)
-    )
+    return !!this.qs.bufferQueue.length || this.innerService.hasMore || this.otherTabServices.some((s) => s.hasMore)
   }
 
   override hasMoreExceptQueue = true
@@ -141,9 +135,7 @@ export class AppRecService extends BaseTabService<RecItemType> {
       const restServices = this.allServices.filter((s) => s.hasMore)
       if (!restServices.length) break
       const pickedServices = shuffle(restServices).slice(0, 3)
-      const more = (
-        await Promise.all(pickedServices.map(async (s) => (await s.loadMore(abortSignal)) || []))
-      )
+      const more = (await Promise.all(pickedServices.map(async (s) => (await s.loadMore(abortSignal)) || [])))
         .flat()
         .filter((x) => x.api !== EApiType.Separator)
       this.qs.bufferQueue.push(...more)
@@ -256,10 +248,7 @@ class AppRecInnerService implements IService {
 /**
  * 已关注作为重要的推荐理由, 值得使用详情 API 补充时间
  */
-export async function fetchAppRecommendFollowedPubDate(
-  item: RecItemType,
-  cardData: IVideoCardData,
-) {
+export async function fetchAppRecommendFollowedPubDate(item: RecItemType, cardData: IVideoCardData) {
   const { bvid, goto, recommendReason } = cardData
   const isNormalVideo = goto === 'av'
   const shouldFetch =

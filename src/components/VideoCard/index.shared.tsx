@@ -40,9 +40,7 @@ export enum VideoLinkOpenMode {
   Iina = 'Iina',
 }
 
-export const VideoLinkOpenModeKey: Record<VideoLinkOpenMode, string> = Object.entries(
-  VideoLinkOpenMode,
-).reduce(
+export const VideoLinkOpenModeKey: Record<VideoLinkOpenMode, string> = Object.entries(VideoLinkOpenMode).reduce(
   (record, [key, value]) => {
     return { ...record, [value]: `LinkOpenMode.${key}` }
   },
@@ -78,10 +76,7 @@ export const VideoLinkOpenModeConfig: Record<VideoLinkOpenMode, VideoLinkOpenMod
     desc: (
       <>
         当{' '}
-        <a
-          href='https://developer.chrome.com/docs/web-platform/document-picture-in-picture'
-          target='_blank'
-        >
+        <a href='https://developer.chrome.com/docs/web-platform/document-picture-in-picture' target='_blank'>
           「文档画中画」API
         </a>{' '}
         可用时, 会使用「文档画中画」的形式: 窗口置顶 + 播放页网页全屏.
@@ -100,10 +95,7 @@ export const VideoLinkOpenModeConfig: Record<VideoLinkOpenMode, VideoLinkOpenMod
     enabled: isMac,
     desc: (
       <>
-        <a
-          href='https://github.com/magicdawn/bilibili-gate/blob/main/notes/iina.md'
-          target='_blank'
-        >
+        <a href='https://github.com/magicdawn/bilibili-gate/blob/main/notes/iina.md' target='_blank'>
           macOS IINA 设置教程
         </a>
       </>

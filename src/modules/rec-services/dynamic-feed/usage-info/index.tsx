@@ -116,10 +116,7 @@ export function DynamicFeedUsageInfo() {
         icon: avatar,
         // label: up.uname,
         label: (
-          <span
-            title={up.uname}
-            className='block max-w-130px text-ellipsis whitespace-nowrap overflow-hidden'
-          >
+          <span title={up.uname} className='block max-w-130px text-ellipsis whitespace-nowrap overflow-hidden'>
             {up.uname}
           </span>
         ),
@@ -159,11 +156,7 @@ export function DynamicFeedUsageInfo() {
         selectedKeys: [selectedKey],
       }}
     >
-      <Button
-        icon={dropdownButtonIcon}
-        className='gap-4px'
-        css={[scopeDropdownOpen && buttonOpenCss]}
-      >
+      <Button icon={dropdownButtonIcon} className='gap-4px' css={[scopeDropdownOpen && buttonOpenCss]}>
         {dropdownButtonLabel}
       </Button>
     </Dropdown>

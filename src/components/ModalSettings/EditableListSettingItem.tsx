@@ -52,9 +52,7 @@ export function EditableListSettingItem({
           // clear: 非受控组件, 有内部状态, 不能简单设置 input.value
           if (e?.target) {
             const el = e.target as HTMLElement
-            const clearBtn = el
-              .closest('.ant-input-wrapper')
-              ?.querySelector<HTMLElement>('.ant-input-clear-icon')
+            const clearBtn = el.closest('.ant-input-wrapper')?.querySelector<HTMLElement>('.ant-input-clear-icon')
             clearBtn?.click()
           }
         }}
@@ -97,9 +95,7 @@ export function EditableListSettingItem({
                     await updateSettingsInnerArray(configPath, { remove: [tag] })
                   }}
                   renderTag={
-                    configPath === 'filter.byAuthor.keywords'
-                      ? (tag) => <UpTagItemDisplay tag={tag} />
-                      : undefined
+                    configPath === 'filter.byAuthor.keywords' ? (tag) => <UpTagItemDisplay tag={tag} /> : undefined
                   }
                 />
               )
@@ -209,12 +205,7 @@ function UpTagItemDisplay({ tag }: { tag: string }) {
   return (
     <>
       <AntdTooltip title={tooltip}>
-        <span
-          className={clsx(
-            'inline-flex items-center justify-center',
-            mid ? 'cursor-pointer' : 'cursor-[edit]',
-          )}
-        >
+        <span className={clsx('inline-flex items-center justify-center', mid ? 'cursor-pointer' : 'cursor-[edit]')}>
           {mid && <IconRadixIconsPerson className='size-12px mr-2px' />}
           {mid ? (
             <a href={formatSpaceUrl(mid)} target='_blank' style={{ color: 'inherit' }}>

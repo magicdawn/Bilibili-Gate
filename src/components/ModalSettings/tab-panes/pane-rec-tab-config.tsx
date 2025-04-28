@@ -7,9 +7,9 @@ import { bgLv2Value, bgLv3Value } from '$components/css-vars'
 import { EAppApiDevice } from '$define/index.shared'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
+import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 import { getUserNickname } from '$modules/bilibili/user/nickname'
 import { appRecShowContentFromOtherTabEl } from '$modules/rec-services/app'
-import type { FollowGroup } from '$modules/rec-services/dynamic-feed/group/types/groups'
 import {
   IconForGroup,
   IconForUp,
@@ -22,21 +22,11 @@ import {
   dfStore,
 } from '$modules/rec-services/dynamic-feed/store'
 import { FollowGroupMechanismNote } from '$modules/rec-services/dynamic-feed/usage-info/popover-related'
-import {
-  settings,
-  updateSettings,
-  updateSettingsInnerArray,
-  useSettingsSnapshot,
-} from '$modules/settings'
+import { settings, updateSettings, updateSettingsInnerArray, useSettingsSnapshot } from '$modules/settings'
 import type { DragEndEvent } from '@dnd-kit/core'
 import { DndContext, PointerSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core'
 import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers'
-import {
-  SortableContext,
-  arrayMove,
-  useSortable,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable'
+import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { css } from '@emotion/react'
 import { Checkbox, Collapse, Empty, Radio, Space } from 'antd'
@@ -141,10 +131,7 @@ export function TabPaneRecTabsConfig() {
                 tooltip={
                   <>
                     查看「全部」动态时 <br />
-                    {explainForFlag(
-                      '将添加右键菜单, 点击可添加到「全部」动态的过滤列表',
-                      '关闭此功能',
-                    )}
+                    {explainForFlag('将添加右键菜单, 点击可添加到「全部」动态的过滤列表', '关闭此功能')}
                   </>
                 }
               />
@@ -199,10 +186,7 @@ export function TabPaneRecTabsConfig() {
 
 function useCurrentShowingTabKeys(): ETab[] {
   const { hidingTabKeys } = useSettingsSnapshot()
-  return useMemo(
-    () => CONFIGURABLE_TAB_KEYS.filter((key) => !hidingTabKeys.includes(key)),
-    [hidingTabKeys],
-  )
+  return useMemo(() => CONFIGURABLE_TAB_KEYS.filter((key) => !hidingTabKeys.includes(key)), [hidingTabKeys])
 }
 
 function VideoSourceTabOrder({ className, style }: { className?: string; style?: CSSProperties }) {
@@ -254,8 +238,7 @@ function VideoSourceTabOrder({ className, style }: { className?: string; style?:
 }
 
 function VideoSourceTabSortableItem({ id }: { id: ETab }) {
-  const { attributes, listeners, setNodeRef, transform, transition, setActivatorNodeRef } =
-    useSortable({ id })
+  const { attributes, listeners, setNodeRef, transform, transition, setActivatorNodeRef } = useSortable({ id })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -356,13 +339,7 @@ function DynamicFeedWhenViewAllHideIdsPanel() {
   )
 }
 
-function DynamicFeedWhenViewAllHideIdTag({
-  tag,
-  followGroups,
-}: {
-  tag: string
-  followGroups?: FollowGroup[]
-}) {
+function DynamicFeedWhenViewAllHideIdTag({ tag, followGroups }: { tag: string; followGroups?: FollowGroup[] }) {
   let mid: string | undefined
   let followGroupId: string | undefined
   let invalid = false
@@ -411,8 +388,7 @@ function DynamicFeedWhenViewAllHideIdTag({
   )
 
   const href = useMemo(
-    () =>
-      mid ? formatSpaceUrl(mid) : followGroupId ? formatFollowGroupUrl(followGroupId) : undefined,
+    () => (mid ? formatSpaceUrl(mid) : followGroupId ? formatFollowGroupUrl(followGroupId) : undefined),
     [mid, followGroupId],
   )
 

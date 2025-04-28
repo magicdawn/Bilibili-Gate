@@ -1,11 +1,4 @@
-import {
-  APP_CLS_CARD,
-  APP_CLS_CARD_ACTIVE,
-  APP_CLS_CARD_COVER,
-  APP_CLS_ROOT,
-  APP_KEY_PREFIX,
-  appWarn,
-} from '$common'
+import { APP_CLS_CARD, APP_CLS_CARD_ACTIVE, APP_CLS_CARD_COVER, APP_CLS_ROOT, APP_KEY_PREFIX, appWarn } from '$common'
 import { zIndexVideoCardContextMenu } from '$common/css-vars-export.module.scss'
 import { useLessFrequentFn } from '$common/hooks/useLessFrequentFn'
 import { useMittOn } from '$common/hooks/useMitt'
@@ -67,14 +60,7 @@ import {
   isVideoPreviewDataValid,
 } from './services'
 import { StatItemDisplay } from './stat-item'
-import {
-  ApiTypeTag,
-  ChargeOnlyTag,
-  isChargeOnlyVideo,
-  LiveBadge,
-  RankingNumMark,
-  VolMark,
-} from './top-marks'
+import { ApiTypeTag, ChargeOnlyTag, isChargeOnlyVideo, LiveBadge, RankingNumMark, VolMark } from './top-marks'
 import { useDislikeRelated } from './use/useDislikeRelated'
 import { useLargePreviewRelated } from './use/useLargePreview'
 import { useMultiSelectRelated } from './use/useMultiSelect'
@@ -134,13 +120,7 @@ export const VideoCard = memo(function VideoCard({
   const isBlockedCard = showingDislikeCard || showingBlacklistCard
   const blockedCardCss = useBlockedCardCss(isBlockedCard)
 
-  const _className = clsx(
-    'bili-video-card',
-    APP_CLS_CARD,
-    { [APP_CLS_CARD_ACTIVE]: active },
-    'relative',
-    className,
-  )
+  const _className = clsx('bili-video-card', APP_CLS_CARD, { [APP_CLS_CARD_ACTIVE]: active }, 'relative', className)
   const _css = [
     baseCss,
     blockedCardCss,
@@ -524,9 +504,7 @@ const VideoCardInner = memo(function VideoCardInner({
     _isStreaming && <LiveBadge key='LiveBadge' />,
 
     // App推荐: 来自其他 Tab 的内容
-    tab === ETab.AppRecommend && !isAppRecommend(item) && !isLive(item) && (
-      <ApiTypeTag key='ApiTypeTag' item={item} />
-    ),
+    tab === ETab.AppRecommend && !isAppRecommend(item) && !isLive(item) && <ApiTypeTag key='ApiTypeTag' item={item} />,
 
     // 投稿: 显示序号
     _isSpaceUploadShowVol && <VolMark key='VolMark' vol={item.vol} />,
@@ -636,9 +614,7 @@ const VideoCardInner = memo(function VideoCardInner({
         </div>
         {/* 时长 */}
         {/* 番剧没有 duration 字段 */}
-        <span className='bili-video-card__stats__duration relative top-0.5px'>
-          {isNormalVideo && durationStr}
-        </span>
+        <span className='bili-video-card__stats__duration relative top-0.5px'>{isNormalVideo && durationStr}</span>
       </div>
 
       {watchlaterProgressBar}

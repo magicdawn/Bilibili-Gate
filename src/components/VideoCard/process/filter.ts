@@ -24,11 +24,7 @@ export function anyFilterEnabled(tab: ETab) {
   }
 
   // 推荐 / 热门
-  const mayNeedCheck_blacklist_filterByUp_filterByTitle = [
-    ETab.AppRecommend,
-    ETab.PcRecommend,
-    ETab.Hot,
-  ].includes(tab)
+  const mayNeedCheck_blacklist_filterByUp_filterByTitle = [ETab.AppRecommend, ETab.PcRecommend, ETab.Hot].includes(tab)
   if (mayNeedCheck_blacklist_filterByUp_filterByTitle) {
     if (
       blacklistMids.size ||
@@ -100,18 +96,8 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
     // just keep it
     if (item.api === EApiType.Separator) return true
 
-    const {
-      play,
-      duration,
-      danmaku,
-      recommendReason,
-      goto,
-      authorName,
-      authorMid,
-      title,
-      bvid,
-      href,
-    } = normalizeCardData(item)
+    const { play, duration, danmaku, recommendReason, goto, authorName, authorMid, title, bvid, href } =
+      normalizeCardData(item)
     const followed = getFollowedStatus(recommendReason)
 
     /**
@@ -131,16 +117,8 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
       }
 
       // up
-      if (
-        filter.enabled &&
-        byAuthor.enabled &&
-        (blockUpMids.size || blockUpNames.size) &&
-        (authorName || authorMid)
-      ) {
-        if (
-          (authorName && blockUpNames.has(authorName)) ||
-          (authorMid && blockUpMids.has(authorMid))
-        ) {
+      if (filter.enabled && byAuthor.enabled && (blockUpMids.size || blockUpNames.size) && (authorName || authorMid)) {
+        if ((authorName && blockUpNames.has(authorName)) || (authorMid && blockUpMids.has(authorMid))) {
           debug('filter out by author-rule: %o', {
             authorName,
             authorMid,
@@ -218,12 +196,7 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
       }
 
       // play
-      if (
-        minPlayCount.enabled &&
-        minPlayCount.value &&
-        typeof play === 'number' &&
-        play < minPlayCount.value
-      ) {
+      if (minPlayCount.enabled && minPlayCount.value && typeof play === 'number' && play < minPlayCount.value) {
         debug('filter out by min-play-count-rule: %s < %s, %o', play, minPlayCount.value, {
           bvid,
           title,

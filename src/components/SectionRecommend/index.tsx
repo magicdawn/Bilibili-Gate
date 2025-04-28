@@ -52,10 +52,7 @@ const TabContent = memo(function TabContent({
   return (
     <section data-area='推荐'>
       <RecHeader refreshing={refreshing} onRefresh={refresh} />
-      <div
-        className={clsx(videoGrid, limitTwoLines, videoGridBiliFeed4)}
-        style={{ marginBottom: 30 }}
-      >
+      <div className={clsx(videoGrid, limitTwoLines, videoGridBiliFeed4)} style={{ marginBottom: 30 }}>
         {displaySkeleton
           ? skeletonPlaceholders.map((id) => <VideoCard key={id} tab={tab} />)
           : items.map((item) => {

@@ -25,14 +25,8 @@ export const IconForCollection = IconIonLayersOutline
 
 export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
   const { fav } = useSettingsSnapshot()
-  const {
-    favFolders,
-    selectedFavFolder,
-    favCollections,
-    selectedFavCollection,
-    selectedLabel,
-    selectedKey,
-  } = useSnapshot(favStore)
+  const { favFolders, selectedFavFolder, favCollections, selectedFavCollection, selectedLabel, selectedKey } =
+    useSnapshot(favStore)
   const onRefresh = useOnRefreshContext()
   const { ref, getPopupContainer } = usePopupContainer()
 
@@ -204,18 +198,14 @@ export function ViewingAllExcludeFolderConfig({
 
   const [excludeFavFolderIdsChanged, setExcludeFavFolderIdsChanged] = useState(false)
 
-  const handleChange = useMemoizedFn(
-    (newTargetKeys: Key[], direction: TransferDirection, moveKeys: Key[]) => {
-      setExcludeFavFolderIdsChanged(true)
-      settings.fav.excludedFolderIds = newTargetKeys.map((k) => k.toString())
-    },
-  )
+  const handleChange = useMemoizedFn((newTargetKeys: Key[], direction: TransferDirection, moveKeys: Key[]) => {
+    setExcludeFavFolderIdsChanged(true)
+    settings.fav.excludedFolderIds = newTargetKeys.map((k) => k.toString())
+  })
 
   // may contains legacy ids, so not `allFavFolderServices.length - excludeFavFolderIds.length`
   const foldersCount = useMemo(
-    () =>
-      allFavFolderServices.filter((x) => !fav.excludedFolderIds.includes(x.entry.id.toString()))
-        .length,
+    () => allFavFolderServices.filter((x) => !fav.excludedFolderIds.includes(x.entry.id.toString())).length,
     [allFavFolderServices, fav.excludedFolderIds],
   )
 

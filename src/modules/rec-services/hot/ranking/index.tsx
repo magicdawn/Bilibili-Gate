@@ -69,10 +69,7 @@ export class RankingRecService implements IService {
   }
 }
 
-export const rankingStore = await proxyWithGmStorage<{ slug: CategorySlug }>(
-  { slug: 'all' },
-  'ranking-store',
-)
+export const rankingStore = await proxyWithGmStorage<{ slug: CategorySlug }>({ slug: 'all' }, 'ranking-store')
 
 // valid check
 if (!RANKING_CATEGORIES.map((x) => x.slug).includes(rankingStore.slug)) {
@@ -85,11 +82,7 @@ function RankingUsageInfo() {
   const { slug } = useSnapshot(rankingStore)
   const category = useMemo(() => RANKING_CATEGORIES_MAP[slug], [slug])
 
-  const renderCategoryList = (
-    list: Category[],
-    key: keyof typeof RANKING_CATEGORIES_GROUPDED,
-    label: string,
-  ) => {
+  const renderCategoryList = (list: Category[], key: keyof typeof RANKING_CATEGORIES_GROUPDED, label: string) => {
     return (
       <div className='max-w-500px mt-15px pt-5px first:(mt-0 pt-0)'>
         <p className='flex-v-center mb-8px text-white bg-gate-primary py-5px pl-6px rounded-5px'>

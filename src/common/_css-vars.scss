@@ -30,12 +30,8 @@ $app-bg-lv3-id: --#{$app-name}--bg--lv3;
 // 优先使用 Bilibili-Evolved 的自定义字体
 $app-custom-font-id: --#{$app-name}--font;
 $app-custom-font-value:
-  'Alibaba PuHuiTi 3.0', 'PingFang SC', HarmonyOS_Regular, 'Helvetica Neue', 'Microsoft YaHei',
-  sans-serif;
-$app-using-font: var(
-  --custom-font-family--options--font-family,
-  var(#{$app-custom-font-id})
-) !important;
+  'Alibaba PuHuiTi 3.0', 'PingFang SC', HarmonyOS_Regular, 'Helvetica Neue', 'Microsoft YaHei', sans-serif;
+$app-using-font: var(--custom-font-family--options--font-family, var(#{$app-custom-font-id})) !important;
 
 // video card
 $app-video-card-border-radius-id: --#{$app-name}--video-card--border-radius;

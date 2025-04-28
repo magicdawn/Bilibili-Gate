@@ -39,7 +39,5 @@ export const RecoverableVideo = forwardRef<
     largePreviewStore.muted = ref.current.muted
   })
 
-  return (
-    <video ref={ref} {...videoProps} onTimeUpdate={onTimeUpdate} onVolumeChange={onVolumeChange} />
-  )
+  return <video ref={ref} {...videoProps} onTimeUpdate={onTimeUpdate} onVolumeChange={onVolumeChange} />
 })

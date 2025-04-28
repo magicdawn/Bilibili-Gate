@@ -5,10 +5,7 @@
 import { $headerHeight } from '$header'
 import type { MenuProps } from 'antd'
 import { App, message, notification } from 'antd'
-import type {
-  ConfigOptions as MessageConfigOptions,
-  MessageInstance,
-} from 'antd/es/message/interface'
+import type { ConfigOptions as MessageConfigOptions, MessageInstance } from 'antd/es/message/interface'
 import type { NotificationInstance } from 'antd/es/notification/interface'
 import { omit } from 'es-toolkit'
 

@@ -70,10 +70,7 @@ export function TvQrCodeAuth() {
         <ModalClose onClick={onHide} />
       </div>
 
-      <div
-        css={BaseModalStyle.modalBody}
-        className='flex flex-col items-center justify-center text-center'
-      >
+      <div css={BaseModalStyle.modalBody} className='flex flex-col items-center justify-center text-center'>
         <div className='flex-center min-h-25px text-size-14px mb-2px'>{message || ''}</div>
 
         {qrcodeUrl && (

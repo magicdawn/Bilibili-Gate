@@ -2,10 +2,7 @@ import { request } from '$request'
 import { getUid } from '$utility/cookie'
 import { uniqBy } from 'es-toolkit'
 import type { FavCollectionDetailJson } from '../types/collections/collection-detail'
-import type {
-  FavCollection,
-  ListAllCollectionJson,
-} from '../types/collections/list-all-collections'
+import type { FavCollection, ListAllCollectionJson } from '../types/collections/list-all-collections'
 
 async function fetchFavCollections(page: number) {
   const res = await request.get('/x/v3/fav/folder/collected/list', {

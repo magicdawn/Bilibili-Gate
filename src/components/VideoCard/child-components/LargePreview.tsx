@@ -22,10 +22,7 @@ export enum AspectRatioPreset {
 type Direction = 'top' | 'right' | 'bottom' | 'left'
 type Bbox = { x: number; y: number; width: number; height: number }
 
-const DirectionConfig: Record<
-  Direction,
-  { multiplier: 1 | -1; axis: 'x' | 'y'; reverse: Direction }
-> = {
+const DirectionConfig: Record<Direction, { multiplier: 1 | -1; axis: 'x' | 'y'; reverse: Direction }> = {
   right: { multiplier: 1, axis: 'x', reverse: 'left' },
   left: { multiplier: -1, axis: 'x', reverse: 'right' },
   bottom: { multiplier: 1, axis: 'y', reverse: 'top' },
@@ -218,10 +215,7 @@ export const LargePreview = forwardRef<
     setPosition({ direction, elWidth, elHeight, elPosX, elPosY, arrowTop, arrowLeft })
   })
 
-  const calculatePostionThrottled = useMemo(
-    () => throttle(calculatePostion, 100),
-    [calculatePostion],
-  )
+  const calculatePostionThrottled = useMemo(() => throttle(calculatePostion, 100), [calculatePostion])
 
   useMount(() => {
     calculatePostion()

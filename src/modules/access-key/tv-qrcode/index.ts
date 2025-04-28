@@ -5,13 +5,7 @@
 
 import toast from '$utility/toast'
 import { delay } from 'es-toolkit'
-import {
-  hideQrCodeModal,
-  qrcodeStore,
-  showQrCodeModal,
-  updateStore,
-  whenQrCodeModalHide,
-} from './TvQrCodeAuth'
+import { hideQrCodeModal, qrcodeStore, showQrCodeModal, updateStore, whenQrCodeModalHide } from './TvQrCodeAuth'
 import type { PollResult } from './api'
 import { getQrCodeInfo, poll } from './api'
 

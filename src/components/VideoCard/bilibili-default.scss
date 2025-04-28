@@ -144,12 +144,7 @@
   .bili-video-card .loading_animation .bili-video-card__skeleton--text,
   .bili-video-card .loading_animation .bili-video-card__skeleton--face,
   .bili-video-card .loading_animation .bili-video-card__skeleton--cover {
-    background: linear-gradient(
-      -45deg,
-      var(--graph_bg_regular) 25%,
-      var(--bg1) 45%,
-      var(--graph_bg_regular) 65%
-    );
+    background: linear-gradient(-45deg, var(--graph_bg_regular) 25%, var(--bg1) 45%, var(--graph_bg_regular) 65%);
     background-size: 400% 100%;
     animation: skeleton-loading 1.2s ease-in-out infinite;
   }

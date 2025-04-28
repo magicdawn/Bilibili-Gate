@@ -12,8 +12,7 @@ export function useRefState<T>(initialValue: T | (() => T)) {
 
   const setStateWraped: typeof setState = useCallback(
     (payload) => {
-      const nextState =
-        typeof payload === 'function' ? (payload as (prev: T) => T)(ref.current) : payload
+      const nextState = typeof payload === 'function' ? (payload as (prev: T) => T)(ref.current) : payload
       ref.current = nextState
       setState(nextState)
     },

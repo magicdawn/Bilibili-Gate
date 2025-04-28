@@ -19,9 +19,7 @@ export const CollapseBtn = forwardRef<CollapseBtnRef, IProps>(function CollapseB
 
   const btn = (
     <Button onClick={buttonsExpandedActions.toggle} className='icon-only-round-button'>
-      <IconParkOutlineRight
-        className={clsx('size-13px', buttonsExpanded ? 'rotate-z-0' : 'rotate-z-180deg')}
-      />
+      <IconParkOutlineRight className={clsx('size-13px', buttonsExpanded ? 'rotate-z-0' : 'rotate-z-180deg')} />
     </Button>
   )
 

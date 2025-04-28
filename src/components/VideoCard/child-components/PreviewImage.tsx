@@ -85,9 +85,7 @@ export const PreviewImage = memo(
 
     return (
       <div {...restProps} ref={rootElRef} css={S.previewImageWrapper}>
-        {!!(pvideo && size.width && size.height && usingProgress) && (
-          <PreviewImageInner {...innerProps} />
-        )}
+        {!!(pvideo && size.width && size.height && usingProgress) && <PreviewImageInner {...innerProps} />}
       </div>
     )
   }),
@@ -159,10 +157,7 @@ const PreviewImageInner = memo(function PreviewImageInner({
   )
 })
 
-export function SimplePregressBar({
-  progress,
-  ...rest
-}: { progress: number } & ComponentProps<'div'>) {
+export function SimplePregressBar({ progress, ...rest }: { progress: number } & ComponentProps<'div'>) {
   const backgroundColor = bgLv1Value
   return (
     <div
@@ -173,11 +168,7 @@ export function SimplePregressBar({
         background-color: ${backgroundColor};
       `}
     >
-      <div
-        data-role='bar'
-        className='h-full bg-gate-primary'
-        style={{ width: `${progress * 100}%` }}
-      />
+      <div data-role='bar' className='h-full bg-gate-primary' style={{ width: `${progress * 100}%` }} />
     </div>
   )
 }

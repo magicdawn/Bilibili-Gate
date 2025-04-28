@@ -138,10 +138,7 @@ export function useShortcut({
     makeVisible(newActiveIndex)
   }
 
-  const useKey = (
-    keyFilter: KeyFilter,
-    eventHandler: (event: KeyboardEvent, key: KeyType) => void,
-  ) => {
+  const useKey = (keyFilter: KeyFilter, eventHandler: (event: KeyboardEvent, key: KeyType) => void) => {
     useKeyPress(
       keyFilter,
       (event, key) => {

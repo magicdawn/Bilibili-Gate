@@ -16,12 +16,7 @@ export function HelpInfo({
   IconComponent?: ComponentType<ComponentProps<'svg'>>
 } & ComponentProps<'svg'>) {
   const _className = useMemo(() => {
-    return clsx(
-      'cursor-pointer',
-      !hasSize(className) && 'size-16px',
-      !hasMarginLeft(className) && 'ml-4px',
-      className,
-    )
+    return clsx('cursor-pointer', !hasSize(className) && 'size-16px', !hasMarginLeft(className) && 'ml-4px', className)
   }, [className])
 
   IconComponent ??= DefaultIconComponent

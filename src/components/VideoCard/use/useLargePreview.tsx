@@ -234,15 +234,9 @@ export function useLargePreviewRelated({
         active={willRenderLargePreview}
         inlinePosition={'right'}
         icon={
-          $req.loading ? (
-            <IconForLoading className='size-16px' />
-          ) : (
-            <IconParkOutlineVideoTwo className='size-15px' />
-          )
+          $req.loading ? <IconForLoading className='size-16px' /> : <IconParkOutlineVideoTwo className='size-15px' />
         }
-        tooltip={
-          triggerAction.state === 'click' ? (visible ? '关闭浮动预览' : '浮动预览') : '浮动预览'
-        }
+        tooltip={triggerAction.state === 'click' ? (visible ? '关闭浮动预览' : '浮动预览') : '浮动预览'}
         onMouseEnter={(e) => onMouseEnter('video-card-action-button')}
         onMouseLeave={(e) => onMouseLeave('video-card-action-button')}
         onClick={(e) => {

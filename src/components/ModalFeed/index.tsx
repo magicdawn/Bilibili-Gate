@@ -189,12 +189,7 @@ function ModalFeedConfigChecks() {
         }}
       />
 
-      <CheckboxSettingItem
-        configPath='modalFeedFullScreen'
-        label='全屏'
-        tooltip='世界清净了~'
-        css={inModalFeedStyle}
-      />
+      <CheckboxSettingItem configPath='modalFeedFullScreen' label='全屏' tooltip='世界清净了~' css={inModalFeedStyle} />
     </>
   )
 }

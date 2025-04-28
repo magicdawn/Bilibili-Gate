@@ -33,11 +33,7 @@ function onResetSettings() {
 async function onRestoreSettings() {
   const remoteSettings = await articleDraft.getData()
   runSettingsMigration(remoteSettings)
-  const { pickedPaths, pickedSettings } = pickSettings(
-    remoteSettings,
-    allowedLeafSettingsPaths,
-    restoreOmitPaths,
-  )
+  const { pickedPaths, pickedSettings } = pickSettings(remoteSettings, allowedLeafSettingsPaths, restoreOmitPaths)
   if (!pickedPaths.length) {
     return antMessage.error('备份不存在或没有有效的配置')
   }
@@ -56,11 +52,7 @@ export function TabPaneAdvance() {
     <div css={sharedCss.tabPane}>
       <SettingsGroup title='设置项'>
         <Space size={20}>
-          <Popconfirm
-            title='确定'
-            description='确定恢复默认设置? 此操作不可逆!'
-            onConfirm={onResetSettings}
-          >
+          <Popconfirm title='确定' description='确定恢复默认设置? 此操作不可逆!' onConfirm={onResetSettings}>
             <Button danger type='primary'>
               <IconTablerRestore />
               恢复默认设置
@@ -109,11 +101,7 @@ export function TabPaneAdvance() {
             </a>
           </span>
 
-          <Popconfirm
-            title='确定'
-            description='将覆盖本地设置? 此操作不可逆!'
-            onConfirm={onRestoreSettings}
-          >
+          <Popconfirm title='确定' description='将覆盖本地设置? 此操作不可逆!' onConfirm={onRestoreSettings}>
             <Button danger type='primary'>
               <IconTablerRestore />
               从专栏草稿箱中恢复
@@ -175,9 +163,7 @@ export function TabPaneAdvance() {
                   configPath={k as BooleanSettingsPath}
                   tooltip={k}
                   label={startCase(
-                    k.startsWith('__internal')
-                      ? k.slice('__internal'.length)
-                      : k.replaceAll('__internal.', ''),
+                    k.startsWith('__internal') ? k.slice('__internal'.length) : k.replaceAll('__internal.', ''),
                   )}
                 />
               ))}

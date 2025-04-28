@@ -24,11 +24,7 @@ export function valtioFactory<T>(computeValue: () => T) {
   return { state, use, get, update, updateThrottled }
 }
 
-export function subscribeOnKeys<T extends object>(
-  state: T,
-  keys: (keyof T)[],
-  callback: (newState: T) => void,
-) {
+export function subscribeOnKeys<T extends object>(state: T, keys: (keyof T)[], callback: (newState: T) => void) {
   let prevVal = pick(snapshot(state) as T, keys)
 
   subscribe(state, () => {
@@ -119,10 +115,7 @@ export async function proxySetWithGmStorage<T>(storageKey: string) {
   }
 }
 
-export async function proxyMapWithGmStorage<K, V>(
-  storageKey: string,
-  beforeSave?: (vals: [K, V][]) => [K, V][],
-) {
+export async function proxyMapWithGmStorage<K, V>(storageKey: string, beforeSave?: (vals: [K, V][]) => [K, V][]) {
   const load = async (): Promise<[K, V][]> => (await GM.getValue(storageKey)) || []
   const p = proxyMap<K, V>(await load())
   const replaceAllWith = (newVal: Iterable<[K, V]>) => {

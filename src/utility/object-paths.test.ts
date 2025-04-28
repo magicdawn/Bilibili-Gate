@@ -15,20 +15,7 @@ describe('object-paths', () => {
   describe('getPaths', () => {
     it('should get all possible paths through an object', () => {
       const paths = getPaths(testObj)
-      expect(paths).toEqual([
-        'a',
-        'a.b',
-        'a.c',
-        'd',
-        'e',
-        'e.f',
-        'e.f.g',
-        'arr',
-        'obj',
-        'obj.items',
-        'date',
-        'regexp',
-      ])
+      expect(paths).toEqual(['a', 'a.b', 'a.c', 'd', 'e', 'e.f', 'e.f.g', 'arr', 'obj', 'obj.items', 'date', 'regexp'])
     })
 
     it('should handle empty object', () => {
@@ -122,15 +109,7 @@ describe('object-paths', () => {
         },
       }
       const paths = getLeafPaths(obj)
-      expect(paths).toEqual([
-        'str',
-        'num',
-        'bool',
-        'nil',
-        'undef',
-        'nested.symbol',
-        'nested.bigint',
-      ])
+      expect(paths).toEqual(['str', 'num', 'bool', 'nil', 'undef', 'nested.symbol', 'nested.bigint'])
     })
   })
 })

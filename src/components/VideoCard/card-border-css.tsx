@@ -128,15 +128,7 @@ export function useCardBorderCss(): CssProp {
           `,
       ],
     ]
-  }, [
-    useBorder,
-    useBorderOnlyOnHover,
-    useBoxShadow,
-    usePadding,
-    useDelayForHover,
-    cardDisplay,
-    multiSelecting,
-  ])
+  }, [useBorder, useBorderOnlyOnHover, useBoxShadow, usePadding, useDelayForHover, cardDisplay, multiSelecting])
 }
 
 export function getActiveCardBorderCss(active: boolean): CssProp {

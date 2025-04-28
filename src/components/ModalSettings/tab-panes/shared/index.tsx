@@ -1,9 +1,4 @@
-import {
-  initialSettings,
-  pickSettings,
-  updateSettings,
-  type LeafSettingsPath,
-} from '$modules/settings'
+import { initialSettings, pickSettings, updateSettings, type LeafSettingsPath } from '$modules/settings'
 import type { CssProp } from '$utility/type'
 import { css } from '@emotion/react'
 import { Button, Popconfirm } from 'antd'
@@ -65,11 +60,7 @@ export function SettingsGroup({
 >) {
   return (
     <div css={S.settingsGroup} data-role='settings-group' {...rest}>
-      <div
-        data-role='settings-group-title'
-        className={titleClassName}
-        css={[S.settingsGroupTitle, titleCss]}
-      >
+      <div data-role='settings-group-title' className={titleClassName} css={[S.settingsGroupTitle, titleCss]}>
         {title}
       </div>
       <div
@@ -89,13 +80,7 @@ export function resetPartialSettings(paths: LeafSettingsPath[]) {
   updateSettings(pickedSettings)
 }
 
-export function ResetPartialSettingsButton({
-  paths,
-  className,
-}: {
-  paths: LeafSettingsPath[]
-  className?: string
-}) {
+export function ResetPartialSettingsButton({ paths, className }: { paths: LeafSettingsPath[]; className?: string }) {
   return (
     <Popconfirm title={'确定重置下面的设置项?'} onConfirm={() => resetPartialSettings(paths)}>
       <Button

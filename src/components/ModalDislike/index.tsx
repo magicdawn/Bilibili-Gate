@@ -192,13 +192,7 @@ export function ModalDislike({ show, onHide, item }: IProps) {
                   </span>
                   <span className='flex-1 px-4px'>{reason.name}</span>
                   <span className='flex-none size-20px mr-6px'>
-                    {active && (
-                      <IconAnimatedChecked
-                        className='w-100% h-100%'
-                        color={colorPrimaryValue}
-                        useAnimation
-                      />
-                    )}
+                    {active && <IconAnimatedChecked className='w-100% h-100%' color={colorPrimaryValue} useAnimation />}
                   </span>
                 </button>
               )

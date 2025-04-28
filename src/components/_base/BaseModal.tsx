@@ -205,11 +205,7 @@ export function BaseModal({
   }
 
   return createPortal(
-    <div
-      className={clsModalMask}
-      css={[BaseModalStyle.modalMask, cssModalMask]}
-      onClick={onMaskClick}
-    >
+    <div className={clsModalMask} css={[BaseModalStyle.modalMask, cssModalMask]} onClick={onMaskClick}>
       <div
         style={{ ...wrapperStyle, width }}
         className={clsModal}

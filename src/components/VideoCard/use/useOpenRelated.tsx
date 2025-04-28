@@ -67,10 +67,7 @@ export function useOpenRelated({
     mode ||= settings.videoLinkOpenMode
 
     const newHref = getHref((u) => {
-      if (
-        mode === Mode.NormalWebFullscreen ||
-        (mode === Mode.Popup && settings.pipWindow.autoWebFullscreen)
-      ) {
+      if (mode === Mode.NormalWebFullscreen || (mode === Mode.Popup && settings.pipWindow.autoWebFullscreen)) {
         u.searchParams.set(QueryKey.PlayerScreenMode, PlayerScreenMode.WebFullscreen)
         if (mode === Mode.Popup && !getBiliPlayerConfigAutoPlay()) {
           u.searchParams.set(QueryKey.ForceAutoPlay, ForceAutoPlay.ON)
@@ -138,9 +135,7 @@ export function useOpenRelated({
       (mode) => typeof ModeConfig[mode].enabled === 'boolean' && ModeConfig[mode].enabled,
     ).length
       ? Object.values(VideoLinkOpenMode)
-          .filter(
-            (mode) => typeof ModeConfig[mode].enabled === 'boolean' && ModeConfig[mode].enabled,
-          )
+          .filter((mode) => typeof ModeConfig[mode].enabled === 'boolean' && ModeConfig[mode].enabled)
           .map((mode) => {
             return {
               key: VideoLinkOpenModeKey[mode],
@@ -229,12 +224,7 @@ export function getRecItemDimension(item: RecItemType, dimensionFromApi?: VideoP
 
 export const hasDocumentPictureInPicture = !!window.documentPictureInPicture?.requestWindow
 
-export async function openInPipOrPopup(
-  newHref: string,
-  bvid?: string,
-  videoWidth?: number,
-  videoHeight?: number,
-) {
+export async function openInPipOrPopup(newHref: string, bvid?: string, videoWidth?: number, videoHeight?: number) {
   let popupWidth = 1000
   let popupHeight = Math.ceil((popupWidth / 16) * 9)
 
@@ -287,13 +277,9 @@ function openPopupWindow(newHref: string, popupWidth: number, popupHeight: numbe
   const left = (window.innerWidth - popupWidth) / 2
   const top = (window.innerHeight - popupHeight) / 2 - 50
 
-  const features = [
-    'popup=true',
-    `width=${popupWidth}`,
-    `height=${popupHeight}`,
-    `left=${left}`,
-    `top=${top}`,
-  ].join(',')
+  const features = ['popup=true', `width=${popupWidth}`, `height=${popupHeight}`, `left=${left}`, `top=${top}`].join(
+    ',',
+  )
 
   debug('openInPopup: features -> %s', features)
   window.open(newHref, '_blank', features)

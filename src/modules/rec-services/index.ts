@@ -28,10 +28,7 @@ export const recItemUniqer = (item: RecItemTypeOrSeparator) =>
         [EApiType.SpaceUpload]: (item) => item.bvid,
       })
 
-export function concatThenUniq(
-  existing: RecItemTypeOrSeparator[],
-  newItems: RecItemTypeOrSeparator[],
-) {
+export function concatThenUniq(existing: RecItemTypeOrSeparator[], newItems: RecItemTypeOrSeparator[]) {
   // 对全部 uniq 是否影响性能 ?
   return uniqBy([...existing, ...newItems], recItemUniqer)
 }

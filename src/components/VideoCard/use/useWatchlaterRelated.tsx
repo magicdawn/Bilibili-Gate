@@ -53,10 +53,7 @@ export function useWatchlaterRelated({
   const watchlaterAddedPrevious = usePrevious(watchlaterAdded)
 
   const onToggleWatchlater = useMemoizedFn(
-    async (
-      e?: MouseEvent,
-      usingAction?: UsingAction,
-    ): Promise<{ success: boolean; targetState?: boolean }> => {
+    async (e?: MouseEvent, usingAction?: UsingAction): Promise<{ success: boolean; targetState?: boolean }> => {
       e?.preventDefault()
       e?.stopPropagation()
 

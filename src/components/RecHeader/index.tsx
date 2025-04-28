@@ -122,8 +122,7 @@ export const RecHeader = forwardRef<
               `,
               sticky && [
                 css`
-                  border-bottom: 1px solid
-                    oklch(from ${bgValue} calc(l + ${dark ? 0.15 : -0.15}) c h / 50%);
+                  border-bottom: 1px solid oklch(from ${bgValue} calc(l + ${dark ? 0.15 : -0.15}) c h / 50%);
                   background-color: var(--bg1_float);
                   box-shadow: ${boxShadow};
                 `,
@@ -149,10 +148,7 @@ export const RecHeader = forwardRef<
               {leftSlot}
             </div>
 
-            <div
-              data-class-name='right'
-              className='h-full flex-shrink-0 flex items-center gap-x-8px'
-            >
+            <div data-class-name='right' className='h-full flex-shrink-0 flex items-center gap-x-8px'>
               {rightSlot}
 
               {!accessKey && showAccessKeyManage && <AccessKeyManage style={{ marginLeft: 5 }} />}

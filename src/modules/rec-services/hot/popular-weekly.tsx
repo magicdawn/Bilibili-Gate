@@ -47,9 +47,7 @@ export class PopularWeeklyRecService implements IService {
   constructor(private useShuffle: boolean) {}
 
   // full-list = returnedItems + bufferQueue + more
-  qs = new QueueStrategy<PopularWeeklyItemExtend | ItemsSeparator>(
-    PopularWeeklyRecService.PAGE_SIZE,
-  )
+  qs = new QueueStrategy<PopularWeeklyItemExtend | ItemsSeparator>(PopularWeeklyRecService.PAGE_SIZE)
 
   get hasMore() {
     if (!this.episodesLoaded) return true // not loaded yet
@@ -101,10 +99,7 @@ export class PopularWeeklyRecService implements IService {
 
     // make queue enough
     const prefetchPage = 5
-    while (
-      this.qs.bufferQueue.length < PopularWeeklyRecService.PAGE_SIZE * prefetchPage &&
-      this.episodes.length
-    ) {
+    while (this.qs.bufferQueue.length < PopularWeeklyRecService.PAGE_SIZE * prefetchPage && this.episodes.length) {
       this.episodes = shuffle(this.episodes)
       const episodes = this.episodes.slice(0, prefetchPage) // slice
       this.episodes = this.episodes.slice(prefetchPage) // rest

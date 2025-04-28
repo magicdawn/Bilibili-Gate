@@ -53,9 +53,7 @@ const onDarkModeChange = () => {
 onDarkModeChange()
 subscribe($darkMode.state, onDarkModeChange)
 // when settings.styleUseWhiteBackground change
-subscribeOnKeys(settings.style.pureRecommend, ['useWhiteBackground'], () =>
-  setTimeout($colors.updateThrottled, 500),
-)
+subscribeOnKeys(settings.style.pureRecommend, ['useWhiteBackground'], () => setTimeout($colors.updateThrottled, 500))
 
 const ob = new MutationObserver(() => {
   setTimeout(() => {

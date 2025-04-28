@@ -33,10 +33,7 @@ export function TabPaneFilter() {
           「已关注」内容不考虑过滤条件, 总是展示
           <br />
           "豁免" 一词来源{' '}
-          <a
-            target='_blank'
-            href='https://github.com/magicdawn/bilibili-gate/issues/1#issuecomment-2197868587'
-          >
+          <a target='_blank' href='https://github.com/magicdawn/bilibili-gate/issues/1#issuecomment-2197868587'>
             pilipala
           </a>
         </>
@@ -180,11 +177,7 @@ export function TabPaneFilter() {
                   </div>
                 </div>
               </HelpInfo>
-              <SwitchSettingItem
-                configPath='filter.byAuthor.enabled'
-                disabled={!enabled}
-                className='ml-10px'
-              />
+              <SwitchSettingItem configPath='filter.byAuthor.enabled' disabled={!enabled} className='ml-10px' />
             </div>
             <EditableListSettingItem
               configPath={'filter.byAuthor.keywords'}
@@ -201,11 +194,7 @@ export function TabPaneFilter() {
                 支持正则(i), 语法：/abc|\d+/ <br />
                 作用范围: 推荐 / 热门
               </HelpInfo>
-              <SwitchSettingItem
-                configPath='filter.byTitle.enabled'
-                disabled={!enabled}
-                className='ml-10px'
-              />
+              <SwitchSettingItem configPath='filter.byTitle.enabled' disabled={!enabled} className='ml-10px' />
             </div>
             <EditableListSettingItem
               configPath={'filter.byTitle.keywords'}

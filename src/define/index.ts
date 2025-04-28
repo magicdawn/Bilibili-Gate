@@ -22,10 +22,7 @@ export type { PcRecItem, PcRecommendJson } from './pc-recommend'
 export type { DmJson, PvideoJson }
 export type PvideoData = PvideoJson['data']
 export type DmData = DmJson['data']
-export type {
-  SpaceUploadItem,
-  SpaceUploadJson,
-} from '$modules/rec-services/space-upload/types/space-upload'
+export type { SpaceUploadItem, SpaceUploadJson } from '$modules/rec-services/space-upload/types/space-upload'
 
 /**
  * app

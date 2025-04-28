@@ -46,10 +46,7 @@ export class FavAllService implements IFavInnerService {
     return (
       <>
         <FavItemsOrderSwitcher />
-        <ViewingAllExcludeFolderConfig
-          allFavFolderServices={this.allFolderServices}
-          state={this.state}
-        />
+        <ViewingAllExcludeFolderConfig allFavFolderServices={this.allFolderServices} state={this.state} />
       </>
     )
   }
@@ -76,9 +73,7 @@ export class FavAllService implements IFavInnerService {
       while (this.hasMoreInService && this.shuffleBufferQueue.length < FAV_PAGE_SIZE * 3) {
         const restServices = this.allServices.filter((s) => s.hasMore)
         const pickedServices = shuffle(restServices).slice(0, count)
-        const fetched = (
-          await pmap(pickedServices, async (s) => (await s.loadMore(abortSignal)) || [], batch)
-        )
+        const fetched = (await pmap(pickedServices, async (s) => (await s.loadMore(abortSignal)) || [], batch))
           .flat()
           .filter((x) => x.api !== EApiType.Separator)
         this.shuffleBufferQueue = shuffle([...this.shuffleBufferQueue, ...shuffle(fetched)])
@@ -114,15 +109,11 @@ export class FavAllService implements IFavInnerService {
       const folders = favFolders.filter((f) => !this.excludedFolderIds.includes(f.id.toString()))
       let itemsOrder = this.itemsOrder
       if (itemsOrder === FavItemsOrder.Initial) itemsOrder = FavItemsOrder.FavTimeDesc // 收藏夹没有 `默认`
-      this.allServices.push(
-        ...folders.map((f) => new FavFolderService(f.id, this.addSeparator, itemsOrder)),
-      )
+      this.allServices.push(...folders.map((f) => new FavFolderService(f.id, this.addSeparator, itemsOrder)))
     }
     {
       this.allServices.push(
-        ...favCollections.map(
-          (c) => new FavCollectionService(c.id, this.addSeparator, this.itemsOrder),
-        ),
+        ...favCollections.map((c) => new FavCollectionService(c.id, this.addSeparator, this.itemsOrder)),
       )
     }
 

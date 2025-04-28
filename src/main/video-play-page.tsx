@@ -1,9 +1,6 @@
 import { baseDebug } from '$common'
 import { ForceAutoPlay, PlayerScreenMode, QueryKey } from '$components/VideoCard/index.shared'
-import {
-  hasDocumentPictureInPicture,
-  openInPipOrPopup,
-} from '$components/VideoCard/use/useOpenRelated'
+import { hasDocumentPictureInPicture, openInPipOrPopup } from '$components/VideoCard/use/useOpenRelated'
 import { getBiliPlayer } from '$modules/bilibili/player'
 import { getBiliPlayerConfigAutoPlay } from '$modules/bilibili/player-config'
 import { isMac } from '$ua'
@@ -46,24 +43,22 @@ function registerOpenInIinaCommand() {
 
 async function handleFullscreen() {
   const targetMode = new URL(location.href).searchParams.get(QueryKey.PlayerScreenMode)
-  const next =
-    targetMode === PlayerScreenMode.WebFullscreen || targetMode === PlayerScreenMode.Fullscreen
+  const next = targetMode === PlayerScreenMode.WebFullscreen || targetMode === PlayerScreenMode.Fullscreen
   if (!next) return
 
   let action: (() => void) | undefined
   // NOTE: aria-label 使用中文, 目前没找到 bilibili.com 在哪切换语言, 应该只有中文
   if (targetMode === PlayerScreenMode.WebFullscreen) {
-    action = () =>
-      document.querySelector<HTMLElement>('[role="button"][aria-label="网页全屏"]')?.click()
+    action = () => document.querySelector<HTMLElement>('[role="button"][aria-label="网页全屏"]')?.click()
   }
   if (targetMode === PlayerScreenMode.Fullscreen) {
-    action = () =>
-      document.querySelector<HTMLElement>('[role="button"][aria-label="全屏"]')?.click()
+    action = () => document.querySelector<HTMLElement>('[role="button"][aria-label="全屏"]')?.click()
   }
 
   const getCurrentMode = (): PlayerScreenMode =>
-    (document.querySelector<HTMLDivElement>('#bilibili-player .bpx-player-container')?.dataset
-      .screen as PlayerScreenMode | undefined) || PlayerScreenMode.Normal
+    (document.querySelector<HTMLDivElement>('#bilibili-player .bpx-player-container')?.dataset.screen as
+      | PlayerScreenMode
+      | undefined) || PlayerScreenMode.Normal
 
   const timeoutAt = Date.now() + ms('30s')
   while (getCurrentMode() !== targetMode && Date.now() <= timeoutAt) {

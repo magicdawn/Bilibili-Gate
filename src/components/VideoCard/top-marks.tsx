@@ -1,18 +1,9 @@
 import { colorPrimaryValue } from '$components/css-vars'
-import {
-  isDynamicFeed,
-  isFav,
-  isWatchlater,
-  type RankingItemExtend,
-  type RecItemType,
-} from '$define'
+import { isDynamicFeed, isFav, isWatchlater, type RankingItemExtend, type RecItemType } from '$define'
 import { EApiType } from '$define/index.shared'
 import { openNewTab } from '$modules/gm'
 import { IconForLive } from '$modules/icon'
-import {
-  RANKING_CATEGORIES_MAP,
-  isNormalRankingItem,
-} from '$modules/rec-services/hot/ranking/category'
+import { RANKING_CATEGORIES_MAP, isNormalRankingItem } from '$modules/rec-services/hot/ranking/category'
 import type { NormalRankingItem } from '$modules/rec-services/hot/ranking/types'
 import { Dropdown } from 'antd'
 import type { CSSProperties, ReactNode } from 'react'
@@ -36,13 +27,7 @@ export function ChargeOnlyTag() {
         'bg-gate-primary color-white text-center text-size-10px line-height-[17px] whitespace-nowrap',
       )}
     >
-      <svg
-        width='16'
-        height='17'
-        viewBox='0 0 16 17'
-        fill='none'
-        xmlns='http://www.w3.org/2000/svg'
-      >
+      <svg width='16' height='17' viewBox='0 0 16 17' fill='none' xmlns='http://www.w3.org/2000/svg'>
         <path
           d='M5.00014 14.9839C4.94522 15.1219 5.12392 15.2322 5.22268 15.1212L11.5561 8.00214C11.7084 7.83093 11.5869 7.56014 11.3578 7.56014H9.13662L11.6019 3.57178C11.7112 3.39489 11.584 3.16666 11.376 3.16666H7.4475C7.22576 3.16666 7.02737 3.30444 6.94992 3.51221L4.68362 9.59189C4.61894 9.76539 4.74725 9.95014 4.93241 9.95014H7.00268L5.00014 14.9839Z'
           fill='white'
@@ -80,8 +65,7 @@ export function RankingNumMark({ item }: { item: RankingItemExtend }) {
     tooltipOffset: 2,
   })
 
-  const roundButtonClassName =
-    'flex-center size-28px rounded-full color-white relative whitespace-nowrap'
+  const roundButtonClassName = 'flex-center size-28px rounded-full color-white relative whitespace-nowrap'
   const roundButtonStyle: CSSProperties = useMemo(
     () => ({ backgroundColor: getColor(item.rankingNo) }),
     [item.rankingNo],
@@ -130,15 +114,7 @@ export function RankingNumMark({ item }: { item: RankingItemExtend }) {
   )
 }
 
-export function SomeBadge({
-  icon,
-  label,
-  className,
-}: {
-  icon?: ReactNode
-  label?: ReactNode
-  className?: string
-}) {
+export function SomeBadge({ icon, label, className }: { icon?: ReactNode; label?: ReactNode; className?: string }) {
   return (
     <span
       className={clsx(
@@ -149,9 +125,7 @@ export function SomeBadge({
       {icon}
       {label && typeof label === 'string' ? (
         <>
-          <span className='font-normal font-size-11px line-height-[1] color-white relative top-1px'>
-            {label}
-          </span>
+          <span className='font-normal font-size-11px line-height-[1] color-white relative top-1px'>{label}</span>
         </>
       ) : (
         label
@@ -161,13 +135,7 @@ export function SomeBadge({
 }
 
 export function LiveBadge({ className }: { className?: string }) {
-  return (
-    <SomeBadge
-      className={className}
-      icon={<IconForLive active className='size-14px' />}
-      label='直播中'
-    />
-  )
+  return <SomeBadge className={className} icon={<IconForLive active className='size-14px' />} label='直播中' />
 }
 
 export function ApiTypeTag({ item }: { item: RecItemType }) {

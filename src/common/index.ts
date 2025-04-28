@@ -45,9 +45,7 @@ export const IN_BILIBILI_HOMEPAGE = IN_BILIBILI && (pathname === '/' || pathname
 // https://www.bilibili.com/list/watchlater?bvid=BVxxx
 export const IN_BILIBILI_VIDEO_PLAY_PAGE =
   IN_BILIBILI &&
-  (pathname.startsWith('/video/') ||
-    pathname.startsWith('/list/watchlater') ||
-    pathname.startsWith('/bangumi/play/'))
+  (pathname.startsWith('/video/') || pathname.startsWith('/list/watchlater') || pathname.startsWith('/bangumi/play/'))
 
 // https://space.bilibili.com/17815937/
 export const IN_BILIBILI_SPACE_PAGE = hostname === 'space.bilibili.com'

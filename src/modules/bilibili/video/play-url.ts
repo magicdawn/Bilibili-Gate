@@ -89,8 +89,6 @@ export async function getVideoPlayUrl(
 
   // dash
   const video = fastOrderBy(json.data?.dash?.video || [], ['id', 'codecid'], ['desc', 'desc'])
-  const dashUrls = video
-    .map((x) => reOrderUrls([x.baseUrl, ...(x.backupUrl || [])])[0])
-    .filter(Boolean)
+  const dashUrls = video.map((x) => reOrderUrls([x.baseUrl, ...(x.backupUrl || [])])[0]).filter(Boolean)
   return dashUrls
 }

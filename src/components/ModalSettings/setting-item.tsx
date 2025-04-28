@@ -6,10 +6,7 @@ import type { CheckboxChangeEvent } from 'antd/es/checkbox'
 import { get, set } from 'es-toolkit/compat'
 import type { ComponentProps, ReactNode } from 'react'
 
-function useBooleanSettingsPath(
-  configPath: BooleanSettingsPath,
-  extraAction?: (val: boolean) => void,
-) {
+function useBooleanSettingsPath(configPath: BooleanSettingsPath, extraAction?: (val: boolean) => void) {
   const snap = useSettingsSnapshot()
   const checked = !!get(snap, configPath, false)
   const onChange = useCallback((val: boolean) => {

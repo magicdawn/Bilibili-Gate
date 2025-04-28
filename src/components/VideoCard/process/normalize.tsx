@@ -30,15 +30,8 @@ import { styled } from '$libs'
 import { AntdTooltip } from '$modules/antd/custom'
 import { isFavFolderPrivate } from '$modules/rec-services/fav/fav-util'
 import type { FavItemExtend } from '$modules/rec-services/fav/types'
-import {
-  IconForCollection,
-  IconForPrivateFolder,
-  IconForPublicFolder,
-} from '$modules/rec-services/fav/usage-info'
-import {
-  isBangumiRankingItem,
-  isCinemaRankingItem,
-} from '$modules/rec-services/hot/ranking/category'
+import { IconForCollection, IconForPrivateFolder, IconForPublicFolder } from '$modules/rec-services/fav/usage-info'
+import { isBangumiRankingItem, isCinemaRankingItem } from '$modules/rec-services/hot/ranking/category'
 import { ELiveStatus } from '$modules/rec-services/live/live-enum'
 import { spaceUploadAvatarCache } from '$modules/rec-services/space-upload'
 import { toHttps } from '$utility/url'
@@ -448,11 +441,7 @@ function apiWatchlaterAdapter(item: WatchlaterItemExtend): IVideoCardData {
   const viewed = item.progress > 0
   const title = `${viewed ? '【已观看】· ' : ''}${item.title}`
   const titleRender: ReactNode = invalidReason ? (
-    <AntdTooltip
-      title={<>视频已失效, 原因: {invalidReason}</>}
-      align={{ offset: [0, -5] }}
-      placement='topLeft'
-    >
+    <AntdTooltip title={<>视频已失效, 原因: {invalidReason}</>} align={{ offset: [0, -5] }} placement='topLeft'>
       <del>
         {viewed ? '【已观看】· ' : ''}
         {item.title}`
@@ -516,21 +505,12 @@ function apiFavAdapter(item: FavItemExtend): IVideoCardData {
   const iconInTitle =
     item.from === 'fav-folder' ? (
       isFavFolderPrivate(item.folder.attr) ? (
-        <IconForPrivateFolder
-          className={clsx('size-15px', fillWithColorPrimary)}
-          style={iconInTitleStyle}
-        />
+        <IconForPrivateFolder className={clsx('size-15px', fillWithColorPrimary)} style={iconInTitleStyle} />
       ) : (
-        <IconForPublicFolder
-          className={clsx('size-15px', fillWithColorPrimary)}
-          style={iconInTitleStyle}
-        />
+        <IconForPublicFolder className={clsx('size-15px', fillWithColorPrimary)} style={iconInTitleStyle} />
       )
     ) : (
-      <IconForCollection
-        className={clsx('size-15px', fillWithColorPrimary)}
-        style={iconInTitleStyle}
-      />
+      <IconForCollection className={clsx('size-15px', fillWithColorPrimary)} style={iconInTitleStyle} />
     )
 
   return {
@@ -552,8 +532,7 @@ function apiFavAdapter(item: FavItemExtend): IVideoCardData {
     pubdateDisplay: formatTimeStamp(item.pubtime),
     duration: item.duration,
     durationStr: formatDuration(item.duration),
-    recommendReason:
-      item.from === 'fav-folder' ? `${formatTimeStamp(item.fav_time)} · 收藏` : undefined,
+    recommendReason: item.from === 'fav-folder' ? `${formatTimeStamp(item.fav_time)} · 收藏` : undefined,
 
     // stat
     play: item.cnt_info.play,

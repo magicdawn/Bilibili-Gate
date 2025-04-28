@@ -18,13 +18,7 @@ defineComponent(ETab.Watchlater, WatchlaterUsageInfo)
 /**
  * current not used
  */
-export const UsageInfo = memo(function <T extends ETab>({
-  tab,
-  service,
-}: {
-  tab: T
-  service: ServiceMap[T]
-}) {
+export const UsageInfo = memo(function <T extends ETab>({ tab, service }: { tab: T; service: ServiceMap[T] }) {
   const C = componentMap[tab]
   if (!C) return
   // @ts-ignore

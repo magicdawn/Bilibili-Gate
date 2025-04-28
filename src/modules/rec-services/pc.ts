@@ -50,9 +50,7 @@ export class PcRecService extends BaseTabService<PcRecItemExtend> {
   }
 
   private async getRecommendTimes(times: number, abortSignal: AbortSignal) {
-    let list: PcRecItem[] = (
-      await Promise.all(range(times).map(() => this.getRecommend(abortSignal)))
-    ).flat()
+    let list: PcRecItem[] = (await Promise.all(range(times).map(() => this.getRecommend(abortSignal)))).flat()
 
     list = list.filter((item) => {
       const allowedGotoList = [PcRecGoto.AV, PcRecGoto.Live]

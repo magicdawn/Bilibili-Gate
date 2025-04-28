@@ -6,9 +6,7 @@ export function dailyCache<T>(namespace: string) {
   async function cleanUp() {
     const date = genDate()
     const keys = await GM.listValues()
-    keys
-      .filter((k) => k.startsWith(namespace + ':') && k !== namespace + ':' + date)
-      .forEach((k) => GM.deleteValue(k))
+    keys.filter((k) => k.startsWith(namespace + ':') && k !== namespace + ':' + date).forEach((k) => GM.deleteValue(k))
   }
 
   // cleanup for first time

@@ -47,10 +47,7 @@ export function MultiSelectButton({
         content={
           <div className='max-w-280px'>
             <div className='flex flex-wrap items-center gap-x-15px gap-y-2px'>
-              <Button
-                className='inline-flex items-center'
-                onClick={() => multiSelectStore.selectedIdSet.clear()}
-              >
+              <Button className='inline-flex items-center' onClick={() => multiSelectStore.selectedIdSet.clear()}>
                 <IconMaterialSymbolsDeleteOutlineRounded className='size-16px' />
                 清空
               </Button>

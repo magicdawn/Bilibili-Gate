@@ -191,9 +191,7 @@ export function VideoSourceTab({ onRefresh }: { onRefresh: OnRefresh }) {
         }
       })
     }, [currentTabConfigList, tab])
-    renderAsSegment = (
-      <Segmented<ETab> size='middle' options={options} value={tab} onChange={onChangeTab} />
-    )
+    renderAsSegment = <Segmented<ETab> size='middle' options={options} value={tab} onChange={onChangeTab} />
   }
 
   return (

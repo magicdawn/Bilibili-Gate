@@ -17,8 +17,7 @@ import { PopularWeeklyRecService } from './popular-weekly'
 import { RankingRecService, rankingStore } from './ranking'
 
 const subtabServiceCreators = {
-  [EHotSubTab.PopularGeneral]: () =>
-    new PopularGeneralRecService(settings.popularGeneralUseAnonymous),
+  [EHotSubTab.PopularGeneral]: () => new PopularGeneralRecService(settings.popularGeneralUseAnonymous),
   [EHotSubTab.PopularWeekly]: () => new PopularWeeklyRecService(settings.popularWeeklyUseShuffle),
   [EHotSubTab.Ranking]: () => new RankingRecService(rankingStore.slug),
 } satisfies Record<EHotSubTab, () => IService>
@@ -143,37 +142,35 @@ function HotUsageInfo({ children }: { children?: ReactNode }) {
   const tab = useMemo(() => {
     return (
       <Button.Group>
-        {[EHotSubTab.PopularGeneral, EHotSubTab.PopularWeekly, EHotSubTab.Ranking].map(
-          (subtab, index) => {
-            const { icon, label, desc } = HotSubTabConfig[subtab]
-            const active = subtab === activeSubtab
-            return (
-              <AntdTooltip
-                title={
-                  <>
-                    {label}: {desc}
-                  </>
-                }
-                key={subtab}
+        {[EHotSubTab.PopularGeneral, EHotSubTab.PopularWeekly, EHotSubTab.Ranking].map((subtab, index) => {
+          const { icon, label, desc } = HotSubTabConfig[subtab]
+          const active = subtab === activeSubtab
+          return (
+            <AntdTooltip
+              title={
+                <>
+                  {label}: {desc}
+                </>
+              }
+              key={subtab}
+            >
+              <Button
+                css={groupedButtonCss}
+                icon={icon}
+                variant={active ? 'solid' : 'outlined'}
+                color={active ? 'primary' : 'default'}
+                onClick={() => {
+                  if (subtab === hotStore.subtab) return
+                  hotStore.subtab = subtab
+                  // onRefresh?.(true) // 可以但没必要, 有 skeleton 有 Tab切换 的反馈
+                  onRefresh?.()
+                }}
               >
-                <Button
-                  css={groupedButtonCss}
-                  icon={icon}
-                  variant={active ? 'solid' : 'outlined'}
-                  color={active ? 'primary' : 'default'}
-                  onClick={() => {
-                    if (subtab === hotStore.subtab) return
-                    hotStore.subtab = subtab
-                    // onRefresh?.(true) // 可以但没必要, 有 skeleton 有 Tab切换 的反馈
-                    onRefresh?.()
-                  }}
-                >
-                  {label}
-                </Button>
-              </AntdTooltip>
-            )
-          },
-        )}
+                {label}
+              </Button>
+            </AntdTooltip>
+          )
+        })}
       </Button.Group>
     )
   }, [activeSubtab])

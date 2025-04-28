@@ -23,10 +23,7 @@ import { FAV_PAGE_SIZE, favSeparatorCss } from './_base'
 export function FavFolderSeparator({ service }: { service: FavFolderBasicService }) {
   return (
     <>
-      <CustomTargetLink
-        href={formatFavFolderUrl(service.entry.id, service.entry.attr)}
-        css={favSeparatorCss.item}
-      >
+      <CustomTargetLink href={formatFavFolderUrl(service.entry.id, service.entry.attr)} css={favSeparatorCss.item}>
         <IconForOpenExternalLink className='size-16px' />
         {service.entry.title}
       </CustomTargetLink>

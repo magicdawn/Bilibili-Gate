@@ -1,9 +1,5 @@
 import { __PROD__ } from '$common'
-import {
-  APP_CLS_USE_ANT_LINK_COLOR,
-  buttonOpenCss,
-  usePopoverBorderColor,
-} from '$common/emotion-css'
+import { APP_CLS_USE_ANT_LINK_COLOR, buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import { CHARGE_ONLY_TEXT } from '$components/VideoCard/top-marks'
@@ -11,6 +7,7 @@ import { HelpInfo } from '$components/_base/HelpInfo'
 import { colorPrimaryValue } from '$components/css-vars'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
+import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 import { IconForOpenExternalLink } from '$modules/icon'
 import {
   settings,
@@ -35,11 +32,7 @@ import {
   localDynamicFeedInfoCache,
   updateLocalDynamicFeedCache,
 } from '../cache'
-import {
-  fetchVideoDynamicFeedsWithCache,
-  FollowGroupMergeTimelineService,
-} from '../group/merge-timeline-service'
-import type { FollowGroup } from '../group/types/groups'
+import { fetchVideoDynamicFeedsWithCache, FollowGroupMergeTimelineService } from '../group/merge-timeline-service'
 import { formatFollowGroupUrl, IconForPopoverTrigger } from '../shared'
 import {
   DF_SELECTED_KEY_PREFIX_GROUP,
@@ -64,8 +57,7 @@ export function usePopoverRelated({
   onRefresh: OnRefresh | undefined
   getPopupContainer: (() => HTMLElement) | undefined
 }) {
-  const { upMid, dynamicFeedVideoType, filterMinDuration, searchText, hideChargeOnlyVideos } =
-    useSnapshot(dfStore)
+  const { upMid, dynamicFeedVideoType, filterMinDuration, searchText, hideChargeOnlyVideos } = useSnapshot(dfStore)
 
   const searchInput = (
     <Input.Search
@@ -94,11 +86,7 @@ export function usePopoverRelated({
   )
 
   const popoverContent = (
-    <PopoverContent
-      externalSearchInput={externalSearchInput}
-      searchInput={searchInput}
-      onRefresh={onRefresh}
-    />
+    <PopoverContent externalSearchInput={externalSearchInput} searchInput={searchInput} onRefresh={onRefresh} />
   )
 
   const [popoverOpen, setPopoverOpen] = useState(
@@ -304,9 +292,7 @@ function PopoverContent({
       <div className={classes.section}>
         <div className={classes.sectionTilte}>
           {viewingSomeGroup ? '分组' : viewingSomeUp ? 'UP' : '全部'}
-          <HelpInfo>
-            当前{viewingSomeGroup ? '分组' : viewingSomeUp ? 'UP' : '范围'}的一些操作~
-          </HelpInfo>
+          <HelpInfo>当前{viewingSomeGroup ? '分组' : viewingSomeUp ? 'UP' : '范围'}的一些操作~</HelpInfo>
           {viewingSomeGroup && selectedGroup && (
             <span className='inline-flex items-center ml-15px text-size-14px'>
               (
@@ -359,10 +345,7 @@ function SearchCacheRelated() {
     },
   )
 
-  const checked = useMemo(
-    () => !!upMid && cacheAllItemsUpMids.includes(upMid.toString()),
-    [upMid, cacheAllItemsUpMids],
-  )
+  const checked = useMemo(() => !!upMid && cacheAllItemsUpMids.includes(upMid.toString()), [upMid, cacheAllItemsUpMids])
   const onChange = useCallback(async (e: CheckboxChangeEvent) => {
     if (!upMid) return
     const val = e.target.checked
@@ -442,17 +425,14 @@ export function FollowGroupMechanismNote() {
       <ul>
         <li className='flex items-start gap-x-10px'>
           <div>「从全部过滤」:</div>
-          <div>
-            基于全部动态 + 分组UP过滤, 速度可能巨慢, 且过滤后的数量取决于B站记录的"全部"动态范围
-          </div>
+          <div>基于全部动态 + 分组UP过滤, 速度可能巨慢, 且过滤后的数量取决于B站记录的"全部"动态范围</div>
         </li>
         <li className='flex items-start gap-x-10px'>
           <div>「拼接时间线」:</div>
           <div>
             可以理解为: 去看一遍分组所有 UP 的动态, 然后将它们拼接起来 <br />
             启动慢, 但可以加载所有动态; 且分组 UP 越多, 启动越慢 <br />
-            默认分组 UP 数量不超过{' '}
-            {FollowGroupMergeTimelineService.ENABLE_MERGE_TIMELINE_UPMID_COUNT_THRESHOLD}{' '}
+            默认分组 UP 数量不超过 {FollowGroupMergeTimelineService.ENABLE_MERGE_TIMELINE_UPMID_COUNT_THRESHOLD}{' '}
             时会使用「拼接时间线」 <br />
             详见
             <a
@@ -469,13 +449,7 @@ export function FollowGroupMechanismNote() {
   )
 }
 
-function FollowGroupActions({
-  followGroup,
-  onRefresh,
-}: {
-  followGroup: FollowGroup
-  onRefresh?: () => void
-}) {
+function FollowGroupActions({ followGroup, onRefresh }: { followGroup: FollowGroup; onRefresh?: () => void }) {
   const { whenViewAll } = useSnapshot(settings.dynamicFeed)
   const midCount = followGroup.count
 
@@ -486,8 +460,7 @@ function FollowGroupActions({
   )
   {
     const { checked, onChange } = forceMergeTimelineHandle
-    const disabled =
-      midCount <= FollowGroupMergeTimelineService.ENABLE_MERGE_TIMELINE_UPMID_COUNT_THRESHOLD
+    const disabled = midCount <= FollowGroupMergeTimelineService.ENABLE_MERGE_TIMELINE_UPMID_COUNT_THRESHOLD
     forceMergeTimelineCheckbox = (
       <Checkbox
         checked={checked}
@@ -526,15 +499,14 @@ function FollowGroupActions({
       midCount <= FollowGroupMergeTimelineService.ENABLE_MERGE_TIMELINE_UPMID_COUNT_THRESHOLD ||
       forceMergeTimelineHandle.checked
     const usingMergeTimelineHeadCache =
-      usingMergeTimeline &&
-      midCount > FollowGroupMergeTimelineService.ENABLE_HEAD_CACHE_UPMID_COUNT_THRESHOLD
+      usingMergeTimeline && midCount > FollowGroupMergeTimelineService.ENABLE_HEAD_CACHE_UPMID_COUNT_THRESHOLD
     clearMergeTimelineHeadCacheButton = usingMergeTimelineHeadCache && (
       <AntdTooltip
         title={
           <>
             当分组 UP 数量{' >  '}
-            {FollowGroupMergeTimelineService.ENABLE_HEAD_CACHE_UPMID_COUNT_THRESHOLD}时,
-            「拼接时间线」功能会缓存每个 UP 的最新动态5分钟. <br />
+            {FollowGroupMergeTimelineService.ENABLE_HEAD_CACHE_UPMID_COUNT_THRESHOLD}时, 「拼接时间线」功能会缓存每个 UP
+            的最新动态5分钟. <br />
             这里可以手动清除缓存
           </>
         }

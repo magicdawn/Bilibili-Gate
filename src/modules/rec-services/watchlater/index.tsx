@@ -41,9 +41,7 @@ if (IN_BILIBILI_HOMEPAGE) {
     await pRetry(updateWatchlaterState, {
       retries: 3,
       onFailedAttempt(error) {
-        appWarn(
-          `Try updateWatchlaterState ${error.attemptNumber} failed. There are ${error.retriesLeft} retries left`,
-        )
+        appWarn(`Try updateWatchlaterState ${error.attemptNumber} failed. There are ${error.retriesLeft} retries left`)
       },
     })
   })()
@@ -70,9 +68,7 @@ export class WatchlaterRecService extends BaseTabService<WatchlaterItemExtend | 
     return this.innerService.hasMore
   }
 
-  override fetchMore(
-    abortSignal: AbortSignal,
-  ): Promise<(WatchlaterItemExtend | ItemsSeparator)[] | undefined> {
+  override fetchMore(abortSignal: AbortSignal): Promise<(WatchlaterItemExtend | ItemsSeparator)[] | undefined> {
     return this.innerService.loadMore(abortSignal)
   }
 
@@ -92,9 +88,7 @@ export class WatchlaterRecService extends BaseTabService<WatchlaterItemExtend | 
 
   getServiceSnapshot() {
     const bvidIndexMap =
-      this.innerService instanceof ShuffleOrderService
-        ? this.innerService.currentBvidIndexMap
-        : undefined
+      this.innerService instanceof ShuffleOrderService ? this.innerService.currentBvidIndexMap : undefined
     return { bvidIndexMap }
   }
 }
@@ -213,9 +207,7 @@ class ShuffleOrderService implements IService {
 
     this.state.total = rawItems.length
     this.currentBvidIndexMap = new Map(
-      itemsWithSeparator
-        .filter((x) => x.api !== EApiType.Separator)
-        .map((x, index) => [x.bvid, index]),
+      itemsWithSeparator.filter((x) => x.api !== EApiType.Separator).map((x, index) => [x.bvid, index]),
     )
     return itemsWithSeparator
   }
@@ -229,10 +221,7 @@ class NormalOrderService implements IService {
     private searchText?: string,
   ) {
     if (!this.searchText) {
-      invariant(
-        order !== WatchlaterItemsOrder.Shuffle,
-        'shuffle not supported in NormalOrderService',
-      )
+      invariant(order !== WatchlaterItemsOrder.Shuffle, 'shuffle not supported in NormalOrderService')
     }
   }
 
@@ -293,9 +282,7 @@ class NormalOrderService implements IService {
         this.earlierSeparatorInserted = true
       }
       if (!this.recentSeparatorInserted && needRecentSeparator) {
-        const idx = newItems.findIndex(
-          (item) => item.api === EApiType.Watchlater && item.add_at >= recentGate,
-        )
+        const idx = newItems.findIndex((item) => item.api === EApiType.Watchlater && item.add_at >= recentGate)
         newItems = [...newItems.slice(0, idx), recentSeparator, ...newItems.slice(idx)]
         this.recentSeparatorInserted = true
       }
@@ -307,9 +294,7 @@ class NormalOrderService implements IService {
         this.recentSeparatorInserted = true
       }
       if (!this.earlierSeparatorInserted && needEarlierSeparator) {
-        const idx = newItems.findIndex(
-          (item) => item.api === EApiType.Watchlater && item.add_at < recentGate,
-        )
+        const idx = newItems.findIndex((item) => item.api === EApiType.Watchlater && item.add_at < recentGate)
         newItems = [...newItems.slice(0, idx), earlierSeparator, ...newItems.slice(idx)]
         this.earlierSeparatorInserted = true
       }

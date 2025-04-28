@@ -18,11 +18,7 @@ import { TabPaneRecTabsConfig } from './tab-panes/pane-rec-tab-config'
 import { SettingsGroup, sharedCss } from './tab-panes/shared'
 import { ThemesSelect } from './theme'
 
-function useHotkeyForConfig(
-  hotkey: string | string[],
-  configPath: BooleanSettingsPath,
-  label: string,
-) {
+function useHotkeyForConfig(hotkey: string | string[], configPath: BooleanSettingsPath, label: string) {
   return useKeyPress(
     hotkey,
     (e) => {

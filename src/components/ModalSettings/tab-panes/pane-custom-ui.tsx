@@ -10,19 +10,13 @@ import { explainForFlag } from '../index.shared'
 import { CheckboxSettingItem } from '../setting-item'
 import { ResetPartialSettingsButton, SettingsGroup, sharedCss } from './shared'
 
-type CardBorderState = Partial<
-  Pick<Settings['style']['videoCard'], 'useBorder' | 'useBorderOnlyOnHover'>
->
+type CardBorderState = Partial<Pick<Settings['style']['videoCard'], 'useBorder' | 'useBorderOnlyOnHover'>>
 const borderCycleList: CardBorderState[] = [
   { useBorder: false }, // no border
   { useBorder: true, useBorderOnlyOnHover: true }, // on hover
   { useBorder: true, useBorderOnlyOnHover: false }, // always
 ]
-const borderCycleListLabels = [
-  '「卡片边框」: 禁用',
-  '「卡片边框」: 仅在悬浮时显示',
-  '「卡片边框」: 总是显示',
-]
+const borderCycleListLabels = ['「卡片边框」: 禁用', '「卡片边框」: 仅在悬浮时显示', '「卡片边框」: 总是显示']
 export function useHotkeyForConfigBorder() {
   // useHotkeyForConfig(['shift.b'], 'styleUseCardBorder', '卡片边框')
   return useKeyPress(
@@ -30,10 +24,7 @@ export function useHotkeyForConfigBorder() {
     (e) => {
       if (shouldDisableShortcut()) return
 
-      const curState: CardBorderState = pick(settings.style.videoCard, [
-        'useBorder',
-        'useBorderOnlyOnHover',
-      ])
+      const curState: CardBorderState = pick(settings.style.videoCard, ['useBorder', 'useBorderOnlyOnHover'])
       const curIndex = borderCycleList.findIndex((state) => {
         return isEqual(state, pick(curState, Object.keys(state) as (keyof CardBorderState)[]))
       })
@@ -56,10 +47,7 @@ export function TabPaneCustomUI() {
   const itemsContainerClassName = 'flex flex-col gap-y-4px'
 
   return (
-    <div
-      css={sharedCss.tabPane}
-      className='flex flex-col flex-wrap gap-y-10px gap-x-30px content-start'
-    >
+    <div css={sharedCss.tabPane} className='flex flex-col flex-wrap gap-y-10px gap-x-30px content-start'>
       {/* 通用 */}
       <SettingsGroup
         title={
@@ -110,10 +98,10 @@ export function TabPaneCustomUI() {
             tooltip={
               <>
                 网格配置指: 网格宽度, 间距, 列数等. <br />
-                自定义网格配置: 宽度为90%; 可跟随 Bilibili-Evolved 自定义顶栏配置; 列数: 4 - 10列;{' '}
-                由{APP_NAME} 自定义; <br />
-                默认网格配置: bili-feed4 版本B站首页默认的网格配置; 在 Sarari
-                中使用建议取消勾选此项.
+                自定义网格配置: 宽度为90%; 可跟随 Bilibili-Evolved 自定义顶栏配置; 列数: 4 - 10列; 由{
+                  APP_NAME
+                } 自定义; <br />
+                默认网格配置: bili-feed4 版本B站首页默认的网格配置; 在 Sarari 中使用建议取消勾选此项.
               </>
             }
           />
@@ -181,11 +169,7 @@ export function TabPaneCustomUI() {
             tooltip={<>悬浮卡片时使用发光效果, 看起来比较花哨~</>}
           />
 
-          <CheckboxSettingItem
-            configPath='useDelayForHover'
-            label='延迟悬浮预览'
-            tooltip={<>延迟悬浮预览</>}
-          />
+          <CheckboxSettingItem configPath='useDelayForHover' label='延迟悬浮预览' tooltip={<>延迟悬浮预览</>} />
 
           <CheckboxSettingItem
             configPath='style.videoCard.usePadding'

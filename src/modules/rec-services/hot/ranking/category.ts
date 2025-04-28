@@ -54,21 +54,15 @@ export function isNormalCategory(c: Category): c is NormalCategory {
 /**
  * item predicate
  */
-export function isNormalRankingItem(
-  item: RankingItemExtend,
-): item is NormalRankingItem & RankingItemExtendProps {
+export function isNormalRankingItem(item: RankingItemExtend): item is NormalRankingItem & RankingItemExtendProps {
   const c = RANKING_CATEGORIES_MAP[item.slug]
   return isNormalCategory(c)
 }
-export function isBangumiRankingItem(
-  item: RankingItemExtend,
-): item is BangumiRankingItem & RankingItemExtendProps {
+export function isBangumiRankingItem(item: RankingItemExtend): item is BangumiRankingItem & RankingItemExtendProps {
   const c = RANKING_CATEGORIES_MAP[item.slug]
   return isBangumiCategory(c)
 }
-export function isCinemaRankingItem(
-  item: RankingItemExtend,
-): item is CinemaRankingItem & RankingItemExtendProps {
+export function isCinemaRankingItem(item: RankingItemExtend): item is CinemaRankingItem & RankingItemExtendProps {
   const c = RANKING_CATEGORIES_MAP[item.slug]
   return isCinemaCategory(c)
 }
@@ -127,7 +121,7 @@ export const RANKING_CATEGORIES_MAP: Record<CategorySlug, Category> = RANKING_CA
   {} as Record<CategorySlug, Category>,
 )
 
-export const RANKING_CATEGORIES_GROUPDED = groupBy(
-  RANKING_CATEGORIES,
-  (x) => x.type || 'normal',
-) as Record<NonNullable<CategoryType | 'normal'>, Category[]>
+export const RANKING_CATEGORIES_GROUPDED = groupBy(RANKING_CATEGORIES, (x) => x.type || 'normal') as Record<
+  NonNullable<CategoryType | 'normal'>,
+  Category[]
+>

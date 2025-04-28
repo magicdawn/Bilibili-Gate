@@ -124,10 +124,9 @@ export const VideoCardBottom = memo(function ({
 
   const streaming = item.api === EApiType.Live && item.live_status === ELiveStatus.Streaming
 
-  const { data: pubDateDisplayFromApi } = useRequest(
-    () => fetchAppRecommendFollowedPubDate(item, cardData),
-    { refreshDeps: [item, cardData] },
-  )
+  const { data: pubDateDisplayFromApi } = useRequest(() => fetchAppRecommendFollowedPubDate(item, cardData), {
+    refreshDeps: [item, cardData],
+  })
 
   /**
    * avatar + line1: title
@@ -162,13 +161,7 @@ export const VideoCardBottom = memo(function ({
    * 带头像, 更分散(recommend-reason 单独一行)
    */
   return (
-    <div
-      className={clsx(
-        'mt-15px px-5px flex gap-x-5px overflow-hidden',
-        useBorder ? 'mb-10px' : 'mb-5px',
-        className,
-      )}
-    >
+    <div className={clsx('mt-15px px-5px flex gap-x-5px overflow-hidden', useBorder ? 'mb-10px' : 'mb-5px', className)}>
       {/* avatar */}
       {!!authorMid && !hideAvatar && (
         <a href={authorHref} target={target}>
@@ -273,12 +266,7 @@ export const VideoCardBottom = memo(function ({
     return (
       <Switch>
         <Case condition={appBadge || appBadgeDesc}>
-          <a
-            className='bili-video-card__info--owner'
-            css={descOwnerCss}
-            href={href}
-            target={target}
-          >
+          <a className='bili-video-card__info--owner' css={descOwnerCss} href={href} target={target}>
             {!!appBadge && <span css={S.appBadge}>{appBadge}</span>}
             {!!appBadgeDesc && <span>{appBadgeDesc}</span>}
           </a>

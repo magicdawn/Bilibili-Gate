@@ -70,9 +70,7 @@ const state = proxy({
 
     // old: https://space.bilibili.com/<mid>/channel/collectiondetail?sid=<collection-id>
     {
-      const reg = new RegExp(
-        String.raw`https://space.bilibili.com\/(?<mid>\d+)\/channel\/collectiondetail\?`,
-      )
+      const reg = new RegExp(String.raw`https://space.bilibili.com\/(?<mid>\d+)\/channel\/collectiondetail\?`)
       if (reg.test(this.href)) {
         const u = new URL(this.href)
         const collectionId = u.searchParams.get('sid')?.trim()

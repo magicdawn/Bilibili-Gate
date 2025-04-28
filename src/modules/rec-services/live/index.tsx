@@ -77,11 +77,7 @@ export class LiveRecService extends BaseTabService<LiveItemExtend | ItemsSeparat
     let ret: (LiveItemExtend | ItemsSeparator)[] = items
 
     // add separator
-    if (
-      !this.streamingOnly &&
-      !this.separatorAdded &&
-      items.some((x) => x.live_status !== ELiveStatus.Streaming)
-    ) {
+    if (!this.streamingOnly && !this.separatorAdded && items.some((x) => x.live_status !== ELiveStatus.Streaming)) {
       this.separatorAdded = true
       const index = items.findIndex((x) => x.live_status !== ELiveStatus.Streaming)
       ret.splice(index, 0, {

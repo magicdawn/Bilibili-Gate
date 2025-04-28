@@ -112,9 +112,7 @@ export function TabPaneBasic() {
             tooltip='打开首页时自动打开「查看更多」弹窗'
             extraAction={(val) => {
               if (val) {
-                antMessage.success(
-                  '已开启自动「查看更多」: 下次打开首页时将自动打开「查看更多」弹窗',
-                )
+                antMessage.success('已开启自动「查看更多」: 下次打开首页时将自动打开「查看更多」弹窗')
               }
             }}
           />
@@ -139,11 +137,7 @@ export function TabPaneBasic() {
           <>
             视频链接
             <ResetPartialSettingsButton
-              paths={[
-                'videoLinkOpenMode',
-                'pipWindow.defaultLocked',
-                'pipWindow.autoWebFullscreen',
-              ]}
+              paths={['videoLinkOpenMode', 'pipWindow.defaultLocked', 'pipWindow.autoWebFullscreen']}
             />
           </>
         }
@@ -279,9 +273,7 @@ export function TabPaneBasic() {
           <CheckboxSettingItem
             configPath='videoCard.videoPreview.useMp4'
             label='浮动预览使用 mp4'
-            tooltip={
-              <>{explainForFlag('使用 mp4, 最高 720p, 有声音', '使用 dash, 最高 1080p, 无声音')}</>
-            }
+            tooltip={<>{explainForFlag('使用 mp4, 最高 720p, 有声音', '使用 dash, 最高 1080p, 无声音')}</>}
           />
 
           <CheckboxSettingItem
@@ -298,11 +290,7 @@ export function TabPaneBasic() {
             帮助
             <span className='ml-8px mr-4px text-size-14px relative top-4px inline-flex items-center'>
               当前版本
-              <Tag
-                color='green'
-                className='cursor-pointer mx-4px'
-                onClick={handleCopyScriptVersion}
-              >
+              <Tag color='green' className='cursor-pointer mx-4px' onClick={handleCopyScriptVersion}>
                 {APP_NAME} v{__SCRIPT_VERSION__}
               </Tag>
               <IconForCopy className='size-16px cursor-pointer' onClick={handleCopyScriptVersion} />
