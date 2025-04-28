@@ -60,16 +60,11 @@ export function AppRoot({
             Notification: {
               zIndexPopup: Number(zIndexAntdPopupBase),
             },
-            // 也很难看~
-            // Segmented: {
-            //   trackPadding: 4,
-            //   itemSelectedBg: colorPrimary,
-            //   itemActiveBg: colorPrimary,
-            //   trackBg: tweakLightness(colorPrimary, -0.2),
-            //   itemSelectedColor: '#fff',
-            //   itemColor: '#fff',
-            //   itemHoverColor: '#fff',
-            // },
+            Button: {
+              // the `default` / `primary` shadow is ugly, `danger` shadow 看不出来
+              defaultShadow: 'none',
+              primaryShadow: 'none',
+            },
           },
         }}
       >
