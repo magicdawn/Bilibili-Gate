@@ -6,7 +6,8 @@ import { Button, Input } from 'antd'
 import { useSnapshot } from 'valtio'
 import { CopyBvidButtonsUsageInfo } from '../_shared/copy-bvid-buttons'
 import { GenericOrderSwitcher } from '../_shared/generic-order-switcher'
-import { SpaceUploadOrder, SpaceUploadOrderConfig } from './api'
+import type { SpaceUploadOrder } from './api'
+import { SpaceUploadOrderConfig } from './api'
 import { SpaceUploadQueryKey, spaceUploadStore } from './store'
 
 const fixAntdInputSearchAddonCss = css`
@@ -26,7 +27,7 @@ const fixAntdInputSearchAddonCss = css`
 `
 
 export function SpaceUploadUsageInfo() {
-  const { searchText, filterText, mids, groupId } = useSnapshot(spaceUploadStore, { sync: true })
+  const { searchText, filterText, allowedOrders, usingOrder } = useSnapshot(spaceUploadStore, { sync: true })
   const { order } = useSnapshot(spaceUploadStore)
   const onRefresh = useOnRefreshContext()
 
@@ -42,23 +43,16 @@ export function SpaceUploadUsageInfo() {
     location.href = u.href
   })
 
-  const isMultiple = mids.length > 1 || !!groupId
-  const allowedOrders = useMemo(
-    () => [SpaceUploadOrder.Latest, SpaceUploadOrder.View, !isMultiple && SpaceUploadOrder.Fav].filter(Boolean),
-    [isMultiple],
-  )
-  const switcherValue = allowedOrders.includes(order) ? order : allowedOrders[0]
-
   return (
     <div className='flex items-center gap-x-10px'>
       <GenericOrderSwitcher<SpaceUploadOrder>
-        value={switcherValue}
+        value={usingOrder}
+        list={allowedOrders as SpaceUploadOrder[]}
+        listDisplayConfig={SpaceUploadOrderConfig}
         onChange={(value) => {
           spaceUploadStore.order = value
           onRefresh?.()
         }}
-        list={allowedOrders}
-        listDisplayConfig={SpaceUploadOrderConfig}
       />
       <Input.Search
         style={{ width: 200 }}

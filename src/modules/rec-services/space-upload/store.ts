@@ -28,6 +28,18 @@ const store = proxy({
   order: SpaceUploadOrder.Latest,
   searchText: QUERY_SPACE_UPLOAD_SEARCH_TEXT as string | undefined,
   filterText: QUERY_SPACE_UPLOAD_FILTER_TEXT as string | undefined,
+
+  get isMultipleTraget() {
+    return this.mids.length > 1 || !!this.groupId
+  },
+  get allowedOrders() {
+    return [SpaceUploadOrder.Latest, SpaceUploadOrder.View, !this.isMultipleTraget && SpaceUploadOrder.Fav].filter(
+      Boolean,
+    )
+  },
+  get usingOrder() {
+    return this.allowedOrders.includes(this.order) ? this.order : this.allowedOrders[0]
+  },
 })
 
 export { store as spaceUploadStore }

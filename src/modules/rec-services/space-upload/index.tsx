@@ -31,7 +31,7 @@ export function getSpaceUploadServiceConfig(): SpaceUploadServiceConfig {
   return {
     mids: snap.mids,
     groupId: snap.groupId,
-    order: snap.order,
+    order: snap.usingOrder,
     searchText: snap.searchText,
     filterText: snap.filterText,
   }
