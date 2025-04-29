@@ -206,6 +206,7 @@ export default defineConfig(({ command, mode }) => ({
           'https://www.bilibili.com/list/watchlater?*',
           'https://www.bilibili.com/bangumi/play/*',
           'https://space.bilibili.com/*',
+          'https://search.bilibili.com/*',
         ],
         'connect': ['app.bilibili.com'],
         'grant': [
@@ -264,10 +265,7 @@ export default defineConfig(({ command, mode }) => ({
               {
                 // antd deps = [react, react-dom, dayjs]
                 'dayjs': cdn.npmmirror('dayjs', 'dayjs.min.js'),
-                'dayjs/plugin/duration': cdn.npmmirror(
-                  'dayjs_plugin_duration',
-                  'plugin/duration.js',
-                ),
+                'dayjs/plugin/duration': cdn.npmmirror('dayjs_plugin_duration', 'plugin/duration.js'),
 
                 // https://github.com/ant-design/ant-design/issues/45262
                 '@ant-design/cssinjs': cdn.npmmirror('antdCssinjs', 'dist/umd/cssinjs.min.js'),

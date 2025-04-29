@@ -252,6 +252,9 @@ importers:
       type-fest:
         specifier: ^4.40.1
         version: 4.40.1
+      typed-query-selector:
+        specifier: ^2.12.0
+        version: 2.12.0
       typed-scss-modules:
         specifier: ^8.1.1
         version: 8.1.1(sass@1.87.0)
@@ -4187,6 +4190,9 @@ packages:
   type-fest@4.40.1:
     resolution: {integrity: sha512-9YvLNnORDpI+vghLU/Nf+zSv0kL47KbVJ1o3sKgoTefl6i+zebxbiDQWoe/oWWqPhIgQdRZRT1KA9sCPL810SA==}
     engines: {node: '>=16'}
+
+  typed-query-selector@2.12.0:
+    resolution: {integrity: sha512-SbklCd1F0EiZOyPiW192rrHZzZ5sBijB6xM+cpmrwDqObvdtunOHHIk9fCGsoK5JVIYXoyEp4iEdE3upFH3PAg==}
 
   typed-scss-modules@8.1.1:
     resolution: {integrity: sha512-tWcG7Tvi4r9SNs24EECogZFFOi/IFWmAowtYI0129I9Jolcgp4gzYtRahxKAs3So7XFfhLlf2+Nn//OYnVnyFg==}
@@ -8471,6 +8477,8 @@ snapshots:
   type-fest@3.13.1: {}
 
   type-fest@4.40.1: {}
+
+  typed-query-selector@2.12.0: {}
 
   typed-scss-modules@8.1.1(sass@1.87.0):
     dependencies:

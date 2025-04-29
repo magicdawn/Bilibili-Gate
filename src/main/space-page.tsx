@@ -13,8 +13,10 @@ import { css } from '@emotion/react'
 import { type ComponentProps, type ReactNode } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
 import { proxy, useSnapshot } from 'valtio'
+import { setupForNoneHomepage } from './shared'
 
 export async function initSpacePage() {
+  setupForNoneHomepage()
   addDynEntry()
 }
 

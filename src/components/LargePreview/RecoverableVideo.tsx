@@ -1,6 +1,18 @@
 import { useMixedRef } from '$common/hooks/mixed-ref'
+import { proxyWithGmStorage } from '$utility/valtio'
 import type { ComponentProps, ComponentRef, MutableRefObject } from 'react'
-import { largePreviewStore } from '../use/useLargePreview'
+
+const store = await proxyWithGmStorage<{
+  volume: number | undefined
+  muted: boolean | undefined
+}>(
+  {
+    volume: undefined, // A double values must fall between 0 and 1, where 0 is effectively muted and 1 is the loudest possible value.
+    muted: undefined,
+  },
+  'large-preview-store',
+)
+export { store as largePreviewStore }
 
 export const RecoverableVideo = forwardRef<
   ComponentRef<'video'>,
@@ -16,11 +28,11 @@ export const RecoverableVideo = forwardRef<
         ref.current.currentTime = currentTimeRef.current
       }
       // set initial volume & muted
-      if (typeof largePreviewStore.volume === 'number') {
-        ref.current.volume = largePreviewStore.volume
+      if (typeof store.volume === 'number') {
+        ref.current.volume = store.volume
       }
-      if (typeof largePreviewStore.muted === 'boolean') {
-        ref.current.muted = largePreviewStore.muted
+      if (typeof store.muted === 'boolean') {
+        ref.current.muted = store.muted
       }
     }
     mountedRef.current = true
@@ -35,8 +47,8 @@ export const RecoverableVideo = forwardRef<
     if (!mountedRef.current) return
     if (!ref.current) return
     // persist values
-    largePreviewStore.volume = ref.current.volume
-    largePreviewStore.muted = ref.current.muted
+    store.volume = ref.current.volume
+    store.muted = ref.current.muted
   })
 
   return <video ref={ref} {...videoProps} onTimeUpdate={onTimeUpdate} onVolumeChange={onVolumeChange} />

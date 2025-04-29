@@ -1,20 +1,19 @@
-import { APP_CLS_CARD } from '$common'
+import { APP_CLS_CARD, BiliDomain } from '$common'
 import { useMittOn } from '$common/hooks/useMitt'
-import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
-import type { RecItemType } from '$define'
+import { useRefStateBox } from '$common/hooks/useRefState'
 import { openNewTab } from '$modules/gm'
 import { IconForLoading } from '$modules/icon'
+import { settings } from '$modules/settings'
 import { shouldDisableShortcut } from '$utility/dom'
-import { proxyWithGmStorage } from '$utility/valtio'
-import { useClickAway, useEventListener, useRequest } from 'ahooks'
+import { useClickAway, useEventListener, useLockFn, useRequest } from 'ahooks'
 import type { ComponentRef, MutableRefObject } from 'react'
-import { LargePreview } from '../child-components/LargePreview'
-import { RecoverableVideo } from '../child-components/RecoverableVideo'
-import { VideoCardActionButton } from '../child-components/VideoCardActions'
-import { type SharedEmitter } from '../index.shared'
-import type { IVideoCardData } from '../process/normalize'
-import type { VideoPreviewData } from '../services'
-import { getRecItemDimension } from './useOpenRelated'
+import { useSnapshot } from 'valtio'
+import { VideoCardActionButton } from '../VideoCard/child-components/VideoCardActions'
+import { type SharedEmitter } from '../VideoCard/index.shared'
+import { fetchVideoPreviewData, isVideoPreviewDataValid, type VideoPreviewData } from '../VideoCard/services'
+import { getRecItemDimension } from '../VideoCard/use/useOpenRelated'
+import { LargePreview } from './index'
+import { RecoverableVideo } from './RecoverableVideo'
 
 type Timer = ReturnType<typeof setTimeout>
 type TimerRef = MutableRefObject<Timer | undefined>
@@ -24,45 +23,60 @@ function clearTimerRef(timerRef: TimerRef) {
   timerRef.current = undefined
 }
 
-export const largePreviewStore = await proxyWithGmStorage<{
-  volume: number | undefined
-  muted: boolean | undefined
-}>(
-  {
-    volume: undefined, // A double values must fall between 0 and 1, where 0 is effectively muted and 1 is the loudest possible value.
-    muted: undefined,
-  },
-  'large-preview-store',
-)
+type UseLargePreviewOptions = {
+  // videoPreview data
+  shouldFetchPreviewData: boolean
+  // render ActionButton?
+  actionButtonVisible: boolean
+  hasLargePreviewActionButton: boolean
+  // required data
+  bvid: string
+  cid?: number
+  uniqId: string
+  sharedEmitter: SharedEmitter
+  // optional
+  aspectRatioFromItem?: number
+  cover?: string
+  cardRef?: MutableRefObject<ComponentRef<'div'> | null>
+}
 
 export function useLargePreviewRelated({
   // videoPreview data
   shouldFetchPreviewData,
-  tryFetchVideoPreviewData,
-  videoPreviewDataBox,
-
-  // render ActionButton
+  // render ActionButton?
   actionButtonVisible,
   hasLargePreviewActionButton,
-
-  // item
-  item,
-  cardData,
+  // required data
+  bvid,
+  cid,
+  uniqId,
   sharedEmitter,
+  // optional
+  aspectRatioFromItem,
+  cover,
   cardRef,
-}: {
-  actionButtonVisible: boolean
-  hasLargePreviewActionButton: boolean
-  shouldFetchPreviewData: boolean
-  tryFetchVideoPreviewData: () => Promise<void>
-  videoPreviewDataBox: RefStateBox<VideoPreviewData | undefined>
-  item: RecItemType
-  cardData: IVideoCardData
-  sharedEmitter: SharedEmitter
-  cardRef: MutableRefObject<ComponentRef<'div'> | null>
-}) {
-  const { uniqId } = item
-  const { cover, bvid } = cardData
+}: UseLargePreviewOptions) {
+  const {
+    useMp4,
+    __internal: { preferNormalCdn },
+  } = useSnapshot(settings.videoCard.videoPreview)
+
+  const videoPreviewDataBox = useRefStateBox<VideoPreviewData | undefined>(undefined)
+  const tryFetchVideoPreviewData = useLockFn(async () => {
+    if (!shouldFetchPreviewData) return
+    if (isVideoPreviewDataValid(videoPreviewDataBox.val)) return // already fetched
+    const data = await fetchVideoPreviewData({
+      bvid,
+      cid,
+      useMp4,
+      preferNormalCdn,
+      aspectRatioFromItem,
+    })
+    videoPreviewDataBox.set(data)
+  })
+  useUpdateEffect(() => {
+    videoPreviewDataBox.set(undefined)
+  }, [useMp4, preferNormalCdn])
 
   const $req = useRequest(tryFetchVideoPreviewData, {
     manual: true,
@@ -153,7 +167,7 @@ export function useLargePreviewRelated({
   const onOpenInNewTab = useMemoizedFn(() => {
     if (!bvid) return
 
-    const u = new URL(`/video/${bvid}`, location.href)
+    const u = new URL(`https://${BiliDomain.Main}/video/${bvid}`)
     const t = getLargePreviewCurrentTime()
     if (t) u.searchParams.set('t', t.toString())
     openNewTab(u.href)
@@ -162,10 +176,12 @@ export function useLargePreviewRelated({
     hide()
   })
 
-  const usingDimension = useMemo(
-    () => getRecItemDimension(item, videoPreviewDataBox.state?.dimension),
-    [item, videoPreviewDataBox.state?.dimension],
-  )
+  const usingAspectRatio = useMemo(() => {
+    return (
+      getRecItemDimension({ dimensionFromApi: videoPreviewDataBox.state?.dimension })?.aspectRatio ??
+      aspectRatioFromItem
+    )
+  }, [videoPreviewDataBox.state?.dimension])
   const videoRef = useRef<ComponentRef<typeof RecoverableVideo> | null>(null)
   const currentTimeRef = useRef<number | undefined>(undefined)
   const largePreviewRef = useRef<ComponentRef<typeof LargePreview> | null>(null)
@@ -173,7 +189,7 @@ export function useLargePreviewRelated({
   const largePreviewEl = willRenderLargePreview && (
     <LargePreview
       ref={largePreviewRef}
-      aspectRatio={usingDimension.aspectRatio}
+      aspectRatio={usingAspectRatio}
       onMouseEnter={(e) => onMouseEnter('popover')}
       onMouseLeave={(e) => onMouseLeave('popover')}
     >
@@ -261,9 +277,9 @@ export function useLargePreviewRelated({
   useClickAway(
     () => hide(),
     [
-      () => cardRef.current?.closest('.' + APP_CLS_CARD), // click from card
+      cardRef ? () => cardRef?.current?.closest('.' + APP_CLS_CARD) : undefined, // click from card
       largePreviewRef, // click from `LargePreview`, safari 中使用 createPortal 不再是 card descendant
-    ],
+    ].filter(Boolean),
   )
 
   /**

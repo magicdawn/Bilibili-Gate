@@ -26,7 +26,7 @@ export function AppRoot({
   emotionCache = emotionCssDefaultCache,
   styleProviderProps,
 }: {
-  children: ReactNode
+  children?: ReactNode
   injectGlobalStyle?: boolean
   antdSetup?: boolean
   emotionCache?: EmotionCache

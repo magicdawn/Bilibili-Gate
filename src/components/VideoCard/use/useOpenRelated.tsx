@@ -105,7 +105,7 @@ export function useOpenRelated({
   })
 
   function handlePopup(newHref: string) {
-    const { width, height } = getRecItemDimension(item)
+    const { width, height } = getRecItemDimension({ item })
     return openInPipOrPopup(newHref, cardData.bvid, width, height)
   }
 
@@ -181,7 +181,13 @@ export function useOpenRelated({
   }
 }
 
-export function getRecItemDimension(item: RecItemType, dimensionFromApi?: VideoPage['dimension']) {
+export function getRecItemDimension({
+  item,
+  dimensionFromApi,
+}: {
+  item?: RecItemType
+  dimensionFromApi?: VideoPage['dimension']
+}) {
   let width: number | undefined
   let height: number | undefined
   let aspectRatio: number | undefined
@@ -195,7 +201,7 @@ export function getRecItemDimension(item: RecItemType, dimensionFromApi?: VideoP
   }
 
   // AppRecommend
-  else if (item.api === EApiType.AppRecommend && item.uri?.startsWith('bilibili://')) {
+  else if (item?.api === EApiType.AppRecommend && item.uri?.startsWith('bilibili://')) {
     const searchParams = new URL(item.uri).searchParams
     const playerWidth = Number(searchParams.get('player_width') || 0)
     const playerHeight = Number(searchParams.get('player_height') || 0)
@@ -208,7 +214,7 @@ export function getRecItemDimension(item: RecItemType, dimensionFromApi?: VideoP
   }
 
   // ranking
-  else if (item.api === EApiType.Ranking && isNormalRankingItem(item)) {
+  else if (item?.api === EApiType.Ranking && isNormalRankingItem(item)) {
     const w = item.dimension.width
     const h = item.dimension.height
     const rotate = item.dimension.rotate

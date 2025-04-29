@@ -8,12 +8,17 @@ import { HelpInfo } from '$components/_base/HelpInfo'
 import { antMessage } from '$modules/antd'
 import { IconForCopy } from '$modules/icon'
 import { updateSettings, useSettingsSnapshot } from '$modules/settings'
-import { Button, Select, Space, Tag } from 'antd'
+import { Button, Divider, Select, Space, Tag } from 'antd'
 import { explainForFlag, toastAndReload } from '../index.shared'
 import { ResetPartialSettingsButton, SettingsGroup, sharedCss } from './shared'
 
 export function TabPaneBasic() {
-  const { videoLinkOpenMode } = useSettingsSnapshot()
+  const {
+    videoLinkOpenMode,
+    videoCard: {
+      actions: { showLargePreview, openInPipWindow },
+    },
+  } = useSettingsSnapshot()
 
   const openModeOptions = useMemo(() => {
     return Object.values(VideoLinkOpenMode)
@@ -136,9 +141,7 @@ export function TabPaneBasic() {
         title={
           <>
             视频链接
-            <ResetPartialSettingsButton
-              paths={['videoLinkOpenMode', 'pipWindow.defaultLocked', 'pipWindow.autoWebFullscreen']}
-            />
+            <ResetPartialSettingsButton paths={['videoLinkOpenMode']} />
           </>
         }
       >
@@ -172,18 +175,6 @@ export function TabPaneBasic() {
               }}
             />
           </div>
-
-          <CheckboxSettingItem
-            configPath='pipWindow.defaultLocked'
-            label='小窗: 默认锁定'
-            tooltip={explainForFlag('小窗打开时: 默认锁定', '小窗打开时: 不锁定')}
-          />
-
-          <CheckboxSettingItem
-            configPath='pipWindow.autoWebFullscreen'
-            label='小窗: 自动网页全屏'
-            tooltip={explainForFlag('自动网页全屏', '不启用')}
-          />
         </Space>
       </SettingsGroup>
 
@@ -195,7 +186,15 @@ export function TabPaneBasic() {
               视频卡片操作 <HelpInfo>视频卡片右上角「稍后再看」按钮旁</HelpInfo>
             </span>
             <ResetPartialSettingsButton
-              paths={['videoCard.actions.showLargePreview', 'videoCard.actions.openInPipWindow']}
+              paths={[
+                'videoCard.actions.showLargePreview',
+                'videoCard.actions.openInPipWindow',
+                'videoCard.videoPreview.useMp4',
+                'videoCard.videoPreview.useScale',
+                'videoCard.videoPreview.addTo.searchPage',
+                'pipWindow.defaultLocked',
+                'pipWindow.autoWebFullscreen',
+              ]}
             />
           </>
         }
@@ -203,6 +202,7 @@ export function TabPaneBasic() {
         <div className='flex items-center gap-x-10px'>
           <CheckboxSettingItem
             configPath='videoCard.actions.showLargePreview'
+            className='min-w-220px'
             label={'浮动预览'}
             tooltip={
               <>
@@ -221,12 +221,56 @@ export function TabPaneBasic() {
               </>
             }
           />
-
           <CheckboxSettingItem
             configPath='videoCard.actions.openInPipWindow'
+            className='min-w-190px'
             label={'小窗打开'}
             tooltip={<>仅当「文档画中画」API 可用时, 勾选生效</>}
           />
+        </div>
+        <Divider className='py-0 my-0' />
+        <div className='flex flex-wrap items-start gap-x-10px'>
+          <div className='flex flex-col gap-y-4px'>
+            <CheckboxSettingItem
+              className='min-w-220px'
+              configPath='videoCard.videoPreview.useMp4'
+              disabled={!showLargePreview}
+              label='浮动预览: 使用 mp4'
+              tooltip={
+                <>{explainForFlag('使用 mp4, 最高 720p, 有声音', '使用 dash, 最高 1080p, 无声音, 理论上更快')}</>
+              }
+            />
+            <CheckboxSettingItem
+              className='min-w-220px'
+              configPath='videoCard.videoPreview.useScale'
+              disabled={!showLargePreview}
+              label='浮动预览: 使用放大效果'
+              tooltip={<>{explainForFlag('浮动预览面板: 放大展开 (类似浮图秀)', '浮动预览面板: 滑动展开')}</>}
+            />
+            <CheckboxSettingItem
+              className='min-w-220px'
+              configPath='videoCard.videoPreview.addTo.searchPage'
+              disabled={!showLargePreview}
+              label='浮动预览: 添加到「搜索页」'
+              tooltip={<>在搜索页的视频也添加「浮动预览」</>}
+            />
+          </div>
+          <div className='flex flex-col gap-y-4px'>
+            <CheckboxSettingItem
+              className='min-w-190px'
+              configPath='pipWindow.defaultLocked'
+              disabled={!openInPipWindow}
+              label='小窗: 默认锁定'
+              tooltip={explainForFlag('小窗打开时: 默认锁定', '小窗打开时: 不锁定')}
+            />
+            <CheckboxSettingItem
+              className='min-w-190px'
+              configPath='pipWindow.autoWebFullscreen'
+              disabled={!openInPipWindow}
+              label='小窗: 自动网页全屏'
+              tooltip={explainForFlag('自动网页全屏', '不启用')}
+            />
+          </div>
         </div>
       </SettingsGroup>
 
@@ -235,18 +279,11 @@ export function TabPaneBasic() {
         title={
           <>
             预览
-            <ResetPartialSettingsButton
-              paths={[
-                'autoPreviewWhenKeyboardSelect',
-                'autoPreviewWhenHover',
-                'videoCard.videoPreview.useMp4',
-                'videoCard.videoPreview.useScale',
-              ]}
-            />
+            <ResetPartialSettingsButton paths={['autoPreviewWhenKeyboardSelect', 'autoPreviewWhenHover']} />
           </>
         }
       >
-        <Space size={10}>
+        <div className='flex flex-wrap items-center gap-x-10px'>
           <CheckboxSettingItem
             configPath='autoPreviewWhenKeyboardSelect'
             label='键盘选中后自动开始预览'
@@ -269,19 +306,7 @@ export function TabPaneBasic() {
               </>
             }
           />
-
-          <CheckboxSettingItem
-            configPath='videoCard.videoPreview.useMp4'
-            label='浮动预览使用 mp4'
-            tooltip={<>{explainForFlag('使用 mp4, 最高 720p, 有声音', '使用 dash, 最高 1080p, 无声音')}</>}
-          />
-
-          <CheckboxSettingItem
-            configPath='videoCard.videoPreview.useScale'
-            label='浮动预览使用放大效果'
-            tooltip={<>{explainForFlag('浮动预览面板 放大展开', '浮动预览面板 滑动展开')}</>}
-          />
-        </Space>
+        </div>
       </SettingsGroup>
 
       <SettingsGroup

@@ -35,6 +35,7 @@ import { css } from '@emotion/react'
 import { useLockFn } from 'ahooks'
 import { Dropdown } from 'antd'
 import type { ComponentRef, CSSProperties, MouseEventHandler, ReactNode } from 'react'
+import { useLargePreviewRelated } from '../LargePreview/useLargePreview'
 import { videoCardBorderRadiusValue } from '../css-vars'
 import { multiSelectedCss, useBlockedCardCss } from './card-border-css'
 import { SimplePregressBar } from './child-components/PreviewImage'
@@ -52,17 +53,11 @@ import {
 } from './index.shared'
 import type { IVideoCardData } from './process/normalize'
 import { normalizeCardData } from './process/normalize'
-import type { ImagePreviewData, VideoPreviewData } from './services'
-import {
-  fetchImagePreviewData,
-  fetchVideoPreviewData,
-  isImagePreviewDataValid,
-  isVideoPreviewDataValid,
-} from './services'
+import type { ImagePreviewData } from './services'
+import { fetchImagePreviewData, isImagePreviewDataValid } from './services'
 import { StatItemDisplay } from './stat-item'
 import { ApiTypeTag, ChargeOnlyTag, isChargeOnlyVideo, LiveBadge, RankingNumMark, VolMark } from './top-marks'
 import { useDislikeRelated } from './use/useDislikeRelated'
-import { useLargePreviewRelated } from './use/useLargePreview'
 import { useMultiSelectRelated } from './use/useMultiSelect'
 import { getRecItemDimension, useLinkTarget, useOpenRelated } from './use/useOpenRelated'
 import { usePreviewRelated } from './use/usePreviewRelated'
@@ -240,9 +235,9 @@ const VideoCardInner = memo(function VideoCardInner({
     appWarn(`none (${allowed.join(',')}) goto type %s`, goto, item)
   }
 
-  const imagePreviewDataBox = useRefStateBox<ImagePreviewData | undefined>(undefined)
-  const videoPreviewDataBox = useRefStateBox<VideoPreviewData | undefined>(undefined)
+  const aspectRatioFromItem = useMemo(() => getRecItemDimension({ item })?.aspectRatio, [item])
 
+  const imagePreviewDataBox = useRefStateBox<ImagePreviewData | undefined>(undefined)
   const shouldFetchPreviewData = useMemo(() => {
     if (!bvid) return false // no bvid
     if (!bvid.startsWith('BV')) return false // bvid invalid
@@ -259,21 +254,6 @@ const VideoCardInner = memo(function VideoCardInner({
       warnNoPreview(data.videoshotJson!)
     }
   })
-  const tryFetchVideoPreviewData = useLockFn(async () => {
-    if (!shouldFetchPreviewData) return
-    if (isVideoPreviewDataValid(videoPreviewDataBox.val)) return // already fetched
-    const data = await fetchVideoPreviewData({
-      bvid: bvid!,
-      cid,
-      useMp4,
-      preferNormalCdn,
-      aspectRatioFromItem: getRecItemDimension(item)?.aspectRatio,
-    })
-    videoPreviewDataBox.set(data)
-  })
-  useUpdateEffect(() => {
-    videoPreviewDataBox.set(undefined)
-  }, [useMp4, preferNormalCdn])
 
   // 3,false: 每三次触发一次
   const warnNoPreview = useLessFrequentFn(
@@ -360,15 +340,16 @@ const VideoCardInner = memo(function VideoCardInner({
     hideLargePreview,
   } = useLargePreviewRelated({
     shouldFetchPreviewData,
-    tryFetchVideoPreviewData,
-    videoPreviewDataBox,
-    //
     actionButtonVisible,
     hasLargePreviewActionButton: videoCardActions.showLargePreview,
-    //
-    item,
-    cardData,
+    // required
+    bvid: bvid!,
+    cid,
+    uniqId: item.uniqId,
     sharedEmitter,
+    // optional
+    aspectRatioFromItem,
+    cover,
     cardRef,
   })
 

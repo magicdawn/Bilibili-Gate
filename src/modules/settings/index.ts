@@ -65,6 +65,9 @@ export const initialSettings = {
     videoPreview: {
       useMp4: false, // mp4 | dash (mp4: single video, dash: video only, no audio)
       useScale: true, // scale effect
+      addTo: {
+        searchPage: true,
+      },
       __internal: {
         preferNormalCdn: false,
       },

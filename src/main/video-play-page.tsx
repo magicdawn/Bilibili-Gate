@@ -6,10 +6,12 @@ import { getBiliPlayerConfigAutoPlay } from '$modules/bilibili/player-config'
 import { isMac } from '$ua'
 import { delay } from 'es-toolkit'
 import ms from 'ms'
+import { setupAppRootForNoneHomepage } from './shared'
 
 const debug = baseDebug.extend('main:video-play-page')
 
 export async function initVideoPlayPage() {
+  setupAppRootForNoneHomepage()
   registerGmCommands()
   await handleFullscreen()
   await handleForceAutoPlay()

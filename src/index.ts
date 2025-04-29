@@ -27,21 +27,20 @@ dayjs.extend(duration)
 // load config first
 import './modules/settings'
 
-import { IN_BILIBILI_HOMEPAGE, IN_BILIBILI_SPACE_PAGE, IN_BILIBILI_VIDEO_PLAY_PAGE } from '$common'
+import {
+  IN_BILIBILI_HOMEPAGE,
+  IN_BILIBILI_SEARCH_PAGE,
+  IN_BILIBILI_SPACE_PAGE,
+  IN_BILIBILI_VIDEO_PLAY_PAGE,
+} from '$common'
 import { initHomepage } from '$main/homepage'
+import { initSearchPage } from '$main/search-page'
 import { initSpacePage } from '$main/space-page'
 import { initVideoPlayPage } from '$main/video-play-page'
 
 void (function main() {
-  if (IN_BILIBILI_HOMEPAGE) {
-    return initHomepage()
-  }
-
-  if (IN_BILIBILI_VIDEO_PLAY_PAGE) {
-    return initVideoPlayPage()
-  }
-
-  if (IN_BILIBILI_SPACE_PAGE) {
-    return initSpacePage()
-  }
+  if (IN_BILIBILI_HOMEPAGE) return initHomepage()
+  if (IN_BILIBILI_VIDEO_PLAY_PAGE) return initVideoPlayPage()
+  if (IN_BILIBILI_SPACE_PAGE) return initSpacePage()
+  if (IN_BILIBILI_SEARCH_PAGE) return initSearchPage()
 })()

@@ -1,4 +1,4 @@
-import { APP_CLS_ROOT } from '$common'
+import { APP_CLS_ROOT, IN_BILIBILI_HOMEPAGE } from '$common'
 import { appBgId, appColorPrimaryId } from '$common/css-vars-export.module.scss'
 import { useAntLinkColorGlobalCss } from '$common/emotion-css'
 import { $headerWidth, $usingEvolevdHeader, useBackToTopRight } from '$header'
@@ -36,7 +36,7 @@ export function GlobalStyle() {
         ]}
       />
 
-      {pureRecommend && (
+      {IN_BILIBILI_HOMEPAGE && pureRecommend && (
         <Global
           styles={[
             css`

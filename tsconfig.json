@@ -51,6 +51,7 @@
       "node",
       "vite/client",
       "unplugin-icons/types/react",
+      "typed-query-selector",
       // issue with GM.setClipboard API
       // "vite-plugin-monkey/global",
       "@violentmonkey/types"

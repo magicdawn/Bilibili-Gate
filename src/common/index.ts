@@ -35,26 +35,27 @@ export const OPERATION_FAIL_MSG = '操作失败, 请重试 !!!'
 export const __DEV__ = import.meta.env.DEV
 export const __PROD__ = import.meta.env.PROD
 
-const hostname = location.hostname
-const pathname = location.pathname || ''
-export const IN_BILIBILI = hostname.endsWith('bilibili.com')
+export enum BiliDomain {
+  Tld = '.bilibili.com',
+  Main = 'www.bilibili.com',
+  Space = 'space.bilibili.com',
+  Search = 'search.bilibili.com',
+}
 
+const { hostname, pathname } = location
+export const IN_BILIBILI = hostname.endsWith(BiliDomain.Tld)
 export const IN_BILIBILI_HOMEPAGE = IN_BILIBILI && (pathname === '/' || pathname === '/index.html')
-
 // https://www.bilibili.com/video/BVxxx
 // https://www.bilibili.com/list/watchlater?bvid=BVxxx
 export const IN_BILIBILI_VIDEO_PLAY_PAGE =
-  IN_BILIBILI &&
-  (pathname.startsWith('/video/') || pathname.startsWith('/list/watchlater') || pathname.startsWith('/bangumi/play/'))
-
-// https://space.bilibili.com/17815937/
-export const IN_BILIBILI_SPACE_PAGE = hostname === 'space.bilibili.com'
+  IN_BILIBILI && ['/video/', '/list/watchlater', '/bangumi/play/'].some((prefix) => pathname.startsWith(prefix))
+export const IN_BILIBILI_SPACE_PAGE = hostname === BiliDomain.Space
+export const IN_BILIBILI_SEARCH_PAGE = hostname === BiliDomain.Search
 
 /**
  * log with namespace
  * e.g console.warn('[%s] videoshot error for %s: %o', APP_NAME, bvid, json)
  */
-
 function logFactory(logFn: typeof console.log) {
   return function appLog(...args: Parameters<typeof console.log>) {
     const [message, ...rest] = args
