@@ -1,16 +1,20 @@
 import { AppRoot } from '$components/AppRoot'
 import { registerSettingsGmCommand } from '$components/RecHeader/modals'
+import { once } from 'es-toolkit'
 
 export function setupForNoneHomepage() {
   setupAppRootForNoneHomepage()
   registerSettingsGmCommand()
 }
 
-export function setupAppRootForNoneHomepage() {
+const _setupOnce = once(() => {
   const container = document.createElement('div')
   document.body.appendChild(container)
   const root = createRoot(container)
   root.render(<AppRoot injectGlobalStyle antdSetup />)
+})
+export function setupAppRootForNoneHomepage() {
+  _setupOnce()
 }
 
 export function isInIframe() {
