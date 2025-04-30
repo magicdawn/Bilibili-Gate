@@ -199,10 +199,9 @@ export function TabPaneBasic() {
           </>
         }
       >
-        <div className='flex items-center gap-x-10px'>
+        <div className='grid grid-cols-[repeat(2,max-content)_1fr] items-start gap-x-20px'>
           <CheckboxSettingItem
             configPath='videoCard.actions.showLargePreview'
-            className='min-w-220px'
             label={'浮动预览'}
             tooltip={
               <>
@@ -223,16 +222,12 @@ export function TabPaneBasic() {
           />
           <CheckboxSettingItem
             configPath='videoCard.actions.openInPipWindow'
-            className='min-w-190px'
             label={'小窗打开'}
             tooltip={<>仅当「文档画中画」API 可用时, 勾选生效</>}
           />
-        </div>
-        <Divider className='py-0 my-0' />
-        <div className='flex flex-wrap items-start gap-x-10px'>
-          <div className='flex flex-col gap-y-4px'>
+          <Divider className='py-0 my-0 grid-col-span-full' />
+          <div className='flex flex-col gap-y-2px'>
             <CheckboxSettingItem
-              className='min-w-220px'
               configPath='videoCard.videoPreview.useMp4'
               disabled={!showLargePreview}
               label='浮动预览: 使用 mp4'
@@ -241,30 +236,26 @@ export function TabPaneBasic() {
               }
             />
             <CheckboxSettingItem
-              className='min-w-220px'
               configPath='videoCard.videoPreview.useScale'
               disabled={!showLargePreview}
               label='浮动预览: 使用放大效果'
               tooltip={<>{explainForFlag('浮动预览面板: 放大展开 (类似浮图秀)', '浮动预览面板: 滑动展开')}</>}
             />
             <CheckboxSettingItem
-              className='min-w-220px'
               configPath='videoCard.videoPreview.addTo.searchPage'
               disabled={!showLargePreview}
               label='浮动预览: 添加到「搜索页」'
               tooltip={<>在搜索页的视频也添加「浮动预览」</>}
             />
           </div>
-          <div className='flex flex-col gap-y-4px'>
+          <div className='flex flex-col gap-y-2px'>
             <CheckboxSettingItem
-              className='min-w-190px'
               configPath='pipWindow.defaultLocked'
               disabled={!openInPipWindow}
               label='小窗: 默认锁定'
               tooltip={explainForFlag('小窗打开时: 默认锁定', '小窗打开时: 不锁定')}
             />
             <CheckboxSettingItem
-              className='min-w-190px'
               configPath='pipWindow.autoWebFullscreen'
               disabled={!openInPipWindow}
               label='小窗: 自动网页全屏'
