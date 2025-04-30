@@ -15,11 +15,9 @@ https://github.com/microsoft/TypeScript/issues/58897#issuecomment-2220808697
 pnpm add -D typescript@5.4.5
 ```
 
-## antd
+## `motion/react` v.s `framer-motion`
 
-// https://ant.design/changelog-cn#5211 external antd 后, default Button 没有边框,
-// 缺少 .ant-btn-variant-outlined.ant-btn-color-default { border-color: #d9d9d9; } 样式
-// 仅 external 情况下会有, https://github.com/ant-design/cssinjs/pull/201
-// 'antd',
-
-https://github.com/ant-design/cssinjs 发新版了, 所以可以升级了.
+- `frame-motion`更底层: `motion` 从 `frame-motion/dom` 重新导出, `motion/react` 从 `frame-motion` 重新导出
+- `motion` 的 dist 目录非常乱 https://www.npmjs.com/package/motion/v/12.9.2?activeTab=code 很多重复目录 `es` `lib` 等有多层级
+- `framer-motion` 有 UMD build, `motion` 有 UMD build, `motion/react` 无 UMD build
+- 所以还是继续用 framer-motion 就行
