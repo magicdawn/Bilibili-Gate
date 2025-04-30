@@ -248,7 +248,7 @@ export function useLargePreviewRelated({
     </LargePreview>
   )
 
-  const largePreviewActionButtonEl = hasLargePreviewActionButton && shouldFetchPreviewData && actionButtonVisible && (
+  const largePreviewActionButtonEl = hasLargePreviewActionButton && shouldFetchPreviewData && (
     <VideoCardActionButton
       key='video-card-action-button'
       css={actionButtonCss}

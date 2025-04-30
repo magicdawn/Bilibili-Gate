@@ -66,10 +66,13 @@ function LargePreviewSetup({ el }: { el: HTMLDivElement }) {
     hasLargePreviewActionButton: true,
     actionButtonVisible: hovering,
     actionButtonProps: {
-      initial: { opacity: 0 },
-      animate: { opacity: 1 },
-      exit: { opacity: 0 },
-      transition: { duration: 0.2, ease: 'linear', delay: 0.2 },
+      useMotion: true,
+      motionProps: {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0, transition: { delay: 0 } },
+        transition: { duration: 0.2, ease: 'linear', delay: 0.2 },
+      },
     },
     // required
     bvid: bvid,

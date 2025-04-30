@@ -11,17 +11,8 @@ export default tseslint.config(
   eslintConfigPrettier,
 
   // must use single `ignores` key
-  {
-    ignores: ['dist/', '**/*.module.less.d.ts'],
-  },
-  {
-    languageOptions: {
-      globals: {
-        ...globals.browser,
-        ...globals.node,
-      },
-    },
-  },
+  { ignores: ['dist/', '**/*.module.less.d.ts'] },
+  { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
   {
     rules: {
       //

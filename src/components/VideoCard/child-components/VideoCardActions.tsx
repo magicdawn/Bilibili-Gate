@@ -2,7 +2,7 @@ import { setForwardedRef } from '$common/hooks/mixed-ref'
 import { colorPrimaryValue } from '$components/css-vars'
 import { css as _css, css } from '@emotion/react'
 import { useHover } from 'ahooks'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import type { ComponentRef } from 'react'
 import { type ComponentProps, type ReactNode } from 'react'
 import { zIndexLeftMarks, zIndexRightActions } from '../index.shared'
@@ -35,31 +35,6 @@ const S = {
     `,
   ],
 
-  button: (visible: boolean, active = false) => css`
-    position: relative;
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
-    cursor: pointer;
-    background-color: rgba(33, 33, 33, 0.7);
-    border: 1px solid #444;
-    color: #fff;
-    &:hover {
-      border-color: ${colorPrimaryValue};
-    }
-    ${active && `border-color: ${colorPrimaryValue};`}
-
-    display: ${visible ? 'inline-flex' : 'none'};
-    align-items: center;
-    justify-content: center;
-
-    /* svg-icon */
-    svg {
-      pointer-events: none;
-      user-select: none;
-    }
-  `,
-
   tooltip: (inlinePosition: InlinePosition, tooltipOffset = 5) => [
     css`
       position: absolute;
@@ -84,34 +59,79 @@ const S = {
 
 export { S as VideoCardActionStyle }
 
+const buttonInnerSvgCss = css`
+  /* svg-icon */
+  svg {
+    pointer-events: none;
+    user-select: none;
+  }
+`
+
+// div / motion.div props 不兼容的 key
+type InCompatibleDivProps = 'onAnimationStart' | 'onDragStart' | 'onDragEnd' | 'onDrag'
+type VideoCardActionButtonProps = {
+  inlinePosition: InlinePosition
+  icon: ReactNode
+  tooltip: string
+  visible?: boolean
+  active?: boolean
+  useMotion?: boolean
+  motionProps?: ComponentProps<typeof motion.div>
+} & Omit<ComponentProps<'div'>, InCompatibleDivProps>
+
 export const VideoCardActionButton = memo(
-  forwardRef<
-    ComponentRef<'div'>,
-    {
-      inlinePosition: InlinePosition
-      icon: ReactNode
-      tooltip: string
-      visible?: boolean
-      active?: boolean
-    } & ComponentProps<typeof motion.div>
-  >(({ inlinePosition, icon, tooltip, visible, active, className, ...divProps }, forwardedRef) => {
-    visible ??= true
-    const { triggerRef, tooltipEl } = useTooltip({ inlinePosition, tooltip })
-    return (
-      <motion.div
-        {...divProps}
-        ref={(el) => {
+  forwardRef<ComponentRef<'div'>, VideoCardActionButtonProps>(
+    (
+      {
+        inlinePosition,
+        icon,
+        tooltip,
+        visible = true,
+        active = false,
+        className,
+        useMotion = false,
+        motionProps,
+        ...divProps
+      },
+      forwardedRef,
+    ) => {
+      const { triggerRef, tooltipEl } = useTooltip({ inlinePosition, tooltip })
+
+      const _className = useMemo(() => {
+        return clsx(
+          'action-button',
+          'relative size-28px rounded-6px cursor-pointer bg-[rgb(33_33_33_/_0.7)] color-white',
+          'b-1px b-solid',
+          active ? 'b-gate-primary' : 'b-#444',
+          'hover:b-gate-primary',
+          useMotion ? 'inline-flex' : visible ? 'inline-flex' : 'hidden',
+          'items-center justify-center',
+          className,
+        )
+      }, [active, className, visible, useMotion])
+
+      const sharedProps = {
+        ...divProps,
+        className: _className,
+        css: buttonInnerSvgCss,
+        ref: (el: HTMLDivElement) => {
           triggerRef.current = el
           setForwardedRef(forwardedRef, el)
-        }}
-        className={clsx('action-button', className)}
-        css={[S.button(visible, active)]}
-      >
-        {icon}
-        {tooltipEl}
-      </motion.div>
-    )
-  }),
+        },
+        children: [icon, tooltipEl],
+      }
+
+      if (!useMotion) {
+        return <div {...sharedProps} />
+      } else {
+        return (
+          <AnimatePresence>
+            {visible && <motion.div key={'action-button'} {...sharedProps} {...motionProps} />}
+          </AnimatePresence>
+        )
+      }
+    },
+  ),
 )
 
 export function useTooltip({
