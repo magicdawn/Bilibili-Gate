@@ -2,6 +2,7 @@ import { setForwardedRef } from '$common/hooks/mixed-ref'
 import { colorPrimaryValue } from '$components/css-vars'
 import { css as _css, css } from '@emotion/react'
 import { useHover } from 'ahooks'
+import { motion } from 'framer-motion'
 import type { ComponentRef } from 'react'
 import { type ComponentProps, type ReactNode } from 'react'
 import { zIndexLeftMarks, zIndexRightActions } from '../index.shared'
@@ -92,23 +93,23 @@ export const VideoCardActionButton = memo(
       tooltip: string
       visible?: boolean
       active?: boolean
-    } & ComponentProps<'div'>
+    } & ComponentProps<typeof motion.div>
   >(({ inlinePosition, icon, tooltip, visible, active, className, ...divProps }, forwardedRef) => {
     visible ??= true
     const { triggerRef, tooltipEl } = useTooltip({ inlinePosition, tooltip })
     return (
-      <div
+      <motion.div
         {...divProps}
         ref={(el) => {
           triggerRef.current = el
           setForwardedRef(forwardedRef, el)
         }}
-        css={[S.button(visible, active)]}
         className={clsx('action-button', className)}
+        css={[S.button(visible, active)]}
       >
         {icon}
         {tooltipEl}
-      </div>
+      </motion.div>
     )
   }),
 )

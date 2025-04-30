@@ -5,6 +5,7 @@ import { openNewTab } from '$modules/gm'
 import { IconForLoading } from '$modules/icon'
 import { settings } from '$modules/settings'
 import { shouldDisableShortcut } from '$utility/dom'
+import type { CssProp } from '$utility/type'
 import { useClickAway, useEventListener, useLockFn, useRequest } from 'ahooks'
 import type { ComponentRef, MutableRefObject } from 'react'
 import { useSnapshot } from 'valtio'
@@ -27,8 +28,10 @@ type UseLargePreviewOptions = {
   // videoPreview data
   shouldFetchPreviewData: boolean
   // render ActionButton?
-  actionButtonVisible: boolean
   hasLargePreviewActionButton: boolean
+  actionButtonVisible: boolean
+  actionButtonCss?: CssProp
+  actionButtonProps?: Partial<ComponentProps<typeof VideoCardActionButton>>
   // required data
   bvid: string
   cid?: number
@@ -44,8 +47,10 @@ export function useLargePreviewRelated({
   // videoPreview data
   shouldFetchPreviewData,
   // render ActionButton?
-  actionButtonVisible,
   hasLargePreviewActionButton,
+  actionButtonVisible,
+  actionButtonProps,
+  actionButtonCss,
   // required data
   bvid,
   cid,
@@ -243,25 +248,25 @@ export function useLargePreviewRelated({
     </LargePreview>
   )
 
-  const largePreviewActionButtonEl = hasLargePreviewActionButton /** settings */ &&
-    shouldFetchPreviewData /** rec-item */ && (
-      <VideoCardActionButton
-        visible={actionButtonVisible}
-        active={willRenderLargePreview}
-        inlinePosition={'right'}
-        icon={
-          $req.loading ? <IconForLoading className='size-16px' /> : <IconParkOutlineVideoTwo className='size-15px' />
-        }
-        tooltip={triggerAction.state === 'click' ? (visible ? '关闭浮动预览' : '浮动预览') : '浮动预览'}
-        onMouseEnter={(e) => onMouseEnter('video-card-action-button')}
-        onMouseLeave={(e) => onMouseLeave('video-card-action-button')}
-        onClick={(e) => {
-          e.preventDefault()
-          e.stopPropagation()
-          onClick('video-card-action-button')
-        }}
-      />
-    )
+  const largePreviewActionButtonEl = hasLargePreviewActionButton && shouldFetchPreviewData && actionButtonVisible && (
+    <VideoCardActionButton
+      key='video-card-action-button'
+      css={actionButtonCss}
+      {...actionButtonProps}
+      visible={actionButtonVisible}
+      active={willRenderLargePreview}
+      inlinePosition={'right'}
+      icon={$req.loading ? <IconForLoading className='size-16px' /> : <IconParkOutlineVideoTwo className='size-15px' />}
+      tooltip={triggerAction.state === 'click' ? (visible ? '关闭浮动预览' : '浮动预览') : '浮动预览'}
+      onMouseEnter={(e) => onMouseEnter('video-card-action-button')}
+      onMouseLeave={(e) => onMouseLeave('video-card-action-button')}
+      onClick={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        onClick('video-card-action-button')
+      }}
+    />
+  )
 
   /**
    * trigger by click, more ways to close

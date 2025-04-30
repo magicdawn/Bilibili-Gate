@@ -63,8 +63,14 @@ function LargePreviewSetup({ el }: { el: HTMLDivElement }) {
 
   const { largePreviewActionButtonEl, largePreviewEl } = useLargePreviewRelated({
     shouldFetchPreviewData: !!bvid,
-    actionButtonVisible: hovering,
     hasLargePreviewActionButton: true,
+    actionButtonVisible: hovering,
+    actionButtonProps: {
+      initial: { opacity: 0 },
+      animate: { opacity: 1 },
+      exit: { opacity: 0 },
+      transition: { duration: 0.2, ease: 'linear', delay: 0.2 },
+    },
     // required
     bvid: bvid,
     cid: undefined,
