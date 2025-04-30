@@ -13,7 +13,7 @@ import { isInIframe, setupForNoneHomepage } from './shared'
 export async function initSearchPage() {
   if (isInIframe()) return // pagetual use iframe to load more
   setupForNoneHomepage()
-  if (settings.videoCard.videoPreview.addTo.searchPage) {
+  if (settings.videoCard.actions.showLargePreview && settings.videoCard.videoPreview.addTo.searchPage) {
     addLargePreviewForSearchResults()
   }
 }
