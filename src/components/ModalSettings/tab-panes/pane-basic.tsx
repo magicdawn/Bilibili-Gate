@@ -225,8 +225,8 @@ export function TabPaneBasic() {
             label={'小窗打开'}
             tooltip={<>仅当「文档画中画」API 可用时, 勾选生效</>}
           />
-          <Divider className='py-0 my-0 grid-col-span-full' />
-          <div className='flex flex-col gap-y-2px'>
+          <Divider className='py-0 my-2px grid-col-span-full' />
+          <div className='flex flex-col'>
             <CheckboxSettingItem
               configPath='videoCard.videoPreview.useMp4'
               disabled={!showLargePreview}
@@ -248,7 +248,7 @@ export function TabPaneBasic() {
               tooltip={<>在搜索页的视频也添加「浮动预览」</>}
             />
           </div>
-          <div className='flex flex-col gap-y-2px'>
+          <div className='flex flex-col'>
             <CheckboxSettingItem
               configPath='pipWindow.defaultLocked'
               disabled={!openInPipWindow}
