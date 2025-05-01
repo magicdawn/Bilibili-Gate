@@ -1,60 +1,8 @@
 {
-  "include": ["src", "src/auto-imports.d.ts"],
-  "references": [{ "path": "./tsconfig.node.json" }],
-  "compilerOptions": {
-    // generated .d.ts
-    "rootDirs": [".", "generated"],
-
-    "baseUrl": "./",
-    "paths": {
-      "$*": ["./src/*"]
-    },
-
-    "module": "ESNext",
-    "target": "ES2022",
-    "lib": [
-      "ES2023",
-      "DOM",
-      "DOM.Iterable",
-      "ES2024.Promise", // Promise.withResolvers; Baseline 2024
-      "ESNext.Disposable", // DisposableStack; Stage 3; need polyfill
-      "ESNext.Collection" // Set.prototype.difference
-    ],
-    "useDefineForClassFields": true,
-    "skipLibCheck": true,
-
-    /* Bundler mode */
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
-    "jsxImportSource": "@emotion/react",
-
-    //
-    "moduleDetection": "force",
-
-    /* Linting */
-    "strict": true,
-    "noImplicitOverride": true,
-
-    // "noUnusedLocals": true,
-    // "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-
-    "plugins": [{ "name": "@styled/typescript-styled-plugin" }],
-    "types": [
-      "@total-typescript/ts-reset",
-      "node",
-      "vite/client",
-      "unplugin-icons/types/react",
-      "typed-query-selector",
-      // issue with GM.setClipboard API
-      // "vite-plugin-monkey/global",
-      "@violentmonkey/types"
-    ]
-  }
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" }, // FE App
+    { "path": "./tsconfig.vite.json" }, // Vite config
+    { "path": "./tsconfig.node.json" } // other config runs in node
+  ]
 }

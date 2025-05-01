@@ -1,0 +1,48 @@
+{
+  "include": ["src", "src/auto-imports.d.ts"],
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "baseUrl": "./",
+    "paths": {
+      "$*": ["./src/*"]
+    },
+
+    // module
+    "target": "ES2022",
+    "module": "ESNext",
+    "lib": [
+      "ES2023",
+      "DOM",
+      "DOM.Iterable",
+      "ES2024.Promise", // Promise.withResolvers; Baseline 2024
+      "ESNext.Disposable", // DisposableStack; Stage 3; need polyfill
+      "ESNext.Collection" // Set.prototype.difference
+    ],
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "moduleDetection": "force",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+
+    // typecheck
+    "skipLibCheck": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "noEmit": true,
+    "useDefineForClassFields": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "@emotion/react",
+    "plugins": [{ "name": "@styled/typescript-styled-plugin" }],
+    "types": [
+      "@total-typescript/ts-reset",
+      "node",
+      "vite/client",
+      "unplugin-icons/types/react",
+      "typed-query-selector",
+      "@violentmonkey/types" // "vite-plugin-monkey/global", has issue with GM.setClipboard API
+    ]
+  }
+}

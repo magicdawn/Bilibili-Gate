@@ -8,12 +8,13 @@
     },
     "_typecheck": {
       "dependsOn": ["build:scss"],
-      "inputs": ["src/**/*.{ts,tsx}", "tsconfig.json"]
+      "inputs": ["src/**/*.{ts,tsx}", "tsconfig.json", "tsconfig.*.json"]
     },
     "_lint": {
       "inputs": [
         "src/**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue,astro,svelte}",
         "tsconfig.json",
+        "tsconfig.*.json",
         ".oxlintrc.json"
       ]
     },
@@ -24,6 +25,7 @@
       "inputs": [
         "src/**/*.{ts,tsx}",
         "tsconfig.json",
+        "tsconfig.*.json",
         "vite.config.ts",
         "uno.config.ts",
         "package.json"
@@ -36,6 +38,7 @@
       "inputs": [
         "src/**/*.{ts,tsx}",
         "tsconfig.json",
+        "tsconfig.*.json",
         "vite.config.ts",
         "uno.config.ts",
         "package.json"
