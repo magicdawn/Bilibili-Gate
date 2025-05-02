@@ -9,7 +9,6 @@ export default defineConfig([
   tseslint.configs.recommended,
   eslintConfigPrettier,
 
-  // must use single `ignores` key
   { ignores: ['dist/', '**/*.module.less.d.ts'] },
   { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
   {

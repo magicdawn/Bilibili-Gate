@@ -8,6 +8,7 @@
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
     "strict": true,
-    "allowJs": true
+    "allowJs": true,
+    "noEmit": true
   }
 }
