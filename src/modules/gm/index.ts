@@ -2,6 +2,7 @@ import { isSafari } from '$ua'
 import pLimit from 'p-limit'
 
 export function openNewTab(url: string, active = true) {
+  if (url.startsWith('/')) url = location.origin + url // safari Userscripts will complain with pathname only
   if (isSafari) {
     // https://github.com/quoid/userscripts?tab=readme-ov-file#api
     GM.openInTab(url, !active)
