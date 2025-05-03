@@ -80,7 +80,7 @@ export class FavFolderService implements IFavInnerService {
     this.assertInnerService()
     return {
       api: EApiType.Separator,
-      uniqId: `fav-folder-${this.folderId}`,
+      uniqId: `fav-folder-separator-${this.folderId}`,
       content: <FavFolderSeparator service={this.innerService} />,
     }
   }
@@ -243,7 +243,7 @@ export class FavFolderBasicService {
         from: 'fav-folder',
         folder: this.info!,
         api: EApiType.Fav,
-        uniqId: `fav-${this.info?.id}-${item.bvid}`,
+        uniqId: `${EApiType.Fav}-folder:${this.info?.id || this.entry.id}-${item.bvid}`,
       }
     })
   }

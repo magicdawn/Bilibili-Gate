@@ -124,6 +124,7 @@ export function createVideoCardEmitter() {
 export type SharedEmitterEvents = {
   'mouseenter': string
   'show-large-preview': string
+  'remove-cards': [uniqIds: string[], titles?: string[]]
 }
 export type SharedEmitter = Emitter<SharedEmitterEvents>
 export function createSharedEmitter() {

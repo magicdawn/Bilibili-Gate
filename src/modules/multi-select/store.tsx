@@ -7,6 +7,11 @@ export const multiSelectStore = proxy({
   selectedIdSet: proxySet<string>(), // uniqId
 })
 
+export function useMultiSelecting() {
+  const { multiSelecting } = useSnapshot(multiSelectStore)
+  return multiSelecting
+}
+
 export function useMultiSelectState(uniqId: string | undefined) {
   const { multiSelecting, selectedIdSet } = useSnapshot(multiSelectStore)
   return multiSelecting && !!uniqId && selectedIdSet.has(uniqId)

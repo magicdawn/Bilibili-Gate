@@ -1,12 +1,15 @@
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
 import type { ETab } from '$components/RecHeader/tab-enum'
-import { IconForShuffle, IconForTimestamp, withAscIcon, withDescIcon } from '$modules/icon'
+import { AntdTooltip } from '$modules/antd/custom'
+import { IconForRemove, IconForShuffle, IconForTimestamp, withAscIcon, withDescIcon } from '$modules/icon'
+import { useMultiSelecting } from '$modules/multi-select/store'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import toast from '$utility/toast'
-import { Input, Tag } from 'antd'
+import { Button, Input, Tag } from 'antd'
 import { delay } from 'es-toolkit'
 import type { ElementRef, ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
+import { removeMultiSelectedWatchlaterItems } from '.'
 import { usePopupContainer } from '../_base'
 import { CopyBvidButtonsUsageInfo } from '../_shared/copy-bvid-buttons'
 import { GenericOrderSwitcher } from '../_shared/generic-order-switcher'
@@ -18,6 +21,7 @@ export function WatchlaterUsageInfo({ service }: UsageInfoPropsFor<ETab.Watchlat
   const { watchlaterAddSeparator, watchlaterItemsOrder } = useSettingsSnapshot()
   const onRefresh = useOnRefreshContext()
   const { searchText } = useSnapshot(watchlaterStore, { sync: true })
+  const multiSelecting = useMultiSelecting()
 
   // 切换 添加分割线 设置, 即时生效
   useUpdateEffect(() => {
@@ -63,6 +67,14 @@ export function WatchlaterUsageInfo({ service }: UsageInfoPropsFor<ETab.Watchlat
       />
 
       {totalTag}
+
+      {multiSelecting && (
+        <AntdTooltip arrow={false} title='移除稍后再看 (多选)'>
+          <Button className='icon-only-round-button' onClick={removeMultiSelectedWatchlaterItems}>
+            <IconForRemove />
+          </Button>
+        </AntdTooltip>
+      )}
 
       <CopyBvidButtonsUsageInfo />
     </div>

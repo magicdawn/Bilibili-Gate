@@ -1,7 +1,4 @@
 dist
 node_modules
-
 **/*.module.less.d.ts
-*.ejs
-
 **/auto-imports.d.ts

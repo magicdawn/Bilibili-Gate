@@ -79,7 +79,7 @@ export class PopularWeeklyRecService implements IService {
       this.qs.bufferQueue.push(
         {
           api: EApiType.Separator,
-          uniqId: `popular-weekly-${epNum}`,
+          uniqId: `popular-weekly-separator-${epNum}`,
           content: (
             <CustomTargetLink href={`https://www.bilibili.com/v/popular/weekly?num=${epNum}`}>
               {ep.name}
@@ -138,7 +138,7 @@ async function fetchWeeklyItems(episodeNum: number) {
       return {
         ...item,
         api: EApiType.PopularWeekly,
-        uniqId: item.bvid,
+        uniqId: `${EApiType.PopularWeekly}-${item.bvid}`,
       } as PopularWeeklyItemExtend
     })
 

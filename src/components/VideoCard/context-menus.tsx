@@ -27,6 +27,7 @@ import {
   IconForFav,
   IconForFaved,
   IconForOpenExternalLink,
+  IconForRemove,
   IconForSpaceUpload,
   IconForWatchlater,
 } from '$modules/icon'
@@ -311,7 +312,7 @@ export function useContextMenus({
       },
     ])
 
-    // I'm interested in this video and video-author
+    // I'm interested in this video or the author
     const interestedMenus = defineAntMenus([
       {
         test: hasViewUpVideoListEntry,
@@ -331,11 +332,7 @@ export function useContextMenus({
         test: hasWatchlaterEntry,
         key: 'watchlater',
         label: watchlaterAdded ? '移除稍后再看' : '稍后再看',
-        icon: watchlaterAdded ? (
-          <IconMaterialSymbolsDeleteOutlineRounded className='size-15px' />
-        ) : (
-          <IconForWatchlater className='size-15px' />
-        ),
+        icon: watchlaterAdded ? <IconForRemove className='size-15px' /> : <IconForWatchlater className='size-15px' />,
         onClick() {
           onToggleWatchlater()
         },

@@ -300,13 +300,6 @@ function getBabelImportPlugins(command: ConfigEnv['command']): PluginOption[] {
         libraryName: 'antd',
         libraryDirectory: 'es',
       }),
-
-    // command === 'build' &&
-    //   importer({
-    //     libraryName: '@icon-park/react',
-    //     libraryDirectory: 'es/icons',
-    //     camel2DashComponentName: false, // default: true,
-    //   }),
   ].filter(Boolean)
 }
 

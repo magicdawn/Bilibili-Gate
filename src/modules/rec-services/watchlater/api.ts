@@ -1,6 +1,8 @@
 import { appWarn } from '$common'
 import { encWbi } from '$modules/bilibili/risk-control'
 import { isWebApiSuccess, request } from '$request'
+import { getCsrfToken } from '$utility/cookie'
+import toast from '$utility/toast'
 import type { WatchlaterItem, WatchlaterJson } from './types'
 
 /**
@@ -50,4 +52,21 @@ function filterOutApiReturnedRecent(items: WatchlaterItem[]) {
   return items.filter(
     (item) => !(item.title === '以下为更早添加的视频' && item.aid === 0 && item.bvid === '' && item.add_at === 0),
   )
+}
+
+/**
+ * 批量移除稍后再看 API call
+ */
+export async function batchRemoveWatchlater(avids: string[]) {
+  const form = new FormData()
+  form.append('resources', avids.join(','))
+  form.append('csrf', getCsrfToken())
+  const params = await encWbi({})
+  const res = await request.post('/x/v2/history/toview/v2/dels', form, { params })
+  const json = res.data
+  if (!isWebApiSuccess(json)) {
+    toast(json?.message || '出错了')
+    return false
+  }
+  return true // success
 }

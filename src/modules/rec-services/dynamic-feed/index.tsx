@@ -420,7 +420,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
         return {
           ...item,
           api: EApiType.DynamicFeed,
-          uniqId: item.id_str || crypto.randomUUID(),
+          uniqId: `${EApiType.DynamicFeed}-${item.id_str || crypto.randomUUID()}`,
         }
       })
 
@@ -512,7 +512,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
         if (idx !== -1) {
           ret.splice(idx, 0, {
             api: EApiType.Separator,
-            uniqId: 'dynamic-feed-separator-today',
+            uniqId: `dynamic-feed-separator-today`,
             content,
           })
           config.added = true

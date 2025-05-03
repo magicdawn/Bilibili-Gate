@@ -118,7 +118,12 @@ export const VideoCardActionButton = memo(
           triggerRef.current = el
           setForwardedRef(forwardedRef, el)
         },
-        children: [icon, tooltipEl],
+        children: (
+          <>
+            {icon}
+            {tooltipEl}
+          </>
+        ),
       }
 
       if (!useMotion) {

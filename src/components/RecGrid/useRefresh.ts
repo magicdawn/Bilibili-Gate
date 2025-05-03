@@ -45,9 +45,7 @@ export function useRefresh({
 }) {
   const hasMoreBox = useRefStateBox(true)
   const itemsBox = useRefStateBox<RecItemTypeOrSeparator[]>([])
-  useEffect(() => {
-    setGlobalGridItems(itemsBox.state)
-  }, [itemsBox.state])
+  useEffect(() => setGlobalGridItems(itemsBox.state), [itemsBox.state])
 
   const refreshingBox = useRefStateBox(false)
   const refreshTsBox = useRefStateBox<number>(() => Date.now())

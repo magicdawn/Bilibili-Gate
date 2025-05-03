@@ -38,6 +38,7 @@ import { useInView } from 'react-intersection-observer'
 import { VirtuosoGrid } from 'react-virtuoso'
 import { useSnapshot } from 'valtio'
 import * as classNames from '../video-grid.module.scss'
+import { setCurrentGridSharedEmitter } from './unsafe-window-export'
 import type { OnRefresh } from './useRefresh'
 import { useRefresh } from './useRefresh'
 import { useShortcut } from './useShortcut'
@@ -299,6 +300,7 @@ const RecGridInner = memo(function ({
   }, [usingVideoItems])
 
   const sharedEmitter = useMemo(() => createSharedEmitter(), [])
+  useEffect(() => setCurrentGridSharedEmitter(sharedEmitter), [sharedEmitter])
 
   const [activeLargePreviewUniqId, setActiveLargePreviewUniqId] = useState<string | undefined>(undefined)
   useMittOn(sharedEmitter, 'show-large-preview', setActiveLargePreviewUniqId)
@@ -337,22 +339,33 @@ const RecGridInner = memo(function ({
 
   const setItems = itemsBox.set
 
-  const handleRemoveCard = useMemoizedFn((item: RecItemType, data: IVideoCardData) => {
+  const handleRemoveCards = useMemoizedFn((uniqIds: string[], titles?: string[]) => {
     setItems((items) => {
-      const index = items.findIndex((x) => x.uniqId === item.uniqId)
-      if (index === -1) return items
-
       const newItems = items.slice()
-      newItems.splice(index, 1)
-      antMessage.success(`已移除: ${data.title}`, 4)
+      const removedTitles: string[] = []
 
-      if (tab === ETab.Watchlater) {
-        servicesRegistry.val[tab]?.decreaseTotal()
-        // updateExtraInfo(tab)
+      for (const [i, uniqId] of uniqIds.entries()) {
+        const index = newItems.findIndex((x) => x.uniqId === uniqId)
+        if (index === -1) continue
+
+        newItems.splice(index, 1)
+        const title = titles?.[i]
+        if (title) removedTitles.push(title)
+
+        if (tab === ETab.Watchlater) {
+          servicesRegistry.val[tab]?.decreaseTotal()
+        }
+        if (tab === ETab.Fav) {
+          servicesRegistry.val[tab]?.decreaseTotal()
+        }
       }
-      if (tab === ETab.Fav) {
-        servicesRegistry.val[tab]?.decreaseTotal()
-        // updateExtraInfo(tab)
+
+      if (removedTitles.length) {
+        if (removedTitles.length <= 3) {
+          removedTitles.forEach((t) => antMessage.success(`已移除: ${removedTitles.join(', ')}`))
+        } else {
+          antMessage.success(`已移除: ${removedTitles.length}个视频`)
+        }
       }
 
       return newItems
@@ -374,6 +387,7 @@ const RecGridInner = memo(function ({
       return newItems
     })
   })
+  useMittOn(sharedEmitter, 'remove-cards', ([uniqIds, titles]) => handleRemoveCards(uniqIds, titles))
 
   /**
    * footer for infinite scroll
@@ -496,7 +510,7 @@ const RecGridInner = memo(function ({
           tab={tab}
           item={item}
           active={active}
-          onRemoveCurrent={handleRemoveCard}
+          onRemoveCurrent={(item, data) => handleRemoveCards([item.uniqId], [data.title])}
           onMoveToFirst={handleMoveCardToFirst}
           onRefresh={refresh}
           emitter={videoCardEmitters[index]}

@@ -1,4 +1,6 @@
 import { appWarn, IN_BILIBILI_HOMEPAGE } from '$common'
+import { currentGridSharedEmitter, getMultiSelectedItems } from '$components/RecGrid/unsafe-window-export'
+import { normalizeCardData } from '$components/VideoCard/process/normalize'
 import { type ItemsSeparator, type WatchlaterItemExtend } from '$define'
 import { EApiType } from '$define/index.shared'
 import { getHasLogined, getUid } from '$utility/cookie'
@@ -10,7 +12,7 @@ import pRetry from 'p-retry'
 import { proxy, useSnapshot } from 'valtio'
 import { proxySet } from 'valtio/utils'
 import { BaseTabService, type IService } from '../_base'
-import { fetchWatchlaterItems } from './api'
+import { batchRemoveWatchlater, fetchWatchlaterItems } from './api'
 import { type WatchlaterItem } from './types'
 import { WatchlaterUsageInfo } from './usage-info'
 import { WatchlaterItemsOrder } from './watchlater-enum'
@@ -45,6 +47,27 @@ if (IN_BILIBILI_HOMEPAGE) {
       },
     })
   })()
+}
+
+/**
+ * 批量移除稍后再看
+ */
+export async function removeMultiSelectedWatchlaterItems() {
+  const selected = getMultiSelectedItems()
+    .map((item) => ({ item, cardData: normalizeCardData(item) }))
+    .filter((x) => x.cardData.avid)
+    .map((x) => [x.cardData.avid, x.item.uniqId, x.cardData.title] as [avid: string, uniqId: string, title: string])
+    .filter(Boolean)
+  const avids = selected.map((x) => x[0])
+  const uniqIds = selected.map((x) => x[1])
+  const titles = selected.map((x) => x[2])
+  if (!avids.length) {
+    return toast('没有选中的视频')
+  }
+
+  const success = await batchRemoveWatchlater(avids)
+  if (!success) return
+  currentGridSharedEmitter.emit('remove-cards', [uniqIds, titles])
 }
 
 export class WatchlaterRecService extends BaseTabService<WatchlaterItemExtend | ItemsSeparator> {
@@ -101,7 +124,7 @@ function extendItem(item: WatchlaterItem): WatchlaterItemExtend {
   return {
     ...item,
     api: EApiType.Watchlater,
-    uniqId: `watchlater-${item.bvid}`,
+    uniqId: `${EApiType.Watchlater}-${item.bvid}`,
   }
 }
 
@@ -110,12 +133,12 @@ const getRecentGate = () => dayjs().subtract(2, 'days').unix()
 
 const recentSeparator: ItemsSeparator = {
   api: EApiType.Separator as const,
-  uniqId: 'watchlater-recent',
+  uniqId: 'watchlater-separator-recent',
   content: '近期',
 }
 const earlierSeparator: ItemsSeparator = {
   api: EApiType.Separator as const,
-  uniqId: 'watchlater-earlier',
+  uniqId: 'watchlater-separator-earlier',
   content: '更早',
 }
 

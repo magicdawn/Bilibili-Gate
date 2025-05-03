@@ -36,7 +36,7 @@ export class PopularGeneralRecService implements IService {
       return {
         ...item,
         api: EApiType.PopularGeneral,
-        uniqId: item.bvid,
+        uniqId: `${EApiType.PopularGeneral}-${item.bvid}`,
       } as PopularGeneralItemExtend
     })
     return items

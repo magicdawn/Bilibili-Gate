@@ -48,11 +48,12 @@ export class RankingRecService implements IService {
 
       const list: RankingItem[] = json?.data?.list || json?.result?.list || []
       const items: RankingItemExtend[] = list.map((item, index) => {
+        const rankingNo = index + 1
         return {
           ...item,
           api: EApiType.Ranking,
-          uniqId: crypto.randomUUID(),
-          rankingNo: index + 1,
+          uniqId: `${EApiType.Ranking}-${this.slug}-rankingNo:${rankingNo}`,
+          rankingNo,
           slug: this.slug,
           categoryType: c.type,
         }

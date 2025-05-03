@@ -40,7 +40,7 @@ export class FavCollectionService implements IFavInnerService {
   private get separator(): ItemsSeparator {
     return {
       api: EApiType.Separator,
-      uniqId: `fav-collection-${this.collectionId}`,
+      uniqId: `fav-collection-separator-${this.collectionId}`,
       content: <FavCollectionSeparator service={this} />,
     }
   }
@@ -70,7 +70,7 @@ export class FavCollectionService implements IFavInnerService {
         return {
           ...x,
           api: EApiType.Fav as const,
-          uniqId: `fav-${this.collectionId}-${x.bvid}`,
+          uniqId: `${EApiType.Fav}-collection:${this.collectionId}-${x.bvid}`,
           collection: data.info,
           from: 'fav-collection' as const,
         }
