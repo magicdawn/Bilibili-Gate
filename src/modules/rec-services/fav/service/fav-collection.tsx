@@ -76,6 +76,11 @@ export class FavCollectionService implements IFavInnerService {
         }
       })
       items = handleItemsOrder(items, this.itemsOrder)
+      // add vol attr
+      items.forEach((item, index, arr) => {
+        item.vol = arr.length - index
+      })
+
       this.bufferQueue = items
       this.loaded = true
 

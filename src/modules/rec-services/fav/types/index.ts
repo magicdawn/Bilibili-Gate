@@ -15,4 +15,5 @@ export type FavItem =
 export type FavItemExtend = FavItem & {
   uniqId: string
   api: EApiType.Fav
+  vol?: number
 }

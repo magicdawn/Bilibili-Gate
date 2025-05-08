@@ -1,5 +1,6 @@
 import { APP_CLS_CARD, APP_CLS_CARD_ACTIVE, APP_CLS_CARD_COVER, APP_CLS_ROOT, APP_KEY_PREFIX, appWarn } from '$common'
 import { zIndexVideoCardContextMenu } from '$common/css-vars-export.module.scss'
+import { useIsEmptyFragment } from '$common/hooks/useIsEmptyFragment'
 import { useLessFrequentFn } from '$common/hooks/useLessFrequentFn'
 import { useMittOn } from '$common/hooks/useMitt'
 import { useRefStateBox } from '$common/hooks/useRefState'
@@ -460,42 +461,48 @@ const VideoCardInner = memo(function VideoCardInner({
     (isPcRecommend(item) && item.goto === PcRecGoto.Live)
   const _isSpaceUploadShowVol = isSpaceUpload(item) && showVol
 
-  /**
-   * key is required for list rendering
-   */
-  const wrapWithFragment = (el: ReactNode, key: string) => {
-    if (!el) return
-    return <Fragment key={key}>{el}</Fragment>
-  }
+  const topLeftMarksEl = (
+    <>
+      {/* 多选 */}
+      {multiSelecting && multiSelectEl}
 
-  const topLeftMarks: ReactNode[] = [
-    // 多选
-    multiSelecting && wrapWithFragment(multiSelectEl, 'multiSelectEl'),
+      {/* 我不想看 */}
+      {dislikeButtonEl}
 
-    // 我不想看
-    wrapWithFragment(dislikeButtonEl, 'dislikeButtonEl'),
+      {/* 动态: 充电专属 */}
+      {_isChargeOnly && <ChargeOnlyTag key='ChargeOnlyTag' />}
 
-    // 动态: 充电专属
-    _isChargeOnly && <ChargeOnlyTag key='ChargeOnlyTag' />,
+      {/* 热门: 排行榜 */}
+      {_isRanking && <RankingNumMark key='RankingNumMark' item={item} />}
 
-    // 热门: 排行榜
-    _isRanking && <RankingNumMark key='RankingNumMark' item={item} />,
+      {/* 直播: 直播中 */}
+      {_isStreaming && <LiveBadge key='LiveBadge' />}
 
-    // 直播: 直播中
-    _isStreaming && <LiveBadge key='LiveBadge' />,
+      {/* App推荐: 来自其他 Tab 的内容 */}
+      {tab === ETab.AppRecommend && !isAppRecommend(item) && !isLive(item) && (
+        <ApiTypeTag key='ApiTypeTag' item={item} />
+      )}
 
-    // App推荐: 来自其他 Tab 的内容
-    tab === ETab.AppRecommend && !isAppRecommend(item) && !isLive(item) && <ApiTypeTag key='ApiTypeTag' item={item} />,
+      {/* 投稿: 显示序号 */}
+      {_isSpaceUploadShowVol && <VolMark key='VolMark' vol={item.vol} />}
+    </>
+  )
 
-    // 投稿: 显示序号
-    _isSpaceUploadShowVol && <VolMark key='VolMark' vol={item.vol} />,
-  ].filter(Boolean)
+  const topRightActionsEl = (
+    <>
+      {/* 稍后再看 */}
+      {watchlaterButtonEl}
 
-  const topRightActions = [
-    wrapWithFragment(watchlaterButtonEl, 'watchlaterButtonEl'), // 稍后再看
-    wrapWithFragment(openInPopupActionButtonEl, 'openInPopupActionButtonEl'), // 小窗打开
-    wrapWithFragment(largePreviewActionButtonEl, 'largePreviewActionButtonEl'), // 浮动预览
-  ].filter(Boolean)
+      {/* 小窗打开 */}
+      {openInPopupActionButtonEl}
+
+      {/* 浮动预览 */}
+      {largePreviewActionButtonEl}
+    </>
+  )
+
+  const hasTopLeftMarks = !useIsEmptyFragment(topLeftMarksEl)
+  const hasTopRightActions = !useIsEmptyFragment(topRightActionsEl)
 
   const watchlaterProgressBar =
     isWatchlater(item) && item.progress > 0 ? (
@@ -603,20 +610,20 @@ const VideoCardInner = memo(function VideoCardInner({
       {multiSelectBgEl}
 
       {/* left-marks */}
-      {!!topLeftMarks.length && (
+      {hasTopLeftMarks && (
         <div
           className='left-top-marks'
           css={VideoCardActionStyle.topContainer('left')}
           style={{ columnGap: multiSelecting ? 10 : undefined }}
         >
-          {topLeftMarks}
+          {topLeftMarksEl}
         </div>
       )}
 
       {/* right-actions */}
-      {!!topRightActions.length && (
+      {hasTopRightActions && (
         <div className='right-actions' css={VideoCardActionStyle.topContainer('right')}>
-          {topRightActions}
+          {topRightActionsEl}
         </div>
       )}
     </a>
