@@ -75,6 +75,7 @@ export class FavCollectionService implements IFavInnerService {
           from: 'fav-collection' as const,
         }
       })
+      // sort
       items = handleItemsOrder(items, this.itemsOrder)
       // add vol attr
       items.forEach((item, index, arr) => {

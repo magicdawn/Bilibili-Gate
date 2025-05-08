@@ -1,6 +1,6 @@
 import { APP_CLS_CARD, APP_CLS_CARD_ACTIVE, APP_CLS_CARD_COVER, APP_CLS_ROOT, APP_KEY_PREFIX, appWarn } from '$common'
 import { zIndexVideoCardContextMenu } from '$common/css-vars-export.module.scss'
-import { useIsEmptyFragment } from '$common/hooks/useIsEmptyFragment'
+import { isEmptyFragment } from '$common/hooks/useIsEmptyFragment'
 import { useLessFrequentFn } from '$common/hooks/useLessFrequentFn'
 import { useMittOn } from '$common/hooks/useMitt'
 import { useRefStateBox } from '$common/hooks/useRefState'
@@ -459,7 +459,7 @@ const VideoCardInner = memo(function VideoCardInner({
   const _isStreaming = // 直播中
     (isLive(item) && item.live_status === ELiveStatus.Streaming) ||
     (isPcRecommend(item) && item.goto === PcRecGoto.Live)
-  const _isSpaceUploadShowVol = isSpaceUpload(item) && showVol
+  const hasVolMark = (isSpaceUpload(item) && showVol) || (item.api === EApiType.Fav && !!item.vol)
 
   const topLeftMarksEl = (
     <>
@@ -483,8 +483,8 @@ const VideoCardInner = memo(function VideoCardInner({
         <ApiTypeTag key='ApiTypeTag' item={item} />
       )}
 
-      {/* 投稿: 显示序号 */}
-      {_isSpaceUploadShowVol && <VolMark key='VolMark' vol={item.vol} />}
+      {/* 显示序号, Tab: 投稿 | 收藏 */}
+      {hasVolMark && !!item.vol && <VolMark key='VolMark' vol={item.vol} />}
     </>
   )
 
@@ -501,8 +501,8 @@ const VideoCardInner = memo(function VideoCardInner({
     </>
   )
 
-  const hasTopLeftMarks = !useIsEmptyFragment(topLeftMarksEl)
-  const hasTopRightActions = !useIsEmptyFragment(topRightActionsEl)
+  const hasTopLeftMarks = !isEmptyFragment(topLeftMarksEl)
+  const hasTopRightActions = !isEmptyFragment(topRightActionsEl)
 
   const watchlaterProgressBar =
     isWatchlater(item) && item.progress > 0 ? (
