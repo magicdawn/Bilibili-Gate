@@ -5,7 +5,7 @@ import { getUserNickname } from '$modules/bilibili/user/nickname'
 import { getSpaceAccInfo } from '$modules/bilibili/user/space-acc-info'
 import { setPageTitle } from '$utility/dom'
 import { parseSearchInput } from '$utility/search'
-import { invariant, orderBy } from 'es-toolkit'
+import { invariant, orderBy, uniq } from 'es-toolkit'
 import pmap from 'promise.map'
 import QuickLRU from 'quick-lru'
 import type { WritableDeep } from 'type-fest'
@@ -152,7 +152,11 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
       })
     }
 
-    await this.fetchAvatars(list.map((item) => item.mid.toString()))
+    {
+      const mids = uniq(list.filter((item) => item.author.trim() !== '账号已注销').map((item) => item.mid.toString()))
+      await this.fetchAvatars(mids)
+    }
+
     return list
   }
 }
