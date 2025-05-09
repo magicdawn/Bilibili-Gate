@@ -4,7 +4,7 @@
  */
 
 import { colorPrimaryValue } from '$components/css-vars'
-import { isAppRecommend, isLive, isPcRecommend, isRanking, type RecItemType } from '$define'
+import { isAppRecommend, isLive, isPcRecommend, isRank, type RecItemType } from '$define'
 import { EApiType, EAppApiDevice } from '$define/index.shared'
 import { PcRecGoto } from '$define/pc-recommend'
 import { IconForLive } from '$modules/icon'
@@ -272,7 +272,7 @@ export const VideoCardBottom = memo(function ({
           </a>
         </Case>
 
-        <Case condition={isRanking(item) && rankingDesc}>
+        <Case condition={isRank(item) && rankingDesc}>
           <div css={descOwnerCss}>{rankingDesc}</div>
         </Case>
 

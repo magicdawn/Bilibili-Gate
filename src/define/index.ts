@@ -1,5 +1,5 @@
-import type { CategorySlug, CategoryType } from '$modules/rec-services/hot/ranking/category'
-import type { RankingItem } from '$modules/rec-services/hot/ranking/types'
+import type { ERankApiType, IRankTab } from '$modules/rec-services/hot/rank/rank-tab'
+import type { RankItem } from '$modules/rec-services/hot/rank/types'
 import type { LiveItem } from '$modules/rec-services/live/types/list-live'
 import type { SpaceUploadItem } from '$modules/rec-services/space-upload/types/space-upload'
 import type { FavItemExtend } from '../modules/rec-services/fav/types'
@@ -65,7 +65,7 @@ export type RecItemType =
   | FavItemExtend
   | PopularGeneralItemExtend
   | PopularWeeklyItemExtend
-  | RankingItemExtend
+  | RankItemExtend
   | LiveItemExtend
   | SpaceUploadItemExtend
 
@@ -95,14 +95,16 @@ export type PopularWeeklyItemExtend = PopularWeeklyItem & {
   api: EApiType.PopularWeekly
 }
 
-export type RankingItemExtendProps = {
+export type RankItemExtendProps = {
   uniqId: string
-  api: EApiType.Ranking
+  api: EApiType.Rank
+  // rank specific
   rankingNo: number
-  slug: CategorySlug
-  categoryType: CategoryType
+  from: ERankApiType
+  slug: string
+  rankTab: IRankTab
 }
-export type RankingItemExtend = RankingItem & RankingItemExtendProps
+export type RankItemExtend = RankItem & RankItemExtendProps
 
 export type LiveItemExtend = LiveItem & {
   uniqId: string
@@ -138,8 +140,8 @@ export function isPopularGeneral(item: RecItemType): item is PopularGeneralItemE
 export function isPopularWeekly(item: RecItemType): item is PopularWeeklyItemExtend {
   return item.api === EApiType.PopularWeekly
 }
-export function isRanking(item: RecItemType): item is RankingItemExtend {
-  return item.api === EApiType.Ranking
+export function isRank(item: RecItemType): item is RankItemExtend {
+  return item.api === EApiType.Rank
 }
 export function isLive(item: RecItemType): item is LiveItemExtend {
   return item.api === EApiType.Live

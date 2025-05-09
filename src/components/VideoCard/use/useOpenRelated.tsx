@@ -6,7 +6,7 @@ import { getBiliPlayerConfigAutoPlay } from '$modules/bilibili/player-config'
 import type { VideoPage } from '$modules/bilibili/video/types/page-list'
 import { getVideoPageList } from '$modules/bilibili/video/video-detail'
 import { openNewTab } from '$modules/gm'
-import { isNormalRankingItem } from '$modules/rec-services/hot/ranking/category'
+import { isNormalRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { delay } from 'es-toolkit'
 import type { ComponentProps, MouseEvent, MouseEventHandler, ReactNode } from 'react'
@@ -214,7 +214,7 @@ export function getRecItemDimension({
   }
 
   // ranking
-  else if (item?.api === EApiType.Ranking && isNormalRankingItem(item)) {
+  else if (item?.api === EApiType.Rank && isNormalRankItem(item)) {
     const w = item.dimension.width
     const h = item.dimension.height
     const rotate = item.dimension.rotate

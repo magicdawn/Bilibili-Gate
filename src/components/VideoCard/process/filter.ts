@@ -3,7 +3,7 @@ import { ETab } from '$components/RecHeader/tab-enum'
 import type { RecItemTypeOrSeparator } from '$define'
 import { EApiType } from '$define/index.shared'
 import { blacklistMids } from '$modules/bilibili/me/relations/blacklist'
-import { isNormalRankingItem } from '$modules/rec-services/hot/ranking/category'
+import { isNormalRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { getSettingsSnapshot, settings } from '$modules/settings'
 import { normalizeCardData } from './normalize'
 
@@ -52,7 +52,7 @@ export function isApiRecLike(api: EApiType) {
   return [
     EApiType.AppRecommend,
     EApiType.PcRecommend,
-    EApiType.Ranking,
+    EApiType.Rank,
     EApiType.PopularGeneral,
     EApiType.PopularWeekly,
   ].includes(api)
@@ -137,7 +137,7 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
        * 字面 title, 可能包含其他来源: 如 排行榜desc
        */
       let possibleTitles = [title]
-      if (item.api === EApiType.Ranking && isNormalRankingItem(item) && item.desc) {
+      if (item.api === EApiType.Rank && isNormalRankItem(item) && item.desc) {
         possibleTitles.push(item.desc)
       }
       possibleTitles = possibleTitles.filter(Boolean)

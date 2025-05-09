@@ -1,10 +1,10 @@
 import { colorPrimaryValue } from '$components/css-vars'
-import { isDynamicFeed, isFav, isWatchlater, type RankingItemExtend, type RecItemType } from '$define'
+import { isDynamicFeed, isFav, isWatchlater, type RankItemExtend, type RecItemType } from '$define'
 import { EApiType } from '$define/index.shared'
 import { openNewTab } from '$modules/gm'
 import { IconForLive } from '$modules/icon'
-import { RANKING_CATEGORIES_MAP, isNormalRankingItem } from '$modules/rec-services/hot/ranking/category'
-import type { NormalRankingItem } from '$modules/rec-services/hot/ranking/types'
+import { isNormalRankItem } from '$modules/rec-services/hot/rank/rank-tab'
+import type { NormalRankItem } from '$modules/rec-services/hot/rank/types'
 import { Dropdown } from 'antd'
 import type { CSSProperties, ReactNode } from 'react'
 import { useTooltip } from './child-components/VideoCardActions'
@@ -44,21 +44,19 @@ function getColor(no: number) {
   return medalColors[no - 1] ?? colorPrimaryValue
 }
 
-export function RankingNumMark({ item }: { item: RankingItemExtend }) {
-  const category = RANKING_CATEGORIES_MAP[item.slug]
-
+export function RankNumMark({ item }: { item: RankItemExtend }) {
   const hasMedal = item.rankingNo <= 3
   const medalSymbols = ['🥇', '🥈', '🥉'] // emoji builtin, 可以换, 但是丑
   const medalIcon = <IconPhCrownFill />
 
   let hasOthers = false
-  let others: NormalRankingItem[] = []
-  if (isNormalRankingItem(item) && item.others?.length) {
+  let others: NormalRankItem[] = []
+  if (isNormalRankItem(item) && item.others?.length) {
     hasOthers = true
     others = item.others
   }
 
-  const tooltip = `「${category.name}」排行第 ${item.rankingNo} 名`
+  const tooltip = `「${item.rankTab.name}」排行第 ${item.rankingNo} 名`
   const { triggerRef, tooltipEl } = useTooltip({
     inlinePosition: 'left',
     tooltip,

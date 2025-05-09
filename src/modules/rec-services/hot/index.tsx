@@ -7,19 +7,20 @@ import { AntdTooltip } from '$modules/antd/custom'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { proxyWithGmStorage } from '$utility/valtio'
 import { css } from '@emotion/react'
-import { Button, Dropdown } from 'antd'
+import { Button, Dropdown, Space } from 'antd'
 import type { ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
 import type { IService } from '../_base'
 import { BaseTabService, usePopupContainer } from '../_base'
 import { PopularGeneralRecService } from './popular-general'
 import { PopularWeeklyRecService } from './popular-weekly'
-import { RankingRecService, rankingStore } from './ranking'
+import { RankRecService } from './rank'
+import { rankStore } from './rank/store'
 
 const subtabServiceCreators = {
   [EHotSubTab.PopularGeneral]: () => new PopularGeneralRecService(settings.popularGeneralUseAnonymous),
   [EHotSubTab.PopularWeekly]: () => new PopularWeeklyRecService(settings.popularWeeklyUseShuffle),
-  [EHotSubTab.Ranking]: () => new RankingRecService(rankingStore.slug),
+  [EHotSubTab.Rank]: () => new RankRecService(rankStore.slug),
 } satisfies Record<EHotSubTab, () => IService>
 
 // 是否是: 换一换
@@ -53,8 +54,8 @@ const HotSubTabConfig = {
     desc: '每周五晚 18:00 更新',
     anonymousUsage: true,
   },
-  [EHotSubTab.Ranking]: {
-    // icon: <IconPark name='Ranking' size={15} />,
+  [EHotSubTab.Rank]: {
+    // icon: <IconPark name='Rank' size={15} />,
     icon: imgOf('https://s1.hdslb.com/bfs/static/jinkela/popular/assets/icon_rank.png'),
     label: '排行榜',
     desc: '排行榜根据稿件内容质量，近期的数据综合展示，动态更新',
@@ -99,7 +100,7 @@ function HotUsageInfo({ children }: { children?: ReactNode }) {
 
   const menus: AntMenuItem[] = useMemo(
     () =>
-      [EHotSubTab.PopularGeneral, EHotSubTab.PopularWeekly, EHotSubTab.Ranking]
+      [EHotSubTab.PopularGeneral, EHotSubTab.PopularWeekly, EHotSubTab.Rank]
         .map((subtab, index) => {
           const config = HotSubTabConfig[subtab]
           const active = subtab === activeSubtab
@@ -141,8 +142,8 @@ function HotUsageInfo({ children }: { children?: ReactNode }) {
 
   const tab = useMemo(() => {
     return (
-      <Button.Group>
-        {[EHotSubTab.PopularGeneral, EHotSubTab.PopularWeekly, EHotSubTab.Ranking].map((subtab, index) => {
+      <Space.Compact>
+        {[EHotSubTab.PopularGeneral, EHotSubTab.PopularWeekly, EHotSubTab.Rank].map((subtab, index) => {
           const { icon, label, desc } = HotSubTabConfig[subtab]
           const active = subtab === activeSubtab
           return (
@@ -171,7 +172,7 @@ function HotUsageInfo({ children }: { children?: ReactNode }) {
             </AntdTooltip>
           )
         })}
-      </Button.Group>
+      </Space.Compact>
     )
   }, [activeSubtab])
 

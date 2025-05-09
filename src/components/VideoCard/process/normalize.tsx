@@ -8,7 +8,7 @@ import {
   isPcRecommend,
   isPopularGeneral,
   isPopularWeekly,
-  isRanking,
+  isRank,
   isSpaceUpload,
   isWatchlater,
   type AndroidAppRecItemExtend,
@@ -19,7 +19,7 @@ import {
   type PcRecItemExtend,
   type PopularGeneralItemExtend,
   type PopularWeeklyItemExtend,
-  type RankingItemExtend,
+  type RankItemExtend,
   type RecItemType,
   type SpaceUploadItemExtend,
   type WatchlaterItemExtend,
@@ -31,7 +31,7 @@ import { AntdTooltip } from '$modules/antd/custom'
 import { isFavFolderPrivate } from '$modules/rec-services/fav/fav-util'
 import type { FavItemExtend } from '$modules/rec-services/fav/types'
 import { IconForCollection, IconForPrivateFolder, IconForPublicFolder } from '$modules/rec-services/fav/usage-info'
-import { isBangumiRankingItem, isCinemaRankingItem } from '$modules/rec-services/hot/ranking/category'
+import { isPgcSeasonRankItem, isPgcWebRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { ELiveStatus } from '$modules/rec-services/live/live-enum'
 import { spaceUploadAvatarCache } from '$modules/rec-services/space-upload'
 import { toHttps } from '$utility/url'
@@ -109,7 +109,7 @@ export function lookinto<T>(
     [EApiType.Fav]: (item: FavItemExtend) => T
     [EApiType.PopularGeneral]: (item: PopularGeneralItemExtend) => T
     [EApiType.PopularWeekly]: (item: PopularWeeklyItemExtend) => T
-    [EApiType.Ranking]: (item: RankingItemExtend) => T
+    [EApiType.Rank]: (item: RankItemExtend) => T
     [EApiType.Live]: (item: LiveItemExtend) => T
     [EApiType.SpaceUpload]: (item: SpaceUploadItemExtend) => T
   },
@@ -121,7 +121,7 @@ export function lookinto<T>(
   if (isFav(item)) return opts[EApiType.Fav](item)
   if (isPopularGeneral(item)) return opts[EApiType.PopularGeneral](item)
   if (isPopularWeekly(item)) return opts[EApiType.PopularWeekly](item)
-  if (isRanking(item)) return opts[EApiType.Ranking](item)
+  if (isRank(item)) return opts[EApiType.Rank](item)
   if (isLive(item)) return opts[EApiType.Live](item)
   if (isSpaceUpload(item)) return opts[EApiType.SpaceUpload](item)
   throw new Error(`unknown api type`)
@@ -136,7 +136,7 @@ export function normalizeCardData(item: RecItemType) {
     [EApiType.Fav]: apiFavAdapter,
     [EApiType.PopularGeneral]: apiPopularGeneralAdapter,
     [EApiType.PopularWeekly]: apiPopularWeeklyAdapter,
-    [EApiType.Ranking]: apiRankingAdapter,
+    [EApiType.Rank]: apiRankAdapter,
     [EApiType.Live]: apiLiveAdapter,
     [EApiType.SpaceUpload]: apiSpaceUploadAdapter,
   })
@@ -619,8 +619,8 @@ function apiPopularWeeklyAdapter(item: PopularWeeklyItemExtend): IVideoCardData 
   }
 }
 
-function apiRankingAdapter(item: RankingItemExtend): IVideoCardData {
-  if (isBangumiRankingItem(item) || isCinemaRankingItem(item)) {
+function apiRankAdapter(item: RankItemExtend): IVideoCardData {
+  if (isPgcWebRankItem(item) || isPgcSeasonRankItem(item)) {
     const cover = item.new_ep.cover
     const rankingDesc = item.new_ep.index_show
 

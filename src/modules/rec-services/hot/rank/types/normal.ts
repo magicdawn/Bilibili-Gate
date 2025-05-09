@@ -1,4 +1,4 @@
-export interface NormalRankingJson {
+export interface NormalRankJson {
   code: number
   message: string
   ttl: number
@@ -7,10 +7,10 @@ export interface NormalRankingJson {
 
 export interface Data {
   note: string
-  list: NormalRankingItem[]
+  list: NormalRankItem[]
 }
 
-export interface NormalRankingItem {
+export interface NormalRankItem {
   aid: number
   videos: number
   tid: number
@@ -35,7 +35,7 @@ export interface NormalRankingItem {
   cover43: string
   bvid: string
   score: number
-  others?: NormalRankingItem[]
+  others?: NormalRankItem[]
   enable_vt: number
   season_id?: number
   pub_location?: string

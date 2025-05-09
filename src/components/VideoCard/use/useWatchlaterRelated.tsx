@@ -34,7 +34,7 @@ export function useWatchlaterRelated({
     if (isAppRecommend(item) || isPcRecommend(item)) {
       return item.goto === 'av'
     }
-    if (item.api === EApiType.Ranking) {
+    if (item.api === EApiType.Rank) {
       return cardData.goto === 'av'
     }
     if (item.api === EApiType.Live) {

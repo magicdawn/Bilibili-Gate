@@ -15,7 +15,7 @@ export enum ETab {
 export enum EHotSubTab {
   PopularGeneral = 'popular-general',
   PopularWeekly = 'popular-weekly',
-  Ranking = 'ranking',
+  Rank = 'ranking',
 }
 
 export const ALL_TAB_KEYS = Object.values(ETab)

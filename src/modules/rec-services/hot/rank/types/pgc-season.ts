@@ -1,20 +1,21 @@
-export interface BangumiRankingJson {
+export interface PgcSeasonRankJson {
   code: number
+  data: Data
   message: string
-  result: Result
 }
 
-export interface Result {
-  list: BangumiRankingItem[]
+export interface Data {
+  list: PgcSeasonRankItem[]
   note: string
+  season_type: number
 }
 
-export interface BangumiRankingItem {
+export interface PgcSeasonRankItem {
   badge: Badge
   badge_info: BadgeInfo
   badge_type: number
-  copyright: Copyright
   cover: string
+  desc: string
   enable_vt: boolean
   icon_font: IconFont
   new_ep: NewEp
@@ -28,9 +29,12 @@ export interface BangumiRankingItem {
 }
 
 export enum Badge {
+  Empty = '',
   会员专享 = '会员专享',
   会员抢先 = '会员抢先',
+  出品 = '出品',
   独家 = '独家',
+  限时免费 = '限时免费',
 }
 
 export interface BadgeInfo {
@@ -47,11 +51,6 @@ export enum BgColor {
 export enum BgColorNight {
   Bb5B76 = '#BB5B76',
   The0B91Be = '#0B91BE',
-}
-
-export enum Copyright {
-  Bilibili = 'bilibili',
-  Dujia = 'dujia',
 }
 
 export interface IconFont {

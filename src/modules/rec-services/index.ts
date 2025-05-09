@@ -23,7 +23,7 @@ export const recItemUniqer = (item: RecItemTypeOrSeparator) =>
         [EApiType.Fav]: (item) => item.bvid,
         [EApiType.PopularGeneral]: (item) => item.bvid,
         [EApiType.PopularWeekly]: (item) => item.bvid,
-        [EApiType.Ranking]: (item) => item.uniqId,
+        [EApiType.Rank]: (item) => item.uniqId,
         [EApiType.Live]: (item) => item.roomid,
         [EApiType.SpaceUpload]: (item) => item.bvid,
       })

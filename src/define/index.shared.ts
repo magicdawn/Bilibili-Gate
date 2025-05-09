@@ -12,7 +12,7 @@ export enum EApiType {
   Fav = 'fav',
   PopularGeneral = 'popular-general',
   PopularWeekly = 'popular-weekly',
-  Ranking = 'ranking',
+  Rank = 'ranking',
   Live = 'live',
   SpaceUpload = 'space-upload',
 }

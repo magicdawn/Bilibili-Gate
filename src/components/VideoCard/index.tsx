@@ -13,7 +13,7 @@ import {
   isAppRecommend,
   isLive,
   isPcRecommend,
-  isRanking,
+  isRank,
   isSpaceUpload,
   isWatchlater,
   type AppRecItemExtend,
@@ -57,7 +57,7 @@ import { normalizeCardData } from './process/normalize'
 import type { ImagePreviewData } from './services'
 import { fetchImagePreviewData, isImagePreviewDataValid } from './services'
 import { StatItemDisplay } from './stat-item'
-import { ApiTypeTag, ChargeOnlyTag, isChargeOnlyVideo, LiveBadge, RankingNumMark, VolMark } from './top-marks'
+import { ApiTypeTag, ChargeOnlyTag, isChargeOnlyVideo, LiveBadge, RankNumMark, VolMark } from './top-marks'
 import { useDislikeRelated } from './use/useDislikeRelated'
 import { useMultiSelectRelated } from './use/useMultiSelect'
 import { getRecItemDimension, useLinkTarget, useOpenRelated } from './use/useOpenRelated'
@@ -455,7 +455,7 @@ const VideoCardInner = memo(function VideoCardInner({
    * top marks
    */
   const _isChargeOnly = isChargeOnlyVideo(item, recommendReason) // 充电专属
-  const _isRanking = isRanking(item)
+  const _isRank = isRank(item)
   const _isStreaming = // 直播中
     (isLive(item) && item.live_status === ELiveStatus.Streaming) ||
     (isPcRecommend(item) && item.goto === PcRecGoto.Live)
@@ -473,7 +473,7 @@ const VideoCardInner = memo(function VideoCardInner({
       {_isChargeOnly && <ChargeOnlyTag key='ChargeOnlyTag' />}
 
       {/* 热门: 排行榜 */}
-      {_isRanking && <RankingNumMark key='RankingNumMark' item={item} />}
+      {_isRank && <RankNumMark key='RankNumMark' item={item} />}
 
       {/* 直播: 直播中 */}
       {_isStreaming && <LiveBadge key='LiveBadge' />}
@@ -648,7 +648,7 @@ const VideoCardInner = memo(function VideoCardInner({
           if (isSafari) return document.body
           return cardRef.current || document.body
         }}
-        overlayStyle={{ zIndex: zIndexVideoCardContextMenu }}
+        overlayStyle={{ zIndex: Number(zIndexVideoCardContextMenu) }}
         menu={{
           items: contextMenus,
           style: {
