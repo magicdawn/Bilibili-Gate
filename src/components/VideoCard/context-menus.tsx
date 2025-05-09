@@ -349,6 +349,8 @@ export function useContextMenus({
         icon: <IconForSpaceUpload className='size-15px' />,
         onClick: onViewUpSpaceUpload,
       },
+      // 投稿
+      spaceUploadViewStartFromHere,
       {
         test: hasViewUpVideoListEntry && followed,
         key: 'view-up-dyn',
@@ -413,8 +415,6 @@ export function useContextMenus({
       // 动态
       dynamicViewUpdateSinceThis,
       dynamicViewStartFromHere,
-      // 投稿
-      spaceUploadViewStartFromHere,
     ])
 
     // I don't like this video
