@@ -65,8 +65,8 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
   override usageInfo: ReactNode = (<SpaceUploadUsageInfo />)
 
   override get hasMoreExceptQueue(): boolean {
-    if (!this.mergeTimelineService) return true
-    return this.mergeTimelineService.hasMore
+    if (!this.service) return true
+    return this.service.hasMore
   }
 
   private async fetchAvatars(mids: string[]) {
@@ -139,14 +139,17 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
     }
   }
 
+  get service() {
+    return this.singleUpService || this.mergeTimelineService
+  }
+
   override async fetchMore(abortSignal: AbortSignal): Promise<SpaceUploadItemExtend[] | undefined> {
     this.setPageTitle()
 
     await this.setupServices()
-    const service = this.singleUpService || this.mergeTimelineService
-    invariant(service, 'no service available after setupServices')
+    invariant(this.service, 'no service available after setupServices')
 
-    const items = (await service.loadMore(abortSignal)) || []
+    const items = (await this.service.loadMore(abortSignal)) || []
     const endVol = this.singleUpService
       ? this.singleUpService.endVol
       : this.mergeTimelineService!.count - this.qs.fetchedCount
