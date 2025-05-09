@@ -1,8 +1,7 @@
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
-import { AntdTooltip } from '$modules/antd/custom'
 import { css } from '@emotion/react'
-import { Button, Input } from 'antd'
+import { Input } from 'antd'
 import { useSnapshot } from 'valtio'
 import { CopyBvidButtonsUsageInfo } from '../_shared/copy-bvid-buttons'
 import { GenericOrderSwitcher } from '../_shared/generic-order-switcher'
@@ -40,7 +39,7 @@ export function SpaceUploadUsageInfo() {
     filterText
       ? u.searchParams.set(SpaceUploadQueryKey.FilterText, filterText)
       : u.searchParams.delete(SpaceUploadQueryKey.FilterText)
-    location.href = u.href
+    history.replaceState({}, '', u.href)
   })
 
   return (
@@ -58,18 +57,11 @@ export function SpaceUploadUsageInfo() {
         style={{ width: 200 }}
         placeholder='搜索词'
         allowClear
-        css={fixAntdInputSearchAddonCss}
-        addonAfter={
-          <AntdTooltip title='同步搜索词到 URL'>
-            <Button className='size-32px inline-flex-center p-0' onClick={onSyncStoreToUrl}>
-              <IconCarbonUrl className='size-20px' />
-            </Button>
-          </AntdTooltip>
-        }
         value={searchText}
         onChange={(e) => (spaceUploadStore.searchText = e.target.value)}
         onSearch={(value) => {
           spaceUploadStore.searchText = value
+          onSyncStoreToUrl()
           onRefresh?.()
         }}
       />
@@ -77,18 +69,11 @@ export function SpaceUploadUsageInfo() {
         style={{ width: 200 }}
         placeholder='本地过滤词'
         allowClear
-        css={fixAntdInputSearchAddonCss}
-        addonAfter={
-          <AntdTooltip title='同步过滤词到 URL'>
-            <Button className='size-32px inline-flex-center p-0' onClick={onSyncStoreToUrl}>
-              <IconCarbonUrl className='size-20px' />
-            </Button>
-          </AntdTooltip>
-        }
         value={filterText}
         onChange={(e) => (spaceUploadStore.filterText = e.target.value)}
         onSearch={(value) => {
           spaceUploadStore.filterText = value
+          onSyncStoreToUrl()
           onRefresh?.()
         }}
       />
