@@ -1,5 +1,4 @@
 import { reusePendingPromise } from '$utility/async'
-import { cloneDeep } from 'es-toolkit'
 import { proxy } from 'valtio'
 import { subscribeKey } from 'valtio/utils'
 import { defaultRankTab, getRankTabsConfig, type IRankTab } from './rank-tab'
@@ -16,8 +15,9 @@ export const rankStore = proxy({
 })
 
 export const updateRankTabs = reusePendingPromise(async () => {
+  if (rankStore.tabs.length) return
   const rankTabs = await getRankTabsConfig()
-  rankStore.tabs = cloneDeep(rankTabs)
+  rankStore.tabs = rankTabs
 })
 
 subscribeKey(rankStore, 'slug', () => {
