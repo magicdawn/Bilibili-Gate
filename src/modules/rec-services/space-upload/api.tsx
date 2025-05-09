@@ -31,6 +31,9 @@ export const SpaceUploadOrderConfig: Record<
   },
 }
 
+// web default: 42
+export const SPACE_UPLOAD_API_PAGE_SIZE = 40
+
 export async function getSpaceUpload({
   mid,
   order = SpaceUploadOrder.Latest,
@@ -47,7 +50,7 @@ export async function getSpaceUpload({
       mid,
       order,
       keyword,
-      ps: 42, // web default
+      ps: SPACE_UPLOAD_API_PAGE_SIZE,
       pn: pagenum,
     },
   })

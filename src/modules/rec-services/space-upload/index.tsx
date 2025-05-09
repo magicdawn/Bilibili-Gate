@@ -12,7 +12,7 @@ import type { WritableDeep } from 'type-fest'
 import { snapshot } from 'valtio'
 import { BaseTabService, type IService } from '../_base'
 import { SpaceUploadOrder, tryGetSpaceUpload } from './api'
-import { spaceUploadStore } from './store'
+import { QUERY_SPACE_UPLOAD_INITIAL_PAGE, spaceUploadStore } from './store'
 import { SpaceUploadUsageInfo } from './usage-info'
 import { isSpaceUploadItemChargeOnly } from './util'
 
@@ -24,6 +24,7 @@ type SpaceUploadServiceConfig = {
   order: SpaceUploadOrder
   searchText: string | undefined
   filterText: string | undefined
+  initialPage: number | undefined
 }
 
 export function getSpaceUploadServiceConfig(): SpaceUploadServiceConfig {
@@ -34,6 +35,7 @@ export function getSpaceUploadServiceConfig(): SpaceUploadServiceConfig {
     order: snap.usingOrder,
     searchText: snap.searchText,
     filterText: snap.filterText,
+    initialPage: QUERY_SPACE_UPLOAD_INITIAL_PAGE ? Number(QUERY_SPACE_UPLOAD_INITIAL_PAGE) : undefined,
   }
 }
 
@@ -46,6 +48,7 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
   order: SpaceUploadOrder
   searchText: string | undefined
   filterText: string | undefined
+  initialPage: number | undefined
 
   constructor(config: SpaceUploadServiceConfig) {
     super(SpaceUploadService.PAGE_SIZE)
@@ -54,6 +57,9 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
     this.order = config.order
     invariant(this.mids.length || this.groupId, 'mid & groupId can not both be empty')
     this.searchText = this.searchText?.trim()
+    if (this.initialPage && (this.groupId || this.mids.length > 1)) {
+      throw new Error('initialPage not supported when merging')
+    }
   }
 
   override usageInfo: ReactNode = (<SpaceUploadUsageInfo />)
@@ -107,35 +113,50 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
     this.pageTitleSet = true
   }
 
+  singleUpService: SingleUpService | undefined
   mergeTimelineService: MergeTimeService | undefined
-  setupMergeTimelineService() {}
-  override async fetchMore(abortSignal: AbortSignal): Promise<SpaceUploadItemExtend[] | undefined> {
-    if (!this.mergeTimelineService) {
-      if (this.mids.length) {
-        this.mergeTimelineService = new MergeTimeService(this.mids, this.order, this.searchText)
-      } else if (this.groupId) {
-        const mids = await getFollowGroupContent(this.groupId!)
-        this.mergeTimelineService = new MergeTimeService(
-          mids.map((x) => x.toString()),
-          this.order,
-          this.searchText,
-        )
-      }
-    }
-    invariant(this.mergeTimelineService, 'mergeTimelineService should not be undefined')
-    if (!this.mergeTimelineService.hasMore) return
+  private async setupServices(): Promise<void> {
+    if (this.singleUpService || this.mergeTimelineService) return
 
+    if (this.mids.length === 1) {
+      this.singleUpService = new SingleUpService(this.mids[0], this.order, this.searchText, this.initialPage)
+      return
+    }
+
+    if (this.mids.length) {
+      this.mergeTimelineService = new MergeTimeService(this.mids, this.order, this.searchText)
+      return
+    }
+
+    if (this.groupId) {
+      const mids = await getFollowGroupContent(this.groupId!)
+      this.mergeTimelineService = new MergeTimeService(
+        mids.map((x) => x.toString()),
+        this.order,
+        this.searchText,
+      )
+      return
+    }
+  }
+
+  override async fetchMore(abortSignal: AbortSignal): Promise<SpaceUploadItemExtend[] | undefined> {
     this.setPageTitle()
 
-    const items = (await this.mergeTimelineService.loadMore(abortSignal)) || []
-    const fetchedCount = this.qs.fetchedCount
-    const endVol = this.mergeTimelineService.count - fetchedCount
+    await this.setupServices()
+    const service = this.singleUpService || this.mergeTimelineService
+    invariant(service, 'no service available after setupServices')
+
+    const items = (await service.loadMore(abortSignal)) || []
+    const endVol = this.singleUpService
+      ? this.singleUpService.endVol
+      : this.mergeTimelineService!.count - this.qs.fetchedCount
     let list: SpaceUploadItemExtend[] = items.map((item, index) => {
       return {
         ...item,
         api: EApiType.SpaceUpload,
         uniqId: `${EApiType.SpaceUpload}-${item.bvid}`,
-        vol: this.mergeTimelineService!.count ? endVol - index : 0,
+        vol: endVol - index,
+        page: this.singleUpService ? this.singleUpService.page - 1 : undefined,
       }
     })
 
@@ -231,11 +252,16 @@ class SingleUpService {
     public mid: string,
     public order: SpaceUploadOrder,
     public searchText: string | undefined,
-  ) {}
+    public initialPage?: number | undefined,
+  ) {
+    this.page = this.initialPage ?? 1
+  }
 
   bufferQueue: SpaceUploadItem[] = []
   hasMoreForApi = true
   count = 0
+  endVol = 0
+
   get hasMore() {
     return !!this.bufferQueue.length || this.hasMoreForApi
   }
@@ -248,9 +274,9 @@ class SingleUpService {
     }
   }
 
-  page = 1
+  page: number
   async loadMore(abortSignal: AbortSignal): Promise<SpaceUploadItem[] | undefined> {
-    const { items, hasMore, count } = await tryGetSpaceUpload({
+    const { items, hasMore, count, endVol } = await tryGetSpaceUpload({
       mid: this.mid,
       order: this.order,
       pagenum: this.page,
@@ -260,6 +286,8 @@ class SingleUpService {
     this.hasMoreForApi = hasMore
     this.page++
     this.count = count
+    this.endVol = endVol
+
     return items
   }
 }

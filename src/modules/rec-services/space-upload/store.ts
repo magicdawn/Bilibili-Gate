@@ -6,6 +6,7 @@ export enum SpaceUploadQueryKey {
   GroupId = 'space-group-id',
   SearchText = 'space-search-text',
   FilterText = 'space-filter-text',
+  InitialPage = 'space-initial-page',
 }
 
 const searchParams = new URLSearchParams(location.search)
@@ -13,6 +14,7 @@ export const QUERY_SPACE_UPLOAD_MID = searchParams.get(SpaceUploadQueryKey.Mid) 
 export const QUERY_SPACE_UPLOAD_GROUP_ID = searchParams.get(SpaceUploadQueryKey.GroupId) || undefined
 export const QUERY_SPACE_UPLOAD_SEARCH_TEXT = searchParams.get(SpaceUploadQueryKey.SearchText) || undefined
 export const QUERY_SPACE_UPLOAD_FILTER_TEXT = searchParams.get(SpaceUploadQueryKey.FilterText) || undefined
+export const QUERY_SPACE_UPLOAD_INITIAL_PAGE = searchParams.get(SpaceUploadQueryKey.InitialPage) || undefined
 
 const mids = (QUERY_SPACE_UPLOAD_MID || '')
   .split(/[,_-]/) // `-` / `_` 不需要 url encode, `,` 需要

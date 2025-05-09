@@ -12,7 +12,15 @@ import {
 } from '$components/RecGrid/unsafe-window-export'
 import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import { ETab } from '$components/RecHeader/tab-enum'
-import { isDynamicFeed, isFav, isLive, isWatchlater, type DynamicFeedItemExtend, type RecItemType } from '$define'
+import {
+  isDynamicFeed,
+  isFav,
+  isLive,
+  isSpaceUpload,
+  isWatchlater,
+  type DynamicFeedItemExtend,
+  type RecItemType,
+} from '$define'
 import { EApiType } from '$define/index.shared'
 import { antMessage, defineAntMenus, type AntMenuItem } from '$modules/antd'
 import { UserBlacklistService } from '$modules/bilibili/me/relations/blacklist'
@@ -42,7 +50,7 @@ import {
 import { formatFavCollectionUrl, formatFavFolderUrl } from '$modules/rec-services/fav/fav-url'
 import { FavQueryKey, favStore } from '$modules/rec-services/fav/store'
 import { UserFavService, defaultFavFolderName } from '$modules/rec-services/fav/user-fav-service'
-import { SpaceUploadQueryKey } from '$modules/rec-services/space-upload/store'
+import { SHOW_SPACE_UPLOAD_ONLY, SpaceUploadQueryKey } from '$modules/rec-services/space-upload/store'
 import { settings, updateSettingsInnerArray } from '$modules/settings'
 import toast from '$utility/toast'
 import { delay } from 'es-toolkit'
@@ -255,6 +263,26 @@ export function useContextMenus({
     [hasEntry_dynamicFeed_offsetAndMinId, item],
   )
 
+  /**
+   * space-upload offset
+   */
+  const spaceUploadViewStartFromHere: AntMenuItem | false = useMemo(
+    () =>
+      SHOW_SPACE_UPLOAD_ONLY &&
+      isSpaceUpload(item) &&
+      !!item.page && {
+        key: 'space-upload-view-start-from-here',
+        label: `投稿: 从此页开始查看 (${item.page})`,
+        icon: <IconTablerSortDescending2 className='size-17px' />,
+        onClick() {
+          const u = new URL(location.href)
+          u.searchParams.set(SpaceUploadQueryKey.InitialPage, item.page!.toString())
+          openNewTab(u.href)
+        },
+      },
+    [SHOW_SPACE_UPLOAD_ONLY, item],
+  )
+
   return useMemo(() => {
     const divider: AntMenuItem = { type: 'divider' }
 
@@ -385,6 +413,8 @@ export function useContextMenus({
       // 动态
       dynamicViewUpdateSinceThis,
       dynamicViewStartFromHere,
+      // 投稿
+      spaceUploadViewStartFromHere,
     ])
 
     // I don't like this video

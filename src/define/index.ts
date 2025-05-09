@@ -115,6 +115,7 @@ export type SpaceUploadItemExtend = SpaceUploadItem & {
   uniqId: string
   api: EApiType.SpaceUpload
   vol: number
+  page?: number
 }
 // #endregion
 
