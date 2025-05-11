@@ -459,7 +459,8 @@ const VideoCardInner = memo(function VideoCardInner({
   const _isStreaming = // 直播中
     (isLive(item) && item.live_status === ELiveStatus.Streaming) ||
     (isPcRecommend(item) && item.goto === PcRecGoto.Live)
-  const hasVolMark = (isSpaceUpload(item) && showVol) || (item.api === EApiType.Fav && !!item.vol)
+  const hasApiTypeTag = tab === ETab.AppRecommend && !isAppRecommend(item) && !isLive(item)
+  const hasVolMark = (isSpaceUpload(item) && showVol) || (item.api === EApiType.Fav && !!item.vol && !hasApiTypeTag)
 
   const topLeftMarksEl = (
     <>
@@ -470,21 +471,19 @@ const VideoCardInner = memo(function VideoCardInner({
       {dislikeButtonEl}
 
       {/* 动态: 充电专属 */}
-      {_isChargeOnly && <ChargeOnlyTag key='ChargeOnlyTag' />}
+      {_isChargeOnly && <ChargeOnlyTag />}
 
       {/* 热门: 排行榜 */}
-      {_isRank && <RankNumMark key='RankNumMark' item={item} />}
+      {_isRank && <RankNumMark item={item} />}
 
       {/* 直播: 直播中 */}
-      {_isStreaming && <LiveBadge key='LiveBadge' />}
+      {_isStreaming && <LiveBadge />}
 
       {/* App推荐: 来自其他 Tab 的内容 */}
-      {tab === ETab.AppRecommend && !isAppRecommend(item) && !isLive(item) && (
-        <ApiTypeTag key='ApiTypeTag' item={item} />
-      )}
+      {hasApiTypeTag && <ApiTypeTag item={item} />}
 
       {/* 显示序号, Tab: 投稿 | 收藏 */}
-      {hasVolMark && !!item.vol && <VolMark key='VolMark' vol={item.vol} />}
+      {hasVolMark && !!item.vol && <VolMark vol={item.vol} />}
     </>
   )
 
