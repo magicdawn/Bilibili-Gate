@@ -1,14 +1,13 @@
 import { REQUEST_FAIL_MSG } from '$common'
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
-import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
 import { HelpInfo } from '$components/_base/HelpInfo'
+import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
 import type { RankItemExtend } from '$define'
 import { EApiType } from '$define/index.shared'
 import { usePopupContainer } from '$modules/rec-services/_base'
 import { isWebApiSuccess, request } from '$request'
 import toast from '$utility/toast'
 import { Button, Popover } from 'antd'
-import { groupBy } from 'es-toolkit'
 import type { ReactNode } from 'react'
 import { snapshot, useSnapshot } from 'valtio'
 import { QueueStrategy, type IService } from '../../_base'
@@ -74,13 +73,15 @@ function RankUsageInfo() {
   const { ref, getPopupContainer } = usePopupContainer()
   const onRefresh = useOnRefreshContext()
   const { slug, currentTab, tabs } = useSnapshot(rankStore)
-  const grouped = useMemo(() => groupBy(tabs, (t) => getRankTabRequestConfig(t).apiType), [tabs])
 
-  const renderRankTabList = (label: ReactNode, list: IRankTab[]) => {
+  const renderRankTabList = (list: IRankTab[], label: ReactNode, helpInfoContent?: ReactNode) => {
     list ||= []
     return (
       <div className='max-w-500px mt-15px pt-5px first:(mt-0 pt-0)'>
-        <p className='flex-v-center mb-8px text-white bg-gate-primary py-5px pl-6px rounded-5px'>{label}</p>
+        <p className='flex-v-center mb-8px text-white bg-gate-primary py-5px pl-6px rounded-5px'>
+          {label}
+          {!!helpInfoContent && <HelpInfo>{helpInfoContent}</HelpInfo>}
+        </p>
         <div className='grid grid-cols-5 gap-y-8px  gap-x-12px px-2px'>
           {list.map((c) => {
             const active = c.slug === slug
@@ -103,25 +104,20 @@ function RankUsageInfo() {
     )
   }
 
-  const normalList = (grouped[ERankApiType.Normal] || []).filter((x) => !x.isExtra)
-  const normalExtraList = (grouped[ERankApiType.Normal] || []).filter((x) => x.isExtra)
-  const pgcList = [...(grouped[ERankApiType.PgcSeason] || []), ...(grouped[ERankApiType.PgcWeb] || [])]
+  const { normalPresetList, pgcList, normalExtraList } = useMemo(() => {
+    const listWithApiType = tabs.map((x) => ({ ...x, apiType: getRankTabRequestConfig(x).apiType }))
+    const normalList = listWithApiType.filter((x) => x.apiType === ERankApiType.Normal)
+    const pgcList = listWithApiType.filter((x) => [ERankApiType.PgcSeason, ERankApiType.PgcWeb].includes(x.apiType))
+    const normalPresetList = normalList.filter((x) => !x.isExtra)
+    const normalExtraList = normalList.filter((x) => x.isExtra)
+    return { normalPresetList, pgcList, normalExtraList }
+  }, [tabs])
 
   const popoverContent = (
     <>
-      {renderRankTabList('视频', normalList)}
-      {renderRankTabList(
-        <>
-          PGC内容 <HelpInfo>不能提供预览</HelpInfo>
-        </>,
-        pgcList,
-      )}
-      {renderRankTabList(
-        <>
-          更多 <HelpInfo>默认排行榜页没有列出的分区</HelpInfo>
-        </>,
-        normalExtraList,
-      )}
+      {renderRankTabList(normalPresetList, '视频')}
+      {renderRankTabList(pgcList, 'PGC内容', '不能提供预览')}
+      {renderRankTabList(normalExtraList, '更多', '默认排行榜页没有列出的分区')}
     </>
   )
   const [popoverOpen, setPopoverOpen] = useState(false)
