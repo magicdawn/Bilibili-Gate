@@ -1,8 +1,8 @@
 import { IconForFav } from '$modules/icon'
 import { IconForStatDanmaku, IconForStatPlay } from '$modules/icon/stat-icons'
 import { formatCount } from '$utility/video'
-import type { ReactNode } from 'react'
 import { STAT_NUMBER_FALLBACK } from './index.shared'
+import type { ReactNode } from 'react'
 
 export const AllowedStatItemFields = [
   'play',
@@ -69,7 +69,7 @@ export const StatItemDisplay = memo(function ({ field, value }: StatItemType) {
 
   // 对齐真难, 不同字体表现不同...
   return (
-    <span data-field={field} className='bili-video-card__stats--item mr-0! gap-x-2px'>
+    <span data-field={field} className='bili-video-card__stats--item gap-x-2px mr-0!'>
       {icon}
       <span className={clsx('bili-video-card__stats--text line-height-18px')}>{text}</span>
     </span>

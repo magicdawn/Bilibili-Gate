@@ -1,11 +1,11 @@
+import createEmotion from '@emotion/css/create-instance'
+import { css, Global } from '@emotion/react'
 import { APP_CLS_ROOT } from '$common'
 import { useLessFrequentFn } from '$common/hooks/useLessFrequentFn'
 import { AppRoot } from '$components/AppRoot'
 import { colorPrimaryValue } from '$components/css-vars'
 import { openNewTab } from '$modules/gm'
 import { settings } from '$modules/settings'
-import createEmotion from '@emotion/css/create-instance'
-import { css, Global } from '@emotion/react'
 import { useHover } from 'ahooks'
 import { App } from 'antd'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
@@ -21,7 +21,7 @@ export function renderInPipWindow(newHref: string, pipWindow: Window) {
   const container = document.createElement('div')
   container.classList.add(APP_CLS_ROOT)
   container.style.lineHeight = '0'
-  pipWindow.document.body.appendChild(container)
+  pipWindow.document.body.append(container)
 
   const root = createRoot(container)
   root.render(

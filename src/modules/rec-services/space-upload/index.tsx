@@ -1,4 +1,3 @@
-import type { SpaceUploadItem, SpaceUploadItemExtend } from '$define'
 import { EApiType } from '$define/index.shared'
 import { getAllFollowGroups, getFollowGroupContent } from '$modules/bilibili/me/follow-group'
 import { getUserNickname } from '$modules/bilibili/user/nickname'
@@ -8,13 +7,14 @@ import { parseSearchInput } from '$utility/search'
 import { invariant, orderBy, uniq } from 'es-toolkit'
 import pmap from 'promise.map'
 import QuickLRU from 'quick-lru'
-import type { WritableDeep } from 'type-fest'
 import { snapshot } from 'valtio'
 import { BaseTabService, type IService } from '../_base'
 import { SpaceUploadOrder, tryGetSpaceUpload } from './api'
 import { QUERY_SPACE_UPLOAD_INITIAL_PAGE, spaceUploadStore } from './store'
 import { SpaceUploadUsageInfo } from './usage-info'
 import { isSpaceUploadItemChargeOnly } from './util'
+import type { SpaceUploadItem, SpaceUploadItemExtend } from '$define'
+import type { WritableDeep } from 'type-fest'
 
 export const spaceUploadAvatarCache = new QuickLRU<string, string>({ maxSize: 100 })
 

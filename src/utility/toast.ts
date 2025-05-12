@@ -1,7 +1,7 @@
+import { css } from '@emotion/css'
 import { APP_CLS_ROOT, OPERATION_FAIL_MSG, REQUEST_FAIL_MSG } from '$common'
 import { zIndexToast } from '$common/css-vars-export.module.scss'
 import { colorPrimaryValue } from '$components/css-vars'
-import { css } from '@emotion/css'
 
 const toastContainer = css`
   position: fixed;
@@ -31,13 +31,13 @@ const singleLine = css`
 export default function toast(msg: string, duration = 2000, container = document.body) {
   const div = document.createElement('div')
   div.classList.add(toastContainer, APP_CLS_ROOT)
-  div.innerText = msg
+  div.textContent = msg
 
   if (!msg.includes('\n') && !msg.includes('<br')) {
     div.classList.add(singleLine)
   }
 
-  container.appendChild(div)
+  container.append(div)
   setTimeout(() => div.remove(), duration)
 }
 

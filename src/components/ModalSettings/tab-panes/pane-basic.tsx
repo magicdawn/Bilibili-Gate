@@ -1,10 +1,10 @@
 import { APP_NAME } from '$common'
+import { HelpInfo } from '$components/_base/HelpInfo'
 import { AccessKeyManage } from '$components/AccessKeyManage'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { TabIcon } from '$components/RecHeader/tab-config'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { VideoLinkOpenMode, VideoLinkOpenModeConfig } from '$components/VideoCard/index.shared'
-import { HelpInfo } from '$components/_base/HelpInfo'
 import { antMessage } from '$modules/antd'
 import { IconForCopy } from '$modules/icon'
 import { updateSettings, useSettingsSnapshot } from '$modules/settings'
@@ -49,9 +49,9 @@ export function TabPaneBasic() {
       <SettingsGroup
         title={
           <>
-            <TabIcon tabKey={ETab.AppRecommend} className='size-30px mr-5px mt-2px' />
+            <TabIcon tabKey={ETab.AppRecommend} className='mr-5px mt-2px size-30px' />
             推荐 access_key
-            <HelpInfo className='size-18px ml-5px mt-6px' IconComponent={IconParkOutlineHelp}>
+            <HelpInfo className='ml-5px mt-6px size-18px' IconComponent={IconParkOutlineHelp}>
               <span className='inline-flex items-center'>
                 用于「
                 <TabIcon tabKey={ETab.AppRecommend} className='mr-5px' />
@@ -155,10 +155,10 @@ export function TabPaneBasic() {
               {openModeOptions.map(({ value, config }) => {
                 return (
                   !!config.desc && (
-                    <div key={value} className='flex items-start mt-10px first:mt-0'>
+                    <div key={value} className='mt-10px flex items-start first:mt-0'>
                       <span className='inline-flex items-center'>
                         {config.icon}
-                        <span className='min-w-95px ml-4px mr-10px'>{config.label}</span>
+                        <span className='ml-4px mr-10px min-w-95px'>{config.label}</span>
                       </span>
                       <span className='desc'>{config.desc}</span>
                     </div>
@@ -167,7 +167,7 @@ export function TabPaneBasic() {
               })}
             </HelpInfo>
             <Select
-              className='w-160px ml-8px'
+              className='ml-8px w-160px'
               options={openModeOptions}
               value={videoLinkOpenMode}
               onChange={(v) => {
@@ -210,7 +210,7 @@ export function TabPaneBasic() {
                 1. 鼠标悬浮打开 「浮动预览」, 离开关闭 <br />
                 2. 点击固定「浮动预览」, 固定指: 不再随鼠标移出关闭预览 <br />
                 3. 可使用以下方式关闭固定的「浮动预览」
-                <ul className='list-circle ml-30px'>
+                <ul className='ml-30px list-circle'>
                   <li>再次点击视频卡片按钮</li>
                   <li>点击预览视频右上方的「关闭」按钮</li>
                   <li>触发其他卡片的「浮动预览」</li>
@@ -225,7 +225,7 @@ export function TabPaneBasic() {
             label={'小窗打开'}
             tooltip={<>仅当「文档画中画」API 可用时, 勾选生效</>}
           />
-          <Divider className='py-0 my-2px grid-col-span-full' />
+          <Divider className='grid-col-span-full my-2px py-0' />
           <div className='flex flex-col'>
             <CheckboxSettingItem
               configPath='videoCard.videoPreview.useMp4'
@@ -304,9 +304,9 @@ export function TabPaneBasic() {
         title={
           <>
             帮助
-            <span className='ml-8px mr-4px text-size-14px relative top-4px inline-flex items-center'>
+            <span className='relative top-4px ml-8px mr-4px inline-flex items-center text-size-14px'>
               当前版本
-              <Tag color='green' className='cursor-pointer mx-4px' onClick={handleCopyScriptVersion}>
+              <Tag color='green' className='mx-4px cursor-pointer' onClick={handleCopyScriptVersion}>
                 {APP_NAME} v{__SCRIPT_VERSION__}
               </Tag>
               <IconForCopy className='size-16px cursor-pointer' onClick={handleCopyScriptVersion} />

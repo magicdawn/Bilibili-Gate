@@ -4,7 +4,7 @@ import { antMessage } from '$modules/antd'
 import toast from '$utility/toast'
 import dayjs from 'dayjs'
 import { tryit } from 'radash'
-import type { PartialDeep } from 'type-fest'
+import { set_HAS_RESTORED_SETTINGS } from './restore-flag'
 import {
   allowedLeafSettingsPaths,
   getSettingsSnapshot,
@@ -13,7 +13,7 @@ import {
   updateSettings,
   type Settings,
 } from './index'
-import { set_HAS_RESTORED_SETTINGS } from './restore-flag'
+import type { PartialDeep } from 'type-fest'
 
 let lastUrl: string | undefined
 function genUrl() {
@@ -30,7 +30,7 @@ function genUrl() {
   return lastUrl
 }
 
-export async function exportSettings() {
+export function exportSettings() {
   const url = genUrl()
   const filename = `${APP_NAME}-settings ${dayjs().format('YYYY-MM-DD HH:mm:ss')}.json`
   if (typeof GM_download !== 'undefined') {
@@ -53,7 +53,7 @@ export async function importSettings() {
   let settingsFromFile: PartialDeep<Settings>
   try {
     settingsFromFile = JSON.parse(text) as PartialDeep<Settings>
-  } catch (error) {
+  } catch {
     return toast('无法解析文件内容!')
   }
 

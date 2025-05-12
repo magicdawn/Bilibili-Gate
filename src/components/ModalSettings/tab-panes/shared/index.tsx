@@ -1,10 +1,10 @@
-import { initialSettings, pickSettings, updateSettings, type LeafSettingsPath } from '$modules/settings'
-import type { CssProp } from '$utility/type'
 import { css } from '@emotion/react'
+import { initialSettings, pickSettings, updateSettings, type LeafSettingsPath } from '$modules/settings'
 import { Button, Popconfirm } from 'antd'
+import { useUnoMerge } from 'unocss-merge/react'
+import type { CssProp } from '$utility/type'
 import type { ComponentProps, ReactNode } from 'react'
 import type { Merge } from 'type-fest'
-import { useUnoMerge } from 'unocss-merge/react'
 
 const S = {
   tabPane: css`
@@ -89,7 +89,7 @@ export function ResetPartialSettingsButton({ paths, className }: { paths: LeafSe
           column-gap: 4px;
         `}
       >
-        <IconParkOutlineReturn className='size-12px mt--1px' />
+        <IconParkOutlineReturn className='mt--1px size-12px' />
         <span>重置</span>
       </Button>
     </Popconfirm>

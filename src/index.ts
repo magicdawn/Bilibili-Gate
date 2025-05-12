@@ -10,33 +10,33 @@
  *     不见满街漂亮妹，哪个归得程序员？
  */
 
-// polyfills
-import './modules/polyfills/explicit-resource-management'
-
-// styles
-import '$common/global.scss'
-// css modules 与 emtion 混用, 先 import 作为 base 的 css modules
-import '$components/video-grid.module.scss'
-import 'virtual:uno.css'
-
-// dayjs setup
-import dayjs from 'dayjs'
-import duration from 'dayjs/plugin/duration'
-dayjs.extend(duration)
-
-// load config first
-import './modules/settings'
-
 import {
   IN_BILIBILI_HOMEPAGE,
   IN_BILIBILI_SEARCH_PAGE,
   IN_BILIBILI_SPACE_PAGE,
   IN_BILIBILI_VIDEO_PLAY_PAGE,
 } from '$common'
+
 import { initHomepage } from '$main/homepage'
 import { initSearchPage } from '$main/search-page'
 import { initSpacePage } from '$main/space-page'
+
 import { initVideoPlayPage } from '$main/video-play-page'
+// dayjs setup
+import dayjs from 'dayjs'
+
+import duration from 'dayjs/plugin/duration'
+
+// polyfills
+import './modules/polyfills/explicit-resource-management'
+// load config first
+import './modules/settings'
+// styles
+import '$common/global.scss'
+// css modules 与 emtion 混用, 先 import 作为 base 的 css modules
+import '$components/video-grid.module.scss'
+import 'virtual:uno.css'
+dayjs.extend(duration)
 
 void (function main() {
   if (IN_BILIBILI_HOMEPAGE) return initHomepage()

@@ -9,11 +9,11 @@ import { proxy } from 'valtio'
 import { subscribeKey } from 'valtio/utils'
 import { fetchAllFavCollections } from './collection/api'
 import { FavItemsOrder } from './fav-enum'
+import { getSavedOrder } from './usage-info/fav-items-order'
+import { fetchFavFolder } from './user-fav-service'
 import type { FavCollectionDetailInfo } from './types/collections/collection-detail'
 import type { FavCollection } from './types/collections/list-all-collections'
 import type { FavFolder } from './types/folders/list-all-folders'
-import { getSavedOrder } from './usage-info/fav-items-order'
-import { fetchFavFolder } from './user-fav-service'
 
 const debug = baseDebug.extend('modules:rec-services:fav:store')
 
@@ -30,7 +30,7 @@ export enum FavQueryKey {
 const parseId = (text: string | undefined | null) => {
   if (!text) return
   const num = Number(text)
-  if (isNaN(num)) return
+  if (Number.isNaN(num)) return
   return num
 }
 
@@ -153,7 +153,7 @@ export function updateFavFolderMediaCount(targetFavFolderId: number, count: numb
   }
 }
 
-export async function updateList(force = false) {
+export function updateList(force = false) {
   return Promise.all([updateFolderList(force), updateCollectionList(force)])
 }
 
@@ -162,7 +162,7 @@ const _updateFolderList = reusePendingPromise(async () => {
   favStore.favFolders = folders
   favStore.favFoldersUpdateAt = Date.now()
 })
-async function updateFolderList(force = false) {
+function updateFolderList(force = false) {
   if (force) return
   const { favFolders, favFoldersUpdateAt } = favStore
   if (favFolders.length && favFoldersUpdateAt && Date.now() - favFoldersUpdateAt < ms('5min')) {
@@ -176,7 +176,7 @@ const _updateCollectionList = reusePendingPromise(async () => {
   favStore.favCollections = collections
   favStore.favCollectionsUpdateAt = Date.now()
 })
-async function updateCollectionList(force = false) {
+function updateCollectionList(force = false) {
   if (force) return
   const { favCollections, favCollectionsUpdateAt } = favStore
   if (favCollections.length && favCollectionsUpdateAt && Date.now() - favCollectionsUpdateAt < ms('5min')) {

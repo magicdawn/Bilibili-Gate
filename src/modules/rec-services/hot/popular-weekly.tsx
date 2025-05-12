@@ -1,16 +1,16 @@
 import { SwitchSettingItem } from '$components/ModalSettings/setting-item'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
 import { CustomTargetLink } from '$components/VideoCard/use/useOpenRelated'
-import { type ItemsSeparator, type PopularWeeklyItemExtend } from '$define'
 import { EApiType } from '$define/index.shared'
-import type { PopularWeeklyJson } from '$define/popular-weekly'
-import type { PopularWeeklyListItem, PopularWeeklyListJson } from '$define/popular-weekly.list'
 import { request } from '$request'
 import dayjs from 'dayjs'
 import { delay, shuffle } from 'es-toolkit'
 import pmap from 'promise.map'
-import type { IService } from '../_base'
 import { QueueStrategy } from '../_base'
+import type { IService } from '../_base'
+import type { ItemsSeparator, PopularWeeklyItemExtend } from '$define'
+import type { PopularWeeklyJson } from '$define/popular-weekly'
+import type { PopularWeeklyListItem, PopularWeeklyListJson } from '$define/popular-weekly.list'
 
 let episodes: PopularWeeklyListItem[] = []
 let cacheKey = ''
@@ -135,11 +135,12 @@ async function fetchWeeklyItems(episodeNum: number) {
     })
     const json = res.data as PopularWeeklyJson
     const items = (json.data.list || []).map((item) => {
-      return {
+      const extended: PopularWeeklyItemExtend = {
         ...item,
         api: EApiType.PopularWeekly,
         uniqId: `${EApiType.PopularWeekly}-${item.bvid}`,
-      } as PopularWeeklyItemExtend
+      }
+      return extended
     })
 
     cache[episodeNum] = items

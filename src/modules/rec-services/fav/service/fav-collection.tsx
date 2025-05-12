@@ -1,5 +1,4 @@
 import { CustomTargetLink } from '$components/VideoCard/use/useOpenRelated'
-import { type ItemsSeparator } from '$define'
 import { EApiType } from '$define/index.shared'
 import { AntdTooltip } from '$modules/antd/custom'
 import { getSpaceAccInfo } from '$modules/bilibili/user/space-acc-info'
@@ -10,12 +9,13 @@ import { proxy, useSnapshot } from 'valtio'
 import { fetchCollectionDetail } from '../collection/api'
 import { FavItemsOrder, handleItemsOrder } from '../fav-enum'
 import { formatBvidUrl, formatFavCollectionUrl } from '../fav-url'
-import { type IFavInnerService } from '../index'
 import { favStore } from '../store'
+import { FavItemsOrderSwitcher } from '../usage-info/fav-items-order'
+import type { IFavInnerService } from '../index'
 import type { FavItemExtend } from '../types'
 import type { FavCollectionDetailInfo, FavCollectionDetailMedia } from '../types/collections/collection-detail'
-import { FavItemsOrderSwitcher } from '../usage-info/fav-items-order'
 import { FAV_PAGE_SIZE, favSeparatorCss } from './_base'
+import type { ItemsSeparator } from '$define'
 
 export class FavCollectionService implements IFavInnerService {
   constructor(

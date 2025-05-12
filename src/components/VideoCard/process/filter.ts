@@ -1,11 +1,11 @@
 import { baseDebug } from '$common'
 import { ETab } from '$components/RecHeader/tab-enum'
-import type { RecItemTypeOrSeparator } from '$define'
 import { EApiType } from '$define/index.shared'
 import { blacklistMids } from '$modules/bilibili/me/relations/blacklist'
 import { isNormalRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { getSettingsSnapshot, settings } from '$modules/settings'
 import { normalizeCardData } from './normalize'
+import type { RecItemTypeOrSeparator } from '$define'
 
 const debug = baseDebug.extend('VideoCard:filter')
 
@@ -25,22 +25,19 @@ export function anyFilterEnabled(tab: ETab) {
 
   // 推荐 / 热门
   const mayNeedCheck_blacklist_filterByUp_filterByTitle = [ETab.AppRecommend, ETab.PcRecommend, ETab.Hot].includes(tab)
-  if (mayNeedCheck_blacklist_filterByUp_filterByTitle) {
-    if (
-      blacklistMids.size ||
+  if (
+    mayNeedCheck_blacklist_filterByUp_filterByTitle &&
+    (blacklistMids.size ||
       (settings.filter.enabled &&
         ((settings.filter.byAuthor.enabled && !!settings.filter.byAuthor.keywords.length) ||
-          (settings.filter.byTitle.enabled && !!settings.filter.byTitle.keywords.length)))
-    ) {
-      return true
-    }
+          (settings.filter.byTitle.enabled && !!settings.filter.byTitle.keywords.length))))
+  ) {
+    return true
   }
 
   // recommend
-  if (tab === ETab.AppRecommend || tab === ETab.PcRecommend) {
-    if (settings.filter.enabled) {
-      return true
-    }
+  if ((tab === ETab.AppRecommend || tab === ETab.PcRecommend) && settings.filter.enabled) {
+    return true
   }
 
   return false
@@ -103,33 +100,33 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
     /**
      * 已关注 Tab
      */
-    if (tab === 'keep-follow-only') {
-      if (!followed) return false
-    }
+    if (tab === 'keep-follow-only' && !followed) return false
 
     function check_blacklist_filterByUp_filterByTitle() {
       // blacklist
-      if (authorMid && blacklistMids.size) {
-        if (blacklistMids.has(authorMid)) {
-          debug('filter out by blacklist-rule: %s %o', authorMid, { bvid, title })
-          return false
-        }
+      if (authorMid && blacklistMids.size && blacklistMids.has(authorMid)) {
+        debug('filter out by blacklist-rule: %s %o', authorMid, { bvid, title })
+        return false
       }
 
       // up
-      if (filter.enabled && byAuthor.enabled && (blockUpMids.size || blockUpNames.size) && (authorName || authorMid)) {
-        if ((authorName && blockUpNames.has(authorName)) || (authorMid && blockUpMids.has(authorMid))) {
-          debug('filter out by author-rule: %o', {
-            authorName,
-            authorMid,
-            rules: byAuthor.keywords,
-            blockUpMids,
-            blockUpNames,
-            bvid,
-            title,
-          })
-          return false
-        }
+      if (
+        filter.enabled &&
+        byAuthor.enabled &&
+        (blockUpMids.size || blockUpNames.size) &&
+        (authorName || authorMid) &&
+        ((authorName && blockUpNames.has(authorName)) || (authorMid && blockUpMids.has(authorMid)))
+      ) {
+        debug('filter out by author-rule: %o', {
+          authorName,
+          authorMid,
+          rules: byAuthor.keywords,
+          blockUpMids,
+          blockUpNames,
+          bvid,
+          title,
+        })
+        return false
       }
 
       /**
@@ -157,22 +154,18 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
     }
 
     // 推荐 / 热门
-    if (isApiRecLike(item.api)) {
-      if (check_blacklist_filterByUp_filterByTitle() === false) {
-        return false
-      }
+    if (isApiRecLike(item.api) && check_blacklist_filterByUp_filterByTitle() === false) {
+      return false
     }
 
     // 推荐
-    if (item.api === EApiType.AppRecommend || item.api === EApiType.PcRecommend) {
-      if (filter.enabled) {
-        const isVideo = goto === 'av'
-        const isPicture = goto === 'picture'
-        const isBangumi = goto === 'bangumi'
-        if (isVideo) return filterVideo()
-        if (isPicture) return filterPicture()
-        if (isBangumi) return filterBangumi()
-      }
+    if ((item.api === EApiType.AppRecommend || item.api === EApiType.PcRecommend) && filter.enabled) {
+      const isVideo = goto === 'av'
+      const isPicture = goto === 'picture'
+      const isBangumi = goto === 'bangumi'
+      if (isVideo) return filterVideo()
+      if (isPicture) return filterPicture()
+      if (isBangumi) return filterBangumi()
     }
 
     function filterVideo() {

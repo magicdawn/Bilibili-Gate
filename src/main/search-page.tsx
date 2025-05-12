@@ -1,16 +1,16 @@
+import { css } from '@emotion/react'
 import { APP_NAMESPACE } from '$common'
 import { AppRoot } from '$components/AppRoot'
 import { useLargePreviewRelated } from '$components/LargePreview/useLargePreview'
 import { VideoCardActionStyle } from '$components/VideoCard/child-components/VideoCardActions'
 import { defaultSharedEmitter } from '$components/VideoCard/index.shared'
 import { settings } from '$modules/settings'
-import { css } from '@emotion/react'
 import { useHover } from 'ahooks'
 import { limitFunction } from 'p-limit'
 import { createPortal } from 'react-dom'
 import { isInIframe, setupForNoneHomepage } from './shared'
 
-export async function initSearchPage() {
+export function initSearchPage() {
   if (isInIframe()) return // pagetual use iframe to load more
   setupForNoneHomepage()
   if (settings.videoCard.actions.showLargePreview && settings.videoCard.videoPreview.addTo.searchPage) {
@@ -18,7 +18,7 @@ export async function initSearchPage() {
   }
 }
 
-async function addLargePreviewForSearchResults() {
+function addLargePreviewForSearchResults() {
   const run = limitFunction(
     () => {
       const itemsSelector = '.video-list-item:has(> .bili-video-card),div:has(> .bili-video-card)'
@@ -44,7 +44,7 @@ function addLargePreview(el: HTMLDivElement) {
   if (!prevEl) return
 
   const container = document.createElement('div')
-  prevEl.insertAdjacentElement('afterend', container)
+  prevEl.after(container)
   processed.add(el)
   el.setAttribute(processedAttr, 'true')
 
@@ -75,7 +75,7 @@ function LargePreviewSetup({ el }: { el: HTMLDivElement }) {
       },
     },
     // required
-    bvid: bvid,
+    bvid,
     cid: undefined,
     uniqId: bvid,
     sharedEmitter: defaultSharedEmitter,

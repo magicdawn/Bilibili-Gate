@@ -38,7 +38,7 @@ export const GenericOrderSwitcher = function <T extends string | number>({
 }: GenericOrderSwitcherProps<T>) {
   const { icon, label } = listDisplayConfig[value]
 
-  const onToggle = useMemoizedFn(async (e: MouseEvent) => {
+  const onToggle = useMemoizedFn((e: MouseEvent) => {
     const allowed = list.filter((x) => x !== 'divider')
     const index = allowed.indexOf(value)
     if (index === -1) return

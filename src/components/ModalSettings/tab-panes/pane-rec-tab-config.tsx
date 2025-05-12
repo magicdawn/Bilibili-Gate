@@ -1,20 +1,24 @@
+import { closestCenter, DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers'
+import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+import { css } from '@emotion/react'
+import { HelpInfo } from '$components/_base/HelpInfo'
+import { bgLv2Value, bgLv3Value } from '$components/css-vars'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { useSortedTabKeys } from '$components/RecHeader/tab'
 import { TabConfig, TabIcon } from '$components/RecHeader/tab-config'
 import { CONFIGURABLE_TAB_KEYS, ETab } from '$components/RecHeader/tab-enum'
-import { HelpInfo } from '$components/_base/HelpInfo'
-import { bgLv2Value, bgLv3Value } from '$components/css-vars'
 import { EAppApiDevice } from '$define/index.shared'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
-import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 import { getUserNickname } from '$modules/bilibili/user/nickname'
 import { appRecShowContentFromOtherTabEl } from '$modules/rec-services/app'
 import {
-  IconForGroup,
-  IconForUp,
   formatFollowGroupUrl,
   formatSpaceUrl,
+  IconForGroup,
+  IconForUp,
 } from '$modules/rec-services/dynamic-feed/shared'
 import {
   DF_SELECTED_KEY_PREFIX_GROUP,
@@ -23,18 +27,14 @@ import {
 } from '$modules/rec-services/dynamic-feed/store'
 import { FollowGroupMechanismNote } from '$modules/rec-services/dynamic-feed/usage-info/popover-related'
 import { settings, updateSettings, updateSettingsInnerArray, useSettingsSnapshot } from '$modules/settings'
-import type { DragEndEvent } from '@dnd-kit/core'
-import { DndContext, PointerSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core'
-import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers'
-import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
-import { css } from '@emotion/react'
 import { Checkbox, Collapse, Empty, Radio, Space } from 'antd'
-import type { CSSProperties } from 'react'
 import { useSnapshot } from 'valtio'
 import { TagItemDisplay } from '../EditableListSettingItem'
 import { explainForFlag } from '../index.shared'
 import { ResetPartialSettingsButton, SettingsGroup, sharedCss } from './shared'
+import type { DragEndEvent } from '@dnd-kit/core'
+import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
+import type { CSSProperties } from 'react'
 
 export function TabPaneRecTabsConfig() {
   const { dynamicFeed, appRecommend } = useSettingsSnapshot()
@@ -103,7 +103,7 @@ export function TabPaneRecTabsConfig() {
               <TabIcon tabKey={ETab.DynamicFeed} className='mr-5px mt--2px' />
               动态
             </div>
-            <div className='flex flex-wrap  gap-x-10px gap-y-10px'>
+            <div className='flex flex-wrap gap-x-10px gap-y-10px'>
               <CheckboxSettingItem
                 configPath='dynamicFeed.followGroup.enabled'
                 label='启用分组筛选'
@@ -324,7 +324,7 @@ function DynamicFeedWhenViewAllHideIdsPanel() {
   }
 
   return (
-    <div className='flex flex-wrap gap-10px max-h-250px overflow-y-scroll'>
+    <div className='max-h-250px flex flex-wrap gap-10px overflow-y-scroll'>
       {hideIds.map((tag) => {
         return (
           <TagItemDisplay
@@ -361,7 +361,7 @@ function DynamicFeedWhenViewAllHideIdTag({ tag, followGroups }: { tag: string; f
 
   // followGroupId -> name
   const [followGroupName, setFollowGroupName] = useState<string | undefined>(undefined)
-  useMount(async () => {
+  useMount(() => {
     if (!followGroupId) return
     const groupName = followGroups?.find((g) => g.tagid.toString() === followGroupId)?.name
     if (groupName) setFollowGroupName(groupName)
@@ -380,9 +380,9 @@ function DynamicFeedWhenViewAllHideIdTag({ tag, followGroups }: { tag: string; f
   const icon = useMemo(
     () =>
       mid ? (
-        <IconForUp className='size-12px mr-2px' />
+        <IconForUp className='mr-2px size-12px' />
       ) : followGroupId ? (
-        <IconForGroup className='size-16px mr-2px' />
+        <IconForGroup className='mr-2px size-16px' />
       ) : undefined,
     [mid, followGroupId],
   )

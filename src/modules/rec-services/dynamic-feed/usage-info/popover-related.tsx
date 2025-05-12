@@ -1,13 +1,12 @@
+import { css } from '@emotion/react'
 import { __PROD__ } from '$common'
 import { APP_CLS_USE_ANT_LINK_COLOR, buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
-import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
-import type { OnRefresh } from '$components/RecGrid/useRefresh'
-import { CHARGE_ONLY_TEXT } from '$components/VideoCard/top-marks'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { colorPrimaryValue } from '$components/css-vars'
+import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
+import { CHARGE_ONLY_TEXT } from '$components/VideoCard/top-marks'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
-import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 import { IconForOpenExternalLink } from '$modules/icon'
 import {
   settings,
@@ -18,13 +17,9 @@ import {
   type Settings,
 } from '$modules/settings'
 import { advancedSearchHelpInfo } from '$utility/search'
-import { css } from '@emotion/react'
 import { useRequest } from 'ahooks'
 import { Badge, Button, Checkbox, Input, Popover, Radio } from 'antd'
-import type { CheckboxChangeEvent } from 'antd/es/checkbox'
 import { delay, throttle } from 'es-toolkit'
-import type { ReactNode } from 'react'
-import type { Get } from 'type-fest'
 import { useSnapshot } from 'valtio'
 import {
   createUpdateSearchCacheNotifyFns,
@@ -47,6 +42,11 @@ import {
   SHOW_DYNAMIC_FEED_ONLY,
   type UpMidType,
 } from '../store'
+import type { OnRefresh } from '$components/RecGrid/useRefresh'
+import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
+import type { CheckboxChangeEvent } from 'antd/es/checkbox'
+import type { ReactNode } from 'react'
+import type { Get } from 'type-fest'
 
 export function usePopoverRelated({
   externalSearchInput,
@@ -294,14 +294,14 @@ function PopoverContent({
           {viewingSomeGroup ? '分组' : viewingSomeUp ? 'UP' : '全部'}
           <HelpInfo>当前{viewingSomeGroup ? '分组' : viewingSomeUp ? 'UP' : '范围'}的一些操作~</HelpInfo>
           {viewingSomeGroup && selectedGroup && (
-            <span className='inline-flex items-center ml-15px text-size-14px'>
+            <span className='ml-15px inline-flex items-center text-size-14px'>
               (
               <a
                 href={formatFollowGroupUrl(selectedGroup?.tagid || '')}
                 target='_blank'
                 className={`inline-flex items-center text-size-16px mx-4px ${APP_CLS_USE_ANT_LINK_COLOR}`}
               >
-                <IconForOpenExternalLink className='size-18px mr-2px' />
+                <IconForOpenExternalLink className='mr-2px size-18px' />
                 {selectedGroup?.name}
               </a>
               )
@@ -402,7 +402,7 @@ const tryInstantSearchWithCache = throttle(async function ({
   onRefresh?: () => void
 }) {
   if (!upMid) return
-  if (!(searchText || (!searchText && dfStore.searchText))) return
+  if (!searchText && (searchText || !dfStore.searchText)) return
   if (!settings.dynamicFeed.__internal.cacheAllItemsEntry) return // feature not enabled
   if (!settings.dynamicFeed.__internal.cacheAllItemsUpMids.includes(upMid.toString())) return // up not checked
   if (!(await hasLocalDynamicFeedCache(upMid))) return // cache not exist

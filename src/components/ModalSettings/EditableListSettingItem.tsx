@@ -1,3 +1,4 @@
+import { css } from '@emotion/react'
 import { borderColorValue } from '$components/css-vars'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
@@ -9,7 +10,6 @@ import {
   useSettingsInnerArray,
   type ListSettingsPath,
 } from '$modules/settings'
-import { css } from '@emotion/react'
 import { Empty, Input } from 'antd'
 import { uniq } from 'es-toolkit'
 import type { ComponentPropsWithoutRef } from 'react'
@@ -136,7 +136,7 @@ export const TagItemDisplay = forwardRef<HTMLDivElement, TagItemDisplayProps>(
       >
         {renderTag ? renderTag(tag) : tag}
         <IconParkOutlineCloseSmall
-          className='size-16px ml-2px cursor-pointer text-size-12px'
+          className='ml-2px size-16px cursor-pointer text-size-12px'
           onClick={() => {
             onDelete?.(tag)
           }}
@@ -206,7 +206,7 @@ function UpTagItemDisplay({ tag }: { tag: string }) {
     <>
       <AntdTooltip title={tooltip}>
         <span className={clsx('inline-flex items-center justify-center', mid ? 'cursor-pointer' : 'cursor-[edit]')}>
-          {mid && <IconRadixIconsPerson className='size-12px mr-2px' />}
+          {mid && <IconRadixIconsPerson className='mr-2px size-12px' />}
           {mid ? (
             <a href={formatSpaceUrl(mid)} target='_blank' style={{ color: 'inherit' }}>
               {label}

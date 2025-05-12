@@ -7,8 +7,8 @@ import { isNil, throttle } from 'es-toolkit'
 import localforage from 'localforage'
 import { limitFunction } from 'p-limit'
 import pMemoize, { type AnyAsyncFunction } from 'p-memoize'
-import type { AsyncReturnType } from 'type-fest'
 import { whenIdle } from './dom'
+import type { AsyncReturnType } from 'type-fest'
 
 export function getIdbCache<T>(tableName: string) {
   const db = localforage.createInstance({
@@ -51,7 +51,7 @@ export function wrapWithIdbCache<T extends AnyAsyncFunction>({
 
   const cache = getIdbCache<CacheEntry>(tableName)
 
-  const cleanUp = throttle(async () => {
+  const cleanUp = throttle(() => {
     cache.db.iterate((cached: CacheEntry, key) => {
       if (!shouldReuseCached(cached)) {
         cache.db.removeItem(key)

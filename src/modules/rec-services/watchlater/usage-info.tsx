@@ -1,5 +1,4 @@
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
-import type { ETab } from '$components/RecHeader/tab-enum'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconForRemove, IconForShuffle, IconForTimestamp, withAscIcon, withDescIcon } from '$modules/icon'
 import { useMultiSelecting } from '$modules/multi-select/store'
@@ -7,15 +6,16 @@ import { settings, useSettingsSnapshot } from '$modules/settings'
 import toast from '$utility/toast'
 import { Button, Input, Tag } from 'antd'
 import { delay } from 'es-toolkit'
-import type { ElementRef, ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
-import { removeMultiSelectedWatchlaterItems } from '.'
 import { usePopupContainer } from '../_base'
 import { CopyBvidButtonsUsageInfo } from '../_shared/copy-bvid-buttons'
 import { GenericOrderSwitcher } from '../_shared/generic-order-switcher'
 import type { UsageInfoPropsFor } from '../UsageInfo'
 import { watchlaterStore } from './store'
 import { WatchlaterItemsOrder } from './watchlater-enum'
+import { removeMultiSelectedWatchlaterItems } from '.'
+import type { ETab } from '$components/RecHeader/tab-enum'
+import type { ElementRef, ReactNode } from 'react'
 
 export function WatchlaterUsageInfo({ service }: UsageInfoPropsFor<ETab.Watchlater>) {
   const { watchlaterAddSeparator, watchlaterItemsOrder } = useSettingsSnapshot()
@@ -109,7 +109,7 @@ const extraHelpInfo = (
     {list.map((x) => {
       const { icon, label, helpInfo } = WatchlaterItemsOrderConfig[x]
       return (
-        <div key={x} className={'flex items-center justify-left line-height-[0] gap-x-4px'}>
+        <div key={x} className={'flex items-center justify-left gap-x-4px line-height-[0]'}>
           {icon} <span className='min-w-80px'>{label}</span> :&nbsp;&nbsp; {helpInfo}
         </div>
       )

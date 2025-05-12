@@ -1,6 +1,5 @@
 import { REQUEST_FAIL_MSG } from '$common'
 import { CustomTargetLink } from '$components/VideoCard/use/useOpenRelated'
-import type { ItemsSeparator } from '$define'
 import { EApiType } from '$define/index.shared'
 import { IconForOpenExternalLink, IconForPlayer } from '$modules/icon'
 import { isWebApiSuccess, request } from '$request'
@@ -8,17 +7,18 @@ import { wrapWithIdbCache } from '$utility/idb'
 import toast from '$utility/toast'
 import { invariant, shuffle, uniqBy } from 'es-toolkit'
 import ms from 'ms'
-import type { SetNonNullable } from 'type-fest'
 import { snapshot } from 'valtio'
 import { FavItemsOrder, handleItemsOrder } from '../fav-enum'
 import { formatFavFolderUrl, formatFavPlaylistUrl } from '../fav-url'
-import { type IFavInnerService } from '../index'
 import { favStore, updateFavFolderMediaCount } from '../store'
+import { FavItemsOrderSwitcher } from '../usage-info/fav-items-order'
+import type { IFavInnerService } from '../index'
 import type { FavItemExtend } from '../types'
 import type { FavFolder } from '../types/folders/list-all-folders'
 import type { FavFolderDetailInfo, ResourceListJSON } from '../types/folders/list-folder-items'
-import { FavItemsOrderSwitcher } from '../usage-info/fav-items-order'
 import { FAV_PAGE_SIZE, favSeparatorCss } from './_base'
+import type { ItemsSeparator } from '$define'
+import type { SetNonNullable } from 'type-fest'
 
 export function FavFolderSeparator({ service }: { service: FavFolderBasicService }) {
   return (
@@ -160,7 +160,7 @@ export class FavFolderService implements IFavInnerService {
   private fetchAllItemsWithCache = wrapWithIdbCache({
     fn: this.__fetchAllItems,
     tableName: 'fav-folder-all-items',
-    generateKey: () => `${this.folderId}`,
+    generateKey: () => String(this.folderId),
     ttl: ms('5min'),
   })
   private addToFetchAllItemsWithCache = async (items: FavItemExtend[]) => {

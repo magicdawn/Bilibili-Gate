@@ -48,28 +48,9 @@ function d() {
   let n = 'empty'
   return (
     i &&
-      (n =
-        i.webdriver +
-        '' +
-        i.screenResolution +
-        '' +
-        i.platform +
-        '' +
-        i.hardwareConcurrency +
-        '' +
-        i.deviceMemory +
-        '' +
-        i.colorDepth +
-        '' +
-        i.indexedDb +
-        '' +
-        i.language +
-        '' +
-        i.openDatabase +
-        '' +
-        i.touchSupport +
-        '' +
-        i.userAgent),
+      (n = `${i.webdriver}${i.screenResolution}${i.platform}${i.hardwareConcurrency}${i.deviceMemory}${i.colorDepth}${
+        i.indexedDb
+      }${i.language}${i.openDatabase}${i.touchSupport}${i.userAgent}`),
     decodeURIComponent(n)
   )
 }

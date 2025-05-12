@@ -7,16 +7,16 @@ import { formatSpaceUrl } from '$modules/rec-services/dynamic-feed/shared'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { sortListByName } from '$utility/sort'
 import { Button, Dropdown, Popover, Tag, Transfer } from 'antd'
-import type { TransferDirection } from 'antd/es/transfer'
 import { delay, groupBy } from 'es-toolkit'
-import type { Key } from 'react'
 import { useSnapshot } from 'valtio'
 import { usePopupContainer } from '../../_base'
 import { dropdownMenuStyle } from '../../_shared'
 import { isFavFolderDefault, isFavFolderPrivate } from '../fav-util'
+import { favStore, type FavStore } from '../store'
 import type { FavAllService } from '../service/fav-all'
 import type { FavFolderBasicService } from '../service/fav-folder'
-import { favStore, type FavStore } from '../store'
+import type { TransferDirection } from 'antd/es/transfer'
+import type { Key } from 'react'
 
 export const IconForAll = IconLucideList
 export const IconForPrivateFolder = IconLucideFolderLock
@@ -60,7 +60,7 @@ export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
             type: 'group',
             label: (
               <span className='flex items-center gap-x-2px'>
-                <IconForOpenExternalLink className='size-15px mt-2px' />
+                <IconForOpenExternalLink className='mt-2px size-15px' />
                 <a target='_blank' href={upSpaceUrl}>
                   @{upName}
                 </a>
@@ -69,7 +69,7 @@ export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
             children: collections.map((f) => {
               const key: FavStore['selectedKey'] = `fav-collection:${f.id}`
               const label = (
-                <span className='flex items-center gap-x-2px ml-8px'>
+                <span className='ml-8px flex items-center gap-x-2px'>
                   <IconForCollection className='size-15px' />
                   {f.title} ({f.media_count})
                 </span>
@@ -216,10 +216,8 @@ export function ViewingAllExcludeFolderConfig({
     }
 
     // when close
-    else {
-      if (excludeFavFolderIdsChanged) {
-        onRefresh?.()
-      }
+    else if (excludeFavFolderIdsChanged) {
+      onRefresh?.()
     }
   })
 
@@ -245,7 +243,7 @@ export function ViewingAllExcludeFolderConfig({
         </>
       }
     >
-      <Tag ref={ref} color='success' className='cursor-pointer text-size-12px mx-0'>
+      <Tag ref={ref} color='success' className='mx-0 cursor-pointer text-size-12px'>
         收藏夹({foldersCount}) 收藏({totalCountInFavFolders})
       </Tag>
     </Popover>

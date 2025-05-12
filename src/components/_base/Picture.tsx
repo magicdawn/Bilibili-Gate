@@ -17,7 +17,7 @@ export function Picture({ src, avif, webp, imgProps, className, ...props }: IPro
     <picture className={clsx('w-full h-full object-cover', className)} {...props}>
       {avif && <source srcSet={`${src}.avif`} type='image/avif' />}
       {webp && <source srcSet={`${src}.webp`} type='image/webp' />}
-      <img src={src} loading='lazy' className='block w-full h-full' {...imgProps} />
+      <img src={src} loading='lazy' className='block h-full w-full' {...imgProps} />
     </picture>
   )
 }

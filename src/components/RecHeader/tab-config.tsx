@@ -1,3 +1,4 @@
+import { css } from '@emotion/react'
 import {
   IconForDynamicFeed,
   IconForFav,
@@ -13,7 +14,6 @@ import { favStore } from '$modules/rec-services/fav/store'
 import { isHotTabUsingShuffle } from '$modules/rec-services/hot'
 import { advancedSearchHelpInfo } from '$utility/search'
 import toast from '$utility/toast'
-import { css } from '@emotion/react'
 import { cloneElement, type ReactElement, type ReactNode } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
 import { ETab } from './tab-enum'
@@ -68,7 +68,7 @@ export const TabConfig: Record<ETab, TabConfigItem> = {
     swr: true,
   },
   [ETab.Fav]: {
-    icon: <IconForFav className='size-16px mt--1px' />,
+    icon: <IconForFav className='mt--1px size-16px' />,
     label: '收藏',
     desc: '你添加的收藏; 默认随机乱序, 可在设置中关闭乱序',
     get swr() {

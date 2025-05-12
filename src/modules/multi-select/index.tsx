@@ -5,10 +5,10 @@ import { AntdTooltip } from '$modules/antd/custom'
 import { CopyBvidButtons } from '$modules/rec-services/_shared/copy-bvid-buttons'
 import { settings } from '$modules/settings'
 import { Button, Divider, Popover } from 'antd'
-import type { ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
 import { proxySet } from 'valtio/utils'
 import { multiSelectStore } from './store'
+import type { ReactNode } from 'react'
 
 export function MultiSelectButton({
   iconOnly,

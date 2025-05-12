@@ -1,7 +1,5 @@
 import { baseDebug, HOST_APP, OPERATION_FAIL_MSG } from '$common'
-import type { AppRecItem, PvideoJson } from '$define'
 import { getVideoPlayUrl } from '$modules/bilibili/video/play-url'
-import type { VideoPage } from '$modules/bilibili/video/types/page-list'
 import { getVideoPageList } from '$modules/bilibili/video/video-detail'
 import { gmrequest, isWebApiSuccess, request } from '$request'
 import { reusePendingPromise } from '$utility/async'
@@ -10,6 +8,8 @@ import toast from '$utility/toast'
 import ms from 'ms'
 import QuickLRU from 'quick-lru'
 import { getVideoshotJson, isVideoshotDataValid } from './videoshot'
+import type { AppRecItem, PvideoJson } from '$define'
+import type { VideoPage } from '$modules/bilibili/video/types/page-list'
 
 const debug = baseDebug.extend('VideoCard:services')
 
@@ -24,7 +24,7 @@ function watchlaterFactory(action: 'add' | 'del') {
       aid: avid,
       csrf: getCsrfToken(),
     })
-    const res = await request.post('/x/v2/history/toview/' + action, form)
+    const res = await request.post(`/x/v2/history/toview/${action}`, form)
 
     // {
     //     "code": 0,
@@ -163,7 +163,7 @@ export const fetchVideoPreviewData = reusePendingPromise(
       cid = pages[0]?.cid
       dimension = pages[0]?.dimension
       if (typeof cid === 'undefined') {
-        throw new Error(`can not get cid by bvid=${bvid}`)
+        throw new TypeError(`can not get cid by bvid=${bvid}`)
       }
     }
 

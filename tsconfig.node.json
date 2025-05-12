@@ -1,14 +1,14 @@
 {
-  "include": ["uno.config.ts", "eslint.config.js"],
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
     "module": "NodeNext",
     "moduleResolution": "nodenext",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true,
-    "strict": true,
     "allowJs": true,
-    "noEmit": true
-  }
+    "strict": true,
+    "noEmit": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["uno.config.ts", "eslint.config.js"]
 }

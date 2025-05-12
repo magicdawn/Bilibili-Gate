@@ -80,10 +80,7 @@ export async function getVideoPlayUrl(
 
   // mp4
   if (json?.data?.durl) {
-    const urls = (json.data.durl || [])
-      .map((x) => [x.url, ...(x.backup_url || [])])
-      .flat()
-      .filter(Boolean)
+    const urls = (json.data.durl || []).flatMap((x) => [x.url, ...(x.backup_url || [])]).filter(Boolean)
     if (urls.length) return reOrderUrls(urls)
   }
 

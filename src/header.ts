@@ -24,7 +24,7 @@ function calcHeaderHeight() {
   if (!heightDef) return 50
 
   const height = Number(heightDef.replace('px', ''))
-  if (isNaN(height)) return 50
+  if (Number.isNaN(height)) return 50
   return height
 }
 // prefix with $ 避免与普通变量冲突

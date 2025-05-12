@@ -1,9 +1,9 @@
+import debugFactory from 'debug'
+
 export const APP_NAME = 'Bilibili-Gate' // formal name
 export const APP_NAMESPACE = 'bilibili-gate' // as namespace, kebab-case
 export const APP_KEY_PREFIX = 'bilibili_gate' // as javascript key prefix, snake_case
 export const APP_SHORT_PREFIX = 'bili-gate'
-
-import debugFactory from 'debug'
 export const baseDebug = debugFactory(APP_NAMESPACE)
 
 export const HOST_API = 'https://api.bilibili.com'

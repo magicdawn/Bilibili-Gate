@@ -1,14 +1,14 @@
+import { css } from '@emotion/react'
 import { APP_CLS_CARD, APP_CLS_CARD_ACTIVE, APP_CLS_CARD_COVER, APP_CLS_ROOT, APP_KEY_PREFIX, appWarn } from '$common'
 import { zIndexVideoCardContextMenu } from '$common/css-vars-export.module.scss'
 import { isEmptyFragment } from '$common/hooks/useIsEmptyFragment'
 import { useLessFrequentFn } from '$common/hooks/useLessFrequentFn'
 import { useMittOn } from '$common/hooks/useMitt'
 import { useRefStateBox } from '$common/hooks/useRefState'
+import { Picture } from '$components/_base/Picture'
 import { useDislikedReason } from '$components/ModalDislike'
 import { setGlobalValue } from '$components/RecGrid/unsafe-window-export'
-import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import { ETab } from '$components/RecHeader/tab-enum'
-import { Picture } from '$components/_base/Picture'
 import {
   isAppRecommend,
   isLive,
@@ -31,20 +31,16 @@ import { useWatchlaterState } from '$modules/rec-services/watchlater'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { isWebApiSuccess } from '$request'
 import { isFirefox, isSafari } from '$ua'
-import type { CssProp } from '$utility/type'
-import { css } from '@emotion/react'
 import { useLockFn } from 'ahooks'
 import { Dropdown } from 'antd'
-import type { ComponentRef, CSSProperties, MouseEventHandler, ReactNode } from 'react'
-import { useLargePreviewRelated } from '../LargePreview/useLargePreview'
 import { videoCardBorderRadiusValue } from '../css-vars'
+import { useLargePreviewRelated } from '../LargePreview/useLargePreview'
 import { multiSelectedCss, useBlockedCardCss } from './card-border-css'
+import { BlacklistCard, DislikedCard, SkeletonCard } from './child-components/other-type-cards'
 import { SimplePregressBar } from './child-components/PreviewImage'
 import { VideoCardActionStyle } from './child-components/VideoCardActions'
 import { VideoCardBottom } from './child-components/VideoCardBottom'
-import { BlacklistCard, DislikedCard, SkeletonCard } from './child-components/other-type-cards'
 import { useContextMenus } from './context-menus'
-import type { ECardDisplay, SharedEmitter, VideoCardEmitter } from './index.shared'
 import {
   defaultEmitter,
   defaultSharedEmitter,
@@ -52,9 +48,7 @@ import {
   isDisplayAsList,
   zIndexWatchlaterProgressBar,
 } from './index.shared'
-import type { IVideoCardData } from './process/normalize'
 import { normalizeCardData } from './process/normalize'
-import type { ImagePreviewData } from './services'
 import { fetchImagePreviewData, isImagePreviewDataValid } from './services'
 import { StatItemDisplay } from './stat-item'
 import { ApiTypeTag, ChargeOnlyTag, isChargeOnlyVideo, LiveBadge, RankNumMark, VolMark } from './top-marks'
@@ -63,6 +57,12 @@ import { useMultiSelectRelated } from './use/useMultiSelect'
 import { getRecItemDimension, useLinkTarget, useOpenRelated } from './use/useOpenRelated'
 import { usePreviewRelated } from './use/usePreviewRelated'
 import { useWatchlaterRelated } from './use/useWatchlaterRelated'
+import type { ECardDisplay, SharedEmitter, VideoCardEmitter } from './index.shared'
+import type { IVideoCardData } from './process/normalize'
+import type { ImagePreviewData } from './services'
+import type { OnRefresh } from '$components/RecGrid/useRefresh'
+import type { CssProp } from '$utility/type'
+import type { ComponentRef, CSSProperties, MouseEventHandler, ReactNode } from 'react'
 
 export type VideoCardProps = {
   style?: CSSProperties
@@ -573,7 +573,7 @@ const VideoCardInner = memo(function VideoCardInner({
         <div className='bili-video-card__image--wrap'>
           <Picture
             src={`${cover}@672w_378h_1c_!web-home-common-cover`}
-            className='v-img bili-video-card__cover'
+            className='bili-video-card__cover v-img'
             style={{ borderRadius: 0 }}
             imgProps={{
               // in firefox, alt text is visible during loading

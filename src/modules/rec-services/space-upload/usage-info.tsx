@@ -1,13 +1,13 @@
+import { css } from '@emotion/react'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
-import { css } from '@emotion/react'
 import { Input } from 'antd'
 import { useSnapshot } from 'valtio'
 import { CopyBvidButtonsUsageInfo } from '../_shared/copy-bvid-buttons'
 import { GenericOrderSwitcher } from '../_shared/generic-order-switcher'
-import type { SpaceUploadOrder } from './api'
 import { SpaceUploadOrderConfig } from './api'
 import { SpaceUploadQueryKey, spaceUploadStore } from './store'
+import type { SpaceUploadOrder } from './api'
 
 const fixAntdInputSearchAddonCss = css`
   .ant-input-group-addon {

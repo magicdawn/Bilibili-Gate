@@ -48,9 +48,6 @@ export type VideoChangeCallback = (id: { aid: string; cid: string }) => void
 
 /**
  * 监听视频的变化, 等待视频加载并开始监听后 resolve
- * @param callback 回调函数
- * @param config 事件监听选项
- * @returns 是否有视频存在
  */
 export const onVideoChange = async (callback: VideoChangeCallback) => {
   if (!IN_BILIBILI_VIDEO_PLAY_PAGE) {

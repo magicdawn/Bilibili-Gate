@@ -3,12 +3,12 @@ import type { RecItemTypeOrSeparator } from '$define'
 
 export type IService<T = RecItemTypeOrSeparator> = {
   hasMore: boolean
-  loadMore(abortSignal: AbortSignal): Promise<T[] | undefined>
+  loadMore: (abortSignal: AbortSignal) => Promise<T[] | undefined>
   usageInfo?: ReactNode
 }
 
 export type ITabService = IService & {
-  restore(): void
+  restore: () => void
   usageInfo: ReactNode
 }
 
@@ -91,7 +91,7 @@ export class QueueStrategy<T = RecItemTypeOrSeparator> {
 export function usePopupContainer<T extends HTMLElement = HTMLDivElement>() {
   const ref = useRef<T>(null)
   const getPopupContainer = useCallback(() => {
-    return ref.current?.closest<T>('.' + APP_CLS_TAB_BAR) || document.body
+    return ref.current?.closest<T>(`.${APP_CLS_TAB_BAR}`) || document.body
   }, [])
   return { ref, getPopupContainer }
 }

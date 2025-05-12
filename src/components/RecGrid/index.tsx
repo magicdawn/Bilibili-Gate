@@ -2,6 +2,7 @@
  * 推荐内容, 无限滚动
  */
 
+import { css } from '@emotion/react'
 import { APP_CLS_GRID, baseDebug } from '$common'
 import { useMittOn } from '$common/hooks/useMitt'
 import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
@@ -12,9 +13,7 @@ import { VideoCard } from '$components/VideoCard'
 import { getActiveCardBorderCss, useCardBorderCss } from '$components/VideoCard/card-border-css'
 import { createSharedEmitter, type VideoCardEmitter, type VideoCardEvents } from '$components/VideoCard/index.shared'
 import { filterRecItems } from '$components/VideoCard/process/filter'
-import type { IVideoCardData } from '$components/VideoCard/process/normalize'
 import { useLinkTarget } from '$components/VideoCard/use/useOpenRelated'
-import { type RecItemType, type RecItemTypeOrSeparator } from '$define'
 import { EApiType } from '$define/index.shared'
 import { $headerHeight } from '$header'
 import { antMessage } from '$modules/antd'
@@ -26,24 +25,25 @@ import { hotStore } from '$modules/rec-services/hot'
 import { getServiceFromRegistry, type ServiceMap } from '$modules/rec-services/service-map.ts'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { isSafari } from '$ua'
-import { css } from '@emotion/react'
 import { useEventListener, useLatest, usePrevious, useUnmountedRef } from 'ahooks'
 import { Divider } from 'antd'
-import type { AxiosError } from 'axios'
 import { cloneDeep, delay, isEqual, noop } from 'es-toolkit'
 import mitt from 'mitt'
 import ms from 'ms'
-import type { ForwardedRef, ReactNode } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { VirtuosoGrid } from 'react-virtuoso'
 import { useSnapshot } from 'valtio'
 import * as classNames from '../video-grid.module.scss'
 import { setCurrentGridSharedEmitter } from './unsafe-window-export'
-import type { OnRefresh } from './useRefresh'
 import { useRefresh } from './useRefresh'
 import { useShortcut } from './useShortcut'
-import type { CustomGridComponents, CustomGridContext } from './virtuoso.config'
 import { ENABLE_VIRTUAL_GRID, gridComponents } from './virtuoso.config'
+import type { OnRefresh } from './useRefresh'
+import type { CustomGridComponents, CustomGridContext } from './virtuoso.config'
+import type { IVideoCardData } from '$components/VideoCard/process/normalize'
+import type { RecItemType, RecItemTypeOrSeparator } from '$define'
+import type { AxiosError } from 'axios'
+import type { ForwardedRef, ReactNode } from 'react'
 
 const debug = baseDebug.extend('components:RecGrid')
 
@@ -229,8 +229,8 @@ const RecGridInner = memo(function ({
       more = filterRecItems(more, tab)
       newItems = concatThenUniq(newItems, more)
       newHasMore = service.hasMore
-    } catch (e) {
-      err = e
+    } catch (error) {
+      err = error
     }
     if (err) {
       unlock(lockKey)
@@ -404,12 +404,12 @@ const RecGridInner = memo(function ({
   })
   const footerInViewRef = useLatest(__footerInView)
   const footer = (
-    <div ref={footerRef} className='flex items-center justify-center py-30px text-size-120% grid-col-span-full'>
+    <div ref={footerRef} className='grid-col-span-full flex items-center justify-center py-30px text-size-120%'>
       {!refreshing && (
         <>
           {hasMore ? (
             <>
-              <IconParkOutlineLoading className='size-40px animate-spin mr-10px color-gate-primary' />
+              <IconParkOutlineLoading className='mr-10px size-40px animate-spin color-gate-primary' />
               加载中~
             </>
           ) : (
@@ -601,18 +601,18 @@ function ErrorDetail({ err, tab }: { err: any; tab: ETab }) {
   const target = useLinkTarget()
   const errDetail: ReactNode = useMemo(() => inspectErr(err), [err])
   return (
-    <div className='text-center text-size-20px p-20px'>
+    <div className='p-20px text-center text-size-20px'>
       <AntdTooltip
         title={
           <div className='py-10px'>
             <h3>错误详情</h3>
-            <div className='overflow-hidden whitespace-pre-wrap break-normal max-h-50vh overflow-y-auto'>
+            <div className='max-h-50vh overflow-hidden overflow-y-auto whitespace-pre-wrap break-normal'>
               {errDetail}
             </div>
           </div>
         }
       >
-        <p className='cursor-pointer flex items-center justify-center'>
+        <p className='flex cursor-pointer items-center justify-center'>
           <IconTablerFaceIdError className='mr-4px' />
           出错了, 请刷新重试!
         </p>

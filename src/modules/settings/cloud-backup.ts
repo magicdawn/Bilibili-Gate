@@ -1,9 +1,9 @@
 import { isEqual, throttle } from 'es-toolkit'
 import ms from 'ms'
-import type { PartialDeep, ReadonlyDeep } from 'type-fest'
-import { allowedLeafSettingsPaths, pickSettings, type Settings } from '.'
 import { articleDraft, debug, getBackupOmitPaths } from './index.shared'
 import { HAS_RESTORED_SETTINGS } from './restore-flag'
+import { allowedLeafSettingsPaths, pickSettings, type Settings } from '.'
+import type { PartialDeep, ReadonlyDeep } from 'type-fest'
 
 let lastBackupVal: PartialDeep<Settings> | undefined
 const setDataThrottled = throttle(articleDraft.setData, ms('5s'))
@@ -20,7 +20,7 @@ export async function saveToDraft(val: ReadonlyDeep<PartialDeep<Settings>>) {
     await setDataThrottled(currentBackupVal)
     lastBackupVal = currentBackupVal
     debug('backup to article draft complete')
-  } catch (e: any) {
-    console.error(e.stack || e)
+  } catch (error: any) {
+    console.error(error.stack || error)
   }
 }

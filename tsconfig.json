@@ -1,8 +1,8 @@
 {
-  "files": [],
   "references": [
     { "path": "./tsconfig.app.json" }, // FE App
     { "path": "./tsconfig.vite.json" }, // Vite config
     { "path": "./tsconfig.node.json" } // other config runs in node
-  ]
+  ],
+  "files": []
 }

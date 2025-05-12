@@ -1,15 +1,12 @@
 import { baseDebug } from '$common'
 import { CHARGE_ONLY_TEXT } from '$components/VideoCard/top-marks'
-import { type DynamicFeedItem, type DynamicFeedItemExtend, type ItemsSeparator, type LiveItemExtend } from '$define'
 import { EApiType } from '$define/index.shared'
 import { getFollowGroupContent } from '$modules/bilibili/me/follow-group'
 import { settings } from '$modules/settings'
 import { parseSearchInput } from '$utility/search'
-import type { Nullable } from '$utility/type'
 import { parseDuration } from '$utility/video'
 import dayjs from 'dayjs'
 import pmap from 'promise.map'
-import type { ReactNode } from 'react'
 import { snapshot } from 'valtio'
 import { BaseTabService, QueueStrategy } from '../_base'
 import { LiveRecService } from '../live'
@@ -31,6 +28,9 @@ import {
   type DynamicFeedStore,
 } from './store'
 import { DynamicFeedUsageInfo } from './usage-info'
+import type { DynamicFeedItem, DynamicFeedItemExtend, ItemsSeparator, LiveItemExtend } from '$define'
+import type { Nullable } from '$utility/type'
+import type { ReactNode } from 'react'
 
 export type DynamicFeedServiceConfig = ReturnType<typeof getDynamicFeedServiceConfig>
 
@@ -248,7 +248,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
     const set = this.whenViewAllHideMids
     mids.forEach((x) => set.add(x))
 
-    const midsInGroup = (await pmap(groupIds, async (id) => getFollowGroupContent(id), 3)).flat()
+    const midsInGroup = (await pmap(groupIds, (id) => getFollowGroupContent(id), 3)).flat()
     midsInGroup.forEach((x) => set.add(x.toString()))
 
     this.whenViewAllHideMidsLoaded = true

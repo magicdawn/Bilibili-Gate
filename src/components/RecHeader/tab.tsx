@@ -1,4 +1,4 @@
-import { type OnRefresh } from '$components/RecGrid/useRefresh'
+import { css } from '@emotion/react'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { SHOW_DYNAMIC_FEED_ONLY } from '$modules/rec-services/dynamic-feed/store'
 import { SHOW_FAV_TAB_ONLY } from '$modules/rec-services/fav/store'
@@ -6,13 +6,13 @@ import { SHOW_SPACE_UPLOAD_ONLY } from '$modules/rec-services/space-upload/store
 import { useSettingsSnapshot } from '$modules/settings'
 import { checkLoginStatus, useHasLogined } from '$utility/cookie'
 import { proxyWithGmStorage } from '$utility/valtio'
-import { css } from '@emotion/react'
 import { Radio, Segmented } from 'antd'
-import type { ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
-import type { TabConfigItem } from './tab-config'
 import { TabConfig, TabIcon, toastNeedLogin } from './tab-config'
 import { ALL_TAB_KEYS, CONFIGURABLE_TAB_KEYS, ETab } from './tab-enum'
+import type { TabConfigItem } from './tab-config'
+import type { OnRefresh } from '$components/RecGrid/useRefresh'
+import type { ReactNode } from 'react'
 
 /**
  * initial tab
@@ -101,11 +101,11 @@ export function useCurrentUsingTab(): ETab {
   if (!displayTabKeys.includes(tab)) return fallbackTab
 
   // not logined
-  if (!logined) {
-    // 不允许游客访问
-    if (!TabConfig[tab].anonymousUsage) {
-      return fallbackTab
-    }
+  if (
+    !logined && // 不允许游客访问
+    !TabConfig[tab].anonymousUsage
+  ) {
+    return fallbackTab
   }
 
   return tab
@@ -132,12 +132,8 @@ export function VideoSourceTab({ onRefresh }: { onRefresh: OnRefresh }) {
   const { __internalRecTabRenderAsSegments } = useSettingsSnapshot()
 
   const onChangeTab = useMemoizedFn((newTab: ETab) => {
-    if (!logined) {
-      if (!TabConfig[newTab].anonymousUsage) {
-        if (!checkLoginStatus()) {
-          return toastNeedLogin()
-        }
-      }
+    if (!logined && !TabConfig[newTab].anonymousUsage && !checkLoginStatus()) {
+      return toastNeedLogin()
     }
     videoSourceTabState.value = newTab
   })
@@ -154,7 +150,7 @@ export function VideoSourceTab({ onRefresh }: { onRefresh: OnRefresh }) {
         const target = e.target as HTMLElement
         target.blur()
       }}
-      onChange={async (e) => {
+      onChange={(e) => {
         const newValue = e.target.value as ETab
         onChangeTab(newValue)
       }}
@@ -197,11 +193,11 @@ export function VideoSourceTab({ onRefresh }: { onRefresh: OnRefresh }) {
   return (
     <div className='flex-v-center'>
       {__internalRecTabRenderAsSegments ? renderAsSegment : renderAsRadio}
-      <HelpInfo className='size-16px ml-6px'>
+      <HelpInfo className='ml-6px size-16px'>
         <>
           {currentTabConfigList.map(({ key, label, desc, extraHelpInfo }) => (
             <Fragment key={key}>
-              <div className='flex items-center h-22px'>
+              <div className='h-22px flex items-center'>
                 <TabIcon tabKey={key} className='mr-4px' active />
                 {label}: {desc}
               </div>

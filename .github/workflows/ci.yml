@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - 'main'
+      - main
 
 concurrency:
   group: ${{ github.workflow }}
@@ -44,7 +44,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
-          cache: 'pnpm'
+          cache: pnpm
 
       # install deps
       - run: pnpm install --frozen-lockfile

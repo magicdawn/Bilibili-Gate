@@ -1,15 +1,15 @@
+import { css as _css, css } from '@emotion/react'
 import { APP_CLS_CARD, APP_CLS_CARD_COVER, baseDebug } from '$common'
 import { zIndexVideoCardLargePreview } from '$common/css-vars-export.module.scss'
 import { useMixedRef } from '$common/hooks/mixed-ref'
 import { colorPrimaryValue } from '$components/css-vars'
 import { useSettingsSnapshot } from '$modules/settings'
 import { isSafari } from '$ua'
-import { css as _css, css } from '@emotion/react'
 import { useEventListener } from 'ahooks'
 import { orderBy, throttle } from 'es-toolkit'
 import { motion } from 'framer-motion'
-import type { ComponentRef, ReactNode } from 'react'
 import { createPortal } from 'react-dom'
+import type { ComponentRef, ReactNode } from 'react'
 
 const debug = baseDebug.extend('VideoCard:LargePreview')
 
@@ -155,7 +155,7 @@ export const LargePreview = forwardRef<ComponentRef<'div'>, LargePreviewProps>(
       )[0]
 
       debug('picked direction', picked)
-      const { direction, bbox, scale, scaleLimit } = picked
+      const { direction, bbox, scaleLimit } = picked
 
       let elWidth: number
       let elHeight: number
@@ -263,12 +263,10 @@ export const LargePreview = forwardRef<ComponentRef<'div'>, LargePreviewProps>(
         }
       }
       // scale
-      else {
-        if (axis === 'x') {
-          return { scale: 0.5, transformOrigin: `${reverse} ${position.arrowTop}px` }
-        } else {
-          return { scale: 0.5, transformOrigin: `${position.arrowLeft}px ${reverse}` }
-        }
+      else if (axis === 'x') {
+        return { scale: 0.5, transformOrigin: `${reverse} ${position.arrowTop}px` }
+      } else {
+        return { scale: 0.5, transformOrigin: `${position.arrowLeft}px ${reverse}` }
       }
     }, [position, useScale])
 
@@ -346,7 +344,7 @@ function PopoverArrow({
   arrowTop: number
   arrowLeft: number
 }) {
-  const { axis, multiplier, reverse } = DirectionConfig[direction]
+  const { axis } = DirectionConfig[direction]
   const extra = useMemo(() => {
     if (axis === 'x') {
       return _css`

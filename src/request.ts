@@ -14,7 +14,7 @@ request.interceptors.request.use(async function (config) {
   config.params ||= {}
 
   // wbi sign when needed
-  if (config.url?.includes('/wbi/') && !(config.params.w_rid || config.params.wts)) {
+  if (config.url?.includes('/wbi/') && !config.params.w_rid && !config.params.wts) {
     config.params = await encWbi(config.params)
   }
 
@@ -59,7 +59,7 @@ gmrequest.interceptors.response.use((res) => {
     res.data = text
     try {
       res.data = JSON.parse(text)
-    } catch (e) {
+    } catch {
       // noop
     }
   }

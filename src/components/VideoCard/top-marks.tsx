@@ -4,11 +4,11 @@ import { EApiType } from '$define/index.shared'
 import { openNewTab } from '$modules/gm'
 import { IconForLive } from '$modules/icon'
 import { isNormalRankItem } from '$modules/rec-services/hot/rank/rank-tab'
-import type { NormalRankItem } from '$modules/rec-services/hot/rank/types'
 import { Dropdown } from 'antd'
-import type { CSSProperties, ReactNode } from 'react'
 import { useTooltip } from './child-components/VideoCardActions'
 import { useLinkNewTab } from './use/useOpenRelated'
+import type { NormalRankItem } from '$modules/rec-services/hot/rank/types'
+import type { CSSProperties, ReactNode } from 'react'
 
 export const CHARGE_ONLY_TEXT = '充电专属'
 
@@ -123,7 +123,7 @@ export function SomeBadge({ icon, label, className }: { icon?: ReactNode; label?
       {icon}
       {label && typeof label === 'string' ? (
         <>
-          <span className='font-normal font-size-11px line-height-[1] color-white relative top-1px'>{label}</span>
+          <span className='relative top-1px font-size-11px color-white font-normal line-height-[1]'>{label}</span>
         </>
       ) : (
         label
@@ -144,7 +144,7 @@ export function ApiTypeTag({ item }: { item: RecItemType }) {
     return item.api
   })()
   return (
-    <div className='rounded-2px ml-4px bg-gate-primary flex-center px-6px py-1px text-size-11px line-height-[17px] text-white text-center whitespace-nowrap'>
+    <div className='ml-4px flex-center whitespace-nowrap rounded-2px bg-gate-primary px-6px py-1px text-center text-size-11px text-white line-height-[17px]'>
       {text}
     </div>
   )
@@ -152,7 +152,7 @@ export function ApiTypeTag({ item }: { item: RecItemType }) {
 
 export function VolMark({ vol }: { vol: number }) {
   return (
-    <div className='h-24px min-w-24px rounded-8px relative flex-center bg-gate-primary color-white whitespace-nowrap px-6px'>
+    <div className='relative h-24px min-w-24px flex-center whitespace-nowrap rounded-8px bg-gate-primary px-6px color-white'>
       {vol}
     </div>
   )

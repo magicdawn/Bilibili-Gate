@@ -51,7 +51,7 @@ export function registerSettingsGmCommand() {
 const renderOnce = once(function render() {
   const container = document.createElement('div')
   container.classList.add('modals-container', APP_CLS_ROOT)
-  document.body.appendChild(container)
+  document.body.append(container)
   const r = createRoot(container)
   r.render(
     <AppRoot>

@@ -57,7 +57,7 @@ export async function getSpaceUpload({
 
   const json = res.data as SpaceUploadJson
   if (!isWebApiSuccess(json)) {
-    throw new Error('request json error: ' + json.message || OPERATION_FAIL_MSG)
+    throw new Error(`request json error: ${json.message || OPERATION_FAIL_MSG}`)
   }
 
   const items = json.data.list.vlist || []

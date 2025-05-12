@@ -1,8 +1,8 @@
 import { APP_NAME } from '$common'
 import { buttonOpenCss } from '$common/emotion-css'
-import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { CollapsePanel } from '$components/_base/CollapsePanel'
 import { HelpInfo } from '$components/_base/HelpInfo'
+import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconForOpenExternalLink } from '$modules/icon'
@@ -79,7 +79,7 @@ export function TabPaneAdvance() {
       <SettingsGroup
         title={
           <>
-            <IconIcOutlineCloud className='size-28px mr-4px' />
+            <IconIcOutlineCloud className='mr-4px size-28px' />
             备份
           </>
         }
@@ -96,7 +96,7 @@ export function TabPaneAdvance() {
               href='https://member.bilibili.com/platform/upload/text/draft'
               target='_blank'
             >
-              <IconForOpenExternalLink className='size-16px mr-4px' />
+              <IconForOpenExternalLink className='mr-4px size-16px' />
               去草稿箱浏览
             </a>
           </span>
@@ -154,9 +154,9 @@ export function TabPaneAdvance() {
         }
       >
         <CollapsePanel expanded={internalKeysExpanded}>
-          <div className='b-1px b-solid b-gate-border rounded-6px p-10px w-full flex gap-x-20px'>
+          <div className='w-full flex gap-x-20px b-1px b-gate-border rounded-6px b-solid p-10px'>
             <ResetPartialSettingsButton paths={internalBooleanPaths} className='flex-none' />
-            <div className='flex-1 flex flex-wrap gap-x-20px gap-y-10px items-start'>
+            <div className='flex flex-1 flex-wrap items-start gap-x-20px gap-y-10px'>
               {internalBooleanPaths.map((k) => (
                 <CheckboxSettingItem
                   key={k}

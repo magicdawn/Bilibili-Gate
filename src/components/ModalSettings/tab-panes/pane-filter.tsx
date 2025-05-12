@@ -1,12 +1,12 @@
-import { CheckboxSettingItem, SwitchSettingItem } from '$components/ModalSettings/setting-item'
 import { HelpInfo } from '$components/_base/HelpInfo'
+import { CheckboxSettingItem, SwitchSettingItem } from '$components/ModalSettings/setting-item'
 import { IconForInfo } from '$modules/icon'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { InputNumber, Tag } from 'antd'
 import { isNil } from 'es-toolkit'
-import type { ComponentProps } from 'react'
 import { EditableListSettingItem } from '../EditableListSettingItem'
 import { SettingsGroup, sharedCss } from './shared'
+import type { ComponentProps } from 'react'
 
 export function TabPaneFilter() {
   const {
@@ -168,9 +168,9 @@ export function TabPaneFilter() {
                 使用 mid 屏蔽时支持备注, 格式: <Tag color='success'>mid(备注)</Tag>
                 {'  '}如 <Tag color='success'>8047632(B站官方)</Tag> <br />
                 作用范围: 推荐 / 热门 <br />
-                <div className='flex items-start mt-4px'>
+                <div className='mt-4px flex items-start'>
                   <IconForInfo className='mt-3px' />
-                  <div className='flex-1 ml-8px'>
+                  <div className='ml-8px flex-1'>
                     B站官方支持黑名单, 对于不喜欢的 UP 可以直接拉黑 <br />
                     黑名单无视此页开关, 总是会过滤掉 <br />
                     这里是客户端过滤, 与黑名单功能重复, 优先使用黑名单功能 <br />

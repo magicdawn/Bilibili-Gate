@@ -60,8 +60,8 @@ export function parseCount(str: string) {
   if (!str) return undefined
   if (str === '-') return 0 // -弹幕, 即 0弹幕
   if (/^\d+$/.test(str)) return Number(str)
-  if (/^\d+(\.\d+?)?万$/.test(str)) return Number(str.slice(0, -1)) * 1_0000
-  if (/^\d+(\.\d+?)?亿$/.test(str)) return Number(str.slice(0, -1)) * 1_0000_0000
+  if (/^\d+(?:\.\d+)?万$/.test(str)) return Number(str.slice(0, -1)) * 1_0000
+  if (/^\d+(?:\.\d+)?亿$/.test(str)) return Number(str.slice(0, -1)) * 1_0000_0000
 }
 
 const currentYear = dayjs().format('YYYY')
@@ -72,9 +72,9 @@ export function formatTimeStamp(unixTs?: number, includeTime = false) {
   const t = dayjs.unix(unixTs)
   const extraFormat = includeTime ? ' HH:mm' : ''
   if (t.format('YYYY') === currentYear) {
-    return t.format('M-D' + extraFormat)
+    return t.format(`M-D${extraFormat}`)
   } else {
-    return t.format('YY-M-D' + extraFormat)
+    return t.format(`YY-M-D${extraFormat}`)
   }
 }
 

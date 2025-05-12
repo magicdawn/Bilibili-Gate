@@ -19,7 +19,7 @@ export function useSticky<T extends HTMLElement>() {
 
       // 有缩放时, top: 49.000003814697266
       const refPageOffset = Math.trunc(stickyRef.current.getBoundingClientRect().top * 10) / 10
-      const stickyOffset = parseInt(getComputedStyle(stickyRef.current).top)
+      const stickyOffset = Number.parseInt(getComputedStyle(stickyRef.current).top)
       const stickyActive = refPageOffset <= stickyOffset
       setSticky(stickyActive)
     }

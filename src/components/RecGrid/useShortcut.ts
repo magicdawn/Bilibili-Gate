@@ -1,9 +1,9 @@
 import { APP_CLS_CARD, APP_CLS_CARD_ACTIVE } from '$common'
-import type { VideoCardEmitter } from '$components/VideoCard/index.shared'
 import { settings } from '$modules/settings'
 import { shouldDisableShortcut } from '$utility/dom'
-import type { KeyFilter, KeyType } from 'ahooks/lib/useKeyPress'
 import { videoGrid } from '../video-grid.module.scss'
+import type { VideoCardEmitter } from '$components/VideoCard/index.shared'
+import type { KeyFilter, KeyType } from 'ahooks/lib/useKeyPress'
 
 interface IOptions {
   enabled: boolean
@@ -197,8 +197,7 @@ export function useShortcut({
     if (!scrollerRect) return 0
 
     const cards = getCards()
-    for (let i = 0; i < cards.length; i++) {
-      const card = cards[i]
+    for (const [i, card] of cards.entries()) {
       const rect = card.getBoundingClientRect()
 
       // first fully visible card

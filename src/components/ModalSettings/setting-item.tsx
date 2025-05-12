@@ -1,9 +1,9 @@
 import { AntdTooltip } from '$modules/antd/custom'
-import type { BooleanSettingsPath } from '$modules/settings'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { Button, Checkbox, Switch } from 'antd'
-import type { CheckboxChangeEvent } from 'antd/es/checkbox'
 import { get, set } from 'es-toolkit/compat'
+import type { BooleanSettingsPath } from '$modules/settings'
+import type { CheckboxChangeEvent } from 'antd/es/checkbox'
 import type { ComponentProps, ReactNode } from 'react'
 
 function useBooleanSettingsPath(configPath: BooleanSettingsPath, extraAction?: (val: boolean) => void) {
@@ -152,7 +152,7 @@ export function ButtonSettingItem({
   return (
     <AntdTooltip title={tooltip} {...tooltipProps}>
       <Button onClick={onToggle}>
-        <span className='inline-flex items-center justify-center line-height-[1] gap-4px'>
+        <span className='inline-flex items-center justify-center gap-4px line-height-[1]'>
           {checked ? (checkedChildren ?? '✅') : (unCheckedChildren ?? '❎')}
         </span>
       </Button>

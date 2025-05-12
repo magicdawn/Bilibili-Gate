@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prefer-single-call */
 /**
  * AI 太🐂了
  * WindSurf 太🐂了

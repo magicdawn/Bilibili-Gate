@@ -1,10 +1,10 @@
-import { bgLv1Value } from '$components/css-vars'
-import type { PvideoData } from '$define'
-import { minmax } from '$utility/num'
 import { css } from '@emotion/react'
-import type { ComponentProps, ComponentPropsWithoutRef, ComponentRef } from 'react'
+import { bgLv1Value } from '$components/css-vars'
+import { minmax } from '$utility/num'
 import { videoCardBorderRadiusValue } from '../../css-vars'
 import { zIndexPreviewImageWrapper } from '../index.shared'
+import type { PvideoData } from '$define'
+import type { ComponentProps, ComponentPropsWithoutRef, ComponentRef } from 'react'
 
 const S = {
   previewImageWrapper: css`
@@ -38,7 +38,7 @@ interface IProps {
 }
 
 export type PreviewImageRef = {
-  getT(): number | undefined
+  getT: () => number | undefined
 }
 
 export const PreviewImage = memo(
@@ -57,7 +57,7 @@ export const PreviewImage = memo(
 
     const usingProgress = useMemo(() => {
       function getProgress(): number | undefined {
-        if (typeof progress === 'number' && !isNaN(progress)) return progress
+        if (typeof progress === 'number' && !Number.isNaN(progress)) return progress
         return 0
       }
       return minmax(getProgress() ?? 0, 0, 1)
@@ -182,7 +182,7 @@ function calcIndex(arr: number[], t: number) {
 
   // https://www.bilibili.com/video/av297635747
   // 没有后面的预览
-  if (t > arr[arr.length - 1]) {
+  if (t > arr.at(-1)!) {
     index = arr.length - 1
   }
 }

@@ -5,12 +5,12 @@
 import { APP_KEY_PREFIX } from '$common'
 import { defaultSharedEmitter, type SharedEmitter } from '$components/VideoCard/index.shared'
 import { normalizeCardData, type IVideoCardData } from '$components/VideoCard/process/normalize'
-import type { RecItemType, RecItemTypeOrSeparator } from '$define'
 import { EApiType } from '$define/index.shared'
 import { antNotification } from '$modules/antd'
 import { multiSelectStore } from '$modules/multi-select/store'
 import dayjs from 'dayjs'
 import { tryit } from 'radash'
+import type { RecItemType, RecItemTypeOrSeparator } from '$define'
 
 /**
  * RecGrid inner state
@@ -72,7 +72,7 @@ export function copyBvidsSingleLine() {
 export function getBvidInfo(cardData: IVideoCardData) {
   let { bvid, authorName, pubts, title } = cardData
   const date = dayjs.unix(pubts ?? 0).format('YYYY-MM-DD')
-  title = title.replace(/\n+/g, ' ')
+  title = title.replaceAll(/\n+/g, ' ')
   return `${bvid} ;; [${authorName}] ${date} ${title}`
 }
 export function copyBvidInfos() {
@@ -86,7 +86,7 @@ export function copyVideoLinks() {
   const lines = getMultiSelectedCardDatas()
     .map((cardData) => {
       let href = cardData.href
-      if (!href) return
+      if (!href) return undefined
       if (href.startsWith('/')) href = new URL(href, location.href).href
       return href
     })

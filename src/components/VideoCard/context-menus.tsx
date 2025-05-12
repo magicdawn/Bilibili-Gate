@@ -10,7 +10,6 @@ import {
   currentGridItems,
   getBvidInfo,
 } from '$components/RecGrid/unsafe-window-export'
-import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import { ETab } from '$components/RecHeader/tab-enum'
 import {
   isDynamicFeed,
@@ -43,25 +42,26 @@ import { multiSelectStore } from '$modules/multi-select/store'
 import {
   DF_SELECTED_KEY_ALL,
   DF_SELECTED_KEY_PREFIX_UP,
+  dfStore,
   DynamicFeedQueryKey,
   QUERY_DYNAMIC_UP_MID,
-  dfStore,
 } from '$modules/rec-services/dynamic-feed/store'
 import { formatFavCollectionUrl, formatFavFolderUrl } from '$modules/rec-services/fav/fav-url'
 import { FavQueryKey, favStore } from '$modules/rec-services/fav/store'
-import { UserFavService, defaultFavFolderName } from '$modules/rec-services/fav/user-fav-service'
+import { defaultFavFolderName, UserFavService } from '$modules/rec-services/fav/user-fav-service'
 import { SHOW_SPACE_UPLOAD_ONLY, SpaceUploadQueryKey } from '$modules/rec-services/space-upload/store'
 import { settings, updateSettingsInnerArray } from '$modules/settings'
 import toast from '$utility/toast'
 import { delay } from 'es-toolkit'
-import type { MouseEvent } from 'react'
 import { useSnapshot } from 'valtio'
 import { copyContent } from './index.shared'
 import { getFollowedStatus, isApiRecLike } from './process/filter'
-import type { IVideoCardData } from './process/normalize'
-import type { watchlaterDel } from './services'
 import { watchlaterAdd } from './services'
 import { getLinkTarget } from './use/useOpenRelated'
+import type { IVideoCardData } from './process/normalize'
+import type { watchlaterDel } from './services'
+import type { OnRefresh } from '$components/RecGrid/useRefresh'
+import type { MouseEvent } from 'react'
 
 export function useContextMenus({
   item,
@@ -159,7 +159,7 @@ export function useContextMenus({
   const onAddUpToFilterList = useMemoizedFn(async () => {
     if (!authorMid) return antMessage.error('UP mid 为空!')
 
-    const content = `${authorMid}`
+    const content = String(authorMid)
     if (settings.filter.byAuthor.keywords.includes(content)) {
       return toast(`已在过滤名单中: ${content}`)
     }
@@ -291,7 +291,7 @@ export function useContextMenus({
     const copyMenus = defineAntMenus([
       {
         key: 'copy-link',
-        label: '复制视频链接' + multiSelectingAppendix,
+        label: `复制视频链接${multiSelectingAppendix}`,
         icon: <IconForCopy className='size-15px' />,
         onClick() {
           if (multiSelectStore.multiSelecting) {
@@ -304,7 +304,7 @@ export function useContextMenus({
       {
         test: !!bvid,
         key: 'copy-bvid',
-        label: '复制 BVID' + multiSelectingAppendix,
+        label: `复制 BVID${multiSelectingAppendix}`,
         icon: <IconForCopy className='size-15px' />,
         onClick() {
           if (multiSelectStore.multiSelecting) {
@@ -317,7 +317,7 @@ export function useContextMenus({
       {
         test: !!bvid && settings.__internalEnableCopyBvidInfo,
         key: 'copy-bvid-info',
-        label: '复制 BVID 信息' + multiSelectingAppendix,
+        label: `复制 BVID 信息${multiSelectingAppendix}`,
         icon: <IconForCopy className='size-15px' />,
         onClick() {
           if (multiSelectStore.multiSelecting) {

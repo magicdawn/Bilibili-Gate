@@ -92,7 +92,7 @@ export class BilibiliArticleDraft {
     if (!text) return
     try {
       return JSON.parse(text) as T
-    } catch (e) {
+    } catch {
       return
     }
   }

@@ -1,16 +1,16 @@
+import { css } from '@emotion/react'
 import { appClsDarkSelector } from '$common/css-vars-export.module.scss'
+import { BaseModal, BaseModalStyle, ModalClose } from '$components/_base/BaseModal'
+import { CollapseBtn } from '$components/_base/CollapseBtn'
+import { colorPrimaryValue } from '$components/css-vars'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
-import type { HeaderState } from '$components/RecGrid'
 import { initHeaderState, RecGrid } from '$components/RecGrid'
 import { OnRefreshContext } from '$components/RecGrid/useRefresh'
 import { RefreshButton } from '$components/RecHeader/RefreshButton'
 import { VideoSourceTab } from '$components/RecHeader/tab'
-import { BaseModal, BaseModalStyle, ModalClose } from '$components/_base/BaseModal'
-import { CollapseBtn } from '$components/_base/CollapseBtn'
-import { colorPrimaryValue } from '$components/css-vars'
 import { antMessage } from '$modules/antd'
 import { useSettingsSnapshot } from '$modules/settings'
-import { css } from '@emotion/react'
+import type { HeaderState } from '$components/RecGrid'
 
 const S = {
   modalMask: (narrowMode: boolean) =>
@@ -125,7 +125,7 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
             <VideoSourceTab onRefresh={onRefresh} />
             {extraInfo}
           </div>
-          <div className='right flex-shrink-0 flex items-center'>
+          <div className='right flex flex-shrink-0 items-center'>
             {useNarrowMode ? null : useFullScreen ? (
               <ModalFeedConfigChecks />
             ) : (

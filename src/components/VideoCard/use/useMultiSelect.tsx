@@ -1,7 +1,7 @@
-import { multiSelectStore } from '$modules/multi-select/store'
 import { css } from '@emotion/css'
-import type { SyntheticEvent } from 'react'
+import { multiSelectStore } from '$modules/multi-select/store'
 import { zIndexMultiSelectBg } from '../index.shared'
+import type { SyntheticEvent } from 'react'
 
 export const IconForMultiSelectUnchecked = IconLucideCircle
 export const IconForMultiSelectChecked = IconLucideCircleCheck

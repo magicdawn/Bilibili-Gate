@@ -1,5 +1,4 @@
 import { REQUEST_FAIL_MSG } from '$common'
-import type { ItemsSeparator, LiveItemExtend } from '$define'
 import { EApiType } from '$define/index.shared'
 import { isWebApiSuccess, request } from '$request'
 import toast from '$utility/toast'
@@ -7,11 +6,12 @@ import dayjs from 'dayjs'
 import { BaseTabService } from '../_base'
 import { ELiveStatus } from './live-enum'
 import type { ListFollowingLiveJson } from './types/list-live'
+import type { ItemsSeparator, LiveItemExtend } from '$define'
 
 export async function getLiveList(page: number) {
   const res = await request.get('https://api.live.bilibili.com/xlive/web-ucenter/user/following', {
     params: {
-      page: page,
+      page,
       page_size: LiveRecService.PAGE_SIZE,
       ignoreRecord: 1,
       hit_ab: true,

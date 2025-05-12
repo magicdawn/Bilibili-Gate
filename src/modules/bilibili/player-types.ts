@@ -1,11 +1,11 @@
 export type BiliPlayer = {
-  play(): void
-  pause(): void
-  isPaused(): boolean
-  isInitialized(): boolean
-  getMediaInfo(): MediaInfo
-  getManifest(): Manifest
-  getStates(): States
+  play: () => void
+  pause: () => void
+  isPaused: () => boolean
+  isInitialized: () => boolean
+  getMediaInfo: () => MediaInfo
+  getManifest: () => Manifest
+  getStates: () => States
 }
 
 export interface MediaInfo {

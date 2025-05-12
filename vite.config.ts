@@ -1,6 +1,7 @@
+import { execSync } from 'node:child_process'
+import process from 'node:process'
 import react from '@vitejs/plugin-react'
 import reactSwc from '@vitejs/plugin-react-swc'
-import { execSync } from 'child_process'
 import { interopImportCJSDefault } from 'node-cjs-interop'
 import postcssMediaMinmax from 'postcss-media-minmax'
 import { visualizer } from 'rollup-plugin-visualizer'
@@ -17,10 +18,10 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 import { name as packageName, version as packageVersion } from './package.json'
 
 const typedScssModules = interopImportCJSDefault(typedScssModulesOriginal)
-const isDev = process.env.NODE_ENV == 'development'
+const isDev = process.env.NODE_ENV === 'development'
 if (isDev) {
   // only needed in dev mode
-  typedScssModules(__dirname + '/src/**/*.module.scss', {
+  typedScssModules(`${__dirname}/src/**/*.module.scss`, {
     watch: true,
   })
 }
@@ -120,7 +121,7 @@ export default defineConfig(({ command, mode }) => ({
   build: {
     emptyOutDir: process.env.CI || process.env.KEEP_DIST ? false : true,
     cssMinify: minify,
-    minify: minify,
+    minify,
     // target defaults `modules`, = ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari14']
     // target: 'modules',
   },

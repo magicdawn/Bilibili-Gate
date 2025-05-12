@@ -20,7 +20,7 @@ function hasBewlyBewly() {
 }
 
 // 有时入口检测不到 bewly, bewly 比本脚本后运行, 在渲染完成后, 持续检测一段时间, 检测到取消渲染
-async function tryDetectBewlyBewly() {
+function tryDetectBewlyBewly() {
   return tryAction(
     bewlyEnabledSelector,
     () => {
@@ -107,11 +107,11 @@ async function initHomepagePureRecommend() {
 
   const biliLayout = document.createElement('div')
   biliLayout.classList.add('bili-feed4-layout', 'pure-recommend')
-  document.body.appendChild(biliLayout)
+  document.body.append(biliLayout)
 
   const container = document.createElement('section')
   container.classList.add(APP_CLS_ROOT)
-  biliLayout.appendChild(container)
+  biliLayout.append(container)
 
   root = createRoot(container)
   root.render(

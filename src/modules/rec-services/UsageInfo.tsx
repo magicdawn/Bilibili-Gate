@@ -1,8 +1,8 @@
 import { ETab } from '$components/RecHeader/tab-enum'
-import type { ComponentProps, FunctionComponent } from 'react'
 import { DynamicFeedUsageInfo } from './dynamic-feed/usage-info'
-import type { ServiceMap } from './service-map'
 import { WatchlaterUsageInfo } from './watchlater/usage-info'
+import type { ServiceMap } from './service-map'
+import type { ComponentProps, FunctionComponent } from 'react'
 
 export type UsageInfoFor<T extends ETab> = FunctionComponent<{ service: ServiceMap[T] }>
 export type UsageInfoPropsFor<T extends ETab> = ComponentProps<UsageInfoFor<T>>

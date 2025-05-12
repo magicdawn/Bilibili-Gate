@@ -1,11 +1,11 @@
 import { baseDebug } from '$common'
-import type { PcRecItem, PcRecItemExtend, PcRecommendJson } from '$define'
 import { EApiType } from '$define/index.shared'
 import { PcRecGoto } from '$define/pc-recommend'
 import { isWebApiSuccess, request } from '$request'
 import toast from '$utility/toast'
 import { range, uniqBy } from 'es-toolkit'
 import { BaseTabService } from './_base'
+import type { PcRecItem, PcRecItemExtend, PcRecommendJson } from '$define'
 
 const debug = baseDebug.extend('modules:rec-services:pc')
 
@@ -74,11 +74,12 @@ export class PcRecService extends BaseTabService<PcRecItemExtend> {
     })
 
     const _list = list.map((item) => {
-      return {
+      const extended: PcRecItemExtend = {
         ...item,
         uniqId: `${EApiType.PcRecommend}-${item.bvid || item.room_info?.room_id || crypto.randomUUID()}`,
         api: EApiType.PcRecommend,
-      } as PcRecItemExtend
+      }
+      return extended
     })
     return _list
   }
@@ -106,12 +107,13 @@ export class PcRecService extends BaseTabService<PcRecItemExtend> {
     const res = await request.get(url, { signal: abortSignal, params })
     const json = res.data as PcRecommendJson
 
-    if (!isWebApiSuccess(json)) {
-      /** code: -62011, data: null, message: "暂时没有更多内容了", ttl: 1 */
-      if (json.code === -62011 && json.message === '暂时没有更多内容了') {
-        this.hasMoreExceptQueue = false
-        return []
-      }
+    if (
+      !isWebApiSuccess(json) /** code: -62011, data: null, message: "暂时没有更多内容了", ttl: 1 */ &&
+      json.code === -62011 &&
+      json.message === '暂时没有更多内容了'
+    ) {
+      this.hasMoreExceptQueue = false
+      return []
     }
 
     if (!json.data?.item) {

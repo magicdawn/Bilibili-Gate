@@ -12,13 +12,7 @@
     "lineEnding": "lf",
     "lineWidth": 100,
     "attributePosition": "auto",
-    "ignore": [
-      "**/dist",
-      "**/node_modules",
-      "**/*.module.less.d.ts",
-      "**/*.ejs",
-      "**/auto-imports.d.ts"
-    ]
+    "ignore": ["**/dist", "**/node_modules", "**/*.module.less.d.ts", "**/*.ejs", "**/auto-imports.d.ts"]
   },
   "organizeImports": { "enabled": true },
   "linter": { "enabled": false },

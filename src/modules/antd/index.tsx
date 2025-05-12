@@ -3,11 +3,11 @@
  */
 
 import { $headerHeight } from '$header'
-import type { MenuProps } from 'antd'
 import { App, message, notification } from 'antd'
+import { omit } from 'es-toolkit'
+import type { MenuProps } from 'antd'
 import type { ConfigOptions as MessageConfigOptions, MessageInstance } from 'antd/es/message/interface'
 import type { NotificationInstance } from 'antd/es/notification/interface'
-import { omit } from 'es-toolkit'
 
 const messageConfig: MessageConfigOptions = {
   // duration: default 3, 单位秒

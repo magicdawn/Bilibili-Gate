@@ -1,8 +1,6 @@
-import type { FavItemExtend, ItemsSeparator } from '$define'
 import { settings } from '$modules/settings'
 import { snapshot } from 'valtio'
 import { BaseTabService } from '../_base'
-import type { FavItemsOrder } from './fav-enum'
 import { FAV_PAGE_SIZE } from './service/_base'
 import { FavAllService } from './service/fav-all'
 import { FavCollectionService } from './service/fav-collection'
@@ -10,6 +8,8 @@ import { FavFolderService } from './service/fav-folder'
 import { favStore, updateFavFolderMediaCount } from './store'
 import { FavUsageInfo } from './usage-info'
 import { getSavedOrder } from './usage-info/fav-items-order'
+import type { FavItemsOrder } from './fav-enum'
+import type { FavItemExtend, ItemsSeparator } from '$define'
 
 export type FavServiceConfig = ReturnType<typeof getFavServiceConfig>
 
@@ -47,7 +47,7 @@ function getFavServiceConfigExtra(config: FavServiceConfig) {
 
 export interface IFavInnerService {
   hasMore: boolean
-  loadMore(abortSignal: AbortSignal): Promise<(FavItemExtend | ItemsSeparator)[] | undefined>
+  loadMore: (abortSignal: AbortSignal) => Promise<(FavItemExtend | ItemsSeparator)[] | undefined>
   usageInfo?: ReactNode
   extraUsageInfo?: ReactNode
 }

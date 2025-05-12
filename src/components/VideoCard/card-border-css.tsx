@@ -7,16 +7,16 @@
  * https://box-shadow.dev/
  */
 
+import { css as _css, css } from '@emotion/react'
 import { APP_NAMESPACE } from '$common'
 import { bgLv1Value, bgLv2Value, borderColorValue, colorPrimaryValue } from '$components/css-vars'
 import { multiSelectStore } from '$modules/multi-select/store'
 import { useSettingsSnapshot } from '$modules/settings'
 import { tweakLightness } from '$utility/css'
-import type { CssProp } from '$utility/type'
-import { css as _css, css } from '@emotion/react'
 import { useSnapshot } from 'valtio'
 import { bgValue, videoCardBorderRadiusValue } from '../css-vars'
 import { isDisplayAsList } from './index.shared'
+import type { CssProp } from '$utility/type'
 
 const c = tweakLightness(colorPrimaryValue, 0.1)
 

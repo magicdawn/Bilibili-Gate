@@ -1,21 +1,21 @@
+import { css } from '@emotion/react'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
 import { EHotSubTab } from '$components/RecHeader/tab-enum'
-import type { RecItemTypeOrSeparator } from '$define'
 import { styled } from '$libs'
-import type { AntMenuItem } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { proxyWithGmStorage } from '$utility/valtio'
-import { css } from '@emotion/react'
 import { Button, Dropdown, Space } from 'antd'
-import type { ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
-import type { IService } from '../_base'
 import { BaseTabService, usePopupContainer } from '../_base'
+import type { IService } from '../_base'
 import { PopularGeneralRecService } from './popular-general'
 import { PopularWeeklyRecService } from './popular-weekly'
 import { RankRecService } from './rank'
 import { rankStore } from './rank/store'
+import type { RecItemTypeOrSeparator } from '$define'
+import type { AntMenuItem } from '$modules/antd'
+import type { ReactNode } from 'react'
 
 const subtabServiceCreators = {
   [EHotSubTab.PopularGeneral]: () => new PopularGeneralRecService(settings.popularGeneralUseAnonymous),
@@ -100,26 +100,24 @@ function HotUsageInfo({ children }: { children?: ReactNode }) {
 
   const menus: AntMenuItem[] = useMemo(
     () =>
-      [EHotSubTab.PopularGeneral, EHotSubTab.PopularWeekly, EHotSubTab.Rank]
-        .map((subtab, index) => {
-          const config = HotSubTabConfig[subtab]
-          const active = subtab === activeSubtab
-          return [
-            index > 0 && { type: 'divider' as const },
-            {
-              key: subtab,
-              label: <span className={clsx({ 'color-gate-primary': active })}>{config.label}</span>,
-              icon: config.icon,
-              onClick() {
-                if (subtab === hotStore.subtab) return
-                hotStore.subtab = subtab
-                // onRefresh?.(true) // 可以但没必要, 有 skeleton 有 Tab切换 的反馈
-                onRefresh?.()
-              },
-            } satisfies AntMenuItem,
-          ].filter(Boolean)
-        })
-        .flat(),
+      [EHotSubTab.PopularGeneral, EHotSubTab.PopularWeekly, EHotSubTab.Rank].flatMap((subtab, index) => {
+        const config = HotSubTabConfig[subtab]
+        const active = subtab === activeSubtab
+        return [
+          index > 0 && { type: 'divider' as const },
+          {
+            key: subtab,
+            label: <span className={clsx({ 'color-gate-primary': active })}>{config.label}</span>,
+            icon: config.icon,
+            onClick() {
+              if (subtab === hotStore.subtab) return
+              hotStore.subtab = subtab
+              // onRefresh?.(true) // 可以但没必要, 有 skeleton 有 Tab切换 的反馈
+              onRefresh?.()
+            },
+          } satisfies AntMenuItem,
+        ].filter(Boolean)
+      }),
     [activeSubtab],
   )
 
@@ -133,7 +131,7 @@ function HotUsageInfo({ children }: { children?: ReactNode }) {
         }
       `}
     >
-      <Button ref={ref} className='w-114px gap-0 flex items-center justify-start pl-16px'>
+      <Button ref={ref} className='w-114px flex items-center justify-start gap-0 pl-16px'>
         {icon}
         <span className='ml-8px'>{label}</span>
       </Button>

@@ -3,6 +3,7 @@
  * https://greasyfork.org/zh-CN/scripts/479861-bilibili-%E9%A1%B5%E9%9D%A2%E5%87%80%E5%8C%96%E5%A4%A7%E5%B8%88/discussions/238294
  */
 
+import { css } from '@emotion/react'
 import { colorPrimaryValue } from '$components/css-vars'
 import { isAppRecommend, isLive, isPcRecommend, isRank, type RecItemType } from '$define'
 import { EApiType, EAppApiDevice } from '$define/index.shared'
@@ -13,15 +14,14 @@ import { formatSpaceUrl } from '$modules/rec-services/dynamic-feed/shared'
 import { ELiveStatus } from '$modules/rec-services/live/live-enum'
 import { settings } from '$modules/settings'
 import { getAvatarSrc } from '$utility/image'
-import { css } from '@emotion/react'
 import { useRequest } from 'ahooks'
 import { Avatar } from 'antd'
-import { type MouseEventHandler } from 'react'
 import { Case, Switch } from 'react-if'
 import { useSnapshot } from 'valtio'
-import type { IVideoCardData } from '../process/normalize'
 import { DESC_SEPARATOR } from '../process/normalize'
 import { useLinkTarget } from '../use/useOpenRelated'
+import type { IVideoCardData } from '../process/normalize'
+import type { MouseEventHandler } from 'react'
 
 const S = {
   recommendReason: css`
@@ -136,16 +136,14 @@ export const VideoCardBottom = memo(function ({
    */
 
   let descTitleAttr: string | undefined
-  if (isNormalVideo) {
-    if (authorName || pubdateDisplay || pubdateDisplayForTitleAttr || pubDateDisplayFromApi) {
-      descTitleAttr = [
-        //
-        authorName,
-        pubdateDisplayForTitleAttr || pubdateDisplay || pubDateDisplayFromApi,
-      ]
-        .filter(Boolean)
-        .join(' · ')
-    }
+  if (isNormalVideo && (authorName || pubdateDisplay || pubdateDisplayForTitleAttr || pubDateDisplayFromApi)) {
+    descTitleAttr = [
+      //
+      authorName,
+      pubdateDisplayForTitleAttr || pubdateDisplay || pubDateDisplayFromApi,
+    ]
+      .filter(Boolean)
+      .join(' · ')
   }
 
   /**
@@ -178,7 +176,7 @@ export const VideoCardBottom = memo(function ({
             )}
             {streaming && (
               <IconForLive
-                className='size-12px absolute bottom-0 right-0 rounded-full'
+                className='absolute bottom-0 right-0 size-12px rounded-full'
                 active
                 css={css`
                   background-color: ${colorPrimaryValue};

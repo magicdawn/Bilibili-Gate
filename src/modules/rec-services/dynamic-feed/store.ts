@@ -1,6 +1,5 @@
 import { IN_BILIBILI_HOMEPAGE } from '$common'
 import { getAllFollowGroups } from '$modules/bilibili/me/follow-group'
-import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 import { settings } from '$modules/settings'
 import { getUid } from '$utility/cookie'
 import { setPageTitle, whenIdle } from '$utility/dom'
@@ -10,6 +9,7 @@ import ms from 'ms'
 import { proxy } from 'valtio'
 import { getRecentUpdateUpList } from './up'
 import type { DynamicPortalUp } from './up/portal-types'
+import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 
 /**
  * view dynamic of <mid> via query
@@ -167,7 +167,6 @@ export function createDfStore() {
   })
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type FollowGroupInfo = Record<number, {}>
 export const dfInfoStore = proxy<{ followGroupInfo: FollowGroupInfo }>({
   followGroupInfo: {},
@@ -199,7 +198,7 @@ async function updateGroups(force = false) {
   dfStore.groupsUpdatedAt = Date.now()
 }
 
-export async function updateFilterData() {
+export function updateFilterData() {
   // not logined
   if (!getUid()) return
   return Promise.all([updateUpList(), updateGroups()])
@@ -223,7 +222,7 @@ if (QUERY_DYNAMIC_UP_MID) {
     ({ upName, searchText, selectedGroup, viewingSomeUp, viewingAll }) => {
       let title = viewingAll ? '动态' : viewingSomeUp ? `「${upName}」的动态` : `「${selectedGroup?.name}」分组动态`
       if (searchText) {
-        title = `🔍【${searchText}】 - ` + title
+        title = `🔍【${searchText}】 - ${title}`
       }
       setPageTitle(title)
     },

@@ -1,20 +1,20 @@
+import { css } from '@emotion/react'
 import { APP_NAMESPACE, OPERATION_FAIL_MSG } from '$common'
 import { useMittOn } from '$common/hooks/useMitt'
-import type { Reason } from '$components/ModalDislike'
 import { delDislikeId } from '$components/ModalDislike'
-import type { AppRecItemExtend, RecItemType } from '$define'
 import { antMessage } from '$modules/antd'
 import { UserBlacklistService } from '$modules/bilibili/me/relations/blacklist'
 import { IconForBlacklist, IconForReset } from '$modules/icon'
 import { toastRequestFail } from '$utility/toast'
-import { css } from '@emotion/react'
 import { videoCardBorderRadiusValue } from '../../css-vars'
-import type { VideoCardEmitter } from '../index.shared'
 import { defaultEmitter } from '../index.shared'
-import type { IVideoCardData } from '../process/normalize'
 import { cancelDislike } from '../services'
+import type { VideoCardEmitter } from '../index.shared'
+import type { IVideoCardData } from '../process/normalize'
 import { skeletonActive as clsSkeletonActive } from './skeleton.module.scss'
 import { VideoCardBottom } from './VideoCardBottom'
+import type { Reason } from '$components/ModalDislike'
+import type { AppRecItemExtend, RecItemType } from '$define'
 
 export const SkeletonCard = memo(function SkeletonCard({ loading }: { loading: boolean }) {
   return (
@@ -27,7 +27,7 @@ export const SkeletonCard = memo(function SkeletonCard({ loading }: { loading: b
       <div className='bili-video-card__skeleton--cover' style={{ borderRadius: videoCardBorderRadiusValue }} />
       <div className='bili-video-card__skeleton--info px-5px'>
         <div className='bili-video-card__skeleton--avatar size-32px rounded-full' />
-        <div className='bili-video-card__skeleton--right flex-1 ml-10px'>
+        <div className='bili-video-card__skeleton--right ml-10px flex-1'>
           <p className='bili-video-card__skeleton--text'></p>
           <p className='bili-video-card__skeleton--text short'></p>
           <p className='bili-video-card__skeleton--light'></p>
@@ -124,8 +124,8 @@ export const DislikedCard = memo(function DislikedCard({
     let err: Error | undefined
     try {
       ;({ success, message } = await cancelDislike(item, dislikedReason.id))
-    } catch (e) {
-      err = e as Error
+    } catch (error) {
+      err = error as Error
     }
     if (err) {
       console.error(err.stack || err)
@@ -146,7 +146,7 @@ export const DislikedCard = memo(function DislikedCard({
     <div css={blockedCardCss.wrapper}>
       <div css={blockedCardCss.cover}>
         <div css={blockedCardCss.coverInner}>
-          <IconParkOutlineDistraughtFace className='size-32px mb-5px' />
+          <IconParkOutlineDistraughtFace className='mb-5px size-32px' />
           <div css={blockedCardCss.dislikeReason}>{dislikedReason?.name}</div>
           <div css={blockedCardCss.dislikeDesc}>{dislikedReason?.toast || '将减少此类内容推荐'}</div>
         </div>
@@ -171,7 +171,7 @@ function __BottomRevertAction({
       <VideoCardBottom item={item} cardData={cardData} className='invisible' />
       <div css={blockedCardCss.actionInner}>
         <button onClick={onClick}>
-          <IconForReset className='size-16px mr-4px mt--2px' />
+          <IconForReset className='mr-4px mt--2px size-16px' />
           撤销
         </button>
       </div>
@@ -198,7 +198,7 @@ export const BlacklistCard = memo(function BlacklistCard({
     <div css={blockedCardCss.wrapper}>
       <div css={blockedCardCss.cover}>
         <div css={blockedCardCss.coverInner}>
-          <IconForBlacklist className='size-32px mb-5px' />
+          <IconForBlacklist className='mb-5px size-32px' />
           <div css={blockedCardCss.dislikeReason}>已拉黑</div>
           <div css={blockedCardCss.dislikeDesc}>UP: {authorName}</div>
         </div>

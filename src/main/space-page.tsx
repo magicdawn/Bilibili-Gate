@@ -1,3 +1,4 @@
+import { css } from '@emotion/react'
 import { APP_NAME, APP_NAMESPACE } from '$common'
 import { AppRoot } from '$components/AppRoot'
 import { colorPrimaryValue } from '$components/css-vars'
@@ -9,13 +10,12 @@ import { IconForCollection } from '$modules/rec-services/fav/usage-info'
 import { SpaceUploadQueryKey } from '$modules/rec-services/space-upload/store'
 import { reusePendingPromise } from '$utility/async'
 import { poll, tryAction } from '$utility/dom'
-import { css } from '@emotion/react'
-import { type ComponentProps, type ReactNode } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
 import { proxy, useSnapshot } from 'valtio'
 import { setupForNoneHomepage } from './shared'
+import type { ComponentProps, ReactNode } from 'react'
 
-export async function initSpacePage() {
+export function initSpacePage() {
   setupForNoneHomepage()
   addDynEntry()
 }
@@ -37,7 +37,7 @@ async function addDynEntry() {
       const rootEl = document.createElement('span')
       rootEl.id = rootElId
       rootEl.classList.add('mr-24px')
-      container.insertAdjacentElement('afterbegin', rootEl)
+      container.prepend(rootEl)
       const root = createRoot(rootEl)
       root.render(
         <AppRoot injectGlobalStyle>
@@ -61,9 +61,7 @@ const state = proxy({
   get collectionId(): number | undefined {
     // new: https://space.bilibili.com/<mid>/lists/<collection-id>?type=season
     {
-      const reg = new RegExp(
-        String.raw`https://space.bilibili.com\/(?<mid>\d+)\/lists\/(?<collectionId>\d+)(?:\?type=season)?`,
-      )
+      const reg = /https:\/\/space.bilibili.com\/(?<mid>\d+)\/lists\/(?<collectionId>\d+)(?:\?type=season)?/
       const match = this.href.match(reg)
       if (match?.groups?.collectionId) {
         return Number(match?.groups?.collectionId)
@@ -72,7 +70,7 @@ const state = proxy({
 
     // old: https://space.bilibili.com/<mid>/channel/collectiondetail?sid=<collection-id>
     {
-      const reg = new RegExp(String.raw`https://space.bilibili.com\/(?<mid>\d+)\/channel\/collectiondetail\?`)
+      const reg = /https:\/\/space.bilibili.com\/\d+\/channel\/collectiondetail\?/
       if (reg.test(this.href)) {
         const u = new URL(this.href)
         const collectionId = u.searchParams.get('sid')?.trim()
@@ -88,7 +86,7 @@ const state = proxy({
   },
 
   get searchKeyword() {
-    const reg = new RegExp(String.raw`https://space.bilibili.com\/(?<mid>\d+)\/search`)
+    const reg = /https:\/\/space.bilibili.com\/\d+\/search/
     if (!reg.test(this.href)) return undefined
     const searchParams = new URLSearchParams(location.search)
     const keyword = searchParams.get('keyword')
@@ -138,7 +136,7 @@ function ActionButtons() {
   {
     let href = `https://www.bilibili.com/?${SpaceUploadQueryKey.Mid}=${mid}`
     if (isSearching && searchKeyword) {
-      href += '&' + SpaceUploadQueryKey.SearchText + '=' + searchKeyword
+      href += `&${SpaceUploadQueryKey.SearchText}=${searchKeyword}`
     }
     btnSpaceUpload = (
       <ActionButton
@@ -254,7 +252,7 @@ function parseMid(href = location.href) {
   const mid = url.pathname
     .split('/')
     .map((x) => x.trim())
-    .filter((x) => x)[0]
+    .find((x) => x)
   if (!mid || !/^\d+$/.test(mid)) return
   return mid
 }

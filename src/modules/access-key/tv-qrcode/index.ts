@@ -5,9 +5,9 @@
 
 import toast from '$utility/toast'
 import { delay } from 'es-toolkit'
+import { getQrCodeInfo, poll } from './api'
 import { hideQrCodeModal, qrcodeStore, showQrCodeModal, updateStore, whenQrCodeModalHide } from './TvQrCodeAuth'
 import type { PollResult } from './api'
-import { getQrCodeInfo, poll } from './api'
 
 async function refreshQrCode() {
   const qrinfo = await getQrCodeInfo()

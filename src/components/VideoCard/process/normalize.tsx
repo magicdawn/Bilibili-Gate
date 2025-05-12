@@ -1,3 +1,4 @@
+import { BvCode } from '@mgdn/bvid'
 import { appWarn } from '$common'
 import { colorPrimaryValue } from '$components/css-vars'
 import {
@@ -29,7 +30,6 @@ import { PcRecGoto } from '$define/pc-recommend'
 import { styled } from '$libs'
 import { AntdTooltip } from '$modules/antd/custom'
 import { isFavFolderPrivate } from '$modules/rec-services/fav/fav-util'
-import type { FavItemExtend } from '$modules/rec-services/fav/types'
 import { IconForCollection, IconForPrivateFolder, IconForPublicFolder } from '$modules/rec-services/fav/usage-info'
 import { isPgcSeasonRankItem, isPgcWebRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { ELiveStatus } from '$modules/rec-services/live/live-enum'
@@ -43,11 +43,11 @@ import {
   parseCount,
   parseDuration,
 } from '$utility/video'
-import { BvCode } from '@mgdn/bvid'
 import dayjs from 'dayjs'
-import type { ReactNode } from 'react'
-import type { StatItemField, StatItemType } from '../stat-item'
 import { AppRecStatItemFieldMap, defineStatItems, getField } from '../stat-item'
+import type { StatItemField, StatItemType } from '../stat-item'
+import type { FavItemExtend } from '$modules/rec-services/fav/types'
+import type { ReactNode } from 'react'
 
 export const DESC_SEPARATOR = ' · '
 
@@ -685,12 +685,13 @@ function apiRankAdapter(item: RankItemExtend): IVideoCardData {
 }
 
 function apiLiveAdapter(item: LiveItemExtend): IVideoCardData {
-  const area = `${item.area_name_v2}`
+  const area = String(item.area_name_v2)
   const liveExtraDesc =
     item.live_status === ELiveStatus.Streaming
       ? '' // 「 不需要 space padding
       : `${DESC_SEPARATOR}${formatLiveTime(item.record_live_time)} 直播过`
 
+  // eslint-disable-next-line unicorn/consistent-function-scoping
   function formatLiveTime(ts: number) {
     const today = dayjs().format('YYYYMMDD')
     const yesterday = dayjs().subtract(1, 'day').format('YYYYMMDD')

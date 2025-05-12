@@ -2,9 +2,7 @@ import { HOST_APP } from '$common'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { useOnRefreshContext, type OnRefresh } from '$components/RecGrid/useRefresh'
 import { getFollowedStatus } from '$components/VideoCard/process/filter'
-import type { IVideoCardData } from '$components/VideoCard/process/normalize'
 import { isAppRecommend, type AppRecItem, type AppRecItemExtend, type RecItemType } from '$define'
-import type { ipad } from '$define/app-recommend.ipad'
 import { EApiType, EAppApiDevice } from '$define/index.shared'
 import { getVideoDetail } from '$modules/bilibili/video/video-detail'
 import { getSettingsSnapshot } from '$modules/settings'
@@ -20,6 +18,8 @@ import { FavRecService, getFavServiceConfig, type FavServiceConfig } from './fav
 import { FavItemsOrder } from './fav/fav-enum'
 import { WatchlaterRecService } from './watchlater'
 import { WatchlaterItemsOrder } from './watchlater/watchlater-enum'
+import type { IVideoCardData } from '$components/VideoCard/process/normalize'
+import type { ipad } from '$define/app-recommend.ipad'
 
 type AppRecServiceConfig = ReturnType<typeof getAppRecServiceConfig>
 
@@ -173,7 +173,7 @@ class AppRecInnerService implements IService {
     }
 
     // /x/feed/index
-    const res = await gmrequest.get(HOST_APP + '/x/v2/feed/index', {
+    const res = await gmrequest.get(`${HOST_APP}/x/v2/feed/index`, {
       timeout: 20_000,
       responseType: 'json',
       params: {
@@ -233,12 +233,14 @@ class AppRecInnerService implements IService {
     // add uuid
     // add api
     const extendedList = list.map((item) => {
-      return {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      const extended = {
         ...item,
         api: EApiType.AppRecommend,
         uniqId: `${EApiType.AppRecommend}-${item.param}`,
         device: this.deviceParamForApi, // android | ipad
       } as AppRecItemExtend
+      return extended
     })
 
     return extendedList

@@ -1,6 +1,5 @@
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
-import type { AntMenuItem } from '$modules/antd'
 import { IconForReset } from '$modules/icon'
 import { CopyBvidButtonsUsageInfo } from '$modules/rec-services/_shared/copy-bvid-buttons'
 import { useSettingsSnapshot } from '$modules/settings'
@@ -9,7 +8,6 @@ import { localeComparer, mapNameForSort } from '$utility/sort'
 import { Avatar, Badge, Button, Dropdown } from 'antd'
 import { delay } from 'es-toolkit'
 import { fastSortWithOrders } from 'fast-sort-lens'
-import type { ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
 import { usePopupContainer } from '../../_base'
 import { dropdownMenuStyle } from '../../_shared'
@@ -23,6 +21,8 @@ import {
   type DynamicFeedStoreSelectedKey,
 } from '../store'
 import { usePopoverRelated } from './popover-related'
+import type { AntMenuItem } from '$modules/antd'
+import type { ReactNode } from 'react'
 
 export function dynamicFeedFilterSelectUp(payload: Partial<typeof dfStore>) {
   Object.assign(dfStore, payload)
@@ -91,7 +91,7 @@ export function DynamicFeedUsageInfo() {
       groupItems = groups.map((group) => {
         return {
           key: `group:${group.tagid}` satisfies DynamicFeedStoreSelectedKey,
-          label: group.name + ` (${group.count})`,
+          label: `${group.name} (${group.count})`,
           icon: <Avatar size={'small'}>组</Avatar>,
           onClick() {
             onSelect({ ...clearPayload, selectedGroupId: group.tagid })
@@ -116,7 +116,7 @@ export function DynamicFeedUsageInfo() {
         icon: avatar,
         // label: up.uname,
         label: (
-          <span title={up.uname} className='block max-w-130px text-ellipsis whitespace-nowrap overflow-hidden'>
+          <span title={up.uname} className='block max-w-130px overflow-hidden text-ellipsis whitespace-nowrap'>
             {up.uname}
           </span>
         ),
@@ -130,7 +130,7 @@ export function DynamicFeedUsageInfo() {
   }, [upList, dfSettings.followGroup.enabled, groups])
 
   const followGroupMidsCount = selectedGroup?.count
-  const upIcon = <IconForUp className='size-14px mt--2px' />
+  const upIcon = <IconForUp className='mt--2px size-14px' />
   const upAvtar = upFace ? <Avatar size={20} src={getAvatarSrc(upFace)} /> : undefined
   const dropdownButtonIcon = viewingSomeUp ? (
     upAvtar || upIcon
@@ -176,7 +176,7 @@ export function DynamicFeedUsageInfo() {
 
         {(viewingSomeUp || selectedGroup) && (
           <Button onClick={onClear} className='gap-0'>
-            <IconForReset className='size-14px mr-5px' />
+            <IconForReset className='mr-5px size-14px' />
             <span>清除</span>
           </Button>
         )}

@@ -27,6 +27,6 @@ if (location.href.startsWith('https://www.mcbbs.net/template/mcbbs/image/special
     window.top?.postMessage(location.href, 'https://www.bilibili.com')
   }
 
-  return
+  // return
 }
 ```

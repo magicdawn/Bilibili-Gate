@@ -1,12 +1,12 @@
+import { css } from '@emotion/react'
 import { APP_CLS_TAB_BAR, baseDebug } from '$common'
 import { zIndexRecHeader } from '$common/css-vars-export.module.scss'
 import { useSizeExpression } from '$common/hooks/useResizeObserverExpression'
 import { useSticky } from '$common/hooks/useSticky'
+import { bgValue } from '$components/css-vars'
 import { ModalSettingsHotkey } from '$components/ModalSettings'
-import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import { OnRefreshContext } from '$components/RecGrid/useRefresh'
 import { ECardDisplay } from '$components/VideoCard/index.shared'
-import { bgValue } from '$components/css-vars'
 import { $headerHeight, $usingEvolevdHeader } from '$header'
 import { AntdTooltip } from '$modules/antd/custom'
 import { useIsDarkMode } from '$modules/dark-mode'
@@ -15,15 +15,15 @@ import { MultiSelectButton } from '$modules/multi-select'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { isMac, isSafari } from '$ua'
 import { getElementOffset, shouldDisableShortcut } from '$utility/dom'
-import { css } from '@emotion/react'
 import { Button } from 'antd'
 import { useSnapshot } from 'valtio'
 import { AccessKeyManage } from '../AccessKeyManage'
-import { RefreshButton } from './RefreshButton'
 import { headerState } from './index.shared'
 import { showModalFeed, showModalSettings, toggleModalSettings } from './modals'
-import { VideoSourceTab, useCurrentUsingTab } from './tab'
+import { RefreshButton } from './RefreshButton'
+import { useCurrentUsingTab, VideoSourceTab } from './tab'
 import { ETab } from './tab-enum'
+import type { OnRefresh } from '$components/RecGrid/useRefresh'
 
 const debug = baseDebug.extend('RecHeader')
 
@@ -142,13 +142,13 @@ export const RecHeader = forwardRef<
           >
             <div
               data-class-name='left'
-              className='flex-shrink-1 h-full flex items-center flex-wrap gap-y-8px gap-x-15px'
+              className='h-full flex flex-shrink-1 flex-wrap items-center gap-x-15px gap-y-8px'
             >
               <VideoSourceTab onRefresh={onRefresh} />
               {leftSlot}
             </div>
 
-            <div data-class-name='right' className='h-full flex-shrink-0 flex items-center gap-x-8px'>
+            <div data-class-name='right' className='h-full flex flex-shrink-0 items-center gap-x-8px'>
               {rightSlot}
 
               {!accessKey && showAccessKeyManage && <AccessKeyManage style={{ marginLeft: 5 }} />}
@@ -157,9 +157,9 @@ export const RecHeader = forwardRef<
                 <AntdTooltip title='切换卡片显示模式' arrow={false}>
                   <Button className='icon-only-round-button' onClick={toggleCardDisplay}>
                     {cardDisplay === ECardDisplay.Grid ? (
-                      <IconTablerLayoutGrid className='cursor-pointer size-14px' />
+                      <IconTablerLayoutGrid className='size-14px cursor-pointer' />
                     ) : (
-                      <IconTablerListDetails className='cursor-pointer size-14px' />
+                      <IconTablerListDetails className='size-14px cursor-pointer' />
                     )}
                   </Button>
                 </AntdTooltip>
@@ -177,7 +177,7 @@ export const RecHeader = forwardRef<
               <RefreshButton
                 refreshing={refreshing}
                 onRefresh={onRefresh}
-                refreshHotkeyEnabled={!(modalSettingsVisible || modalFeedVisible)}
+                refreshHotkeyEnabled={!modalSettingsVisible && !modalFeedVisible}
               />
 
               {showModalFeedEntry && (

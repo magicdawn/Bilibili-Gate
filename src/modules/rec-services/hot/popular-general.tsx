@@ -1,13 +1,13 @@
 import { REQUEST_FAIL_MSG } from '$common'
 import { CheckboxSettingItem, SwitchSettingItem } from '$components/ModalSettings/setting-item'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
-import { type PopularGeneralItemExtend } from '$define'
 import { EApiType } from '$define/index.shared'
-import type { PopularGeneralJson } from '$define/popular-general'
 import { isWebApiSuccess, request } from '$request'
 import toast from '$utility/toast'
 import { delay } from 'es-toolkit'
 import type { IService } from '../_base'
+import type { PopularGeneralItemExtend } from '$define'
+import type { PopularGeneralJson } from '$define/popular-general'
 
 export class PopularGeneralRecService implements IService {
   hasMore = true
@@ -33,11 +33,12 @@ export class PopularGeneralRecService implements IService {
     this.hasMore = !json.data.no_more
 
     const items = (json.data.list || []).map((item) => {
-      return {
+      const extended: PopularGeneralItemExtend = {
         ...item,
         api: EApiType.PopularGeneral,
         uniqId: `${EApiType.PopularGeneral}-${item.bvid}`,
-      } as PopularGeneralItemExtend
+      }
+      return extended
     })
     return items
   }

@@ -1,6 +1,5 @@
 import { APP_NAME } from '$common'
 import { antMessage } from '$modules/antd'
-import type { Settings } from '$modules/settings'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { shouldDisableShortcut } from '$utility/dom'
 import { Tag } from 'antd'
@@ -9,6 +8,7 @@ import { pick } from 'radash'
 import { explainForFlag } from '../index.shared'
 import { CheckboxSettingItem } from '../setting-item'
 import { ResetPartialSettingsButton, SettingsGroup, sharedCss } from './shared'
+import type { Settings } from '$modules/settings'
 
 type CardBorderState = Partial<Pick<Settings['style']['videoCard'], 'useBorder' | 'useBorderOnlyOnHover'>>
 const borderCycleList: CardBorderState[] = [
@@ -47,7 +47,7 @@ export function TabPaneCustomUI() {
   const itemsContainerClassName = 'flex flex-col gap-y-4px'
 
   return (
-    <div css={sharedCss.tabPane} className='flex flex-col flex-wrap gap-y-10px gap-x-30px content-start'>
+    <div css={sharedCss.tabPane} className='flex flex-col flex-wrap content-start gap-x-30px gap-y-10px'>
       {/* 通用 */}
       <SettingsGroup
         title={

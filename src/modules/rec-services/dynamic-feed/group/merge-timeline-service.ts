@@ -1,13 +1,13 @@
-import type { DynamicFeedItem } from '$define'
 import { wrapWithIdbCache } from '$utility/idb'
 import { orderBy } from 'es-toolkit'
 import pmap from 'promise.map'
 import { fetchVideoDynamicFeeds } from '../api'
 import type { UpMidType } from '../store'
+import type { DynamicFeedItem } from '$define'
 
 export const fetchVideoDynamicFeedsWithCache = wrapWithIdbCache({
   fn: fetchVideoDynamicFeeds,
-  generateKey: ({ upMid }) => `${upMid}`,
+  generateKey: ({ upMid }) => String(upMid),
   tableName: 'dynamic-feed-newest-items', // only head
   ttl: 5 * 60 * 1000, // 5 minutes
 })

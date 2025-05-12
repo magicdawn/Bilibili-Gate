@@ -3,11 +3,11 @@
  */
 
 import { appError } from '$common'
-import type { RankItemExtend, RankItemExtendProps } from '$define'
 import { getGroupFromKvRecord, getKvData } from '$modules/bilibili/kv'
 import { uniqBy } from 'es-toolkit'
 import { STATIC_RANK_TABS } from './rank-tab-static'
 import type { NormalRankItem, PgcSeasonRankItem, PgcWebRankItem } from './types'
+import type { RankItemExtend, RankItemExtendProps } from '$define'
 
 export const defaultRankTab: IRankTab = {
   name: '全站',
@@ -28,8 +28,8 @@ export type IRankTab = {
 export async function getRankTabsConfig() {
   try {
     return (await parseRankTabsConfig()) || STATIC_RANK_TABS
-  } catch (e) {
-    appError('parseRankTabsConfig failed', e)
+  } catch (error) {
+    appError('parseRankTabsConfig failed', error)
     return STATIC_RANK_TABS
   }
 }
@@ -99,10 +99,10 @@ export function getRankTabRequestConfig(rankTab: IRankTab): { apiType: ERankApiT
   const { season_type } = rankTab
   const query = `?day=3&season_type=${season_type}`
 
-  let url = '/pgc/web/rank/list' + query
+  let url = `/pgc/web/rank/list${query}`
   let apiType = ERankApiType.PgcWeb
   if (season_type && [2, 3, 4, 5, 7].includes(season_type)) {
-    url = '/pgc/season/rank/web/list' + query
+    url = `/pgc/season/rank/web/list${query}`
     apiType = ERankApiType.PgcSeason
   }
 
@@ -113,11 +113,11 @@ export function getRankTabRequestConfig(rankTab: IRankTab): { apiType: ERankApiT
  * item predicate
  */
 export function isNormalRankItem(item: RankItemExtend): item is NormalRankItem & RankItemExtendProps {
-  return item.from == ERankApiType.Normal
+  return item.from === ERankApiType.Normal
 }
 export function isPgcSeasonRankItem(item: RankItemExtend): item is PgcSeasonRankItem & RankItemExtendProps {
-  return item.from == ERankApiType.PgcSeason
+  return item.from === ERankApiType.PgcSeason
 }
 export function isPgcWebRankItem(item: RankItemExtend): item is PgcWebRankItem & RankItemExtendProps {
-  return item.from == ERankApiType.PgcWeb
+  return item.from === ERankApiType.PgcWeb
 }

@@ -8,9 +8,9 @@ import { getLeafPaths, type BooleanPaths, type LeafPaths, type ListPaths } from 
 import toast from '$utility/toast'
 import { cloneDeep, isNil } from 'es-toolkit'
 import { get, set } from 'es-toolkit/compat'
-import type { Get, PartialDeep, ReadonlyDeep } from 'type-fest'
 import { proxy, snapshot, subscribe, useSnapshot } from 'valtio'
 import { saveToDraft } from './cloud-backup'
+import type { Get, PartialDeep, ReadonlyDeep } from 'type-fest'
 
 const debug = baseDebug.extend('settings')
 

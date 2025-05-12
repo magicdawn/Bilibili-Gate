@@ -5,10 +5,10 @@ import { settings } from '$modules/settings'
 import { minmax } from '$utility/num'
 import { useEventListener, useMemoizedFn, useRafState, useUnmountedRef } from 'ahooks'
 import { delay } from 'es-toolkit'
-import type { ComponentProps, MouseEvent, ReactNode } from 'react'
 import { PreviewImage, type PreviewImageRef } from '../child-components/PreviewImage'
 import type { SharedEmitter } from '../index.shared'
 import type { ImagePreviewData } from '../services'
+import type { ComponentProps, MouseEvent, ReactNode } from 'react'
 
 const DEBUG_ANIMATION = __PROD__
   ? false //

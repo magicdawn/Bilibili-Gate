@@ -9,7 +9,7 @@ export function setupForNoneHomepage() {
 
 const _setupOnce = once(() => {
   const container = document.createElement('div')
-  document.body.appendChild(container)
+  document.body.append(container)
   const root = createRoot(container)
   root.render(<AppRoot injectGlobalStyle antdSetup />)
 })
@@ -20,7 +20,7 @@ export function setupAppRootForNoneHomepage() {
 export function isInIframe() {
   try {
     return window.self !== window.top
-  } catch (e) {
+  } catch {
     // 跨域访问被阻止，默认认为在 iframe 中
     return true
   }

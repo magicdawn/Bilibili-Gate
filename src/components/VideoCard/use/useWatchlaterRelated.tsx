@@ -6,11 +6,11 @@ import { IconAnimatedChecked } from '$modules/icon/animated-checked'
 import { watchlaterState } from '$modules/rec-services/watchlater'
 import { usePrevious, useRequest } from 'ahooks'
 import { delay } from 'es-toolkit'
-import type { MouseEvent } from 'react'
-import type { VideoCardInnerProps } from '..'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
-import type { IVideoCardData } from '../process/normalize'
 import { watchlaterAdd, watchlaterDel } from '../services'
+import type { VideoCardInnerProps } from '..'
+import type { IVideoCardData } from '../process/normalize'
+import type { MouseEvent } from 'react'
 
 /**
  * 稍候再看

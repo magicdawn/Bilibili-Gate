@@ -5,16 +5,16 @@ import { openNewTab } from '$modules/gm'
 import { IconForLoading } from '$modules/icon'
 import { settings } from '$modules/settings'
 import { shouldDisableShortcut } from '$utility/dom'
-import type { CssProp } from '$utility/type'
 import { useClickAway, useEventListener, useLockFn, useRequest } from 'ahooks'
-import type { ComponentRef, MutableRefObject } from 'react'
 import { useSnapshot } from 'valtio'
 import { VideoCardActionButton } from '../VideoCard/child-components/VideoCardActions'
-import { type SharedEmitter } from '../VideoCard/index.shared'
 import { fetchVideoPreviewData, isVideoPreviewDataValid, type VideoPreviewData } from '../VideoCard/services'
 import { getRecItemDimension } from '../VideoCard/use/useOpenRelated'
-import { LargePreview } from './index'
+import type { SharedEmitter } from '../VideoCard/index.shared'
 import { RecoverableVideo } from './RecoverableVideo'
+import { LargePreview } from './index'
+import type { CssProp } from '$utility/type'
+import type { ComponentRef, MutableRefObject } from 'react'
 
 type Timer = ReturnType<typeof setTimeout>
 type TimerRef = MutableRefObject<Timer | undefined>
@@ -195,8 +195,8 @@ export function useLargePreviewRelated({
     <LargePreview
       ref={largePreviewRef}
       aspectRatio={usingAspectRatio}
-      onMouseEnter={(e) => onMouseEnter('popover')}
-      onMouseLeave={(e) => onMouseLeave('popover')}
+      onMouseEnter={() => onMouseEnter('popover')}
+      onMouseLeave={() => onMouseLeave('popover')}
     >
       <RecoverableVideo
         ref={videoRef}
@@ -282,7 +282,7 @@ export function useLargePreviewRelated({
   useClickAway(
     () => hide(),
     [
-      cardRef ? () => cardRef?.current?.closest('.' + APP_CLS_CARD) : undefined, // click from card
+      cardRef ? () => cardRef?.current?.closest(`.${APP_CLS_CARD}`) : undefined, // click from card
       largePreviewRef, // click from `LargePreview`, safari 中使用 createPortal 不再是 card descendant
     ].filter(Boolean),
   )

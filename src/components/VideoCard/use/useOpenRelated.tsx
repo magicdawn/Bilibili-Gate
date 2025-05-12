@@ -1,15 +1,11 @@
 import { baseDebug } from '$common'
-import type { RecItemType } from '$define'
 import { EApiType } from '$define/index.shared'
-import type { AntMenuItem } from '$modules/antd'
 import { getBiliPlayerConfigAutoPlay } from '$modules/bilibili/player-config'
-import type { VideoPage } from '$modules/bilibili/video/types/page-list'
 import { getVideoPageList } from '$modules/bilibili/video/video-detail'
 import { openNewTab } from '$modules/gm'
 import { isNormalRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { delay } from 'es-toolkit'
-import type { ComponentProps, MouseEvent, MouseEventHandler, ReactNode } from 'react'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
 import {
   ForceAutoPlay,
@@ -22,6 +18,10 @@ import {
 } from '../index.shared'
 import type { IVideoCardData } from '../process/normalize'
 import { renderInPipWindow } from './_pip-window'
+import type { RecItemType } from '$define'
+import type { AntMenuItem } from '$modules/antd'
+import type { VideoPage } from '$modules/bilibili/video/types/page-list'
+import type { ComponentProps, MouseEvent, MouseEventHandler, ReactNode } from 'react'
 
 const debug = baseDebug.extend('VideoCard:useOpenRelated')
 
@@ -206,7 +206,7 @@ export function getRecItemDimension({
     const playerWidth = Number(searchParams.get('player_width') || 0)
     const playerHeight = Number(searchParams.get('player_height') || 0)
     const playerRotate = Number(searchParams.get('player_rotate') || 0)
-    if (playerWidth && playerHeight && !isNaN(playerWidth) && !isNaN(playerHeight)) {
+    if (playerWidth && playerHeight && !Number.isNaN(playerWidth) && !Number.isNaN(playerHeight)) {
       ;[width, height] = [playerWidth, playerHeight]
       if (playerRotate === 1) [width, height] = [height, width]
       aspectRatio = width / height
@@ -218,7 +218,7 @@ export function getRecItemDimension({
     const w = item.dimension.width
     const h = item.dimension.height
     const rotate = item.dimension.rotate
-    if (w && h && !isNaN(w) && !isNaN(h)) {
+    if (w && h && !Number.isNaN(w) && !Number.isNaN(h)) {
       ;[width, height] = [w, h]
       if (rotate === 1) [width, height] = [height, width]
       aspectRatio = width / height
@@ -264,7 +264,7 @@ export async function openInPipOrPopup(newHref: string, bvid?: string, videoWidt
         height: popupHeight,
         disallowReturnToOpener: true,
       })
-    } catch (e) {
+    } catch {
       // noop
     }
   }

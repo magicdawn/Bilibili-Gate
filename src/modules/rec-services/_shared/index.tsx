@@ -1,6 +1,6 @@
 import { ButtonSettingItem } from '$components/ModalSettings/setting-item'
 import { IconForDefaultOrder, IconForShuffle } from '$modules/icon'
-import { type BooleanSettingsPath } from '$modules/settings'
+import type { BooleanSettingsPath } from '$modules/settings'
 import type { ComponentProps, CSSProperties } from 'react'
 
 export function ShuffleSettingsItemFor({
@@ -22,7 +22,7 @@ export function ShuffleSettingsItemFor({
       }
       unCheckedChildren={
         <>
-          <IconForDefaultOrder className='size-18px position-relative top-[-1px]' />
+          <IconForDefaultOrder className='position-relative top-[-1px] size-18px' />
           默认顺序
         </>
       }

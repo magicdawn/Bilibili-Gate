@@ -49,7 +49,7 @@ function toThemes(groupName: string, definitionStr: string): LxTheme[] {
     .filter(Boolean)
     .map((line) => {
       const [colorPrimary, name] = line.split(' ').filter(Boolean)
-      return { id: groupName + ':' + name, name, colorPrimary }
+      return { id: `${groupName}:${name}`, name, colorPrimary }
     })
 }
 
@@ -150,7 +150,7 @@ export const ThemeGroups: {
   },
 ]
 
-const ALL_THEMES = ThemeGroups.map((x) => x.themes).flat()
+const ALL_THEMES = ThemeGroups.flatMap((x) => x.themes)
 
 /**
  * use outside React

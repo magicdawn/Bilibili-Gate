@@ -1,7 +1,6 @@
 import { appWarn, IN_BILIBILI_HOMEPAGE } from '$common'
 import { currentGridSharedEmitter, getMultiSelectedItems } from '$components/RecGrid/unsafe-window-export'
 import { normalizeCardData } from '$components/VideoCard/process/normalize'
-import { type ItemsSeparator, type WatchlaterItemExtend } from '$define'
 import { EApiType } from '$define/index.shared'
 import { getHasLogined, getUid } from '$utility/cookie'
 import { whenIdle } from '$utility/dom'
@@ -13,9 +12,10 @@ import { proxy, useSnapshot } from 'valtio'
 import { proxySet } from 'valtio/utils'
 import { BaseTabService, type IService } from '../_base'
 import { batchRemoveWatchlater, fetchWatchlaterItems } from './api'
-import { type WatchlaterItem } from './types'
 import { WatchlaterUsageInfo } from './usage-info'
 import { WatchlaterItemsOrder } from './watchlater-enum'
+import type { WatchlaterItem } from './types'
+import type { ItemsSeparator, WatchlaterItemExtend } from '$define'
 
 export const watchlaterState = proxy({
   updatedAt: 0,

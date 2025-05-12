@@ -1,9 +1,9 @@
-import type { DynamicFeedItem } from '$define'
 import { antNotification } from '$modules/antd'
 import { getIdbCache } from '$utility/idb'
 import { throttle, uniqBy } from 'es-toolkit'
 import { fetchVideoDynamicFeeds } from '../api'
 import type { UpMidType } from '../store'
+import type { DynamicFeedItem } from '$define'
 
 const cache = getIdbCache<DynamicFeedItem[]>('dynamic-feed-items')
 const infoCache = getIdbCache<{ count: number; updatedAt: number }>('dynamic-feed-items-info') // cache.get is expensive

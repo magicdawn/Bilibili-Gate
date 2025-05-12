@@ -1,8 +1,8 @@
+import { css } from '@emotion/react'
 import { initHeaderState, RecGrid, type HeaderState } from '$components/RecGrid'
 import { RecHeader, type RecHeaderRef } from '$components/RecHeader'
 import { useHeaderState } from '$components/RecHeader/index.shared'
 import { useSettingsSnapshot } from '$modules/settings'
-import { css } from '@emotion/react'
 
 const narrowStyle = {
   grid: css`
@@ -34,7 +34,7 @@ export function PureRecommend() {
       />
       <RecGrid
         css={[useNarrowMode && narrowStyle.grid]}
-        shortcutEnabled={!(modalFeedVisible || modalSettingsVisible)}
+        shortcutEnabled={!modalFeedVisible && !modalSettingsVisible}
         infiniteScrollUseWindow={true}
         onScrollToTop={onScrollToTop}
         onSyncHeaderState={setHeaderState}

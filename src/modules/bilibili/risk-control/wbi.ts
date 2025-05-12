@@ -27,7 +27,7 @@ export async function encWbi(_params: Record<string, any>) {
     .map((key) => {
       return `${encodeURIComponent(key)}=${encodeURIComponent(
         // 过滤 value 中的 "!'()*" 字符
-        params[key].toString().replace(chr_filter, ''),
+        params[key].toString().replaceAll(chr_filter, ''),
       )}`
     })
     .join('&')

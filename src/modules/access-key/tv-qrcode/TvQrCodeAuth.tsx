@@ -1,7 +1,7 @@
-import { APP_CLS_ROOT } from '$common'
-import { AppRoot } from '$components/AppRoot'
-import { BaseModal, BaseModalStyle, ModalClose } from '$components/_base/BaseModal'
 import { css } from '@emotion/react'
+import { APP_CLS_ROOT } from '$common'
+import { BaseModal, BaseModalStyle, ModalClose } from '$components/_base/BaseModal'
+import { AppRoot } from '$components/AppRoot'
 import { QRCode } from 'antd'
 import { once } from 'es-toolkit'
 import mitt from 'mitt'
@@ -71,11 +71,11 @@ export function TvQrCodeAuth() {
       </div>
 
       <div css={BaseModalStyle.modalBody} className='flex flex-col items-center justify-center text-center'>
-        <div className='flex-center min-h-25px text-size-14px mb-2px'>{message || ''}</div>
+        <div className='mb-2px min-h-25px flex-center text-size-14px'>{message || ''}</div>
 
         {qrcodeUrl && (
           <QRCode
-            className='mx-auto mb-40px p-8px flex-shrink-0'
+            className='mx-auto mb-40px flex-shrink-0 p-8px'
             value={qrcodeUrl}
             size={200}
             icon='https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/72/9c/b6/729cb6d8-75f5-0a56-0508-3a26cbba69ae/AppIcon-1x_U007emarketing-0-6-0-0-85-220-0.png/230x0w.webp'
@@ -94,7 +94,7 @@ export function TvQrCodeAuth() {
 const renderOnce = once(function render() {
   const container = document.createElement('div')
   container.classList.add('modal-tv-qrcode-auth', APP_CLS_ROOT)
-  document.body.appendChild(container)
+  document.body.append(container)
   const r = createRoot(container)
   r.render(
     <AppRoot>

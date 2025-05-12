@@ -23,11 +23,11 @@ jobs:
           # 爱发电 token
           afdian_token: ${{ secrets.AFDIAN_TOKEN }}
           # 默认为: .github/afdian-action.cshtml
-          template_filePath: '.github/afdian-action.cshtml'
+          template_filePath: .github/afdian-action.cshtml
           # 默认为: README.md
-          target_filePath: 'README.md'
+          target_filePath: README.md
           # 可省, 高级选项: RazorEngine Complie, 在 cshtml 中需要 using 的 namespace, 多个用 ; 隔开
-          usings: 'System'
+          usings: System
           # 可省, 高级选项: RazorEngine Complie, 在 cshtml 中需要添加的 系统引用, 多个用 ; 隔开
           # 例如: assemblyReferences: "System.Collections, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
           assemblyReferences: 'System.Runtime, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'

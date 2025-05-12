@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-object-type */
-
 export interface FollowGroupContentJson {
   code: number
   message: string

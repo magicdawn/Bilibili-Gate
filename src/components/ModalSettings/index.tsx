@@ -1,12 +1,11 @@
+import { css } from '@emotion/react'
 import { __PROD__ } from '$common'
 import { BaseModal, BaseModalStyle, ModalClose } from '$components/_base/BaseModal'
 import { antMessage } from '$modules/antd'
 import { useHotkeyForToggleEvolvedDarkMode } from '$modules/dark-mode'
 import { IconForConfig } from '$modules/icon'
-import type { BooleanSettingsPath } from '$modules/settings'
 import { settings } from '$modules/settings'
 import { shouldDisableShortcut } from '$utility/dom'
-import { css } from '@emotion/react'
 import { Tabs } from 'antd'
 import { get, set } from 'es-toolkit/compat'
 import { proxy, useSnapshot } from 'valtio'
@@ -17,11 +16,12 @@ import { TabPaneFilter } from './tab-panes/pane-filter'
 import { TabPaneRecTabsConfig } from './tab-panes/pane-rec-tab-config'
 import { SettingsGroup, sharedCss } from './tab-panes/shared'
 import { ThemesSelect } from './theme'
+import type { BooleanSettingsPath } from '$modules/settings'
 
 function useHotkeyForConfig(hotkey: string | string[], configPath: BooleanSettingsPath, label: string) {
   return useKeyPress(
     hotkey,
-    (e) => {
+    () => {
       if (shouldDisableShortcut()) return
       const current = Boolean(get(settings, configPath))
       const newValue = !current
@@ -75,7 +75,7 @@ export function ModalSettings({ show, onHide }: { show: boolean; onHide: () => v
     >
       <div css={BaseModalStyle.modalHeader}>
         <div css={BaseModalStyle.modalTitle}>
-          <IconForConfig className='size-26px mr-4px mt--2px' />
+          <IconForConfig className='mr-4px mt--2px size-26px' />
           设置
         </div>
         <div className='space' style={{ flex: 1 }}></div>

@@ -1,8 +1,8 @@
 import { REQUEST_FAIL_MSG } from '$common'
-import type { DynamicFeedJson } from '$define'
 import { isWebApiSuccess, request } from '$request'
 import toast from '$utility/toast'
 import type { UpMidType } from './store'
+import type { DynamicFeedJson } from '$define'
 
 export async function fetchVideoDynamicFeeds({
   offset,

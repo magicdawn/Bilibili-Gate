@@ -2,18 +2,18 @@ import { REQUEST_FAIL_MSG } from '$common'
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
-import type { RankItemExtend } from '$define'
 import { EApiType } from '$define/index.shared'
 import { usePopupContainer } from '$modules/rec-services/_base'
 import { isWebApiSuccess, request } from '$request'
 import toast from '$utility/toast'
 import { Button, Popover } from 'antd'
-import type { ReactNode } from 'react'
 import { snapshot, useSnapshot } from 'valtio'
 import { QueueStrategy, type IService } from '../../_base'
 import { defaultRankTab, ERankApiType, getRankTabRequestConfig, type IRankTab } from './rank-tab'
 import { rankStore, updateRankTabs } from './store'
 import type { RankItem } from './types'
+import type { RankItemExtend } from '$define'
+import type { ReactNode } from 'react'
 
 export class RankRecService implements IService {
   loaded = false
@@ -77,12 +77,12 @@ function RankUsageInfo() {
   const renderRankTabList = (list: IRankTab[], label: ReactNode, helpInfoContent?: ReactNode) => {
     list ||= []
     return (
-      <div className='max-w-500px mt-15px pt-5px first:(mt-0 pt-0)'>
-        <p className='flex-v-center mb-8px text-white bg-gate-primary py-5px pl-6px rounded-5px'>
+      <div className='mt-15px max-w-500px pt-5px first:(mt-0 pt-0)'>
+        <p className='mb-8px flex-v-center rounded-5px bg-gate-primary py-5px pl-6px text-white'>
           {label}
           {!!helpInfoContent && <HelpInfo>{helpInfoContent}</HelpInfo>}
         </p>
-        <div className='grid grid-cols-5 gap-y-8px  gap-x-12px px-2px'>
+        <div className='grid grid-cols-5 gap-x-12px gap-y-8px px-2px'>
           {list.map((c) => {
             const active = c.slug === slug
             return (
