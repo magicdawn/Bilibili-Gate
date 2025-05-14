@@ -691,7 +691,6 @@ function apiLiveAdapter(item: LiveItemExtend): IVideoCardData {
       ? '' // 「 不需要 space padding
       : `${DESC_SEPARATOR}${formatLiveTime(item.record_live_time)} 直播过`
 
-  // eslint-disable-next-line unicorn/consistent-function-scoping
   function formatLiveTime(ts: number) {
     const today = dayjs().format('YYYYMMDD')
     const yesterday = dayjs().subtract(1, 'day').format('YYYYMMDD')

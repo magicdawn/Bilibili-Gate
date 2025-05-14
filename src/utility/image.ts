@@ -1,6 +1,3 @@
-/* eslint-disable node/handle-callback-err */
-/* eslint-disable unicorn/prefer-add-event-listener */
-
 /**
  * https://avif.io/blog/tutorials/css/#avifsupportdetectionscript
  */
