@@ -137,12 +137,12 @@
     ]
   },
   "lint-staged": {
-    "*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,json,yaml,yml}": [
+    "*.{js,cjs,mjs,ts,cts,mts,jsx,tsx,json,md,yaml,yml}": [
       "oxlint",
       "eslint --fix",
       "prettier --write"
     ],
-    "!*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,json,yaml,yml}": [
+    "!*.{js,cjs,mjs,ts,cts,mts,jsx,tsx,json,md,yaml,yml}": [
       "prettier --write --ignore-unknown"
     ]
   }
