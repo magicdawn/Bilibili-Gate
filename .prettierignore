@@ -1,4 +1,5 @@
-dist
-node_modules
-**/*.module.less.d.ts
-**/auto-imports.d.ts
+dist/
+node_modules/
+*.module.less.d.ts
+auto-imports.d.ts
+pnpm-lock.yaml

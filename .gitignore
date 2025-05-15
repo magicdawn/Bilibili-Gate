@@ -1,26 +1,20 @@
 dist/
-/dist-*/
-node_modules
-.turbo
+dist-*/
+node_modules/
+.turbo/
 tmp/
-
+.idea/
 *.less.d.ts
 *.scss.d.ts
-/generated
+generated/
 
-# visualizer
+# vite
+.vite-inspect/
+vite.config.ts.timestamp*
 /stats.html
 /stats.*
 
+# play
+/demo/
 # privacy
 src/define/watchlater-full.json
-
-/.vite-inspect
-
-# temporary files
-/vite.config.ts.timestamp*
-
-# demo
-/demo
-
-/.idea
