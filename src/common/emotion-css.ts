@@ -6,7 +6,6 @@ import { theme } from 'antd'
 import { useSnapshot } from 'valtio'
 
 // harmonyos_regular 没法对齐
-
 const antdBtnTextStyle = css`
   display: inline-block;
 

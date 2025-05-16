@@ -159,7 +159,7 @@ export function useContextMenus({
   const onAddUpToFilterList = useMemoizedFn(async () => {
     if (!authorMid) return antMessage.error('UP mid 为空!')
 
-    const content = String(authorMid)
+    const content = `${authorMid}`
     if (settings.filter.byAuthor.keywords.includes(content)) {
       return toast(`已在过滤名单中: ${content}`)
     }

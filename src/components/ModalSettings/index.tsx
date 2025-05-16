@@ -21,7 +21,7 @@ import type { BooleanSettingsPath } from '$modules/settings'
 function useHotkeyForConfig(hotkey: string | string[], configPath: BooleanSettingsPath, label: string) {
   return useKeyPress(
     hotkey,
-    () => {
+    (e) => {
       if (shouldDisableShortcut()) return
       const current = Boolean(get(settings, configPath))
       const newValue = !current

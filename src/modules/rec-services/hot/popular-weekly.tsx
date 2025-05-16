@@ -135,12 +135,11 @@ async function fetchWeeklyItems(episodeNum: number) {
     })
     const json = res.data as PopularWeeklyJson
     const items = (json.data.list || []).map((item) => {
-      const extended: PopularWeeklyItemExtend = {
+      return {
         ...item,
         api: EApiType.PopularWeekly,
         uniqId: `${EApiType.PopularWeekly}-${item.bvid}`,
-      }
-      return extended
+      } satisfies PopularWeeklyItemExtend
     })
 
     cache[episodeNum] = items

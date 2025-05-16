@@ -20,7 +20,7 @@ export async function saveToDraft(val: ReadonlyDeep<PartialDeep<Settings>>) {
     await setDataThrottled(currentBackupVal)
     lastBackupVal = currentBackupVal
     debug('backup to article draft complete')
-  } catch (error: any) {
-    console.error(error.stack || error)
+  } catch (e: any) {
+    console.error(e.stack || e)
   }
 }

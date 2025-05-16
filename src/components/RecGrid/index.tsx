@@ -229,8 +229,8 @@ const RecGridInner = memo(function ({
       more = filterRecItems(more, tab)
       newItems = concatThenUniq(newItems, more)
       newHasMore = service.hasMore
-    } catch (error) {
-      err = error
+    } catch (e) {
+      err = e
     }
     if (err) {
       unlock(lockKey)

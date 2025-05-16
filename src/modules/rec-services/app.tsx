@@ -233,14 +233,12 @@ class AppRecInnerService implements IService {
     // add uuid
     // add api
     const extendedList = list.map((item) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      const extended = {
+      return {
         ...item,
         api: EApiType.AppRecommend,
         uniqId: `${EApiType.AppRecommend}-${item.param}`,
-        device: this.deviceParamForApi, // android | ipad
-      } as AppRecItemExtend
-      return extended
+        device: this.deviceParamForApi as any, // android | ipad
+      } satisfies AppRecItemExtend
     })
 
     return extendedList

@@ -160,7 +160,7 @@ export class FavFolderService implements IFavInnerService {
   private fetchAllItemsWithCache = wrapWithIdbCache({
     fn: this.__fetchAllItems,
     tableName: 'fav-folder-all-items',
-    generateKey: () => String(this.folderId),
+    generateKey: () => `${this.folderId}`,
     ttl: ms('5min'),
   })
   private addToFetchAllItemsWithCache = async (items: FavItemExtend[]) => {

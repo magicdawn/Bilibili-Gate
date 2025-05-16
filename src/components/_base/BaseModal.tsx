@@ -163,8 +163,8 @@ export function BaseModal({
   const container = useMemo(() => {
     const div = document.createElement('div')
     div.classList.add(APP_CLS_ROOT)
-    div.dataset.id = `base-modal-${containerId}`
-    document.body.append(div)
+    div.setAttribute('data-id', `base-modal-${containerId}`)
+    document.body.appendChild(div)
     return div
   }, [])
 

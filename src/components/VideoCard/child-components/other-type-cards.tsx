@@ -124,8 +124,8 @@ export const DislikedCard = memo(function DislikedCard({
     let err: Error | undefined
     try {
       ;({ success, message } = await cancelDislike(item, dislikedReason.id))
-    } catch (error) {
-      err = error as Error
+    } catch (e) {
+      err = e as Error
     }
     if (err) {
       console.error(err.stack || err)

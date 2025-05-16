@@ -54,8 +54,8 @@ export function ModalDislike({ show, onHide, item }: IProps) {
     let err: Error | undefined
     try {
       ;({ success, message } = await $req.runAsync(item, reason))
-    } catch (error) {
-      err = error as Error
+    } catch (e) {
+      err = e as Error
     }
     if (err) {
       console.error(err.stack || err)
@@ -85,7 +85,7 @@ export function ModalDislike({ show, onHide, item }: IProps) {
     if (!KEYS.includes(e.key)) return
 
     const index = Number(e.key) - 1
-    if (index < 0 || index >= reasons.length) return
+    if (!(index >= 0 && index < reasons.length)) return
     setActiveIndex(index)
 
     const btn = modalBodyRef.current?.querySelectorAll<HTMLButtonElement>('.reason')[index]
@@ -241,7 +241,7 @@ function getRoot() {
   if (!root) {
     const container = document.createElement('div')
     container.classList.add('show-dislike-container', APP_CLS_ROOT)
-    document.body.append(container)
+    document.body.appendChild(container)
     root = createRoot(container)
   }
   return root

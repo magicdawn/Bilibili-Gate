@@ -144,8 +144,7 @@ export function setPageTitle(title: string) {
 /**
  * https://www.zhangxinxu.com/wordpress/2019/10/document-readystate/
  */
-// eslint-disable-next-line require-await
-export async function domReady() {
+export function domReady() {
   if (document.readyState !== 'loading') {
     return
   } else {

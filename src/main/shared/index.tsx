@@ -9,7 +9,7 @@ export function setupForNoneHomepage() {
 
 const _setupOnce = once(() => {
   const container = document.createElement('div')
-  document.body.append(container)
+  document.body.appendChild(container)
   const root = createRoot(container)
   root.render(<AppRoot injectGlobalStyle antdSetup />)
 })

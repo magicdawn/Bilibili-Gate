@@ -107,11 +107,11 @@ async function initHomepagePureRecommend() {
 
   const biliLayout = document.createElement('div')
   biliLayout.classList.add('bili-feed4-layout', 'pure-recommend')
-  document.body.append(biliLayout)
+  document.body.appendChild(biliLayout)
 
   const container = document.createElement('section')
   container.classList.add(APP_CLS_ROOT)
-  biliLayout.append(container)
+  biliLayout.appendChild(container)
 
   root = createRoot(container)
   root.render(

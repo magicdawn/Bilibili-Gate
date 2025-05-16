@@ -144,8 +144,8 @@ export function useRefresh({
       }
       try {
         currentItems = await fetcher(fetcherOptions)
-      } catch (error_) {
-        err = error_
+      } catch (e) {
+        err = e
       }
 
       // explicit aborted

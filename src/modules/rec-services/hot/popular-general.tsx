@@ -33,12 +33,11 @@ export class PopularGeneralRecService implements IService {
     this.hasMore = !json.data.no_more
 
     const items = (json.data.list || []).map((item) => {
-      const extended: PopularGeneralItemExtend = {
+      return {
         ...item,
         api: EApiType.PopularGeneral,
         uniqId: `${EApiType.PopularGeneral}-${item.bvid}`,
-      }
-      return extended
+      } satisfies PopularGeneralItemExtend
     })
     return items
   }

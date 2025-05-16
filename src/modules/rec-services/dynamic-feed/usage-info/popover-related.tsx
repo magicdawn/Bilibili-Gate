@@ -402,7 +402,7 @@ const tryInstantSearchWithCache = throttle(async function ({
   onRefresh?: () => void
 }) {
   if (!upMid) return
-  if (!searchText && (searchText || !dfStore.searchText)) return
+  if (!(searchText || (!searchText && dfStore.searchText))) return
   if (!settings.dynamicFeed.__internal.cacheAllItemsEntry) return // feature not enabled
   if (!settings.dynamicFeed.__internal.cacheAllItemsUpMids.includes(upMid.toString())) return // up not checked
   if (!(await hasLocalDynamicFeedCache(upMid))) return // cache not exist

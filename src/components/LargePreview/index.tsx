@@ -155,7 +155,7 @@ export const LargePreview = forwardRef<ComponentRef<'div'>, LargePreviewProps>(
       )[0]
 
       debug('picked direction', picked)
-      const { direction, bbox, scaleLimit } = picked
+      const { direction, bbox, scale, scaleLimit } = picked
 
       let elWidth: number
       let elHeight: number
@@ -344,7 +344,7 @@ function PopoverArrow({
   arrowTop: number
   arrowLeft: number
 }) {
-  const { axis } = DirectionConfig[direction]
+  const { axis, multiplier, reverse } = DirectionConfig[direction]
   const extra = useMemo(() => {
     if (axis === 'x') {
       return _css`

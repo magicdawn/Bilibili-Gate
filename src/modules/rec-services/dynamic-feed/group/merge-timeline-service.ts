@@ -7,7 +7,7 @@ import type { DynamicFeedItem } from '$define'
 
 export const fetchVideoDynamicFeedsWithCache = wrapWithIdbCache({
   fn: fetchVideoDynamicFeeds,
-  generateKey: ({ upMid }) => String(upMid),
+  generateKey: ({ upMid }) => `${upMid}`,
   tableName: 'dynamic-feed-newest-items', // only head
   ttl: 5 * 60 * 1000, // 5 minutes
 })

@@ -76,7 +76,7 @@
     "@emotion/babel-plugin": "^11.13.5",
     "@eslint/js": "^9.26.0",
     "@iconify/json": "^2.2.338",
-    "@magicdawn/eslint-config": "^1.2.0",
+    "@magicdawn/eslint-config": "file:../eslint-config",
     "@magicdawn/prettier-config": "^0.1.0",
     "@styled/typescript-styled-plugin": "^1.0.1",
     "@svgr/core": "^8.1.0",

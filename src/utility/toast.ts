@@ -37,7 +37,7 @@ export default function toast(msg: string, duration = 2000, container = document
     div.classList.add(singleLine)
   }
 
-  container.append(div)
+  container.appendChild(div)
   setTimeout(() => div.remove(), duration)
 }
 

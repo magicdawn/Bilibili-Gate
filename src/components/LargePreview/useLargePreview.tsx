@@ -195,8 +195,8 @@ export function useLargePreviewRelated({
     <LargePreview
       ref={largePreviewRef}
       aspectRatio={usingAspectRatio}
-      onMouseEnter={() => onMouseEnter('popover')}
-      onMouseLeave={() => onMouseLeave('popover')}
+      onMouseEnter={(e) => onMouseEnter('popover')}
+      onMouseLeave={(e) => onMouseLeave('popover')}
     >
       <RecoverableVideo
         ref={videoRef}

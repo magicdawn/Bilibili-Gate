@@ -177,7 +177,7 @@ export const RecHeader = forwardRef<
               <RefreshButton
                 refreshing={refreshing}
                 onRefresh={onRefresh}
-                refreshHotkeyEnabled={!modalSettingsVisible && !modalFeedVisible}
+                refreshHotkeyEnabled={!(modalSettingsVisible || modalFeedVisible)}
               />
 
               {showModalFeedEntry && (

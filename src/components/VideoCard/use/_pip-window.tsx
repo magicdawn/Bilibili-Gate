@@ -21,7 +21,7 @@ export function renderInPipWindow(newHref: string, pipWindow: Window) {
   const container = document.createElement('div')
   container.classList.add(APP_CLS_ROOT)
   container.style.lineHeight = '0'
-  pipWindow.document.body.append(container)
+  pipWindow.document.body.appendChild(container)
 
   const root = createRoot(container)
   root.render(

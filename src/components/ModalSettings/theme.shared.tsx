@@ -150,7 +150,7 @@ export const ThemeGroups: {
   },
 ]
 
-const ALL_THEMES = ThemeGroups.flatMap((x) => x.themes)
+const ALL_THEMES = ThemeGroups.map((x) => x.themes).flat()
 
 /**
  * use outside React

@@ -28,8 +28,8 @@ export type IRankTab = {
 export async function getRankTabsConfig() {
   try {
     return (await parseRankTabsConfig()) || STATIC_RANK_TABS
-  } catch (error) {
-    appError('parseRankTabsConfig failed', error)
+  } catch (e) {
+    appError('parseRankTabsConfig failed', e)
     return STATIC_RANK_TABS
   }
 }

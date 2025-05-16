@@ -685,7 +685,7 @@ function apiRankAdapter(item: RankItemExtend): IVideoCardData {
 }
 
 function apiLiveAdapter(item: LiveItemExtend): IVideoCardData {
-  const area = String(item.area_name_v2)
+  const area = `${item.area_name_v2}`
   const liveExtraDesc =
     item.live_status === ELiveStatus.Streaming
       ? '' // 「 不需要 space padding

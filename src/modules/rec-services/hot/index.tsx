@@ -100,24 +100,26 @@ function HotUsageInfo({ children }: { children?: ReactNode }) {
 
   const menus: AntMenuItem[] = useMemo(
     () =>
-      [EHotSubTab.PopularGeneral, EHotSubTab.PopularWeekly, EHotSubTab.Rank].flatMap((subtab, index) => {
-        const config = HotSubTabConfig[subtab]
-        const active = subtab === activeSubtab
-        return [
-          index > 0 && { type: 'divider' as const },
-          {
-            key: subtab,
-            label: <span className={clsx({ 'color-gate-primary': active })}>{config.label}</span>,
-            icon: config.icon,
-            onClick() {
-              if (subtab === hotStore.subtab) return
-              hotStore.subtab = subtab
-              // onRefresh?.(true) // 可以但没必要, 有 skeleton 有 Tab切换 的反馈
-              onRefresh?.()
-            },
-          } satisfies AntMenuItem,
-        ].filter(Boolean)
-      }),
+      [EHotSubTab.PopularGeneral, EHotSubTab.PopularWeekly, EHotSubTab.Rank]
+        .map((subtab, index) => {
+          const config = HotSubTabConfig[subtab]
+          const active = subtab === activeSubtab
+          return [
+            index > 0 && { type: 'divider' as const },
+            {
+              key: subtab,
+              label: <span className={clsx({ 'color-gate-primary': active })}>{config.label}</span>,
+              icon: config.icon,
+              onClick() {
+                if (subtab === hotStore.subtab) return
+                hotStore.subtab = subtab
+                // onRefresh?.(true) // 可以但没必要, 有 skeleton 有 Tab切换 的反馈
+                onRefresh?.()
+              },
+            } satisfies AntMenuItem,
+          ].filter(Boolean)
+        })
+        .flat(),
     [activeSubtab],
   )
 

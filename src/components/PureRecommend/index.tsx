@@ -34,7 +34,7 @@ export function PureRecommend() {
       />
       <RecGrid
         css={[useNarrowMode && narrowStyle.grid]}
-        shortcutEnabled={!modalFeedVisible && !modalSettingsVisible}
+        shortcutEnabled={!(modalFeedVisible || modalSettingsVisible)}
         infiniteScrollUseWindow={true}
         onScrollToTop={onScrollToTop}
         onSyncHeaderState={setHeaderState}
