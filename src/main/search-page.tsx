@@ -13,7 +13,10 @@ import { isInIframe, setupForNoneHomepage } from './shared'
 export function initSearchPage() {
   if (isInIframe()) return // pagetual use iframe to load more
   setupForNoneHomepage()
-  if (settings.videoCard.actions.showLargePreview && settings.videoCard.videoPreview.addTo.searchPage) {
+  if (
+    settings.videoCard.videoPreview.addTo.searchPage &&
+    (settings.videoCard.actions.showLargePreview || settings.videoCard.videoPreview.useVideoCardAsTrigger)
+  ) {
     addLargePreviewForSearchResults()
   }
 }
@@ -58,8 +61,10 @@ function addLargePreview(el: HTMLDivElement) {
 
 function LargePreviewSetup({ el }: { el: HTMLDivElement }) {
   const { bvid = '', cover } = useMemo(() => parseCardInfo(el), [el])
-  const card = useMemo(() => el.querySelector<HTMLDivElement>('.bili-video-card') ?? el, [el])
-  const hovering = useHover(card)
+  const cardEl = useMemo(() => el.querySelector<HTMLDivElement>('.bili-video-card') ?? el, [el])
+  const coverEl = useMemo(() => cardEl.querySelector<HTMLAnchorElement>('.bili-video-card__wrap > a'), [el])
+  const hovering = useHover(cardEl)
+  const videoCardAsTriggerRef = useRef<HTMLElement | null>(coverEl)
 
   const { largePreviewActionButtonEl, largePreviewEl } = useLargePreviewRelated({
     shouldFetchPreviewData: !!bvid,
@@ -81,6 +86,7 @@ function LargePreviewSetup({ el }: { el: HTMLDivElement }) {
     sharedEmitter: defaultSharedEmitter,
     // optional
     cover,
+    videoCardAsTriggerRef,
   })
 
   return (
@@ -96,7 +102,7 @@ function LargePreviewSetup({ el }: { el: HTMLDivElement }) {
         {largePreviewActionButtonEl}
       </div>
       {/* .bili-video-card__wrap 有 z-index: 1, 需要 escape */}
-      {createPortal(largePreviewEl, card)}
+      {createPortal(largePreviewEl, cardEl)}
     </>
   )
 }
