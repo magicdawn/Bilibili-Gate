@@ -24,7 +24,7 @@ function clearTimerRef(timerRef: TimerRef) {
   timerRef.current = undefined
 }
 
-const DEBUG_TRIGGER = __PROD__ ? false : true // 👈🏻👈🏻👈🏻 dev: free to change
+const DEBUG_TRIGGER = __PROD__ ? false : false // 👈🏻👈🏻👈🏻 dev: free to change
 
 type UseLargePreviewOptions = {
   // videoPreview data
