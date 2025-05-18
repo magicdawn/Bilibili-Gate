@@ -192,6 +192,7 @@ export function TabPaneBasic() {
                 'videoCard.videoPreview.useMp4',
                 'videoCard.videoPreview.useScale',
                 'videoCard.videoPreview.addTo.searchPage',
+                'videoCard.videoPreview.useVideoCardAsTrigger',
                 'pipWindow.defaultLocked',
                 'pipWindow.autoWebFullscreen',
               ]}
@@ -240,6 +241,21 @@ export function TabPaneBasic() {
               disabled={!showLargePreview}
               label='浮动预览: 使用放大效果'
               tooltip={<>{explainForFlag('浮动预览面板: 放大展开 (类似浮图秀)', '浮动预览面板: 滑动展开')}</>}
+            />
+            <CheckboxSettingItem
+              configPath='videoCard.videoPreview.useVideoCardAsTrigger'
+              disabled={!showLargePreview}
+              label='浮动预览: 使用视频卡片作为触发器'
+              tooltip={
+                <>
+                  使用视频卡片作为触发器 <br />
+                  <ul className='list-circle pl-25px'>
+                    <li>悬浮视频卡片 1 秒后展开「浮动预览」</li>
+                    <li>与视频卡片右上角按钮相比, 更容易触发, 但也容易非预览意图误触发</li>
+                    <li>与视频卡片右上角按钮独立, 关掉视频卡片按钮, 此选项仍然生效</li>
+                  </ul>
+                </>
+              }
             />
             <CheckboxSettingItem
               configPath='videoCard.videoPreview.addTo.searchPage'

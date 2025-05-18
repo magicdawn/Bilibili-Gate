@@ -352,6 +352,7 @@ const VideoCardInner = memo(function VideoCardInner({
     aspectRatioFromItem,
     cover,
     cardRef,
+    videoCardAsTriggerRef: videoPreviewWrapperRef, // use cardRef | coverRef
   })
 
   /**

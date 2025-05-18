@@ -1,8 +1,8 @@
 import { useClickAway, useEventListener, useLockFn, useRequest } from 'ahooks'
 import { useSnapshot } from 'valtio'
-import { APP_CLS_CARD, BiliDomain } from '$common'
+import { __PROD__, APP_CLS_CARD, appLog, BiliDomain } from '$common'
 import { useMittOn } from '$common/hooks/useMitt'
-import { useRefStateBox } from '$common/hooks/useRefState'
+import { useRefBox, useRefStateBox } from '$common/hooks/useRefState'
 import { openNewTab } from '$modules/gm'
 import { IconForLoading } from '$modules/icon'
 import { settings } from '$modules/settings'
@@ -24,6 +24,8 @@ function clearTimerRef(timerRef: TimerRef) {
   timerRef.current = undefined
 }
 
+const DEBUG_TRIGGER = __PROD__ ? false : true // 👈🏻👈🏻👈🏻 dev: free to change
+
 type UseLargePreviewOptions = {
   // videoPreview data
   shouldFetchPreviewData: boolean
@@ -41,6 +43,7 @@ type UseLargePreviewOptions = {
   aspectRatioFromItem?: number
   cover?: string
   cardRef?: MutableRefObject<ComponentRef<'div'> | null>
+  videoCardAsTriggerRef?: MutableRefObject<HTMLElement | null>
 }
 
 export function useLargePreviewRelated({
@@ -60,9 +63,11 @@ export function useLargePreviewRelated({
   aspectRatioFromItem,
   cover,
   cardRef,
+  videoCardAsTriggerRef,
 }: UseLargePreviewOptions) {
   const {
     useMp4,
+    useVideoCardAsTrigger,
     __internal: { preferNormalCdn },
   } = useSnapshot(settings.videoCard.videoPreview)
 
@@ -95,9 +100,11 @@ export function useLargePreviewRelated({
     | 'popover'
     | 'popover-action-button'
     | 'popover-video-fullscreen-button'
+    | 'video-card' // video-card as trigger
   const triggerAction = useRefStateBox<TriggerAction | undefined>(undefined)
   const triggerElement = useRefStateBox<TriggerElement | undefined>(undefined)
   const hideAt = useRefStateBox<number | undefined>(undefined)
+  const hoveringRef = useRefBox<Partial<Record<TriggerElement, boolean>>>({})
 
   const isRecentlyHidden = useMemoizedFn(() => {
     if (!hideAt.val) return false
@@ -112,6 +119,7 @@ export function useLargePreviewRelated({
   })
 
   const showBy = useMemoizedFn((action: TriggerAction, el: TriggerElement) => {
+    DEBUG_TRIGGER && appLog(bvid, 'showBy', action, el)
     setVisible(true)
     triggerAction.set(action)
     triggerElement.set(el)
@@ -119,6 +127,7 @@ export function useLargePreviewRelated({
     hideAt.set(undefined)
   })
   const hide = useMemoizedFn(() => {
+    DEBUG_TRIGGER && appLog(bvid, 'hide()')
     setVisible(false)
     triggerAction.set(undefined)
     triggerElement.set(undefined)
@@ -131,22 +140,42 @@ export function useLargePreviewRelated({
   })
 
   const onMouseEnter = useMemoizedFn((triggerEl: TriggerElement) => {
+    hoveringRef.set({ ...hoveringRef.val, [triggerEl]: true })
+    DEBUG_TRIGGER && appLog(bvid, 'onMouseEnter', triggerEl)
     if (triggerAction.val === 'click') return
+
     $req.run()
     clearTimers()
-    if (triggerEl === 'video-card-action-button') {
-      enterTimer.current = setTimeout(() => showBy('hover', triggerEl), 200) // 不要太敏感啊~
-    } else {
+
+    // 不要太敏感啊~
+    let delayMs = 0
+    if (triggerEl === 'video-card-action-button') delayMs = 200
+    if (triggerEl === 'video-card') delayMs = 1000
+    if (!delayMs) {
       showBy('hover', triggerEl)
+    } else {
+      enterTimer.current = setTimeout(() => showBy('hover', triggerEl), delayMs)
     }
   })
   const onMouseLeave = useMemoizedFn((triggerEl: TriggerElement) => {
+    hoveringRef.set({ ...hoveringRef.val, [triggerEl]: false })
+    DEBUG_TRIGGER && appLog(bvid, 'onMouseLeave', triggerEl)
     if (triggerAction.val === 'click') return
-    clearTimers()
-    if (triggerEl === 'video-card-action-button') {
-      leaveTimer.current = setTimeout(hide, 250) // give user a chance to hover on `popover` content
-    } else {
+
+    const checkHide = () => {
+      // Q: WHY this needed?
+      // A: 正常都是 onMouseLeave -> onMouseEnter, 但 videoCardAsTrigger 是使用 useEventListener 监听的, 它的 onMouseLeave 事件会比较迟
+      //    这时候, 在 hide() 之前做逻辑检测, 忽略时间的触发顺序
+      if (hoveringRef.val.popover) return
+      if (hoveringRef.val['video-card-action-button']) return
       hide()
+    }
+
+    clearTimers()
+    if (triggerEl === 'video-card-action-button' || triggerEl === 'video-card' || triggerEl === 'popover') {
+      leaveTimer.current = setTimeout(checkHide, 250) // give user a chance to hover on `popover` content
+    } else {
+      checkHide()
     }
   })
   const onClick = useMemoizedFn((el: TriggerElement) => {
@@ -301,6 +330,26 @@ export function useLargePreviewRelated({
       }
     },
     { target: document },
+  )
+
+  // video-card as trigger
+  const emptyRef = useRef<HTMLElement | null>(null)
+  const target = videoCardAsTriggerRef || emptyRef
+  useEventListener(
+    'mouseenter',
+    () => {
+      if (!useVideoCardAsTrigger || !videoCardAsTriggerRef) return
+      onMouseEnter('video-card')
+    },
+    { target },
+  )
+  useEventListener(
+    'mouseleave',
+    () => {
+      if (!useVideoCardAsTrigger || !videoCardAsTriggerRef) return
+      onMouseLeave('video-card')
+    },
+    { target },
   )
 
   return {
