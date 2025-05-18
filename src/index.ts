@@ -10,22 +10,14 @@
  *     不见满街漂亮妹，哪个归得程序员？
  */
 
-// styles
-import '$common/global.scss'
-
-// css modules 与 emtion 混用, 先 import 作为 base 的 css modules
-import '$components/video-grid.module.scss'
+import '$common/global.scss' // styles
+import '$components/video-grid.module.scss' // css modules 与 emtion 混用, 先 import 作为 base 的 css modules
 import 'virtual:uno.css'
-// polyfills
-import './modules/polyfills/explicit-resource-management'
+import './modules/polyfills/explicit-resource-management' // polyfills
+import './modules/settings' // load config first
 
-// load config first
-import './modules/settings'
-// dayjs setup
 import dayjs from 'dayjs'
-
 import duration from 'dayjs/plugin/duration'
-
 import {
   IN_BILIBILI_HOMEPAGE,
   IN_BILIBILI_SEARCH_PAGE,
@@ -36,6 +28,7 @@ import { initHomepage } from '$main/homepage'
 import { initSearchPage } from '$main/search-page'
 import { initSpacePage } from '$main/space-page'
 import { initVideoPlayPage } from '$main/video-play-page'
+
 dayjs.extend(duration)
 
 void (function main() {
