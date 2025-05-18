@@ -6,6 +6,8 @@ import { antMessage } from '$modules/antd'
 import { UserBlacklistService } from '$modules/bilibili/me/relations/blacklist'
 import { IconForBlacklist, IconForReset } from '$modules/icon'
 import { toastRequestFail } from '$utility/toast'
+import type { Reason } from '$components/ModalDislike'
+import type { AppRecItemExtend, RecItemType } from '$define'
 import { videoCardBorderRadiusValue } from '../../css-vars'
 import { defaultEmitter } from '../index.shared'
 import { cancelDislike } from '../services'
@@ -13,8 +15,6 @@ import type { VideoCardEmitter } from '../index.shared'
 import type { IVideoCardData } from '../process/normalize'
 import { skeletonActive as clsSkeletonActive } from './skeleton.module.scss'
 import { VideoCardBottom } from './VideoCardBottom'
-import type { Reason } from '$components/ModalDislike'
-import type { AppRecItemExtend, RecItemType } from '$define'
 
 export const SkeletonCard = memo(function SkeletonCard({ loading }: { loading: boolean }) {
   return (

@@ -1,13 +1,13 @@
 import { css } from '@emotion/react'
-import { APP_CLS_ROOT } from '$common'
-import { BaseModal, BaseModalStyle, ModalClose } from '$components/_base/BaseModal'
-import { AppRoot } from '$components/AppRoot'
 import { QRCode } from 'antd'
 import { once } from 'es-toolkit'
 import mitt from 'mitt'
 import { pEvent } from 'p-event'
 import { createRoot } from 'react-dom/client'
 import { proxy, useSnapshot } from 'valtio'
+import { APP_CLS_ROOT } from '$common'
+import { BaseModal, BaseModalStyle, ModalClose } from '$components/_base/BaseModal'
+import { AppRoot } from '$components/AppRoot'
 import { qrcodeConfirm } from './api'
 
 const initialValue = {

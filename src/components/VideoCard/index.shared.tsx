@@ -1,10 +1,10 @@
 import { css } from '@emotion/react'
+import mitt, { type Emitter } from 'mitt'
 import { APP_SHORT_PREFIX } from '$common'
 import { antMessage } from '$modules/antd'
 import { IconForOpenExternalLink, IconForPlayer } from '$modules/icon'
 import { useSettingsSnapshot } from '$modules/settings'
 import { isMac } from '$ua'
-import mitt, { type Emitter } from 'mitt'
 import type { ReactNode } from 'react'
 
 export const STAT_NUMBER_FALLBACK = '0'

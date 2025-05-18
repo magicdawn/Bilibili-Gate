@@ -1,3 +1,4 @@
+import { Button, Divider, Select, Space, Tag } from 'antd'
 import { APP_NAME } from '$common'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { AccessKeyManage } from '$components/AccessKeyManage'
@@ -8,7 +9,6 @@ import { VideoLinkOpenMode, VideoLinkOpenModeConfig } from '$components/VideoCar
 import { antMessage } from '$modules/antd'
 import { IconForCopy } from '$modules/icon'
 import { updateSettings, useSettingsSnapshot } from '$modules/settings'
-import { Button, Divider, Select, Space, Tag } from 'antd'
 import { explainForFlag, toastAndReload } from '../index.shared'
 import { ResetPartialSettingsButton, SettingsGroup, sharedCss } from './shared'
 

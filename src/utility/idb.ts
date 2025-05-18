@@ -2,11 +2,11 @@
  * indexedDB related
  */
 
-import { APP_NAMESPACE } from '$common'
 import { isNil, throttle } from 'es-toolkit'
 import localforage from 'localforage'
 import { limitFunction } from 'p-limit'
 import pMemoize, { type AnyAsyncFunction } from 'p-memoize'
+import { APP_NAMESPACE } from '$common'
 import { whenIdle } from './dom'
 import type { AsyncReturnType } from 'type-fest'
 

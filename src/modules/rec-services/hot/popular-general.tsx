@@ -1,13 +1,13 @@
+import { delay } from 'es-toolkit'
 import { REQUEST_FAIL_MSG } from '$common'
 import { CheckboxSettingItem, SwitchSettingItem } from '$components/ModalSettings/setting-item'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
 import { EApiType } from '$define/index.shared'
 import { isWebApiSuccess, request } from '$request'
 import toast from '$utility/toast'
-import { delay } from 'es-toolkit'
-import type { IService } from '../_base'
 import type { PopularGeneralItemExtend } from '$define'
 import type { PopularGeneralJson } from '$define/popular-general'
+import type { IService } from '../_base'
 
 export class PopularGeneralRecService implements IService {
   hasMore = true

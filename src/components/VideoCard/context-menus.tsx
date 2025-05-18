@@ -2,6 +2,8 @@
  * context menus related
  */
 
+import { delay } from 'es-toolkit'
+import { useSnapshot } from 'valtio'
 import { appClsColorPrimary } from '$common/css-vars-export.module.scss'
 import {
   copyBvidInfos,
@@ -52,15 +54,13 @@ import { defaultFavFolderName, UserFavService } from '$modules/rec-services/fav/
 import { SHOW_SPACE_UPLOAD_ONLY, SpaceUploadQueryKey } from '$modules/rec-services/space-upload/store'
 import { settings, updateSettingsInnerArray } from '$modules/settings'
 import toast from '$utility/toast'
-import { delay } from 'es-toolkit'
-import { useSnapshot } from 'valtio'
+import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import { copyContent } from './index.shared'
 import { getFollowedStatus, isApiRecLike } from './process/filter'
 import { watchlaterAdd } from './services'
 import { getLinkTarget } from './use/useOpenRelated'
 import type { IVideoCardData } from './process/normalize'
 import type { watchlaterDel } from './services'
-import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import type { MouseEvent } from 'react'
 
 export function useContextMenus({

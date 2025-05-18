@@ -1,6 +1,6 @@
+import { uniqBy } from 'es-toolkit'
 import { request } from '$request'
 import { getUid } from '$utility/cookie'
-import { uniqBy } from 'es-toolkit'
 import type { FavCollectionDetailJson } from '../types/collections/collection-detail'
 import type { FavCollection, ListAllCollectionJson } from '../types/collections/list-all-collections'
 

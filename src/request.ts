@@ -1,8 +1,8 @@
+import axios from 'axios'
+import gmAdapter from 'axios-userscript-adapter'
 import { HOST_API, TVKeyInfo } from '$common'
 import { encWbi } from '$modules/bilibili/risk-control/wbi'
 import { appSign } from '$utility/app-sign'
-import axios from 'axios'
-import gmAdapter from 'axios-userscript-adapter'
 import { settings } from './modules/settings'
 
 export const request = axios.create({

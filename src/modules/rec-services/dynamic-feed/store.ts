@@ -1,15 +1,15 @@
+import { delay } from 'es-toolkit'
+import ms from 'ms'
+import { proxy } from 'valtio'
 import { IN_BILIBILI_HOMEPAGE } from '$common'
 import { getAllFollowGroups } from '$modules/bilibili/me/follow-group'
 import { settings } from '$modules/settings'
 import { getUid } from '$utility/cookie'
 import { setPageTitle, whenIdle } from '$utility/dom'
 import { proxyMapWithGmStorage, proxySetWithGmStorage, subscribeOnKeys } from '$utility/valtio'
-import { delay } from 'es-toolkit'
-import ms from 'ms'
-import { proxy } from 'valtio'
+import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 import { getRecentUpdateUpList } from './up'
 import type { DynamicPortalUp } from './up/portal-types'
-import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 
 /**
  * view dynamic of <mid> via query

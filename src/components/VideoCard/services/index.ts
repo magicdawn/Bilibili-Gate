@@ -1,3 +1,5 @@
+import ms from 'ms'
+import QuickLRU from 'quick-lru'
 import { baseDebug, HOST_APP, OPERATION_FAIL_MSG } from '$common'
 import { getVideoPlayUrl } from '$modules/bilibili/video/play-url'
 import { getVideoPageList } from '$modules/bilibili/video/video-detail'
@@ -5,11 +7,9 @@ import { gmrequest, isWebApiSuccess, request } from '$request'
 import { reusePendingPromise } from '$utility/async'
 import { getCsrfToken } from '$utility/cookie'
 import toast from '$utility/toast'
-import ms from 'ms'
-import QuickLRU from 'quick-lru'
-import { getVideoshotJson, isVideoshotDataValid } from './videoshot'
 import type { AppRecItem, PvideoJson } from '$define'
 import type { VideoPage } from '$modules/bilibili/video/types/page-list'
+import { getVideoshotJson, isVideoshotDataValid } from './videoshot'
 
 const debug = baseDebug.extend('VideoCard:services')
 

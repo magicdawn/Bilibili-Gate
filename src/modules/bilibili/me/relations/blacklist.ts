@@ -2,14 +2,14 @@
  * user blacklist services
  */
 
+import { useSnapshot } from 'valtio'
 import { baseDebug, IN_BILIBILI_HOMEPAGE } from '$common'
 import { isWebApiSuccess, request } from '$request'
 import { whenIdle } from '$utility/dom'
 import { proxySetWithGmStorage } from '$utility/valtio'
-import { useSnapshot } from 'valtio'
+import type { UpMidType } from '$modules/rec-services/dynamic-feed/store'
 import { modifyRelations } from './common'
 import type { ListBlackJson } from './types/list-black'
-import type { UpMidType } from '$modules/rec-services/dynamic-feed/store'
 
 const debug = baseDebug.extend('service:user:relations:blacklist')
 

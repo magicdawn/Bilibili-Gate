@@ -1,9 +1,9 @@
+import dayjs from 'dayjs'
+import { tryit } from 'radash'
 import { APP_NAME } from '$common'
 import { toastAndReload } from '$components/ModalSettings/index.shared'
 import { antMessage } from '$modules/antd'
 import toast from '$utility/toast'
-import dayjs from 'dayjs'
-import { tryit } from 'radash'
 import { set_HAS_RESTORED_SETTINGS } from './restore-flag'
 import {
   allowedLeafSettingsPaths,

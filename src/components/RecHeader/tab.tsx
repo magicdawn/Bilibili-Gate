@@ -1,4 +1,6 @@
 import { css } from '@emotion/react'
+import { Radio, Segmented } from 'antd'
+import { useSnapshot } from 'valtio'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { SHOW_DYNAMIC_FEED_ONLY } from '$modules/rec-services/dynamic-feed/store'
 import { SHOW_FAV_TAB_ONLY } from '$modules/rec-services/fav/store'
@@ -6,12 +8,10 @@ import { SHOW_SPACE_UPLOAD_ONLY } from '$modules/rec-services/space-upload/store
 import { useSettingsSnapshot } from '$modules/settings'
 import { checkLoginStatus, useHasLogined } from '$utility/cookie'
 import { proxyWithGmStorage } from '$utility/valtio'
-import { Radio, Segmented } from 'antd'
-import { useSnapshot } from 'valtio'
+import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import { TabConfig, TabIcon, toastNeedLogin } from './tab-config'
 import { ALL_TAB_KEYS, CONFIGURABLE_TAB_KEYS, ETab } from './tab-enum'
 import type { TabConfigItem } from './tab-config'
-import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import type { ReactNode } from 'react'
 
 /**

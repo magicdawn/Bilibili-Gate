@@ -3,6 +3,8 @@ import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifi
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { css } from '@emotion/react'
+import { Checkbox, Collapse, Empty, Radio, Space } from 'antd'
+import { useSnapshot } from 'valtio'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { bgLv2Value, bgLv3Value } from '$components/css-vars'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
@@ -27,13 +29,11 @@ import {
 } from '$modules/rec-services/dynamic-feed/store'
 import { FollowGroupMechanismNote } from '$modules/rec-services/dynamic-feed/usage-info/popover-related'
 import { settings, updateSettings, updateSettingsInnerArray, useSettingsSnapshot } from '$modules/settings'
-import { Checkbox, Collapse, Empty, Radio, Space } from 'antd'
-import { useSnapshot } from 'valtio'
+import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 import { TagItemDisplay } from '../EditableListSettingItem'
 import { explainForFlag } from '../index.shared'
 import { ResetPartialSettingsButton, SettingsGroup, sharedCss } from './shared'
 import type { DragEndEvent } from '@dnd-kit/core'
-import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 import type { CSSProperties } from 'react'
 
 export function TabPaneRecTabsConfig() {

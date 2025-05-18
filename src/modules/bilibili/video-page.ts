@@ -3,11 +3,11 @@
  * with modification
  */
 
-import { IN_BILIBILI_VIDEO_PLAY_PAGE } from '$common'
-import { poll } from '$utility/dom'
 import { isNil, once } from 'es-toolkit'
 import mitt from 'mitt'
 import ms from 'ms'
+import { IN_BILIBILI_VIDEO_PLAY_PAGE } from '$common'
+import { poll } from '$utility/dom'
 
 const getWin = () => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : globalThis) as any
 

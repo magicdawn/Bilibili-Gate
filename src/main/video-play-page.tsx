@@ -1,11 +1,11 @@
+import { delay } from 'es-toolkit'
+import ms from 'ms'
 import { baseDebug } from '$common'
 import { ForceAutoPlay, PlayerScreenMode, QueryKey } from '$components/VideoCard/index.shared'
 import { hasDocumentPictureInPicture, openInPipOrPopup } from '$components/VideoCard/use/useOpenRelated'
 import { getBiliPlayer } from '$modules/bilibili/player'
 import { getBiliPlayerConfigAutoPlay } from '$modules/bilibili/player-config'
 import { isMac } from '$ua'
-import { delay } from 'es-toolkit'
-import ms from 'ms'
 import { setupAppRootForNoneHomepage } from './shared'
 
 const debug = baseDebug.extend('main:video-play-page')

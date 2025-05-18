@@ -7,13 +7,13 @@
  */
 
 import { css } from '@emotion/react'
+import { usePrevious } from 'ahooks'
+import { ColorPicker } from 'antd'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { $evolvedThemeColor } from '$header'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconAnimatedChecked } from '$modules/icon/animated-checked'
 import { updateSettings, useSettingsSnapshot } from '$modules/settings'
-import { usePrevious } from 'ahooks'
-import { ColorPicker } from 'antd'
 import { DEFAULT_BILI_PINK_THEME, ThemeGroups, useCurrentTheme } from './theme.shared'
 import type { Color } from 'antd/es/color-picker'
 

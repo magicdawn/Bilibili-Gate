@@ -2,12 +2,12 @@
  * extract from https://s1.hdslb.com/bfs/static/jinkela/popular/popular.b128b0b3cb90b22d5e3fb2b560dfb4b675102274.js
  */
 
+import { uniqBy } from 'es-toolkit'
 import { appError } from '$common'
 import { getGroupFromKvRecord, getKvData } from '$modules/bilibili/kv'
-import { uniqBy } from 'es-toolkit'
+import type { RankItemExtend, RankItemExtendProps } from '$define'
 import { STATIC_RANK_TABS } from './rank-tab-static'
 import type { NormalRankItem, PgcSeasonRankItem, PgcWebRankItem } from './types'
-import type { RankItemExtend, RankItemExtendProps } from '$define'
 
 export const defaultRankTab: IRankTab = {
   name: '全站',

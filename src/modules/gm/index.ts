@@ -1,5 +1,5 @@
-import { isSafari } from '$ua'
 import pLimit from 'p-limit'
+import { isSafari } from '$ua'
 
 export function openNewTab(url: string, active = true) {
   if (url.startsWith('/')) url = location.origin + url // safari Userscripts will complain with pathname only

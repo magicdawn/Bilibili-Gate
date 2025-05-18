@@ -1,8 +1,8 @@
+import { Button } from 'antd'
 import { copyBvidInfos, copyBvidsSingleLine } from '$components/RecGrid/unsafe-window-export'
 import { IconForCopy } from '$modules/icon'
 import { MultiSelectButton } from '$modules/multi-select'
 import { useSettingsSnapshot } from '$modules/settings'
-import { Button } from 'antd'
 
 export function CopyBvidButtons() {
   const { __internalEnableCopyBvidInfo: bvidInfo } = useSettingsSnapshot()

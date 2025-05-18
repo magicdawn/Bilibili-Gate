@@ -1,13 +1,13 @@
 import { css } from '@emotion/react'
+import { useHover } from 'ahooks'
+import { limitFunction } from 'p-limit'
+import { createPortal } from 'react-dom'
 import { APP_NAMESPACE } from '$common'
 import { AppRoot } from '$components/AppRoot'
 import { useLargePreviewRelated } from '$components/LargePreview/useLargePreview'
 import { VideoCardActionStyle } from '$components/VideoCard/child-components/VideoCardActions'
 import { defaultSharedEmitter } from '$components/VideoCard/index.shared'
 import { settings } from '$modules/settings'
-import { useHover } from 'ahooks'
-import { limitFunction } from 'p-limit'
-import { createPortal } from 'react-dom'
 import { isInIframe, setupForNoneHomepage } from './shared'
 
 export function initSearchPage() {

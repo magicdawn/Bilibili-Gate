@@ -1,3 +1,5 @@
+import { delay } from 'es-toolkit'
+import { useSnapshot } from 'valtio'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
 import {
   IconForDefaultOrder,
@@ -10,8 +12,6 @@ import {
 } from '$modules/icon'
 import { usePopupContainer } from '$modules/rec-services/_base'
 import { GenericOrderSwitcher } from '$modules/rec-services/_shared/generic-order-switcher'
-import { delay } from 'es-toolkit'
-import { useSnapshot } from 'valtio'
 import { FavItemsOrder } from '../fav-enum'
 import { favStore, type FavSelectedKeyPrefix } from '../store'
 import type { ElementRef, ReactNode } from 'react'

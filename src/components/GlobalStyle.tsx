@@ -5,8 +5,8 @@ import { useAntLinkColorGlobalCss } from '$common/emotion-css'
 import { $headerWidth, $usingEvolevdHeader, useBackToTopRight } from '$header'
 import { useIsDarkMode } from '$modules/dark-mode'
 import { useSettingsSnapshot } from '$modules/settings'
-import { useColorPrimaryHex } from './ModalSettings/theme.shared'
 import type { CssProp } from '$utility/type'
+import { useColorPrimaryHex } from './ModalSettings/theme.shared'
 
 export function GlobalStyle() {
   const colorPrimary = useColorPrimaryHex()

@@ -1,4 +1,6 @@
 import { css } from '@emotion/react'
+import { Button } from 'antd'
+import { useSnapshot } from 'valtio'
 import { APP_CLS_TAB_BAR, baseDebug } from '$common'
 import { zIndexRecHeader } from '$common/css-vars-export.module.scss'
 import { useSizeExpression } from '$common/hooks/useResizeObserverExpression'
@@ -15,15 +17,13 @@ import { MultiSelectButton } from '$modules/multi-select'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { isMac, isSafari } from '$ua'
 import { getElementOffset, shouldDisableShortcut } from '$utility/dom'
-import { Button } from 'antd'
-import { useSnapshot } from 'valtio'
+import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import { AccessKeyManage } from '../AccessKeyManage'
 import { headerState } from './index.shared'
 import { showModalFeed, showModalSettings, toggleModalSettings } from './modals'
 import { RefreshButton } from './RefreshButton'
 import { useCurrentUsingTab, VideoSourceTab } from './tab'
 import { ETab } from './tab-enum'
-import type { OnRefresh } from '$components/RecGrid/useRefresh'
 
 const debug = baseDebug.extend('RecHeader')
 

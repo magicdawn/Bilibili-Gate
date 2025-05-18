@@ -1,3 +1,6 @@
+import { useUnmount } from 'ahooks'
+import { isEqual, tryit } from 'radash'
+import { createContext } from 'react'
 import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
 import { TabConfig } from '$components/RecHeader/tab-config'
 import { ETab } from '$components/RecHeader/tab-enum'
@@ -6,9 +9,7 @@ import { getGridRefreshCount } from '$modules/rec-services'
 import { getDynamicFeedServiceConfig, type DynamicFeedRecService } from '$modules/rec-services/dynamic-feed'
 import { getFavServiceConfig, type FavRecService } from '$modules/rec-services/fav'
 import { hotStore, type HotRecService } from '$modules/rec-services/hot'
-import { useUnmount } from 'ahooks'
-import { isEqual, tryit } from 'radash'
-import { createContext } from 'react'
+import type { RecItemTypeOrSeparator } from '$define'
 import {
   createServiceMap,
   getServiceFromRegistry,
@@ -16,7 +17,6 @@ import {
   type ServiceMap,
 } from '../../modules/rec-services/service-map'
 import { setGlobalGridItems } from './unsafe-window-export'
-import type { RecItemTypeOrSeparator } from '$define'
 import type { Debugger } from 'debug'
 
 export type OnRefresh = (reuse?: boolean) => void | Promise<void>

@@ -2,10 +2,10 @@
  * e.g https://api.bilibili.com/x/kv-frontend/namespace/data?appKey=333.1339&nscode=10&versionId=1745304745412
  */
 
+import ms from 'ms'
 import { request } from '$request'
 import { reusePendingPromise } from '$utility/async'
 import { getIdbCache, wrapWithIdbCache } from '$utility/idb'
-import ms from 'ms'
 import type { KvResponseData, KvResponseJson } from './kv-types'
 
 async function fetchKvData({ appKey, nscode, versionId }: { appKey: string; nscode: number; versionId: string }) {

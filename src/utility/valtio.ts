@@ -1,8 +1,8 @@
-import { reciveGmValueUpdatesFromOtherTab } from '$modules/gm'
 import { isEqual, pick, throttle, toMerged } from 'es-toolkit'
 import pLimit from 'p-limit'
 import { proxy, snapshot, subscribe, useSnapshot } from 'valtio'
 import { proxyMap, proxySet } from 'valtio/utils'
+import { reciveGmValueUpdatesFromOtherTab } from '$modules/gm'
 
 export function valtioFactory<T>(computeValue: () => T) {
   const state = proxy({ value: computeValue() })

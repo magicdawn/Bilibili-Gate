@@ -1,5 +1,5 @@
-import { appWarn, baseDebug } from '$common'
 import { delay, isNil } from 'es-toolkit'
+import { appWarn, baseDebug } from '$common'
 
 const debug = baseDebug.extend('utility:dom')
 

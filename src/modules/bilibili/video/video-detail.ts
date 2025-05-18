@@ -1,6 +1,6 @@
+import ms from 'ms'
 import { request } from '$request'
 import { wrapWithIdbCache } from '$utility/idb'
-import ms from 'ms'
 import type { VideoPageListJson } from './types/page-list'
 import type { VideoDetailJson } from './types/video-detail'
 

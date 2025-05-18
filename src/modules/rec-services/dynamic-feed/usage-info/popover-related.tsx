@@ -1,4 +1,8 @@
 import { css } from '@emotion/react'
+import { useRequest } from 'ahooks'
+import { Badge, Button, Checkbox, Input, Popover, Radio } from 'antd'
+import { delay, throttle } from 'es-toolkit'
+import { useSnapshot } from 'valtio'
 import { __PROD__ } from '$common'
 import { APP_CLS_USE_ANT_LINK_COLOR, buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { HelpInfo } from '$components/_base/HelpInfo'
@@ -17,10 +21,8 @@ import {
   type Settings,
 } from '$modules/settings'
 import { advancedSearchHelpInfo } from '$utility/search'
-import { useRequest } from 'ahooks'
-import { Badge, Button, Checkbox, Input, Popover, Radio } from 'antd'
-import { delay, throttle } from 'es-toolkit'
-import { useSnapshot } from 'valtio'
+import type { OnRefresh } from '$components/RecGrid/useRefresh'
+import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 import {
   createUpdateSearchCacheNotifyFns,
   hasLocalDynamicFeedCache,
@@ -42,8 +44,6 @@ import {
   SHOW_DYNAMIC_FEED_ONLY,
   type UpMidType,
 } from '../store'
-import type { OnRefresh } from '$components/RecGrid/useRefresh'
-import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 import type { CheckboxChangeEvent } from 'antd/es/checkbox'
 import type { ReactNode } from 'react'
 import type { Get } from 'type-fest'

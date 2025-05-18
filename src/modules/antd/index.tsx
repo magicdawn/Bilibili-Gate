@@ -2,9 +2,9 @@
  * https://ant.design/components/app-cn
  */
 
-import { $headerHeight } from '$header'
 import { App, message, notification } from 'antd'
 import { omit } from 'es-toolkit'
+import { $headerHeight } from '$header'
 import type { MenuProps } from 'antd'
 import type { ConfigOptions as MessageConfigOptions, MessageInstance } from 'antd/es/message/interface'
 import type { NotificationInstance } from 'antd/es/notification/interface'

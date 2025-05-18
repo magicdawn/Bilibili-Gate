@@ -1,4 +1,5 @@
 import { BvCode } from '@mgdn/bvid'
+import dayjs from 'dayjs'
 import { appWarn } from '$common'
 import { colorPrimaryValue } from '$components/css-vars'
 import {
@@ -43,10 +44,9 @@ import {
   parseCount,
   parseDuration,
 } from '$utility/video'
-import dayjs from 'dayjs'
+import type { FavItemExtend } from '$modules/rec-services/fav/types'
 import { AppRecStatItemFieldMap, defineStatItems, getField } from '../stat-item'
 import type { StatItemField, StatItemType } from '../stat-item'
-import type { FavItemExtend } from '$modules/rec-services/fav/types'
 import type { ReactNode } from 'react'
 
 export const DESC_SEPARATOR = ' · '

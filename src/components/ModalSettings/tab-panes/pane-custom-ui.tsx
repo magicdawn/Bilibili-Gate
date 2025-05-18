@@ -1,14 +1,14 @@
+import { Tag } from 'antd'
+import { isEqual } from 'es-toolkit'
+import { pick } from 'radash'
 import { APP_NAME } from '$common'
 import { antMessage } from '$modules/antd'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { shouldDisableShortcut } from '$utility/dom'
-import { Tag } from 'antd'
-import { isEqual } from 'es-toolkit'
-import { pick } from 'radash'
+import type { Settings } from '$modules/settings'
 import { explainForFlag } from '../index.shared'
 import { CheckboxSettingItem } from '../setting-item'
 import { ResetPartialSettingsButton, SettingsGroup, sharedCss } from './shared'
-import type { Settings } from '$modules/settings'
 
 type CardBorderState = Partial<Pick<Settings['style']['videoCard'], 'useBorder' | 'useBorderOnlyOnHover'>>
 const borderCycleList: CardBorderState[] = [

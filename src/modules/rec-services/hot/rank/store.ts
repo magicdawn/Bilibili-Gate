@@ -1,6 +1,6 @@
-import { reusePendingPromise } from '$utility/async'
 import { proxy } from 'valtio'
 import { subscribeKey } from 'valtio/utils'
+import { reusePendingPromise } from '$utility/async'
 import { defaultRankTab, getRankTabsConfig, type IRankTab } from './rank-tab'
 
 const storageKey = 'rank-store-slug'

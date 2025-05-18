@@ -1,3 +1,4 @@
+import { range } from 'es-toolkit'
 import { baseDebug } from '$common'
 import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
 import { useRefresh } from '$components/RecGrid/useRefresh'
@@ -6,11 +7,10 @@ import { limitTwoLines, videoGrid, videoGridBiliFeed4 } from '$components/video-
 import { useCardBorderCss } from '$components/VideoCard/card-border-css'
 import { EApiType } from '$define/index.shared'
 import { refreshForHome } from '$modules/rec-services'
-import { range } from 'es-toolkit'
-import { RecHeader } from '../RecHeader'
-import { VideoCard } from '../VideoCard'
 import type { ETab } from '$components/RecHeader/tab-enum'
 import type { ServiceMap } from '$modules/rec-services/service-map'
+import { RecHeader } from '../RecHeader'
+import { VideoCard } from '../VideoCard'
 
 const debug = baseDebug.extend('components:SectionRecommend')
 

@@ -3,8 +3,8 @@
  * https://socialsisteryi.github.io/bilibili-API-collect/docs/login/login_action/QR.html#tv%E7%AB%AF%E6%89%AB%E7%A0%81%E7%99%BB%E5%BD%95
  */
 
-import toast from '$utility/toast'
 import { delay } from 'es-toolkit'
+import toast from '$utility/toast'
 import { getQrCodeInfo, poll } from './api'
 import { hideQrCodeModal, qrcodeStore, showQrCodeModal, updateStore, whenQrCodeModalHide } from './TvQrCodeAuth'
 import type { PollResult } from './api'

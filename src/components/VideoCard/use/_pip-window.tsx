@@ -1,13 +1,13 @@
 import createEmotion from '@emotion/css/create-instance'
 import { css, Global } from '@emotion/react'
+import { useHover } from 'ahooks'
+import { App } from 'antd'
 import { APP_CLS_ROOT } from '$common'
 import { useLessFrequentFn } from '$common/hooks/useLessFrequentFn'
 import { AppRoot } from '$components/AppRoot'
 import { colorPrimaryValue } from '$components/css-vars'
 import { openNewTab } from '$modules/gm'
 import { settings } from '$modules/settings'
-import { useHover } from 'ahooks'
-import { App } from 'antd'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
 import { QueryKey } from '../index.shared'
 
@@ -105,6 +105,7 @@ function LockOverlay({ locked }: { locked: boolean }) {
     locked && (
       <div
         className='locked-overlay'
+        onClick={onOverlayClick}
         css={css`
           position: fixed;
           inset: 0;
@@ -112,7 +113,6 @@ function LockOverlay({ locked }: { locked: boolean }) {
           background-color: transparent;
           user-select: none;
         `}
-        onClick={onOverlayClick}
       />
     )
   )
@@ -165,9 +165,7 @@ function LockButton({
       icon={locked ? <IconRadixIconsLockClosed /> : <IconRadixIconsLockOpen1 />}
       tooltip={locked ? '已锁定, 点击解锁' : '已解锁, 点击锁定'}
       css={S.button}
-      onClick={(e) => {
-        setLocked((x) => !x)
-      }}
+      onClick={() => setLocked((x) => !x)}
     />
   )
 }

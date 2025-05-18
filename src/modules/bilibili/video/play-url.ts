@@ -2,8 +2,8 @@
  * see https://socialsisteryi.github.io/bilibili-API-collect/docs/video/videostream_url.html
  */
 
-import { request } from '$request'
 import { fastOrderBy } from 'fast-sort-lens'
+import { request } from '$request'
 import type { VideoPlayUrlJson } from './types/play-url'
 
 /**

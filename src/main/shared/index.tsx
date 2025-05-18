@@ -1,6 +1,6 @@
+import { once } from 'es-toolkit'
 import { AppRoot } from '$components/AppRoot'
 import { registerSettingsGmCommand } from '$components/RecHeader/modals'
-import { once } from 'es-toolkit'
 
 export function setupForNoneHomepage() {
   setupAppRootForNoneHomepage()

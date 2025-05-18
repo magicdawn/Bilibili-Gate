@@ -1,9 +1,9 @@
+import { once } from 'es-toolkit'
 import { APP_CLS_ROOT, IN_BILIBILI_HOMEPAGE } from '$common'
 import { AppRoot } from '$components/AppRoot'
 import { ModalFeed } from '$components/ModalFeed'
 import { ModalSettings } from '$components/ModalSettings'
 import { settings } from '$modules/settings'
-import { once } from 'es-toolkit'
 import { headerState, useHeaderState } from './index.shared'
 
 export function toggleModalFeed() {

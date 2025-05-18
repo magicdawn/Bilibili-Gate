@@ -1,3 +1,6 @@
+import dayjs from 'dayjs'
+import pmap from 'promise.map'
+import { snapshot } from 'valtio'
 import { baseDebug } from '$common'
 import { CHARGE_ONLY_TEXT } from '$components/VideoCard/top-marks'
 import { EApiType } from '$define/index.shared'
@@ -5,9 +8,8 @@ import { getFollowGroupContent } from '$modules/bilibili/me/follow-group'
 import { settings } from '$modules/settings'
 import { parseSearchInput } from '$utility/search'
 import { parseDuration } from '$utility/video'
-import dayjs from 'dayjs'
-import pmap from 'promise.map'
-import { snapshot } from 'valtio'
+import type { DynamicFeedItem, DynamicFeedItemExtend, ItemsSeparator, LiveItemExtend } from '$define'
+import type { Nullable } from '$utility/type'
 import { BaseTabService, QueueStrategy } from '../_base'
 import { LiveRecService } from '../live'
 import { ELiveStatus } from '../live/live-enum'
@@ -28,8 +30,6 @@ import {
   type DynamicFeedStore,
 } from './store'
 import { DynamicFeedUsageInfo } from './usage-info'
-import type { DynamicFeedItem, DynamicFeedItemExtend, ItemsSeparator, LiveItemExtend } from '$define'
-import type { Nullable } from '$utility/type'
 import type { ReactNode } from 'react'
 
 export type DynamicFeedServiceConfig = ReturnType<typeof getDynamicFeedServiceConfig>

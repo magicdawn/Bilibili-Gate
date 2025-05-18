@@ -1,5 +1,5 @@
-import { wrapWithIdbCache } from '$utility/idb'
 import ms from 'ms'
+import { wrapWithIdbCache } from '$utility/idb'
 import { getSpaceAccInfo } from './space-acc-info'
 
 async function __fetchUserNickname(mid: string | number) {

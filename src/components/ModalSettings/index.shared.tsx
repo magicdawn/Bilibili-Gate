@@ -1,5 +1,5 @@
-import { antMessage } from '$modules/antd'
 import { delay } from 'es-toolkit'
+import { antMessage } from '$modules/antd'
 import type { ReactNode } from 'react'
 
 export async function toastAndReload(msg = '即将刷新网页!') {

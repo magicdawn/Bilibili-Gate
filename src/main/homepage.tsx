@@ -1,3 +1,6 @@
+import { FloatButton } from 'antd'
+import { delay } from 'es-toolkit'
+import { createRoot, type Root } from 'react-dom/client'
 import { APP_CLS_ROOT, APP_NAMESPACE, appWarn } from '$common'
 import { AppRoot } from '$components/AppRoot'
 import { PureRecommend } from '$components/PureRecommend'
@@ -6,9 +9,6 @@ import { SectionRecommend } from '$components/SectionRecommend'
 import { settings } from '$modules/settings'
 import { isSafari } from '$ua'
 import { tryAction, tryToRemove } from '$utility/dom'
-import { FloatButton } from 'antd'
-import { delay } from 'es-toolkit'
-import { createRoot, type Root } from 'react-dom/client'
 
 // in this entry, if no insert point found, render to document body
 const isHashEntry = (location.hash || '').startsWith(`#/${APP_NAMESPACE}/`)

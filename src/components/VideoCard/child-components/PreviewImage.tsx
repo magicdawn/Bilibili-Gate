@@ -1,9 +1,9 @@
 import { css } from '@emotion/react'
 import { bgLv1Value } from '$components/css-vars'
 import { minmax } from '$utility/num'
+import type { PvideoData } from '$define'
 import { videoCardBorderRadiusValue } from '../../css-vars'
 import { zIndexPreviewImageWrapper } from '../index.shared'
-import type { PvideoData } from '$define'
 import type { ComponentProps, ComponentPropsWithoutRef, ComponentRef } from 'react'
 
 const S = {

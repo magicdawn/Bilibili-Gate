@@ -2,10 +2,10 @@
  * https://socialsisteryi.github.io/bilibili-API-collect/docs/user/space.html#查询用户投稿视频明细
  */
 
+import pRetry from 'p-retry'
 import { OPERATION_FAIL_MSG } from '$common'
 import { IconForFav, IconForPlayer, IconForTimestamp } from '$modules/icon'
 import { isWebApiSuccess, request } from '$request'
-import pRetry from 'p-retry'
 import type { SpaceUploadJson } from './types/space-upload'
 
 export enum SpaceUploadOrder {

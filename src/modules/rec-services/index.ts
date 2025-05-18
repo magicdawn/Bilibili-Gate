@@ -1,14 +1,14 @@
+import { uniqBy } from 'es-toolkit'
 import { baseDebug } from '$common'
 import { getColumnCount } from '$components/RecGrid/useShortcut'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { anyFilterEnabled, filterRecItems } from '$components/VideoCard/process/filter'
 import { lookinto } from '$components/VideoCard/process/normalize'
 import { EApiType } from '$define/index.shared'
-import { uniqBy } from 'es-toolkit'
+import type { RecItemTypeOrSeparator } from '$define'
 import { AppRecService } from './app'
 import { PcRecService } from './pc'
 import { getServiceFromRegistry, REC_TABS, type FetcherOptions } from './service-map'
-import type { RecItemTypeOrSeparator } from '$define'
 
 const debug = baseDebug.extend('service')
 

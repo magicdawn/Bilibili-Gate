@@ -1,4 +1,6 @@
 import { css } from '@emotion/react'
+import { Empty, Input } from 'antd'
+import { uniq } from 'es-toolkit'
 import { borderColorValue } from '$components/css-vars'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
@@ -10,8 +12,6 @@ import {
   useSettingsInnerArray,
   type ListSettingsPath,
 } from '$modules/settings'
-import { Empty, Input } from 'antd'
-import { uniq } from 'es-toolkit'
 import type { ComponentPropsWithoutRef } from 'react'
 
 const { Search } = Input

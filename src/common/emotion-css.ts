@@ -1,9 +1,9 @@
 import { css } from '@emotion/react'
+import { theme } from 'antd'
+import { useSnapshot } from 'valtio'
 import { APP_NAMESPACE } from '$common'
 import { borderColorValue } from '$components/css-vars'
 import { settings } from '$modules/settings'
-import { theme } from 'antd'
-import { useSnapshot } from 'valtio'
 
 // harmonyos_regular 没法对齐
 const antdBtnTextStyle = css`

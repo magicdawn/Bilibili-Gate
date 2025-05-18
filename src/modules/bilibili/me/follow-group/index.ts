@@ -1,8 +1,8 @@
+import { uniq } from 'es-toolkit'
 import { get_w_webId } from '$modules/bilibili/risk-control/w_webid'
 import { encWbi } from '$modules/bilibili/risk-control/wbi'
 import { request } from '$request'
 import { getUid } from '$utility/cookie'
-import { uniq } from 'es-toolkit'
 import type { FollowGroupContent, FollowGroupContentJson } from './types/group-content'
 import type { FollowGroupsJson } from './types/groups'
 

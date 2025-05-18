@@ -1,11 +1,12 @@
+import { cloneDeep, countBy, orderBy, shuffle } from 'es-toolkit'
+import { tryit } from 'radash'
+import { proxy, useSnapshot } from 'valtio'
 import { CustomTargetLink } from '$components/VideoCard/use/useOpenRelated'
 import { EApiType } from '$define/index.shared'
 import { AntdTooltip } from '$modules/antd/custom'
 import { getSpaceAccInfo } from '$modules/bilibili/user/space-acc-info'
 import { IconForOpenExternalLink, IconForPlayer } from '$modules/icon'
-import { cloneDeep, countBy, orderBy, shuffle } from 'es-toolkit'
-import { tryit } from 'radash'
-import { proxy, useSnapshot } from 'valtio'
+import type { ItemsSeparator } from '$define'
 import { fetchCollectionDetail } from '../collection/api'
 import { FavItemsOrder, handleItemsOrder } from '../fav-enum'
 import { formatBvidUrl, formatFavCollectionUrl } from '../fav-url'
@@ -15,7 +16,6 @@ import type { IFavInnerService } from '../index'
 import type { FavItemExtend } from '../types'
 import type { FavCollectionDetailInfo, FavCollectionDetailMedia } from '../types/collections/collection-detail'
 import { FAV_PAGE_SIZE, favSeparatorCss } from './_base'
-import type { ItemsSeparator } from '$define'
 
 export class FavCollectionService implements IFavInnerService {
   constructor(

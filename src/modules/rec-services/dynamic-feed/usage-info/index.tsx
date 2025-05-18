@@ -1,3 +1,7 @@
+import { Avatar, Badge, Button, Dropdown } from 'antd'
+import { delay } from 'es-toolkit'
+import { fastSortWithOrders } from 'fast-sort-lens'
+import { useSnapshot } from 'valtio'
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
 import { IconForReset } from '$modules/icon'
@@ -5,10 +9,7 @@ import { CopyBvidButtonsUsageInfo } from '$modules/rec-services/_shared/copy-bvi
 import { useSettingsSnapshot } from '$modules/settings'
 import { getAvatarSrc } from '$utility/image'
 import { localeComparer, mapNameForSort } from '$utility/sort'
-import { Avatar, Badge, Button, Dropdown } from 'antd'
-import { delay } from 'es-toolkit'
-import { fastSortWithOrders } from 'fast-sort-lens'
-import { useSnapshot } from 'valtio'
+import type { AntMenuItem } from '$modules/antd'
 import { usePopupContainer } from '../../_base'
 import { dropdownMenuStyle } from '../../_shared'
 import { IconForGroup, IconForUp } from '../shared'
@@ -21,7 +22,6 @@ import {
   type DynamicFeedStoreSelectedKey,
 } from '../store'
 import { usePopoverRelated } from './popover-related'
-import type { AntMenuItem } from '$modules/antd'
 import type { ReactNode } from 'react'
 
 export function dynamicFeedFilterSelectUp(payload: Partial<typeof dfStore>) {

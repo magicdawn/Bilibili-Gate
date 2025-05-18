@@ -1,7 +1,8 @@
-import { ETab } from '$components/RecHeader/tab-enum'
-import { settings } from '$modules/settings'
 import { invariant } from 'es-toolkit'
 import { snapshot } from 'valtio'
+import { ETab } from '$components/RecHeader/tab-enum'
+import { settings } from '$modules/settings'
+import type { RefStateBox } from '$common/hooks/useRefState'
 import { AppRecService, getAppRecServiceConfig } from './app'
 import { DynamicFeedRecService, getDynamicFeedServiceConfig } from './dynamic-feed'
 import { FavRecService, getFavServiceConfig } from './fav'
@@ -12,7 +13,6 @@ import { getSpaceUploadServiceConfig, SpaceUploadService } from './space-upload'
 import { WatchlaterRecService } from './watchlater'
 import { watchlaterStore } from './watchlater/store'
 import type { BaseTabService } from './_base'
-import type { RefStateBox } from '$common/hooks/useRefState'
 
 export const REC_TABS = [ETab.KeepFollowOnly, ETab.PcRecommend, ETab.AppRecommend] satisfies ETab[]
 

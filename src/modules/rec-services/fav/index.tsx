@@ -1,5 +1,6 @@
-import { settings } from '$modules/settings'
 import { snapshot } from 'valtio'
+import { settings } from '$modules/settings'
+import type { FavItemExtend, ItemsSeparator } from '$define'
 import { BaseTabService } from '../_base'
 import { FAV_PAGE_SIZE } from './service/_base'
 import { FavAllService } from './service/fav-all'
@@ -9,7 +10,6 @@ import { favStore, updateFavFolderMediaCount } from './store'
 import { FavUsageInfo } from './usage-info'
 import { getSavedOrder } from './usage-info/fav-items-order'
 import type { FavItemsOrder } from './fav-enum'
-import type { FavItemExtend, ItemsSeparator } from '$define'
 
 export type FavServiceConfig = ReturnType<typeof getFavServiceConfig>
 

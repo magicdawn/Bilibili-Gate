@@ -1,3 +1,5 @@
+import { delay, randomInt, range, shuffle, uniqBy } from 'es-toolkit'
+import { times } from 'es-toolkit/compat'
 import { HOST_APP } from '$common'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { useOnRefreshContext, type OnRefresh } from '$components/RecGrid/useRefresh'
@@ -9,8 +11,8 @@ import { getSettingsSnapshot } from '$modules/settings'
 import { gmrequest } from '$request'
 import { getHasLogined } from '$utility/cookie'
 import { formatRecentTimeStamp } from '$utility/video'
-import { delay, randomInt, range, shuffle, uniqBy } from 'es-toolkit'
-import { times } from 'es-toolkit/compat'
+import type { IVideoCardData } from '$components/VideoCard/process/normalize'
+import type { ipad } from '$define/app-recommend.ipad'
 import { BaseTabService, type IService } from './_base'
 import { DynamicFeedRecService, getDynamicFeedServiceConfig } from './dynamic-feed'
 import { createDfStore } from './dynamic-feed/store'
@@ -18,8 +20,6 @@ import { FavRecService, getFavServiceConfig, type FavServiceConfig } from './fav
 import { FavItemsOrder } from './fav/fav-enum'
 import { WatchlaterRecService } from './watchlater'
 import { WatchlaterItemsOrder } from './watchlater/watchlater-enum'
-import type { IVideoCardData } from '$components/VideoCard/process/normalize'
-import type { ipad } from '$define/app-recommend.ipad'
 
 type AppRecServiceConfig = ReturnType<typeof getAppRecServiceConfig>
 

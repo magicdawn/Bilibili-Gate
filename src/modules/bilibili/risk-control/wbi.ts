@@ -2,12 +2,12 @@
  * https://socialsisteryi.github.io/bilibili-API-collect/docs/misc/sign/wbi.html#javascript
  */
 
-import { HOST_API } from '$common'
-import { dailyCache } from '$modules/gm/daily-cache'
-import { reusePendingPromise } from '$utility/async'
 import axios from 'axios'
 import ms from 'ms'
 import { hash } from 'spark-md5'
+import { HOST_API } from '$common'
+import { dailyCache } from '$modules/gm/daily-cache'
+import { reusePendingPromise } from '$utility/async'
 
 /**
  * 为请求参数进行 wbi 签名

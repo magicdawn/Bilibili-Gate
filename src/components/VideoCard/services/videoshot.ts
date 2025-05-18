@@ -1,10 +1,10 @@
+import { delay } from 'es-toolkit'
+import QuickLRU from 'quick-lru'
 import { appWarn } from '$common'
 import { settings } from '$modules/settings'
 import { isWebApiSuccess, request } from '$request'
 import { reusePendingPromise } from '$utility/async'
 import { preloadImg } from '$utility/image'
-import { delay } from 'es-toolkit'
-import QuickLRU from 'quick-lru'
 import type { PvideoJson } from '$define'
 
 export function isVideoshotDataValid(videoshotData?: PvideoJson['data']): boolean {

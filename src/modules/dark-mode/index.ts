@@ -1,9 +1,9 @@
+import { delay } from 'es-toolkit'
+import { subscribe } from 'valtio'
 import { appClsDark } from '$common/css-vars-export.module.scss'
 import { settings } from '$modules/settings'
 import { shouldDisableShortcut } from '$utility/dom'
 import { subscribeOnKeys, valtioFactory } from '$utility/valtio'
-import { delay } from 'es-toolkit'
-import { subscribe } from 'valtio'
 
 /**
  * BILIBILI-Evolved dark mode:
