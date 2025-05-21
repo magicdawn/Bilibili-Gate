@@ -3,7 +3,7 @@
  */
 
 import dayjs from 'dayjs'
-import { tryit } from 'radash'
+import { attempt } from 'es-toolkit'
 import { APP_KEY_PREFIX } from '$common'
 import { defaultSharedEmitter, type SharedEmitter } from '$components/VideoCard/index.shared'
 import { normalizeCardData, type IVideoCardData } from '$components/VideoCard/process/normalize'
@@ -35,7 +35,7 @@ export function setCurrentGridSharedEmitter(sharedEmitter: SharedEmitter) {
 //   - firefox 提供 `cloneInto()` / `exportFunction()`, 在 violentmonkey 中可以使用这俩函数
 //   - chromium 系列只能使用 `window.postMessage` / `window.addEventListener` 通信, 但是脚本管理器没有做这个
 const win = (typeof unsafeWindow !== 'undefined' ? unsafeWindow : globalThis) as any
-export const setGlobalValue = (key: string, val: any) => void tryit(() => (win[key] = val))()
+export const setGlobalValue = (key: string, val: any) => void attempt(() => (win[key] = val))
 
 export const gridItemsKey = `${APP_KEY_PREFIX}_gridItems`
 export function setGlobalGridItems(itemsWithSep: RecItemTypeOrSeparator[]) {

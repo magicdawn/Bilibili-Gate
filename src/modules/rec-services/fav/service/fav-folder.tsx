@@ -1,4 +1,4 @@
-import { invariant, shuffle, uniqBy } from 'es-toolkit'
+import { assert, shuffle, uniqBy } from 'es-toolkit'
 import ms from 'ms'
 import { snapshot } from 'valtio'
 import { REQUEST_FAIL_MSG } from '$common'
@@ -89,7 +89,7 @@ export class FavFolderService implements IFavInnerService {
   innerService: FavFolderBasicService | undefined
   // https://www.totaltypescript.com/tips/use-assertion-functions-inside-classes
   assertInnerService(): asserts this is SetNonNullable<this, 'innerService'> {
-    invariant(this.innerService, 'this.innerService should not be undefined')
+    assert(this.innerService, 'this.innerService should not be undefined')
   }
 
   async createService() {
@@ -97,7 +97,7 @@ export class FavFolderService implements IFavInnerService {
 
     await favStore.updateList()
     const entry = snapshot(favStore.favFolders).find((f) => f.id === this.folderId)
-    invariant(entry, `favStore.favFolders should have this entry[fid=${this.folderId}]`)
+    assert(entry, `favStore.favFolders should have this entry[fid=${this.folderId}]`)
     this.entry = entry
 
     if (isFavFolderApiSuppoetedOrder(this.itemsOrder)) {

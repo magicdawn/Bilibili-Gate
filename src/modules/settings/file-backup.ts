@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { tryit } from 'radash'
+import { attempt } from 'es-toolkit'
 import { APP_NAME } from '$common'
 import { toastAndReload } from '$components/ModalSettings/index.shared'
 import { antMessage } from '$modules/antd'
@@ -18,10 +18,10 @@ import type { PartialDeep } from 'type-fest'
 let lastUrl: string | undefined
 function genUrl() {
   // revoke previous created url
-  tryit(() => {
+  attempt(() => {
     if (lastUrl) URL.revokeObjectURL(lastUrl)
     lastUrl = undefined
-  })()
+  })
 
   const val = getSettingsSnapshot()
   const json = JSON.stringify(val, null, 2)

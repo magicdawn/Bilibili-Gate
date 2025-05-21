@@ -1,4 +1,4 @@
-import { invariant } from 'es-toolkit'
+import { assert } from 'es-toolkit'
 import { snapshot } from 'valtio'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { settings } from '$modules/settings'
@@ -63,6 +63,6 @@ export function getServiceFromRegistry<T extends ETab>(
   tab: T,
 ): ServiceMap[T] {
   const service = servicesRegistry.val[tab]
-  invariant(service, `servicesRegistry.val[tab=${tab}] should not be nil`)
+  assert(service, `servicesRegistry.val[tab=${tab}] should not be nil`)
   return service
 }

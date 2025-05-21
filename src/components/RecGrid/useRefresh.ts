@@ -1,6 +1,5 @@
 import { useUnmount } from 'ahooks'
-import { isEqual } from 'es-toolkit'
-import { tryit } from 'radash'
+import { attempt, isEqual } from 'es-toolkit'
 import { createContext } from 'react'
 import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
 import { TabConfig } from '$components/RecHeader/tab-config'
@@ -181,7 +180,7 @@ export function useRefresh({
     }
 
     if (willRefresh) {
-      const [err, service] = tryit(() => createServiceMap[tab]({ existingService }))()
+      const [err, service] = attempt(() => createServiceMap[tab]({ existingService }))
       if (err) return onError(err)
 
       servicesRegistry.set({ ...servicesRegistry.val, [tab]: service })

@@ -95,9 +95,6 @@ importers:
       quick-lru:
         specifier: ^7.0.1
         version: 7.0.1
-      radash:
-        specifier: ^12.1.0
-        version: 12.1.0
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -4035,10 +4032,6 @@ packages:
   quick-lru@7.0.1:
     resolution: {integrity: sha512-kLjThirJMkWKutUKbZ8ViqFc09tDQhlbQo2MNuVeLWbRauqYP96Sm6nzlQ24F0HFjUNZ4i9+AgldJ9H6DZXi7g==}
     engines: {node: '>=18'}
-
-  radash@12.1.0:
-    resolution: {integrity: sha512-b0Zcf09AhqKS83btmUeYBS8tFK7XL2e3RvLmZcm0sTdF1/UUlHSsjXdCcWNxe7yfmAlPve5ym0DmKGtTzP6kVQ==}
-    engines: {node: '>=14.18.0'}
 
   rc-cascader@3.34.0:
     resolution: {integrity: sha512-KpXypcvju9ptjW9FaN2NFcA2QH9E9LHKq169Y0eWtH4e/wHQ5Wh5qZakAgvb8EKZ736WZ3B0zLLOBsrsja5Dag==}
@@ -9298,8 +9291,6 @@ snapshots:
   queue-microtask@1.2.3: {}
 
   quick-lru@7.0.1: {}
-
-  radash@12.1.0: {}
 
   rc-cascader@3.34.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:

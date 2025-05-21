@@ -1,5 +1,4 @@
-import { cloneDeep, countBy, orderBy, shuffle } from 'es-toolkit'
-import { tryit } from 'radash'
+import { attemptAsync, cloneDeep, countBy, orderBy, shuffle } from 'es-toolkit'
 import { proxy, useSnapshot } from 'valtio'
 import { CustomTargetLink } from '$components/VideoCard/use/useOpenRelated'
 import { EApiType } from '$define/index.shared'
@@ -65,7 +64,7 @@ export class FavCollectionService implements IFavInnerService {
       const info = data?.info
 
       // pre-process
-      await tryit(() => this.loadUserAvatarFromSpaceAccInfo(medias, abortSignal))()
+      await attemptAsync(() => this.loadUserAvatarFromSpaceAccInfo(medias, abortSignal))
       let items: FavItemExtend[] = medias.map((x) => {
         return {
           ...x,

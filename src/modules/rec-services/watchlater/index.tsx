@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { invariant, orderBy, shuffle } from 'es-toolkit'
+import { assert, orderBy, shuffle } from 'es-toolkit'
 import pRetry from 'p-retry'
 import { proxy, useSnapshot } from 'valtio'
 import { proxySet } from 'valtio/utils'
@@ -244,7 +244,7 @@ class NormalOrderService implements IService {
     private searchText?: string,
   ) {
     if (!this.searchText) {
-      invariant(order !== WatchlaterItemsOrder.Shuffle, 'shuffle not supported in NormalOrderService')
+      assert(order !== WatchlaterItemsOrder.Shuffle, 'shuffle not supported in NormalOrderService')
     }
   }
 

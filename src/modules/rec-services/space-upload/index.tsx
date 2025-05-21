@@ -1,4 +1,4 @@
-import { invariant, orderBy, uniq } from 'es-toolkit'
+import { assert, orderBy, uniq } from 'es-toolkit'
 import pmap from 'promise.map'
 import QuickLRU from 'quick-lru'
 import { snapshot } from 'valtio'
@@ -55,7 +55,7 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
     Object.assign(this, config)
     this.mids = config.mids
     this.order = config.order
-    invariant(this.mids.length || this.groupId, 'mid & groupId can not both be empty')
+    assert(this.mids.length || this.groupId, 'mid & groupId can not both be empty')
     this.searchText = this.searchText?.trim()
     if (this.initialPage && (this.groupId || this.mids.length > 1)) {
       throw new Error('initialPage not supported when merging')
@@ -147,7 +147,7 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
     this.setPageTitle()
 
     await this.setupServices()
-    invariant(this.service, 'no service available after setupServices')
+    assert(this.service, 'no service available after setupServices')
 
     const items = (await this.service.loadMore(abortSignal)) || []
     const endVol = this.singleUpService
@@ -192,7 +192,7 @@ class MergeTimeService implements IService<SpaceUploadItem> {
     public order: SpaceUploadOrder,
     public searchText: string | undefined,
   ) {
-    invariant(
+    assert(
       this.mids.length === 1 || (this.mids.length > 1 && this.order !== SpaceUploadOrder.Fav),
       'SpaceUploadItem.Fav not supported when merging',
     )
