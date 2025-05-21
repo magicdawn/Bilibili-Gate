@@ -6,7 +6,6 @@
 import { css } from '@emotion/react'
 import { useRequest } from 'ahooks'
 import { Avatar } from 'antd'
-import { Case, Switch } from 'react-if'
 import { useSnapshot } from 'valtio'
 import { colorPrimaryValue } from '$components/css-vars'
 import { isAppRecommend, isLive, isPcRecommend, isRank, type RecItemType } from '$define'
@@ -261,50 +260,47 @@ export const VideoCardBottom = memo(function ({
     }
 
     // 其他歪瓜
-    return (
-      <Switch>
-        <Case condition={appBadge || appBadgeDesc}>
-          <a className='bili-video-card__info--owner' css={descOwnerCss} href={href} target={target}>
-            {!!appBadge && <span css={S.appBadge}>{appBadge}</span>}
-            {!!appBadgeDesc && <span>{appBadgeDesc}</span>}
+    if (appBadge || appBadgeDesc) {
+      return (
+        <a className='bili-video-card__info--owner' css={descOwnerCss} href={href} target={target}>
+          {!!appBadge && <span css={S.appBadge}>{appBadge}</span>}
+          {!!appBadgeDesc && <span>{appBadgeDesc}</span>}
+        </a>
+      )
+    }
+    if (isRank(item) && rankingDesc) {
+      return <div css={descOwnerCss}>{rankingDesc}</div>
+    }
+    // 关注的直播 | `PC推荐 & goto=live`
+    if (isLive(item) || (isPcRecommend(item) && item.goto === PcRecGoto.Live)) {
+      return (
+        <>
+          <a
+            css={[
+              descOwnerCss,
+              css`
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 1;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100%;
+              `,
+            ]}
+            href={authorHref}
+            target={target}
+            title={(authorName || '') + (liveExtraDesc || '')}
+          >
+            {authorName}
+            {liveExtraDesc && <span className='ml-4px'>{liveExtraDesc}</span>}
           </a>
-        </Case>
-
-        <Case condition={isRank(item) && rankingDesc}>
-          <div css={descOwnerCss}>{rankingDesc}</div>
-        </Case>
-
-        {/* 关注的直播 */}
-        {/* PC推荐: goto=live */}
-        <Case condition={isLive(item) || (isPcRecommend(item) && item.goto === PcRecGoto.Live)}>
-          <>
-            <a
-              css={[
-                descOwnerCss,
-                css`
-                  display: -webkit-box;
-                  -webkit-box-orient: vertical;
-                  -webkit-line-clamp: 1;
-                  overflow: hidden;
-                  text-overflow: ellipsis;
-                  max-width: 100%;
-                `,
-              ]}
-              href={authorHref}
-              target={target}
-              title={(authorName || '') + (liveExtraDesc || '')}
-            >
-              {authorName}
-              {liveExtraDesc && <span className='ml-4px'>{liveExtraDesc}</span>}
-            </a>
-            {!!recommendReason && (
-              <span css={S.recommendReason} title={recommendReason}>
-                {recommendReason}
-              </span>
-            )}
-          </>
-        </Case>
-      </Switch>
-    )
+          {!!recommendReason && (
+            <span css={S.recommendReason} title={recommendReason}>
+              {recommendReason}
+            </span>
+          )}
+        </>
+      )
+    }
   }
 })
