@@ -517,23 +517,27 @@ const VideoCardInner = memo(function VideoCardInner({
 
   // 一堆 selector 增加权重
   const prefixCls = `.${APP_CLS_ROOT} .${APP_CLS_CARD}` // .${APP_CLS_GRID}
-  const coverBottomNoRoundCss = css`
-    ${prefixCls} & {
-      border-bottom-left-radius: 0;
-      border-bottom-right-radius: 0;
-    }
-  `
-  const coverRoundCss: CssProp = [
-    css`
-      ${prefixCls} & {
-        overflow: hidden;
-        border-radius: ${videoCardBorderRadiusValue};
-      }
-    `,
-    !isDisplayAsList(cardDisplay) &&
-      (isHovering || active || multiSelecting || (cardUseBorder && !cardUseBorderOnlyOnHover)) &&
-      coverBottomNoRoundCss,
-  ]
+
+  // 封面圆角
+  const coverRoundCss: CssProp = useMemo(() => {
+    return [
+      css`
+        ${prefixCls} & {
+          overflow: hidden;
+          border-radius: ${videoCardBorderRadiusValue};
+          transition: border-radius 0.2s ease-in-out;
+        }
+      `,
+      !isDisplayAsList(cardDisplay) &&
+        (isHovering || active || multiSelecting || (cardUseBorder && !cardUseBorderOnlyOnHover)) &&
+        css`
+          ${prefixCls} & {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+          }
+        `,
+    ]
+  }, [cardDisplay, isHovering, active, multiSelecting, cardUseBorder, cardUseBorderOnlyOnHover])
 
   // 防止看不清封面边界: (封面与背景色接近)
   const shouldMakeCoverClear = useMemo(() => {
