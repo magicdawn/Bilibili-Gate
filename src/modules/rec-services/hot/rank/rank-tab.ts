@@ -21,8 +21,6 @@ export type IRankTab = {
   slug: string
   season_type?: number
   type?: string
-  // bili-gate added
-  isExtra?: boolean
 }
 
 export async function getRankTabsConfig() {
@@ -42,14 +40,13 @@ async function parseRankTabsConfig() {
   if (!popular_page_sort.length) return
 
   const list: IRankTab[] = []
-  const push = (obj: any, isExtra?: boolean) => {
+  const push = (obj: any) => {
     list.push({
       tid: (obj.tid || 0) as number,
       name: obj.name as string,
       slug: obj.route as string,
       season_type: (obj.seasonType || 0) as number,
       type: obj.route as string,
-      isExtra,
     })
   }
 
@@ -57,12 +54,6 @@ async function parseRankTabsConfig() {
     if (!record[slug]) continue
     const obj = JSON.parse(record[slug])
     push(obj)
-  }
-
-  for (const [key, str] of Object.entries(record)) {
-    const obj = JSON.parse(str) as any
-    if (!obj.name || !obj.route || !obj.tid) continue
-    push(obj, true)
   }
 
   return uniqBy(list, (x) => x.slug)

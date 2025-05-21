@@ -75,7 +75,7 @@ function RankUsageInfo() {
   const { slug, currentTab, tabs } = useSnapshot(rankStore)
 
   const renderRankTabList = (list: IRankTab[], label: ReactNode, helpInfoContent?: ReactNode) => {
-    list ||= []
+    if (!list.length) return null
     return (
       <div className='mt-15px max-w-500px pt-5px first:(mt-0 pt-0)'>
         <p className='mb-8px flex-v-center rounded-5px bg-gate-primary py-5px pl-6px text-white'>
@@ -104,20 +104,17 @@ function RankUsageInfo() {
     )
   }
 
-  const { normalPresetList, pgcList, normalExtraList } = useMemo(() => {
+  const { normalList, pgcList } = useMemo(() => {
     const listWithApiType = tabs.map((x) => ({ ...x, apiType: getRankTabRequestConfig(x).apiType }))
-    const normalList = listWithApiType.filter((x) => x.apiType === ERankApiType.Normal)
     const pgcList = listWithApiType.filter((x) => [ERankApiType.PgcSeason, ERankApiType.PgcWeb].includes(x.apiType))
-    const normalPresetList = normalList.filter((x) => !x.isExtra)
-    const normalExtraList = normalList.filter((x) => x.isExtra)
-    return { normalPresetList, pgcList, normalExtraList }
+    const normalList = listWithApiType.filter((x) => x.apiType === ERankApiType.Normal)
+    return { normalList, pgcList }
   }, [tabs])
 
   const popoverContent = (
     <>
-      {renderRankTabList(normalPresetList, '视频')}
+      {renderRankTabList(normalList, '视频')}
       {renderRankTabList(pgcList, 'PGC内容', '不能提供预览')}
-      {renderRankTabList(normalExtraList, '更多', '默认排行榜页没有列出的分区')}
     </>
   )
   const [popoverOpen, setPopoverOpen] = useState(false)
