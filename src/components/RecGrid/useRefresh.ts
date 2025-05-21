@@ -1,5 +1,6 @@
 import { useUnmount } from 'ahooks'
-import { isEqual, tryit } from 'radash'
+import { isEqual } from 'es-toolkit'
+import { tryit } from 'radash'
 import { createContext } from 'react'
 import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
 import { TabConfig } from '$components/RecHeader/tab-config'

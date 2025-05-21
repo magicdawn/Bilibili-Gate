@@ -1,6 +1,5 @@
 import { Tag } from 'antd'
-import { isEqual } from 'es-toolkit'
-import { pick } from 'radash'
+import { isEqual, pick } from 'es-toolkit'
 import { APP_NAME } from '$common'
 import { antMessage } from '$modules/antd'
 import { settings, useSettingsSnapshot } from '$modules/settings'
