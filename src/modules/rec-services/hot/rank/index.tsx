@@ -77,12 +77,12 @@ function RankUsageInfo() {
   const renderRankTabList = (list: IRankTab[], label: ReactNode, helpInfoContent?: ReactNode) => {
     if (!list.length) return null
     return (
-      <div className='mt-15px max-w-500px pt-5px first:(mt-0 pt-0)'>
-        <p className='mb-8px flex-v-center rounded-5px bg-gate-primary py-5px pl-6px text-white'>
+      <div className='mt-15px max-w-350px first:mt-0'>
+        <p className='mb-5px flex-v-center rounded-5px bg-gate-primary py-5px pl-6px text-white'>
           {label}
           {!!helpInfoContent && <HelpInfo>{helpInfoContent}</HelpInfo>}
         </p>
-        <div className='grid grid-cols-5 gap-x-12px gap-y-8px px-2px'>
+        <div className='grid grid-cols-4 gap-x-10px gap-y-8px px-2px'>
           {list.map((c) => {
             const active = c.slug === slug
             return (
