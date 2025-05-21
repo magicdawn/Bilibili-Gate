@@ -332,7 +332,7 @@ function apiIpadAppAdapter(item: IpadAppRecItemExtend): IVideoCardData {
     pubdateDisplay: descDate,
     duration: item.player_args?.duration || 0,
     durationStr: formatDuration(item.player_args?.duration),
-    recommendReason: item.bottom_rcmd_reason || item.top_rcmd_reason, // TODO: top_rcmd_reason
+    recommendReason: item.bottom_rcmd_reason || item.top_rcmd_reason,
 
     // stat
     play,
@@ -651,6 +651,10 @@ function apiRankAdapter(item: RankItemExtend): IVideoCardData {
     }
   }
 
+  let recommendReason: string | undefined = (item.dynamic || item.desc)?.trim()
+  if (recommendReason === '-') recommendReason = undefined
+  if (recommendReason && item.title.includes(recommendReason)) recommendReason = undefined
+
   // normal
   return {
     // video
@@ -665,7 +669,7 @@ function apiRankAdapter(item: RankItemExtend): IVideoCardData {
     pubdateDisplay: formatTimeStamp(item.pubdate),
     duration: item.duration,
     durationStr: formatDuration(item.duration),
-    recommendReason: undefined, // TODO: write something here
+    recommendReason,
 
     // stat
     play: item.stat.view,
@@ -726,6 +730,10 @@ function apiSpaceUploadAdapter(item: SpaceUploadItemExtend): IVideoCardData {
   const duration = parseDuration(item.length)
   const durationStr = formatDuration(duration) // 太蠢啦, 这个 API length 有时候会返回 '90:10', 表示 90分钟10秒, 不能直接用
 
+  let recommendReason: string | undefined = item.description?.trim()
+  if (recommendReason === '-') recommendReason = undefined
+  if (recommendReason && item.title.includes(recommendReason)) recommendReason = undefined
+
   return {
     // video
     avid: item.aid.toString(),
@@ -739,7 +747,7 @@ function apiSpaceUploadAdapter(item: SpaceUploadItemExtend): IVideoCardData {
     pubdateDisplay: formatRecentTimeStamp(item.created, false),
     duration,
     durationStr,
-    recommendReason: item.description || undefined,
+    recommendReason,
 
     // stat
     play: item.play,

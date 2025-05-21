@@ -100,7 +100,6 @@ export class FavRecService extends BaseTabService<FavItemExtend | ItemsSeparator
   // for remove card
   decreaseTotal() {
     if (this.config.viewingAll) {
-      // TODO: this is not working, since <FavUsageInfo> is calculating inside itself
       ;(this.innerService as FavAllService).state.totalCountInFavFolders -= 1
     }
 

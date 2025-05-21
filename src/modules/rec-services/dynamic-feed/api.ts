@@ -33,7 +33,6 @@ export async function fetchVideoDynamicFeeds({
   if (upMid) {
     params.host_mid = upMid
     // 未关注, 也可以查询, 但有风控 (code -352) ...
-    // TODO: figure out how to query
     // apiPath = '/x/polymer/web-dynamic/v1/feed/space'
   }
 
