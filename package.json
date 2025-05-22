@@ -97,7 +97,7 @@
     "eslint-config-prettier": "^10.1.5",
     "globals": "^16.1.0",
     "husky": "^9.1.7",
-    "knip": "^5.57.0",
+    "knip": "^5.57.1",
     "lint-staged": "^16.0.0",
     "node-cjs-interop": "^0.1.7",
     "oxlint": "^0.16.11",
@@ -121,18 +121,6 @@
     "vite-plugin-monkey": "^5.0.8",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.1.4"
-  },
-  "pnpm": {
-    "overrides": {
-      "vite-plugin-importer>babel-plugin-import": "^1.13.8"
-    },
-    "onlyBuiltDependencies": [
-      "@biomejs/biome",
-      "@swc/core",
-      "core-js-pure",
-      "esbuild",
-      "unrs-resolver"
-    ]
   },
   "lint-staged": {
     "*.{js,cjs,mjs,ts,cts,mts,jsx,tsx,json,md,yaml,yml}": [

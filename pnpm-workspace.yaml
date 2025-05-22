@@ -1,0 +1,11 @@
+overrides:
+  vite-plugin-importer>babel-plugin-import: ^1.13.8
+
+allowedDeprecatedVersions:
+  axios-userscript-adapter: '0'
+onlyBuiltDependencies:
+  - '@biomejs/biome'
+  - '@swc/core'
+  - core-js-pure
+  - esbuild
+  - unrs-resolver
