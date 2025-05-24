@@ -1,7 +1,7 @@
 import { css } from '@emotion/react'
 import { createPortal } from 'react-dom'
-import { APP_CLS_ROOT } from '$common'
-import { appClsDarkSelector, zIndexBaseModal } from '$common/css-vars-export.module.scss'
+import { APP_CLS_ROOT, APP_NAMESPACE } from '$common'
+import { zIndexBaseModal } from '$common/css-vars-export.module.scss'
 import { useIsDarkMode } from '$modules/dark-mode'
 import { hasMarginLeft, hasSize } from '$utility/css'
 import type { CssProp } from '$utility/type'
@@ -10,10 +10,7 @@ import type { ComponentProps, MouseEvent } from 'react'
 export const BaseModalStyle = {
   modalMask: css`
     position: fixed;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background-color: rgba(0, 0, 0, 0.5);
     z-index: ${zIndexBaseModal};
 
@@ -57,30 +54,9 @@ export const BaseModalStyle = {
     display: flex;
     align-items: center;
   `,
-
-  btnClose: css`
-    margin-left: 10px;
-
-    svg {
-      width: 10px;
-      height: 10px;
-      margin-right: 3px;
-      margin-top: -1px;
-    }
-
-    :global(${appClsDarkSelector}) & {
-      color: #eee !important;
-      background-color: #333 !important;
-      border-color: transparent !important;
-      height: auto;
-      padding: 8px 12px;
-      line-height: 16px;
-      font-size: 13px;
-    }
-  `,
 }
 
-interface IProps {
+type BaseModalProps = {
   show: boolean
   onHide: () => void
   children: ReactNode
@@ -99,18 +75,13 @@ interface IProps {
   hideWhenEsc?: boolean
 }
 
-let showedCount = 0
-const modalShowCheck = () => {
-  showedCount++
-  document.body.style.overflow = 'hidden' // lock
-}
-const modalHideCheck = () => {
-  showedCount--
-  if (showedCount < 0) showedCount = 0
-  if (showedCount === 0) {
-    document.body.style.overflow = '' // unlock
+export const APP_CLS_MODAL_VISIBLE = `${APP_NAMESPACE}-modal-visible`
+// lock body scroll
+export const modalGlobalStyle = css`
+  body:has(.${APP_CLS_MODAL_VISIBLE}) {
+    overflow-y: hidden;
   }
-}
+`
 
 export function BaseModal({
   show,
@@ -126,19 +97,9 @@ export function BaseModal({
   width,
   hideWhenMaskOnClick = false,
   hideWhenEsc = false,
-}: IProps) {
-  // lock body scroll
-  useLayoutEffect(() => {
-    if (show) {
-      modalShowCheck()
-    } else {
-      modalHideCheck()
-    }
-  }, [show])
-
+}: BaseModalProps) {
   const wrapperRef = useRef<HTMLDivElement>(null)
-
-  // 深色模式
+  const containerId = useId()
   const isDarkMode = useIsDarkMode()
 
   const { bg, c } = useMemo(() => {
@@ -159,63 +120,59 @@ export function BaseModal({
         {}
   }, [bg, c, isDarkMode])
 
-  const containerId = useId()
-  const container = useMemo(() => {
-    const div = document.createElement('div')
-    div.classList.add(APP_CLS_ROOT)
-    div.setAttribute('data-id', `base-modal-${containerId}`)
-    document.body.appendChild(div)
-    return div
-  }, [])
-
   const onMaskClick = useMemoizedFn((e: MouseEvent) => {
     const target = e.target as HTMLElement
 
     // click from .modal
     if (wrapperRef.current?.contains(target)) return
 
-    // click from antd tooltip
-    if (target.closest('.ant-tooltip-inner[role="tooltip"]')) return
-
-    // click from antd popconfirm
-    if (target.closest('.ant-popover-inner[role="tooltip"]')) return
-
-    // click from antd select dropdown
-    if (target.closest('.ant-select-dropdown')) return
+    // click from antd components
+    const selectors = [
+      '.ant-tooltip-inner[role="tooltip"]', // tooltip
+      '.ant-popover-inner[role="tooltip"]', // popover
+      '.ant-select-dropdown', // select-dropdown
+    ]
+    if (target.closest(selectors.join(','))) return
 
     if (hideWhenMaskOnClick) {
       onHide()
     }
   })
 
-  useKeyPress('esc', (e) => {
-    if (!show) return
-    if (hideWhenEsc) {
-      // prevent other esc handler run
-      e.preventDefault()
-      e.stopImmediatePropagation()
+  useKeyPress(
+    'esc',
+    (e) => {
+      if (!show) return
+      if (hideWhenEsc) {
+        // prevent other esc handler run
+        e.preventDefault()
+        e.stopImmediatePropagation()
 
-      // wait the unpreventable esc handlers run, close in next tick
-      setTimeout(onHide)
-    }
-  })
+        // wait the unpreventable esc handlers run, close in next tick
+        setTimeout(onHide)
+      }
+    },
+    { exactMatch: true },
+  )
 
   if (!show) {
     return null
   }
 
   return createPortal(
-    <div className={clsModalMask} css={[BaseModalStyle.modalMask, cssModalMask]} onClick={onMaskClick}>
-      <div
-        style={{ ...wrapperStyle, width }}
-        className={clsModal}
-        css={[BaseModalStyle.modal, cssModal]}
-        ref={wrapperRef}
-      >
-        {children}
+    <div className={clsx(APP_CLS_ROOT, { [APP_CLS_MODAL_VISIBLE]: show })} data-id={`base-modal-${containerId}`}>
+      <div className={clsModalMask} css={[BaseModalStyle.modalMask, cssModalMask]} onClick={onMaskClick}>
+        <div
+          style={{ ...wrapperStyle, width }}
+          className={clsModal}
+          css={[BaseModalStyle.modal, cssModal]}
+          ref={wrapperRef}
+        >
+          {children}
+        </div>
       </div>
     </div>,
-    container,
+    document.body,
   )
 }
 
@@ -225,8 +182,7 @@ export const ModalClose = ({ className, ...props }: ComponentProps<'svg'>) => {
       {...props}
       className={clsx(
         'cursor-pointer',
-        !hasSize(className) && 'size-18px',
-        !hasMarginLeft(className) && 'ml-10px',
+        { 'size-18px': !hasSize(className), 'ml-10px': !hasMarginLeft(className) },
         className,
       )}
     />

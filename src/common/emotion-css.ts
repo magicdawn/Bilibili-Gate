@@ -60,7 +60,7 @@ export function useAntLinkCss() {
 }
 
 export const APP_CLS_USE_ANT_LINK_COLOR = `${APP_NAMESPACE}--use-ant-link-color`
-export function useAntLinkColorGlobalCss() {
+export function useAntLinkColorGlobalStyle() {
   const s = useAntLinkCss()
   return css`
     :root .${APP_CLS_USE_ANT_LINK_COLOR} {

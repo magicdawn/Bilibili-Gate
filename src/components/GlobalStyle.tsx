@@ -1,11 +1,11 @@
 import { css as _css, css, Global } from '@emotion/react'
 import { APP_CLS_ROOT, IN_BILIBILI_HOMEPAGE } from '$common'
 import { appBgId, appColorPrimaryId } from '$common/css-vars-export.module.scss'
-import { useAntLinkColorGlobalCss } from '$common/emotion-css'
+import { useAntLinkColorGlobalStyle } from '$common/emotion-css'
 import { $headerWidth, $usingEvolevdHeader, useBackToTopRight } from '$header'
 import { useIsDarkMode } from '$modules/dark-mode'
 import { useSettingsSnapshot } from '$modules/settings'
-import type { CssProp } from '$utility/type'
+import { modalGlobalStyle } from './_base/BaseModal'
 import { useColorPrimaryHex } from './ModalSettings/theme.shared'
 
 export function GlobalStyle() {
@@ -20,19 +20,21 @@ export function GlobalStyle() {
   const width = $headerWidth.use() ?? 90
   const padding = '0 10px'
 
-  const more: CssProp = [useAntLinkColorGlobalCss()]
+  // more
+  const antLinkColorGlobalStyle = useAntLinkColorGlobalStyle()
 
   return (
     <>
       <Global
         styles={[
+          antLinkColorGlobalStyle,
+          modalGlobalStyle,
           _css`
             :root {
               ${appColorPrimaryId}: ${colorPrimary};
               ${appBgId}: ${dark ? '#222' : style.pureRecommend.useWhiteBackground ? `var(--bg1, #fff)` : `var(--bg2, #F6F7F8)`};
             }
           `,
-          more,
         ]}
       />
 
