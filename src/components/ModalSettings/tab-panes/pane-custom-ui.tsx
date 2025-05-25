@@ -129,7 +129,6 @@ export function TabPaneCustomUI() {
                 'style.videoCard.useBorder',
                 'style.videoCard.useBorderOnlyOnHover',
                 'style.videoCard.useBoxShadow',
-                'style.videoCard.usePadding',
                 'useDelayForHover',
               ]}
             />
@@ -169,12 +168,6 @@ export function TabPaneCustomUI() {
           />
 
           <CheckboxSettingItem configPath='useDelayForHover' label='延迟悬浮预览' tooltip={<>延迟悬浮预览</>} />
-
-          <CheckboxSettingItem
-            configPath='style.videoCard.usePadding'
-            label='卡片外扩'
-            tooltip={<>卡片会外扩一点距离</>}
-          />
         </div>
       </SettingsGroup>
     </div>

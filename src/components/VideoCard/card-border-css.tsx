@@ -85,7 +85,7 @@ export function useCardBorderCss(): CssProp {
   const {
     useDelayForHover,
     style: {
-      videoCard: { useBorder, useBorderOnlyOnHover, useBoxShadow, usePadding },
+      videoCard: { useBorder, useBorderOnlyOnHover, useBoxShadow },
       pureRecommend: { cardDisplay },
     },
   } = useSettingsSnapshot()
@@ -107,28 +107,16 @@ export function useCardBorderCss(): CssProp {
           &:hover {
             ${Styles.bgLv1}
             ${Styles.normalBorder}
-              ${useBoxShadow && Styles.activeBorder}
-              ${useDelayForHover && Styles.coverZoomEffect}
+            ${useBoxShadow && Styles.activeBorder}
+            ${useDelayForHover && Styles.coverZoomEffect}
           }
         `,
 
         // show border not:hover
         (multiSelecting || !useBorderOnlyOnHover) && Styles.normalBorder,
-
-        // add padding & negative margin
-        useBorderOnlyOnHover &&
-          !useBoxShadow &&
-          usePadding &&
-          css`
-            margin-inline: -6px;
-            .bili-video-card__wrap {
-              padding: 6px;
-              padding-bottom: 0;
-            }
-          `,
       ],
     ]
-  }, [useBorder, useBorderOnlyOnHover, useBoxShadow, usePadding, useDelayForHover, cardDisplay, multiSelecting])
+  }, [useBorder, useBorderOnlyOnHover, useBoxShadow, useDelayForHover, cardDisplay, multiSelecting])
 }
 
 export function getActiveCardBorderCss(active: boolean): CssProp {

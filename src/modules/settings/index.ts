@@ -224,7 +224,6 @@ export const initialSettings = {
       useBorder: true,
       useBorderOnlyOnHover: true,
       useBoxShadow: false,
-      usePadding: false,
     },
   },
 
@@ -397,7 +396,6 @@ export function runSettingsMigration(val: object | undefined) {
     ['style.videoCard.useBorder', 'styleUseCardBorder'],
     ['style.videoCard.useBorderOnlyOnHover', 'styleUseCardBorderOnlyOnHover'],
     ['style.videoCard.useBoxShadow', 'styleUseCardBoxShadow'],
-    ['style.videoCard.usePadding', 'styleUseCardPadding'],
 
     // 2024-12-17
     ['appRecommend.deviceParamForApi', 'appApiDecice'],
