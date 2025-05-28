@@ -1,5 +1,4 @@
 import { css } from '@emotion/react'
-import { appClsDarkSelector } from '$common/css-vars-export.module.scss'
 import { BaseModal, BaseModalStyle, ModalClose } from '$components/_base/BaseModal'
 import { CollapseBtn } from '$components/_base/CollapseBtn'
 import { colorPrimaryValue } from '$components/css-vars'
@@ -28,14 +27,8 @@ const S = {
     `,
     narrowMode &&
       css`
-        /* $card-width: 283px; */
         width: ${325 * 2 + 40}px;
         height: calc(100vh - 10px);
-
-        border: none;
-        :global(${appClsDarkSelector}) & {
-          border: none;
-        }
       `,
     fullScreenMode &&
       css`
@@ -50,18 +43,6 @@ const S = {
   `,
   modalBody: css`
     padding-right: 15px;
-  `,
-
-  btnRefresh: css`
-    ${appClsDarkSelector} & {
-      color: #eee !important;
-      background-color: #333 !important;
-      border-color: transparent !important;
-      height: auto;
-      padding: 8px 12px;
-      line-height: 16px;
-      font-size: 13px;
-    }
   `,
 }
 
@@ -107,44 +88,22 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
               display: flex;
               align-items: center;
               justify-content: space-between;
-              column-gap: 20px;
+              column-gap: 15px;
             `,
           ]}
         >
-          <div
-            className='left'
-            css={css`
-              flex-shrink: 1;
-              display: flex;
-              align-items: center;
-              flex-wrap: wrap;
-              row-gap: 4px;
-              column-gap: 15px;
-            `}
-          >
+          <div className='left flex flex-shrink-1 flex-wrap items-center gap-x-15px gap-y-4px'>
             <VideoSourceTab onRefresh={onRefresh} />
             {extraInfo}
           </div>
-          <div className='right flex flex-shrink-0 items-center'>
-            {useNarrowMode ? null : useFullScreen ? (
-              <ModalFeedConfigChecks />
-            ) : (
+          <div className='right flex flex-shrink-0 items-center gap-x-8px'>
+            {useNarrowMode ? null : (
               <CollapseBtn initialOpen>
                 <ModalFeedConfigChecks />
               </CollapseBtn>
             )}
-
-            <RefreshButton
-              css={css`
-                ${S.btnRefresh}
-                margin-left: 8px;
-              `}
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              refreshHotkeyEnabled={show}
-            />
-
-            <ModalClose onClick={onHide} />
+            <RefreshButton refreshing={refreshing} onRefresh={onRefresh} refreshHotkeyEnabled={show} />
+            <ModalClose onClick={onHide} className='ml-5px' />
           </div>
         </div>
       </OnRefreshContext.Provider>
@@ -172,24 +131,19 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
 })
 
 function ModalFeedConfigChecks() {
-  const inModalFeedStyle = css`
-    margin-left: 5px;
-  `
   return (
     <>
       <CheckboxSettingItem
         configPath={'showModalFeedOnLoad'}
         label='自动查看更多'
         tooltip='打开首页时默认打开推荐弹窗'
-        css={inModalFeedStyle}
         extraAction={(val) => {
           if (val) {
             antMessage.success('已开启自动查看更多: 下次打开首页时将直接展示推荐弹窗')
           }
         }}
       />
-
-      <CheckboxSettingItem configPath='modalFeedFullScreen' label='全屏' tooltip='世界清净了~' css={inModalFeedStyle} />
+      <CheckboxSettingItem configPath='modalFeedFullScreen' label='全屏' tooltip='世界清净了~' />
     </>
   )
 }
