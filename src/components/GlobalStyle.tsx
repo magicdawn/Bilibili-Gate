@@ -14,14 +14,12 @@ export function GlobalStyle() {
   const dark = useIsDarkMode()
   const backToTopRight = useBackToTopRight()
   const usingEvolevdHeader = $usingEvolevdHeader.use()
+  const antLinkColorGlobalStyle = useAntLinkColorGlobalStyle()
 
   // 会有多次变宽的效果, 看起来很诡异!!!
   // bilibili-default -> 90 % -> evolved宽度计算
   const width = $headerWidth.use() ?? 90
   const padding = '0 10px'
-
-  // more
-  const antLinkColorGlobalStyle = useAntLinkColorGlobalStyle()
 
   return (
     <>
