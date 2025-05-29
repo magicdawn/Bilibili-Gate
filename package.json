@@ -123,12 +123,12 @@
     "vitest": "^3.1.4"
   },
   "lint-staged": {
-    "*.{js,cjs,mjs,ts,cts,mts,jsx,tsx,json,md,yaml,yml}": [
+    "*.{?(c|m)(j|t)s?(x),json,y?(a)ml}": [
       "oxlint",
       "eslint --fix",
       "prettier --write"
     ],
-    "!*.{js,cjs,mjs,ts,cts,mts,jsx,tsx,json,md,yaml,yml}": [
+    "!*.{?(c|m)(j|t)s?(x),json,y?(a)ml}": [
       "prettier --write --ignore-unknown"
     ]
   }
