@@ -1,16 +1,20 @@
-import presetRemToPx from '@unocss/preset-rem-to-px'
-import { defineConfig, presetWind3, transformerDirectives, transformerVariantGroup } from 'unocss'
+import { createRemToPxProcessor } from '@unocss/preset-wind4/utils'
+import { defineConfig, presetWind4, transformerDirectives, transformerVariantGroup } from 'unocss'
 
 export default defineConfig({
   transformers: [transformerDirectives(), transformerVariantGroup()],
 
   presets: [
-    presetWind3({
-      preflight: 'on-demand',
+    presetWind4({
+      preflights: {
+        reset: false,
+        theme: { mode: 'on-demand', process: createRemToPxProcessor() },
+      },
       dark: { dark: '.bilibili-gate-using-dark' },
     }),
-    presetRemToPx({}),
   ],
+
+  postprocess: [createRemToPxProcessor()],
 
   // https://github.com/unocss/unocss/issues/1620
   blocklist: ['container'],
