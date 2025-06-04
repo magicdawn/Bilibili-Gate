@@ -152,23 +152,23 @@ const PreviewImageInner = memo(function PreviewImageInner({
         backgroundSize: `${newImgWidth}px ${newImgHeight}px`,
       }}
     >
-      <SimplePregressBar progress={progress} />
+      <SimpleProgressBar progress={progress} />
     </div>
   )
 })
 
-export function SimplePregressBar({ progress, ...rest }: { progress: number } & ComponentProps<'div'>) {
+export function SimpleProgressBar({ progress, className, ...props }: { progress: number } & ComponentProps<'div'>) {
   const backgroundColor = bgLv1Value
   return (
     <div
-      {...rest}
+      {...props}
       data-role='track'
-      className={clsx('absolute bottom-0 left-0 right-0 h-2px', rest.className)}
+      className={clsx('absolute bottom-0 left-0 right-0 h-2px', className)}
       css={css`
         background-color: ${backgroundColor};
       `}
     >
-      <div data-role='bar' className='h-full bg-gate-primary' style={{ width: `${progress * 100}%` }} />
+      <div data-role='bar' className='bg-gate-primary h-full' style={{ width: `${progress * 100}%` }} />
     </div>
   )
 }

@@ -39,7 +39,7 @@ import { videoCardBorderRadiusValue } from '../css-vars'
 import { useLargePreviewRelated } from '../LargePreview/useLargePreview'
 import { multiSelectedCss, useBlockedCardCss } from './card-border-css'
 import { BlacklistCard, DislikedCard, SkeletonCard } from './child-components/other-type-cards'
-import { SimplePregressBar } from './child-components/PreviewImage'
+import { SimpleProgressBar } from './child-components/PreviewImage'
 import { VideoCardActionStyle } from './child-components/VideoCardActions'
 import { VideoCardBottom } from './child-components/VideoCardBottom'
 import { useContextMenus } from './context-menus'
@@ -506,7 +506,7 @@ const VideoCardInner = memo(function VideoCardInner({
 
   const watchlaterProgressBar =
     isWatchlater(item) && item.progress > 0 ? (
-      <SimplePregressBar
+      <SimpleProgressBar
         progress={item.progress / item.duration}
         css={css`
           z-index: ${zIndexWatchlaterProgressBar};
@@ -606,7 +606,7 @@ const VideoCardInner = memo(function VideoCardInner({
         </div>
         {/* 时长 */}
         {/* 番剧没有 duration 字段 */}
-        <span className='bili-video-card__stats__duration relative top-0.5px'>{isNormalVideo && durationStr}</span>
+        <span className='bili-video-card__stats__duration top-0.5px relative'>{isNormalVideo && durationStr}</span>
       </div>
 
       {watchlaterProgressBar}
