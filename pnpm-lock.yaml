@@ -6,6 +6,7 @@ settings:
 
 overrides:
   vite-plugin-importer>babel-plugin-import: ^1.13.8
+  sass-embedded>@bufbuild/protobuf: ^2.5.0
 
 importers:
 
@@ -107,6 +108,9 @@ importers:
       react-virtuoso:
         specifier: ^4.12.8
         version: 4.12.8(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      sass-embedded:
+        specifier: ^1.89.1
+        version: 1.89.1
       spark-md5:
         specifier: ^3.0.2
         version: 3.0.2
@@ -244,9 +248,6 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1(rollup@4.40.0)
       sass:
-        specifier: ^1.89.1
-        version: 1.89.1
-      sass-embedded:
         specifier: ^1.89.1
         version: 1.89.1
       turbo:
@@ -496,8 +497,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@bufbuild/protobuf@2.1.0':
-    resolution: {integrity: sha512-+2Mx67Y3skJ4NCD/qNSdBJNWtu6x6Qr53jeNg+QcwiL6mt0wK+3jwHH2x1p7xaYH6Ve2JKOVn0OxU35WsmqI9A==}
+  '@bufbuild/protobuf@2.5.1':
+    resolution: {integrity: sha512-lut4UTvKL8tqtend0UDu7R79/n9jA7Jtxf77RNPbxtmWqfWI4qQ9bTjf7KCS4vfqLmpQbuHr1ciqJumAgJODdw==}
 
   '@commitlint/cli@19.8.1':
     resolution: {integrity: sha512-LXUdNIkspyxrlV6VDHWBmCZRtkEVRpBKxi2Gtw3J54cGWhLCTouVD/Q6ZSaSvd2YaDObWK8mDjrz3TIKtaQMAA==}
@@ -5502,7 +5503,7 @@ snapshots:
   '@biomejs/cli-win32-x64@1.9.4':
     optional: true
 
-  '@bufbuild/protobuf@2.1.0': {}
+  '@bufbuild/protobuf@2.5.1': {}
 
   '@commitlint/cli@19.8.1(@types/node@22.15.29)(typescript@5.8.3)':
     dependencies:
@@ -9835,7 +9836,7 @@ snapshots:
 
   sass-embedded@1.89.1:
     dependencies:
-      '@bufbuild/protobuf': 2.1.0
+      '@bufbuild/protobuf': 2.5.1
       buffer-builder: 0.2.0
       colorjs.io: 0.5.2
       immutable: 5.0.2
