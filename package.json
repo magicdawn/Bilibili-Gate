@@ -105,7 +105,7 @@
     "oxlint": "^0.18.0",
     "postcss-media-minmax": "^5.0.0",
     "prettier": "^3.5.3",
-    "rollup-plugin-visualizer": "^6.0.1",
+    "rollup-plugin-visualizer": "^6.0.3",
     "sass": "^1.89.1",
     "turbo": "^2.5.4",
     "type-fest": "^4.41.0",

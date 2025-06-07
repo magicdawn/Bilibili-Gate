@@ -245,8 +245,8 @@ importers:
         specifier: ^3.5.3
         version: 3.5.3
       rollup-plugin-visualizer:
-        specifier: ^6.0.1
-        version: 6.0.1(rollup@4.40.0)
+        specifier: ^6.0.3
+        version: 6.0.3(rollup@4.40.0)
       sass:
         specifier: ^1.89.1
         version: 1.89.1
@@ -4402,12 +4402,12 @@ packages:
   rfdc@1.4.1:
     resolution: {integrity: sha512-q1b3N5QkRUWUl7iyylaaj3kOpIT0N2i9MqIEQXP73GVsN9cw3fdx8X63cEmWhJGi2PPCF23Ijp7ktmd39rawIA==}
 
-  rollup-plugin-visualizer@6.0.1:
-    resolution: {integrity: sha512-NjlGElvLXCSZSAi3gNRZbfX3qlQbQcJ9TW97c5JpqfVwMhttj9YwEdPwcvbKj91RnMX2PWAjonvSEv6UEYtnRQ==}
+  rollup-plugin-visualizer@6.0.3:
+    resolution: {integrity: sha512-ZU41GwrkDcCpVoffviuM9Clwjy5fcUxlz0oMoTXTYsK+tcIFzbdacnrr2n8TXcHxbGKKXtOdjxM2HUS4HjkwIw==}
     engines: {node: '>=18'}
     hasBin: true
     peerDependencies:
-      rolldown: 1.x
+      rolldown: 1.x || ^1.0.0-beta
       rollup: 2.x || 3.x || 4.x
     peerDependenciesMeta:
       rolldown:
@@ -9734,7 +9734,7 @@ snapshots:
 
   rfdc@1.4.1: {}
 
-  rollup-plugin-visualizer@6.0.1(rollup@4.40.0):
+  rollup-plugin-visualizer@6.0.3(rollup@4.40.0):
     dependencies:
       open: 8.4.2
       picomatch: 4.0.2
