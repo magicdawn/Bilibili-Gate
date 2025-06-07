@@ -281,7 +281,7 @@ pnpm build # build 完会自动使用 Chrome 打开安装地址
 - 如果对你有用,请来个 Star :)
 - 如果你喜欢这个项目, 可以 「[爱发电](https://afdian.com/a/magicdawn)」 支持一下
 
-![afdian-magicdawn_w375](https://raw.githubusercontentS.com/magicdawn/magicdawn/master/images/afdian-magicdawn_w375_v2.jpg)
+![afdian-magicdawn_w375](https://hub.gitmirror.com/raw.githubusercontent.com/magicdawn/magicdawn/master/images/afdian-magicdawn_w375_v2.jpg)
 
 ### 赞助者
 
