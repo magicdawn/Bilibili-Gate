@@ -36,14 +36,7 @@ import { isPgcSeasonRankItem, isPgcWebRankItem } from '$modules/rec-services/hot
 import { ELiveStatus } from '$modules/rec-services/live/live-enum'
 import { spaceUploadAvatarCache } from '$modules/rec-services/space-upload'
 import { toHttps } from '$utility/url'
-import {
-  formatDuration,
-  formatRecentTimeStamp,
-  formatTimeStamp,
-  getVideoInvalidReason,
-  parseCount,
-  parseDuration,
-} from '$utility/video'
+import { formatDuration, formatTimeStamp, getVideoInvalidReason, parseCount, parseDuration } from '$utility/video'
 import type { FavItemExtend } from '$modules/rec-services/fav/types'
 import { AppRecStatItemFieldMap, defineStatItems, getField } from '../stat-item'
 import type { StatItemField, StatItemType } from '../stat-item'
@@ -367,7 +360,6 @@ function apiPcAdapter(item: PcRecItemExtend): IVideoCardData {
     title: item.title,
     cover: item.pic,
     pubts: item.pubdate,
-    pubdateDisplay: formatTimeStamp(item.pubdate),
     duration: item.duration,
     durationStr: formatDuration(item.duration),
     recommendReason: _isLive ? item.room_info?.area.area_name : item.rcmd_reason?.content,
@@ -396,16 +388,6 @@ function apiDynamicAdapter(item: DynamicFeedItemExtend): IVideoCardData {
   const v = item.modules.module_dynamic.major.archive
   const author = item.modules.module_author
 
-  const gateTs = dayjs().subtract(2, 'days').unix()
-  const pubdateDisplay = (() => {
-    const ts = author.pub_ts
-    if (ts > gateTs) {
-      return author.pub_time
-    } else {
-      return formatTimeStamp(ts)
-    }
-  })()
-
   return {
     // video
     avid: v.aid,
@@ -416,7 +398,6 @@ function apiDynamicAdapter(item: DynamicFeedItemExtend): IVideoCardData {
     title: v.title,
     cover: v.cover,
     pubts: author.pub_ts,
-    pubdateDisplay,
     duration: parseDuration(v.duration_text) || 0,
     durationStr: v.duration_text,
     recommendReason: v.badge.text,
@@ -460,7 +441,6 @@ function apiWatchlaterAdapter(item: WatchlaterItemExtend): IVideoCardData {
     titleRender,
     cover: item.pic,
     pubts: item.pubdate,
-    pubdateDisplay: formatTimeStamp(item.pubdate),
     pubdateDisplayForTitleAttr: `${formatTimeStamp(item.pubdate, true)} 发布, ${formatTimeStamp(
       item.add_at,
       true,
@@ -529,7 +509,6 @@ function apiFavAdapter(item: FavItemExtend): IVideoCardData {
     ),
     cover: item.cover,
     pubts: item.pubtime,
-    pubdateDisplay: formatTimeStamp(item.pubtime),
     duration: item.duration,
     durationStr: formatDuration(item.duration),
     recommendReason: item.from === 'fav-folder' ? `${formatTimeStamp(item.fav_time)} · 收藏` : undefined,
@@ -562,7 +541,6 @@ function apiPopularGeneralAdapter(item: PopularGeneralItemExtend): IVideoCardDat
     title: item.title,
     cover: item.pic,
     pubts: item.pubdate,
-    pubdateDisplay: formatTimeStamp(item.pubdate),
     duration: item.duration,
     durationStr: formatDuration(item.duration),
     recommendReason: item.rcmd_reason?.content,
@@ -597,7 +575,6 @@ function apiPopularWeeklyAdapter(item: PopularWeeklyItemExtend): IVideoCardData 
     title: item.title,
     cover: item.pic,
     pubts: item.pubdate,
-    pubdateDisplay: formatTimeStamp(item.pubdate),
     duration: item.duration,
     durationStr: formatDuration(item.duration),
     recommendReason: item.rcmd_reason,
@@ -666,7 +643,6 @@ function apiRankAdapter(item: RankItemExtend): IVideoCardData {
     title: item.title,
     cover: item.pic,
     pubts: item.pubdate,
-    pubdateDisplay: formatTimeStamp(item.pubdate),
     duration: item.duration,
     durationStr: formatDuration(item.duration),
     recommendReason,
@@ -744,7 +720,6 @@ function apiSpaceUploadAdapter(item: SpaceUploadItemExtend): IVideoCardData {
     title: item.title,
     cover: item.pic,
     pubts: item.created,
-    pubdateDisplay: formatRecentTimeStamp(item.created, false),
     duration,
     durationStr,
     recommendReason,

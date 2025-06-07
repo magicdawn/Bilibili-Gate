@@ -83,16 +83,34 @@ export function formatTimeStamp(unixTs?: number, includeTime = false) {
  *   - `true`:  `2022年01月01日`
  *   - `false`: `22-1-1`
  */
+
+export enum DayjsFormat {
+  Year = 'YYYY',
+  HyphenDate = 'YYYY-MM-DD',
+  HyphenDateTime = 'YYYY-MM-DD HH:mm:ss',
+
+  ZhDisplayDateShort = 'M月D日',
+  DisplayDateShort = 'M-D',
+  ZhDisplayDate = 'YYYY年M月D日',
+  DisplayDate = 'YY-M-D',
+
+  Today = '今天 HH:mm',
+  Yesterday = '昨天 HH:mm',
+}
+
+export function isRecentTimeStamp(ts: number) {
+  const yesterdayStart = dayjs().subtract(1, 'day').startOf('day').unix()
+  return ts >= yesterdayStart
+}
+
 export function formatRecentTimeStamp(ts: number, zhDate: boolean) {
   if (!ts) return undefined
   const t = dayjs.unix(ts)
 
-  const FORMAT_YEAR = 'YYYY'
-  const FORMAT_DATE = 'YYYY-MM-DD'
-  const isToday = t.format(FORMAT_DATE) === dayjs().format(FORMAT_DATE)
+  const isToday = t.format(DayjsFormat.HyphenDate) === dayjs().format(DayjsFormat.HyphenDate)
   const isTodayRecent = isToday && Date.now() - ts * 1000 <= ms('12h')
-  const isYesterday = t.format(FORMAT_DATE) === dayjs().subtract(1, 'day').format(FORMAT_DATE)
-  const isCurrentYear = t.format(FORMAT_YEAR) === dayjs().format(FORMAT_YEAR)
+  const isYesterday = t.format(DayjsFormat.HyphenDate) === dayjs().subtract(1, 'day').format(DayjsFormat.HyphenDate)
+  const isCurrentYear = t.format(DayjsFormat.Year) === dayjs().format(DayjsFormat.Year)
 
   if (isTodayRecent) {
     const minutes = dayjs().diff(t, 'minutes')
@@ -106,13 +124,13 @@ export function formatRecentTimeStamp(ts: number, zhDate: boolean) {
     }
   }
 
-  if (isToday) return t.format('今天 HH:mm')
-  if (isYesterday) return t.format('昨天 HH:mm')
+  if (isToday) return t.format(DayjsFormat.Today)
+  if (isYesterday) return t.format(DayjsFormat.Yesterday)
 
   if (isCurrentYear) {
-    return t.format(zhDate ? 'M月D日' : 'M-D')
+    return t.format(zhDate ? DayjsFormat.ZhDisplayDateShort : DayjsFormat.DisplayDateShort)
   } else {
-    return t.format(zhDate ? 'YYYY年M月D日' : 'YY-M-D')
+    return t.format(zhDate ? DayjsFormat.ZhDisplayDate : DayjsFormat.DisplayDate)
   }
 }
 

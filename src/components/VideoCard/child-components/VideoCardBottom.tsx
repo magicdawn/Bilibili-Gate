@@ -6,8 +6,8 @@
 import { css } from '@emotion/react'
 import { useRequest } from 'ahooks'
 import { Avatar } from 'antd'
+import dayjs from 'dayjs'
 import { useSnapshot } from 'valtio'
-import { colorPrimaryValue } from '$components/css-vars'
 import { isAppRecommend, isLive, isPcRecommend, isRank, type RecItemType } from '$define'
 import { EApiType, EAppApiDevice } from '$define/index.shared'
 import { PcRecGoto } from '$define/pc-recommend'
@@ -20,7 +20,8 @@ import { getAvatarSrc } from '$utility/image'
 import { DESC_SEPARATOR } from '../process/normalize'
 import { useLinkTarget } from '../use/useOpenRelated'
 import type { IVideoCardData } from '../process/normalize'
-import type { MouseEventHandler } from 'react'
+import { UnixTsDisplay } from './UnixTsDisplay'
+import type { MouseEventHandler, ReactNode } from 'react'
 
 const S = {
   recommendReason: css`
@@ -74,10 +75,6 @@ const descOwnerCss = css`
   justify-content: flex-start;
 `
 
-const subtitleLineHeightCss = css`
-  line-height: var(--subtitle-line-height);
-`
-
 export const VideoCardBottom = memo(function ({
   item,
   cardData,
@@ -100,6 +97,7 @@ export const VideoCardBottom = memo(function ({
     title,
     titleRender,
 
+    pubts,
     pubdateDisplay,
     pubdateDisplayForTitleAttr,
     recommendReason,
@@ -123,27 +121,27 @@ export const VideoCardBottom = memo(function ({
 
   const streaming = item.api === EApiType.Live && item.live_status === ELiveStatus.Streaming
 
-  const { data: pubDateDisplayFromApi } = useRequest(() => fetchAppRecommendFollowedPubDate(item, cardData), {
+  const { data: pubtsFromApi } = useRequest(() => fetchAppRecommendFollowedPubDate(item, cardData), {
     refreshDeps: [item, cardData],
   })
 
   /**
    * avatar + line1: title
-   *          line2: desc =
-   *                      when normal video => `author-name + date`
+   *          line2: desc
+   *                   - when normal video => `author-name + date`
    *          line3: recommend-reason
    */
-
-  let descTitleAttr: string | undefined
-  if (isNormalVideo && (authorName || pubdateDisplay || pubdateDisplayForTitleAttr || pubDateDisplayFromApi)) {
-    descTitleAttr = [
-      //
-      authorName,
-      pubdateDisplayForTitleAttr || pubdateDisplay || pubDateDisplayFromApi,
-    ]
-      .filter(Boolean)
-      .join(' · ')
-  }
+  const descTitleAttribute: string | undefined = useMemo(() => {
+    if (isNormalVideo && (authorName || pubts || pubtsFromApi || pubdateDisplay || pubdateDisplayForTitleAttr)) {
+      let datePartForTitleAttribute: string | undefined
+      if (pubts || pubtsFromApi) {
+        datePartForTitleAttribute = dayjs.unix((pubts || pubtsFromApi)!).format('YYYY年M月D日 HH:mm')
+      } else {
+        datePartForTitleAttribute = pubdateDisplay
+      }
+      return [authorName, pubdateDisplayForTitleAttr || datePartForTitleAttribute].filter(Boolean).join(' · ')
+    }
+  }, [isNormalVideo, authorName, pubts, pubtsFromApi, pubdateDisplay, pubdateDisplayForTitleAttr])
 
   /**
    * https://github.com/magicdawn/bilibili-gate/issues/110
@@ -158,47 +156,33 @@ export const VideoCardBottom = memo(function ({
    * 带头像, 更分散(recommend-reason 单独一行)
    */
   return (
-    <div className={clsx('mt-15px px-5px flex gap-x-5px overflow-hidden', useBorder ? 'mb-10px' : 'mb-5px', className)}>
+    <div className={clsx('mt-15px px-5px flex gap-x-5px', useBorder ? 'mb-10px' : 'mb-5px', className)}>
       {/* avatar */}
       {!!authorMid && !hideAvatar && (
-        <a href={authorHref} target={target}>
-          <span
-            className={clsx(
-              'flex-center p-1px b-1px b-solid rounded-full relative',
-              streaming ? 'b-gate-primary' : 'b-transparent',
-            )}
-          >
-            {authorFace ? (
-              <Avatar src={getAvatarSrc(authorFace)} />
-            ) : (
-              <Avatar>{authorName?.[0] || appBadgeDesc?.[0] || ''}</Avatar>
-            )}
-            {streaming && (
-              <IconForLive
-                className='absolute bottom-0 right-0 size-12px rounded-full'
-                active
-                css={css`
-                  background-color: ${colorPrimaryValue};
-                `}
-              />
-            )}
-          </span>
+        <a
+          href={authorHref}
+          target={target}
+          className={clsx(
+            'self-start flex-center rounded-full relative p-1px ring-1px',
+            streaming ? 'ring-gate-primary' : 'ring-gate-border',
+          )}
+        >
+          {authorFace ? (
+            <Avatar src={getAvatarSrc(authorFace)} />
+          ) : (
+            <Avatar>{authorName?.[0] || appBadgeDesc?.[0] || ''}</Avatar>
+          )}
+          {streaming && (
+            <IconForLive active className='absolute bottom-0 right-0 size-12px rounded-full bg-gate-primary' />
+          )}
         </a>
       )}
 
       {/* title + desc */}
       <div
-        css={css`
-          /* as item */
-          flex: 1;
-          margin-left: 5px; // Q: why not column-gap:10px. A: avatar may hide, margin-left is needed
-
-          /* as container */
-          display: flex;
-          flex-direction: column;
-          row-gap: 4px;
-          overflow: hidden;
-        `}
+        className='ml-5px flex flex-1 flex-col gap-y-4px overflow-hidden'
+        // Q: why not column-gap:10px.
+        // A: avatar may hide, margin-left is needed
       >
         {/* title */}
         <h3
@@ -237,18 +221,28 @@ export const VideoCardBottom = memo(function ({
 
   function renderDesc() {
     if (isNormalVideo) {
-      const date = pubdateDisplay || pubDateDisplayFromApi
+      let date: ReactNode
+      if (pubts || pubtsFromApi) {
+        date = <UnixTsDisplay ts={pubts || pubtsFromApi} />
+      } else if (pubdateDisplay) {
+        date = pubdateDisplay
+      }
       return (
         <>
           <a
             className='bili-video-card__info--owner'
             href={authorHref}
             target={target}
-            title={descTitleAttr}
+            title={descTitleAttribute}
             css={descOwnerCss}
           >
             <span className='bili-video-card__info--author'>{authorName}</span>
-            {date && <span className='bili-video-card__info--date'>{DESC_SEPARATOR + date}</span>}
+            {!!date && (
+              <span className='bili-video-card__info--date'>
+                {DESC_SEPARATOR}
+                {date}
+              </span>
+            )}
           </a>
           {!!recommendReason && (
             <span css={S.recommendReason} title={recommendReason}>
@@ -259,7 +253,9 @@ export const VideoCardBottom = memo(function ({
       )
     }
 
-    // 其他歪瓜
+    /**
+     * 其他歪瓜
+     */
     if (appBadge || appBadgeDesc) {
       return (
         <a className='bili-video-card__info--owner' css={descOwnerCss} href={href} target={target}>
@@ -271,7 +267,7 @@ export const VideoCardBottom = memo(function ({
     if (isRank(item) && rankingDesc) {
       return <div css={descOwnerCss}>{rankingDesc}</div>
     }
-    // 关注的直播 | `PC推荐 & goto=live`
+    // 直播: 关注的直播 | `PC推荐 & goto=live`
     if (isLive(item) || (isPcRecommend(item) && item.goto === PcRecGoto.Live)) {
       return (
         <>

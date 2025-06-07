@@ -10,7 +10,6 @@ import { getVideoDetail } from '$modules/bilibili/video/video-detail'
 import { getSettingsSnapshot } from '$modules/settings'
 import { gmrequest } from '$request'
 import { getHasLogined } from '$utility/cookie'
-import { formatRecentTimeStamp } from '$utility/video'
 import type { IVideoCardData } from '$components/VideoCard/process/normalize'
 import type { ipad } from '$define/app-recommend.ipad'
 import { BaseTabService, type IService } from './_base'
@@ -246,7 +245,7 @@ class AppRecInnerService implements IService {
 }
 
 /**
- * 已关注作为重要的推荐理由, 值得使用详情 API 补充时间
+ * 已关注, 使用详情 API 补充时间
  */
 export async function fetchAppRecommendFollowedPubDate(item: RecItemType, cardData: IVideoCardData) {
   const { bvid, goto, recommendReason } = cardData
@@ -261,6 +260,5 @@ export async function fetchAppRecommendFollowedPubDate(item: RecItemType, cardDa
 
   const detail = await getVideoDetail(bvid)
   const ts = detail?.pubdate
-  if (!ts) return
-  return formatRecentTimeStamp(ts, true)
+  return ts
 }

@@ -1,20 +1,16 @@
-import { createRemToPxProcessor } from '@unocss/preset-wind4/utils'
-import { defineConfig, presetWind4, transformerDirectives, transformerVariantGroup } from 'unocss'
+import { presetRemToPx } from '@unocss/preset-rem-to-px'
+import { defineConfig, presetWind3, transformerDirectives, transformerVariantGroup } from 'unocss'
 
 export default defineConfig({
   transformers: [transformerDirectives(), transformerVariantGroup()],
 
   presets: [
-    presetWind4({
-      preflights: {
-        reset: false,
-        theme: { mode: 'on-demand', process: createRemToPxProcessor() },
-      },
+    presetRemToPx(),
+    presetWind3({
+      preflight: 'on-demand',
       dark: { dark: '.bilibili-gate-using-dark' },
     }),
   ],
-
-  postprocess: [createRemToPxProcessor()],
 
   // https://github.com/unocss/unocss/issues/1620
   blocklist: ['container'],
@@ -23,8 +19,15 @@ export default defineConfig({
     colors: {
       gate: {
         primary: 'var(--bilibili-gate--color-primary)',
-        bg: 'var(--bilibili-gate--bg)',
         border: 'var(--bilibili-gate--border-color)',
+        bg: {
+          DEFAULT: 'var(--bilibili-gate--bg)',
+          lv: {
+            1: 'var(--bilibili-gate--bg-lv1)',
+            2: 'var(--bilibili-gate--bg-lv2)',
+            3: 'var(--bilibili-gate--bg-lv3)',
+          },
+        },
       },
     },
   },
