@@ -3,22 +3,20 @@ import { useLockFn, useRequest, useUpdateLayoutEffect } from 'ahooks'
 import { Spin } from 'antd'
 import { clsx } from 'clsx'
 import { delay } from 'es-toolkit'
-import { createRoot } from 'react-dom/client'
-import { proxy, useSnapshot } from 'valtio'
+import { useSnapshot } from 'valtio'
 import { proxyMap } from 'valtio/utils'
-import { APP_CLS_ROOT, OPERATION_FAIL_MSG } from '$common'
+import { OPERATION_FAIL_MSG } from '$common'
 import { BaseModal, BaseModalStyle, ModalClose } from '$components/_base/BaseModal'
 import { HelpInfo } from '$components/_base/HelpInfo'
-import { AppRoot } from '$components/AppRoot'
 import { colorPrimaryValue } from '$components/css-vars'
 import { antMessage } from '$modules/antd'
 import { IconForDislike } from '$modules/icon'
 import { IconAnimatedChecked } from '$modules/icon/animated-checked'
 import { shouldDisableShortcut } from '$utility/dom'
+import { wrapComponent } from '$utility/global-component'
 import { toastRequestFail } from '$utility/toast'
 import type { AppRecItem, AppRecItemExtend } from '$define'
 import { dislike } from '../VideoCard/services/'
-import type { Root } from 'react-dom/client'
 
 interface IProps {
   show: boolean
@@ -204,19 +202,18 @@ export function ModalDislike({ show, onHide, item }: IProps) {
   )
 }
 
-const currentProps: IProps = {
-  show: false,
-  onHide,
-  item: null,
-}
-
-// for outside consumer
-const modalDislikeVisibleState = proxy({
-  value: currentProps.show,
+const { proxyProps, updateProps } = wrapComponent<IProps>({
+  Component: ModalDislike,
+  containerClassName: 'show-dislike-container',
+  defaultProps: {
+    show: false,
+    onHide,
+    item: null,
+  },
 })
 
 export const useModalDislikeVisible = function () {
-  return useSnapshot(modalDislikeVisibleState).value
+  return useSnapshot(proxyProps).show
 }
 
 function onHide() {
@@ -224,27 +221,6 @@ function onHide() {
   setTimeout(() => {
     updateProps({ show: false, item: null })
   })
-}
-
-function updateProps(newProps: Partial<IProps>) {
-  Object.assign(currentProps, newProps)
-  modalDislikeVisibleState.value = currentProps.show
-  getRoot().render(
-    <AppRoot>
-      <ModalDislike {...currentProps} onHide={onHide} />
-    </AppRoot>,
-  )
-}
-
-let root: Root | undefined
-function getRoot() {
-  if (!root) {
-    const container = document.createElement('div')
-    container.classList.add('show-dislike-container', APP_CLS_ROOT)
-    document.body.appendChild(container)
-    root = createRoot(container)
-  }
-  return root
 }
 
 export function showModalDislike(item: AppRecItemExtend) {

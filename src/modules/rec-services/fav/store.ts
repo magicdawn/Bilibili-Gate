@@ -10,7 +10,7 @@ import { proxyMapWithGmStorage, subscribeOnKeys } from '$utility/valtio'
 import { fetchAllFavCollections } from './collection/api'
 import { FavItemsOrder } from './fav-enum'
 import { getSavedOrder } from './usage-info/fav-items-order'
-import { fetchFavFolder } from './user-fav-service'
+import { fetchFavFolders } from './user-fav-service'
 import type { FavCollectionDetailInfo } from './types/collections/collection-detail'
 import type { FavCollection } from './types/collections/list-all-collections'
 import type { FavFolder } from './types/folders/list-all-folders'
@@ -158,7 +158,7 @@ export function updateList(force = false) {
 }
 
 const _updateFolderList = reusePendingPromise(async () => {
-  const folders = await fetchFavFolder()
+  const folders = await fetchFavFolders()
   favStore.favFolders = folders
   favStore.favFoldersUpdateAt = Date.now()
 })

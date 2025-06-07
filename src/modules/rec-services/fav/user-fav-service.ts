@@ -10,41 +10,58 @@ import { isWebApiSuccess, request } from '$request'
 import { getCsrfToken, getHasLogined, getUid } from '$utility/cookie'
 import toast from '$utility/toast'
 import { formatFavFolderUrl } from './fav-url'
+import { isFavFolderDefault } from './fav-util'
 import type { FavFolderListAllJson } from './types/folders/list-all-folders'
 
 export const UserFavService = {
-  removeFav,
-  addFav,
   getVideoFavState,
+  removeFavs,
+  moveFavs,
+  addFav,
 }
 
-export async function removeFav(folderId: number | string, resource: string) {
+/* #region 批量操作 */
+// 删除
+export async function removeFavs(folderId: number | string, resources: string | string[]) {
   const form = new URLSearchParams({
-    resources: resource,
+    resources: [resources].flat().join(','),
     media_id: folderId.toString(),
     platform: 'web',
     csrf: getCsrfToken(),
   })
-  // resources: 421702525:2
-  // media_id: 484882829
-  // platform: web
-  // csrf: ''
-
   const res = await request.post('/x/v3/fav/resource/batch-del', form)
   const json = res.data
   const success = isWebApiSuccess(json)
   if (!success) {
     toast(json.message || OPERATION_FAIL_MSG)
   }
-
   return success
 }
+
+// 移动
+export async function moveFavs(resources: string | string[], src: string | number, target: string | number) {
+  const form = new URLSearchParams({
+    resources: [resources].flat().join(','),
+    src_media_id: src.toString(),
+    tar_media_id: target.toString(),
+    mid: getUid(),
+    platform: 'web',
+    csrf: getCsrfToken(),
+  })
+  const res = await request.post('/x/v3/fav/resource/move', form)
+  const json = res.data
+  const success = isWebApiSuccess(json)
+  if (!success) {
+    toast(json?.message || 'fav deal api fail')
+  }
+  return success
+}
+/* #endregion */
 
 /**
  * 获取视频所在收藏夹
  * @see https://github.com/the1812/Bilibili-Evolved/blob/master/registry/lib/components/video/quick-favorite/QuickFavorite.vue
  */
-
 export async function getVideoFavState(avid: string) {
   if (!getHasLogined()) return
   const res = await request.get('/x/v3/fav/folder/created/list-all', {
@@ -97,22 +114,21 @@ export async function favDeal({
 
 export let defaultFavFolderId = 0
 export let defaultFavFolderName = ''
-
 export async function addFav(avid: string | number) {
   if (!defaultFavFolderId || !defaultFavFolderName) {
     // NOTE: 不使用 FavService, 因其包含 exclude fav folder 逻辑, 这里期望加入默认收藏夹
-    const folders = await fetchFavFolder()
-    defaultFavFolderId = folders[0].id
-    defaultFavFolderName = folders[0].title
+    const folders = await fetchFavFolders()
+    const defaultFolder = folders.find((f) => isFavFolderDefault(f.attr)) ?? folders[0]
+    if (!defaultFolder) return toast('没有找到默认收藏夹!')
+    defaultFavFolderId = defaultFolder.id
+    defaultFavFolderName = defaultFolder.title
   }
   return await favDeal({ avid, add_media_ids: defaultFavFolderId.toString() })
 }
 
-export async function fetchFavFolder() {
+export async function fetchFavFolders() {
   const res = await request.get('/x/v3/fav/folder/created/list-all', {
-    params: {
-      up_mid: getUid(),
-    },
+    params: { up_mid: getUid() },
   })
   const json = res.data as FavFolderListAllJson
   const folders = json.data.list

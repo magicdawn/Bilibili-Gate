@@ -339,7 +339,7 @@ const RecGridInner = memo(function ({
 
   const setItems = itemsBox.set
 
-  const handleRemoveCards = useMemoizedFn((uniqIds: string[], titles?: string[]) => {
+  const handleRemoveCards = useMemoizedFn((uniqIds: string[], titles?: string[], silent?: boolean) => {
     setItems((items) => {
       const newItems = items.slice()
       const removedTitles: string[] = []
@@ -360,7 +360,7 @@ const RecGridInner = memo(function ({
         }
       }
 
-      if (removedTitles.length) {
+      if (!silent && removedTitles.length) {
         if (removedTitles.length <= 3) {
           removedTitles.forEach((t) => antMessage.success(`已移除: ${removedTitles.join(', ')}`))
         } else {
@@ -510,7 +510,7 @@ const RecGridInner = memo(function ({
           tab={tab}
           item={item}
           active={active}
-          onRemoveCurrent={(item, data) => handleRemoveCards([item.uniqId], [data.title])}
+          onRemoveCurrent={(item, data, silent) => handleRemoveCards([item.uniqId], [data.title], silent)}
           onMoveToFirst={handleMoveCardToFirst}
           onRefresh={refresh}
           emitter={videoCardEmitters[index]}

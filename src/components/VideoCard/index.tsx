@@ -70,7 +70,7 @@ export type VideoCardProps = {
   loading?: boolean
   active?: boolean // 键盘 active
   item?: RecItemType
-  onRemoveCurrent?: (item: RecItemType, data: IVideoCardData) => void | Promise<void>
+  onRemoveCurrent?: (item: RecItemType, data: IVideoCardData, silent?: boolean) => void | Promise<void>
   onMoveToFirst?: (item: RecItemType, data: IVideoCardData) => void | Promise<void>
   onRefresh?: OnRefresh
   emitter?: VideoCardEmitter
@@ -166,7 +166,7 @@ export type VideoCardInnerProps = {
   item: RecItemType
   cardData: IVideoCardData
   active?: boolean
-  onRemoveCurrent?: (item: RecItemType, data: IVideoCardData) => void | Promise<void>
+  onRemoveCurrent?: (item: RecItemType, data: IVideoCardData, silent?: boolean) => void | Promise<void>
   onMoveToFirst?: (item: RecItemType, data: IVideoCardData) => void | Promise<void>
   onRefresh?: OnRefresh
   emitter?: VideoCardEmitter
@@ -606,7 +606,7 @@ const VideoCardInner = memo(function VideoCardInner({
         </div>
         {/* 时长 */}
         {/* 番剧没有 duration 字段 */}
-        <span className='bili-video-card__stats__duration top-0.5px relative'>{isNormalVideo && durationStr}</span>
+        <span className='bili-video-card__stats__duration relative top-0.5px'>{isNormalVideo && durationStr}</span>
       </div>
 
       {watchlaterProgressBar}

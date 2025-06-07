@@ -5,6 +5,7 @@
 import { delay } from 'es-toolkit'
 import { useSnapshot } from 'valtio'
 import { appClsColorPrimary } from '$common/css-vars-export.module.scss'
+import { chooseTragetFavFolder } from '$components/ModalMoveFav'
 import {
   copyBvidInfos,
   copyBvidsSingleLine,
@@ -113,7 +114,7 @@ export function useContextMenus({
   onTriggerDislike: () => unknown
 
   onMoveToFirst: ((item: RecItemType, data: IVideoCardData) => void | Promise<void>) | undefined
-  onRemoveCurrent: ((item: RecItemType, data: IVideoCardData) => void | Promise<void>) | undefined
+  onRemoveCurrent: ((item: RecItemType, data: IVideoCardData, silent?: boolean) => void | Promise<void>) | undefined
 
   consistentOpenMenus: AntMenuItem[]
   conditionalOpenMenus: AntMenuItem[]
@@ -479,12 +480,29 @@ export function useContextMenus({
                   },
                 },
                 {
+                  key: 'move-fav',
+                  label: '移动到其他收藏夹',
+                  icon: <IconParkOutlineTransferData className='size-13px' />,
+                  async onClick() {
+                    const targetId = await chooseTragetFavFolder(item.folder.id)
+                    if (!targetId) return
+                    const resource = `${item.id}:${item.type}`
+                    const success = await UserFavService.moveFavs(resource, item.folder.id, targetId)
+                    if (success) {
+                      antMessage.success('移动收藏已完成~')
+                      await delay(1000)
+                      onRemoveCurrent?.(item, cardData, true)
+                    }
+                  },
+                },
+                {
                   key: 'remove-fav',
                   label: '移除收藏',
                   icon: <IconMaterialSymbolsDeleteOutlineRounded className='size-15px' />,
                   async onClick() {
                     if (!isFav(item)) return
-                    const success = await UserFavService.removeFav(item.folder.id, `${item.id}:${item.type}`)
+                    const resource = `${item.id}:${item.type}`
+                    const success = await UserFavService.removeFavs(item.folder.id, resource)
                     if (success) {
                       await delay(1000)
                       onRemoveCurrent?.(item, cardData)
