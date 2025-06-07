@@ -11,7 +11,9 @@ import {
   copyBvidsSingleLine,
   copyVideoLinks,
   currentGridItems,
+  currentGridSharedEmitter,
   getBvidInfo,
+  getMultiSelectedItems,
 } from '$components/RecGrid/unsafe-window-export'
 import { ETab } from '$components/RecHeader/tab-enum'
 import {
@@ -481,18 +483,43 @@ export function useContextMenus({
                 },
                 {
                   key: 'move-fav',
-                  label: '移动到其他收藏夹',
+                  label: `移动到其他收藏夹${multiSelectingAppendix}`,
                   icon: <IconParkOutlineTransferData className='size-13px' />,
                   async onClick() {
-                    const targetId = await chooseTragetFavFolder(item.folder.id)
-                    if (!targetId) return
-                    const resource = `${item.id}:${item.type}`
-                    const success = await UserFavService.moveFavs(resource, item.folder.id, targetId)
-                    if (success) {
-                      antMessage.success('移动收藏已完成~')
-                      await delay(1000)
-                      onRemoveCurrent?.(item, cardData, true)
+                    let resources: string | string[]
+                    let srcFavFolderId: number
+                    let uniqIds: string[]
+                    let titles: string[]
+                    if (multiSelectStore.multiSelecting) {
+                      const selectedFavItems = getMultiSelectedItems().filter(
+                        (x) => isFav(x) && x.from === 'fav-folder',
+                      )
+                      const folderIds = new Set(selectedFavItems.map((i) => i.folder.id))
+                      if (!folderIds.size) {
+                        return toast('至少选择一项视频')
+                      }
+                      if (folderIds.size > 1) {
+                        return toast('多选移动: 只能批量移动同一源收藏夹下的视频')
+                      }
+                      srcFavFolderId = selectedFavItems[0].folder.id
+                      resources = selectedFavItems.map((x) => `${x.id}:${x.type}`)
+                      uniqIds = selectedFavItems.map((x) => x.uniqId)
+                      titles = selectedFavItems.map((x) => x.title)
+                    } else {
+                      resources = `${item.id}:${item.type}`
+                      srcFavFolderId = item.folder.id
+                      uniqIds = [item.uniqId]
+                      titles = [item.title]
                     }
+
+                    const targetFolder = await chooseTragetFavFolder(item.folder.id)
+                    if (!targetFolder) return
+
+                    const success = await UserFavService.moveFavs(resources, srcFavFolderId, targetFolder.id)
+                    if (!success) return
+
+                    currentGridSharedEmitter.emit('remove-cards', [uniqIds, titles, true])
+                    antMessage.success(`已移动 ${uniqIds.length} 个视频到「${targetFolder.title}」收藏夹`)
                   },
                 },
                 {

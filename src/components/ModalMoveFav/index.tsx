@@ -29,12 +29,12 @@ export function ModalMoveFav({
 }: {
   show: boolean
   onHide: () => void
-  onChoose: (id: number) => void
+  onChoose: (result: Result) => void
   srcFavFolderId: number | undefined
 }) {
   const $req = useRequest(updateFavFolders, { manual: true })
   const { folders } = useSnapshot(store)
-  const [selectedFolderId, setSelectedFolderId] = useState<number | undefined>(undefined)
+  const [selectedFolder, setSelectedFolder] = useState<Result | undefined>(undefined)
 
   useEffect(() => {
     if (show) $req.run()
@@ -78,7 +78,7 @@ export function ModalMoveFav({
           <div className='grid grid-cols-4 mb-20px mt-20px min-h-100px gap-10px pr-15px'>
             {folders.map((f, index) => {
               const disabled = f.id === srcFavFolderId
-              const active = !disabled && f.id === selectedFolderId
+              const active = !disabled && f.id === selectedFolder?.id
               return (
                 <button
                   key={f.id}
@@ -90,7 +90,7 @@ export function ModalMoveFav({
                   )}
                   disabled={disabled}
                   onClick={() => {
-                    setSelectedFolderId(f.id)
+                    setSelectedFolder({ id: f.id, title: f.title })
                   }}
                 >
                   <span className='ml-6px size-20px flex flex-none items-center justify-center rounded-full bg-gate-primary color-white'>
@@ -114,8 +114,8 @@ export function ModalMoveFav({
         <Button
           type='primary'
           onClick={() => {
-            if (!selectedFolderId) return
-            onChoose(selectedFolderId)
+            if (!selectedFolder) return
+            onChoose(selectedFolder)
           }}
         >
           确定
@@ -125,6 +125,8 @@ export function ModalMoveFav({
   )
 }
 
+type Result = Pick<FavFolder, 'id' | 'title'>
+
 const { proxyProps, updateProps } = wrapComponent({
   Component: ModalMoveFav,
   containerClassName: 'ModalMoveFav',
@@ -132,7 +134,7 @@ const { proxyProps, updateProps } = wrapComponent({
     onHide,
     onChoose,
     show: false,
-    result: undefined as number | undefined,
+    result: undefined as Result | undefined,
     srcFavFolderId: undefined as number | undefined,
   },
 })
@@ -146,8 +148,8 @@ function onHide() {
     emitter.emit('modal-close')
   })
 }
-function onChoose(id: number) {
-  proxyProps.result = id
+function onChoose(result: Result) {
+  proxyProps.result = { ...result }
   onHide()
 }
 

@@ -387,7 +387,7 @@ const RecGridInner = memo(function ({
       return newItems
     })
   })
-  useMittOn(sharedEmitter, 'remove-cards', ([uniqIds, titles]) => handleRemoveCards(uniqIds, titles))
+  useMittOn(sharedEmitter, 'remove-cards', ([uniqIds, titles, silent]) => handleRemoveCards(uniqIds, titles, silent))
 
   /**
    * footer for infinite scroll
