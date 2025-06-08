@@ -71,7 +71,9 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
   })
 
   const { modalSettingsVisible } = useHeaderState()
-  const shortcutEnabled = show && !modalSettingsVisible && !useModalDislikeVisible() && !useModalMoveFavVisible()
+  const shortcutEnabled = [show, !modalSettingsVisible, !useModalDislikeVisible(), !useModalMoveFavVisible()].every(
+    (x) => x,
+  )
 
   const [headerState, setHeaderState] = useState<HeaderState>(initHeaderState)
   const renderHeader = () => {
