@@ -2,9 +2,12 @@ import { css } from '@emotion/react'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { CollapseBtn } from '$components/_base/CollapseBtn'
 import { colorPrimaryValue } from '$components/css-vars'
+import { useModalDislikeVisible } from '$components/ModalDislike'
+import { useModalMoveFavVisible } from '$components/ModalMoveFav'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { initHeaderState, RecGrid } from '$components/RecGrid'
 import { OnRefreshContext } from '$components/RecGrid/useRefresh'
+import { useHeaderState } from '$components/RecHeader/index.shared'
 import { RefreshButton } from '$components/RecHeader/RefreshButton'
 import { VideoSourceTab } from '$components/RecHeader/tab'
 import { antMessage } from '$modules/antd'
@@ -67,6 +70,9 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
     }
   })
 
+  const { modalSettingsVisible } = useHeaderState()
+  const shortcutEnabled = show && !modalSettingsVisible && !useModalDislikeVisible() && !useModalMoveFavVisible()
+
   const [headerState, setHeaderState] = useState<HeaderState>(initHeaderState)
   const renderHeader = () => {
     const { refreshing, onRefresh, extraInfo } = headerState
@@ -83,7 +89,7 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
                 <ModalFeedConfigChecks />
               </CollapseBtn>
             )}
-            <RefreshButton refreshing={refreshing} onRefresh={onRefresh} refreshHotkeyEnabled={show} />
+            <RefreshButton refreshing={refreshing} onRefresh={onRefresh} refreshHotkeyEnabled={shortcutEnabled} />
             <ModalClose onClick={onHide} className='ml-5px' />
           </div>
         </div>
@@ -100,7 +106,7 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
       {renderHeader()}
       <div className={clsx(BaseModalClassNames.modalBody, 'pr-15px')} ref={scrollerRef}>
         <RecGrid
-          shortcutEnabled={show}
+          shortcutEnabled={shortcutEnabled}
           onScrollToTop={onScrollToTop}
           infiniteScrollUseWindow={false}
           scrollerRef={scrollerRef}

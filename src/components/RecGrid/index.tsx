@@ -15,6 +15,7 @@ import { APP_CLS_GRID, baseDebug } from '$common'
 import { useMittOn } from '$common/hooks/useMitt'
 import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
 import { useModalDislikeVisible } from '$components/ModalDislike'
+import { useModalMoveFavVisible } from '$components/ModalMoveFav'
 import { useCurrentUsingTab, useSortedTabKeys } from '$components/RecHeader/tab'
 import { EHotSubTab, ETab } from '$components/RecHeader/tab-enum'
 import { VideoCard } from '$components/VideoCard'
@@ -278,6 +279,7 @@ const RecGridInner = memo(function ({
 
   // 不喜欢弹窗
   const modalDislikeVisible = useModalDislikeVisible()
+  const modalMoveFavVisible = useModalMoveFavVisible()
 
   const usingVideoItems = useMemo(() => {
     return usingItems.filter((x) => x.api !== EApiType.Separator)
@@ -311,7 +313,7 @@ const RecGridInner = memo(function ({
 
   // 快捷键
   const { activeIndex, clearActiveIndex } = useShortcut({
-    enabled: shortcutEnabled && !modalDislikeVisible,
+    enabled: shortcutEnabled,
     refresh,
     maxIndex: usingVideoItems.length - 1,
     containerRef,

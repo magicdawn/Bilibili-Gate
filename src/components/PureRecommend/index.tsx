@@ -1,7 +1,7 @@
 import { css } from '@emotion/react'
 import { initHeaderState, RecGrid, type HeaderState } from '$components/RecGrid'
 import { RecHeader, type RecHeaderRef } from '$components/RecHeader'
-import { useHeaderState } from '$components/RecHeader/index.shared'
+import { usePlainShortcutEnabled } from '$components/RecHeader/index.shared'
 import { useSettingsSnapshot } from '$modules/settings'
 
 const narrowStyle = {
@@ -13,16 +13,14 @@ const narrowStyle = {
 }
 
 export function PureRecommend() {
-  // 窄屏模式
-  const { useNarrowMode } = useSettingsSnapshot()
-  // 是否已经打开 "查看更多" 即 ModalFeed
-  const { modalFeedVisible, modalSettingsVisible } = useHeaderState()
+  const { useNarrowMode } = useSettingsSnapshot() // 窄屏模式
+  const shortcutEnabled = usePlainShortcutEnabled()
+  const [headerState, setHeaderState] = useState<HeaderState>(initHeaderState)
 
   const recHeaderRef = useRef<RecHeaderRef>(null)
   const onScrollToTop = useMemoizedFn(() => {
     recHeaderRef.current?.scrollToTop()
   })
-  const [headerState, setHeaderState] = useState<HeaderState>(initHeaderState)
 
   return (
     <>
@@ -31,10 +29,11 @@ export function PureRecommend() {
         refreshing={headerState.refreshing}
         onRefresh={headerState.onRefresh}
         leftSlot={headerState.extraInfo}
+        shortcutEnabled={shortcutEnabled}
       />
       <RecGrid
         css={[useNarrowMode && narrowStyle.grid]}
-        shortcutEnabled={!(modalFeedVisible || modalSettingsVisible)}
+        shortcutEnabled={shortcutEnabled}
         infiniteScrollUseWindow={true}
         onScrollToTop={onScrollToTop}
         onSyncHeaderState={setHeaderState}

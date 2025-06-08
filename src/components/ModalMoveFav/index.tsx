@@ -8,8 +8,11 @@ import PinyinMatch from 'pinyin-match'
 import { proxy, useSnapshot } from 'valtio'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { colorPrimaryValue } from '$components/css-vars'
+import { IconForOpenExternalLink } from '$modules/icon'
 import { IconAnimatedChecked } from '$modules/icon/animated-checked'
 import { fetchFavFolders } from '$modules/rec-services/fav/user-fav-service'
+import { getUid } from '$utility/cookie'
+import { shouldDisableShortcut } from '$utility/dom'
 import { wrapComponent } from '$utility/global-component'
 import type { FavFolder } from '$modules/rec-services/fav/types/folders/list-all-folders'
 
@@ -46,6 +49,16 @@ export function ModalMoveFav({
     }
   }, [show])
 
+  useKeyPress(
+    'r',
+    () => {
+      if (!show) return
+      if (shouldDisableShortcut()) return
+      $req.run()
+    },
+    { exactMatch: true },
+  )
+
   const { folders } = useSnapshot(store)
   const filteredFolders = useMemo(() => {
     const mapped = folders.map((folder, index) => ({ ...folder, vol: index + 1 }))
@@ -75,7 +88,7 @@ export function ModalMoveFav({
           </div>
 
           <Input
-            style={{ width: 180 }}
+            style={{ width: 200 }}
             allowClear
             placeholder='过滤: 支持拼音 / 首字母'
             value={filterText}
@@ -151,17 +164,26 @@ export function ModalMoveFav({
         </Spin>
       </div>
 
-      <div className='mt-2 flex items-center justify-end gap-x-10px'>
-        <Button onClick={onHide}>取消</Button>
-        <Button
-          type='primary'
-          onClick={() => {
-            if (!selectedFolder) return
-            onChoose(selectedFolder)
-          }}
-        >
-          确定
-        </Button>
+      <div className='mt-2 flex items-center justify-between'>
+        <div className='flex-v-center gap-x-10px'>
+          <a href={`https://space.bilibili.com/${getUid()}/favlist`} target='_blank' className='flex-v-center gap-x-1'>
+            <IconForOpenExternalLink className='relative top--1px size-13px' />
+            去个人空间新建收藏夹
+          </a>
+        </div>
+
+        <div className='flex-v-center gap-x-10px'>
+          <Button onClick={onHide}>取消</Button>
+          <Button
+            type='primary'
+            onClick={() => {
+              if (!selectedFolder) return
+              onChoose(selectedFolder)
+            }}
+          >
+            确定
+          </Button>
+        </div>
       </div>
     </BaseModal>
   )
@@ -190,6 +212,10 @@ function onHide() {
 function onChoose(result: Result) {
   proxyProps.result = { ...result }
   onHide()
+}
+
+export function useModalMoveFavVisible() {
+  return useSnapshot(proxyProps).show
 }
 
 export async function chooseTragetFavFolder(srcFavFolderId: number | undefined) {

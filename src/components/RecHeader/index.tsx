@@ -1,6 +1,5 @@
 import { css } from '@emotion/react'
 import { Button } from 'antd'
-import { useSnapshot } from 'valtio'
 import { APP_CLS_TAB_BAR, baseDebug } from '$common'
 import { zIndexRecHeader } from '$common/css-vars-export.module.scss'
 import { useSizeExpression } from '$common/hooks/useResizeObserverExpression'
@@ -19,7 +18,6 @@ import { isMac, isSafari } from '$ua'
 import { getElementOffset, shouldDisableShortcut } from '$utility/dom'
 import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import { AccessKeyManage } from '../AccessKeyManage'
-import { headerState } from './index.shared'
 import { showModalFeed, showModalSettings, toggleModalSettings } from './modals'
 import { RefreshButton } from './RefreshButton'
 import { useCurrentUsingTab, VideoSourceTab } from './tab'
@@ -36,11 +34,11 @@ export const RecHeader = forwardRef<
   {
     refreshing: boolean
     onRefresh: OnRefresh
+    shortcutEnabled: boolean
     leftSlot?: ReactNode
     rightSlot?: ReactNode
   }
->(function RecHeader({ onRefresh, refreshing, leftSlot, rightSlot }, ref) {
-  const { modalFeedVisible, modalSettingsVisible } = useSnapshot(headerState)
+>(function RecHeader({ onRefresh, refreshing, leftSlot, rightSlot, shortcutEnabled }, ref) {
   const {
     accessKey,
     pureRecommend,
@@ -172,11 +170,7 @@ export const RecHeader = forwardRef<
                 </Button>
               </AntdTooltip>
 
-              <RefreshButton
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-                refreshHotkeyEnabled={!(modalSettingsVisible || modalFeedVisible)}
-              />
+              <RefreshButton refreshing={refreshing} onRefresh={onRefresh} refreshHotkeyEnabled={shortcutEnabled} />
 
               {showModalFeedEntry && (
                 <Button onClick={showModalFeed} className='gap-0'>

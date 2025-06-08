@@ -2,6 +2,7 @@ import { range } from 'es-toolkit'
 import { baseDebug } from '$common'
 import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
 import { useRefresh } from '$components/RecGrid/useRefresh'
+import { usePlainShortcutEnabled } from '$components/RecHeader/index.shared'
 import { useCurrentUsingTab } from '$components/RecHeader/tab'
 import { limitTwoLines, videoGrid, videoGridBiliFeed4 } from '$components/video-grid.module.scss'
 import { useCardBorderCss } from '$components/VideoCard/card-border-css'
@@ -46,12 +47,12 @@ const TabContent = memo(function TabContent({
   const items = itemsBox.state
 
   const displaySkeleton = !items.length || refreshError || (refreshing && showSkeleton)
-
   const cardBorderCss = useCardBorderCss()
+  const shortcutEnabled = usePlainShortcutEnabled()
 
   return (
     <section data-area='推荐'>
-      <RecHeader refreshing={refreshing} onRefresh={refresh} />
+      <RecHeader refreshing={refreshing} onRefresh={refresh} shortcutEnabled={shortcutEnabled} />
       <div className={clsx(videoGrid, limitTwoLines, videoGridBiliFeed4)} style={{ marginBottom: 30 }}>
         {displaySkeleton
           ? skeletonPlaceholders.map((id) => <VideoCard key={id} tab={tab} />)
