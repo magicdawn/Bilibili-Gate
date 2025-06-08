@@ -33,8 +33,10 @@ export const BaseModalStyle = {
     background-color: #fff;
     border-radius: 10px;
     padding: 0 15px 15px 15px;
+
+    border: 1px solid transparent;
     ${appClsDarkSelector} & {
-      border: 1px solid ${borderColorValue};
+      border-color: ${borderColorValue};
     }
 
     display: flex;

@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import { useRequest } from 'ahooks'
-import { Button, Spin } from 'antd'
+import { Button, Empty, Input, Spin } from 'antd'
 import mitt from 'mitt'
 import { pEvent } from 'p-event'
 import { proxy, useSnapshot } from 'valtio'
@@ -32,12 +32,26 @@ export function ModalMoveFav({
   srcFavFolderId: number | undefined
 }) {
   const $req = useRequest(updateFavFolders, { manual: true })
-  const { folders } = useSnapshot(store)
   const [selectedFolder, setSelectedFolder] = useState<Result | undefined>(undefined)
+  const [filterText, setFilterText] = useState<string | undefined>(undefined)
 
   useEffect(() => {
-    if (show) $req.run()
+    if (show) {
+      $req.run()
+    } else {
+      setFilterText(undefined)
+    }
   }, [show])
+
+  const { folders } = useSnapshot(store)
+  const filteredFolders = useMemo(() => {
+    return folders
+      .map((folder, index) => ({ ...folder, vol: index + 1 }))
+      .filter((folder) => {
+        if (!filterText) return true
+        return folder.title.toLowerCase().includes(filterText.toLowerCase())
+      })
+  }, [folders, filterText])
 
   return (
     <BaseModal
@@ -49,14 +63,30 @@ export function ModalMoveFav({
       clsModal='rounded-15px'
     >
       <div className={BaseModalClassNames.modalHeader}>
-        <div className={BaseModalClassNames.modalTitle}>
-          <IconParkOutlineTransferData className='size-25px' />
-          <span className='ml-5px'>选择目标收藏夹</span>
+        <div className='flex shrink-0 items-center gap-x-15px'>
+          <div className={BaseModalClassNames.modalTitle}>
+            <IconParkOutlineTransferData className='size-25px' />
+            <span className='ml-5px'>选择目标收藏夹</span>
+          </div>
+
+          <Input
+            style={{ width: 150 }}
+            allowClear
+            placeholder='过滤'
+            value={filterText}
+            onChange={(e) => setFilterText(e.target.value)}
+          />
+
+          {!!filterText && (
+            <span>
+              {filteredFolders.length}/{folders.length}
+            </span>
+          )}
         </div>
         <ModalClose onClick={onHide} />
       </div>
 
-      <div className={clsx(BaseModalClassNames.modalBody, 'my-10px')}>
+      <div className={clsx(BaseModalClassNames.modalBody)}>
         <Spin
           spinning={$req.loading}
           indicator={
@@ -71,8 +101,9 @@ export function ModalMoveFav({
             />
           }
         >
-          <div className='grid grid-cols-4 mb-10px min-h-100px gap-10px pr-15px'>
-            {folders.map((f, index) => {
+          <div className='grid grid-cols-4 mb-10px min-h-100px items-start gap-10px pr-15px'>
+            {!filteredFolders.length && <Empty className='grid-col-span-full' />}
+            {filteredFolders.map((f) => {
               const disabled = f.id === srcFavFolderId
               const active = !disabled && f.id === selectedFolder?.id
               return (
@@ -90,7 +121,7 @@ export function ModalMoveFav({
                   }}
                 >
                   <span className='ml-6px size-20px flex flex-none items-center justify-center rounded-full bg-gate-primary color-white'>
-                    {index + 1}
+                    {f.vol}
                   </span>
                   <span className='flex-1 px-4px'>
                     {f.title} ({f.media_count})
@@ -105,7 +136,7 @@ export function ModalMoveFav({
         </Spin>
       </div>
 
-      <div className='flex items-center justify-end gap-x-10px'>
+      <div className='mt-2 flex items-center justify-end gap-x-10px'>
         <Button onClick={onHide}>取消</Button>
         <Button
           type='primary'

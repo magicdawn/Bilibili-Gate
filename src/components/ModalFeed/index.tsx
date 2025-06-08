@@ -36,14 +36,6 @@ const S = {
         height: 100vh;
       `,
   ],
-
-  // 滚动条右移
-  modalHeader: css`
-    padding-right: 15px;
-  `,
-  modalBody: css`
-    padding-right: 15px;
-  `,
 }
 
 interface IProps {
