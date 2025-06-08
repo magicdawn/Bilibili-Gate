@@ -3,11 +3,11 @@ import { valtioFactory } from '$utility/valtio'
 import { formatRecentTimeStamp, isRecentTimeStamp } from '$utility/video'
 
 const $now = valtioFactory(() => Date.now())
-// update every minute
-const firstTimeout = dayjs().add(1, 'minute').startOf('minute').valueOf() - $now.get()
+// update every half minute
+const firstTimeout = (dayjs().add(1, 'minute').startOf('minute').valueOf() - $now.get()) % 30_000
 setTimeout(() => {
   $now.update()
-  setInterval($now.update, 60_000)
+  setInterval($now.update, 30_000)
 }, firstTimeout)
 // update when switch tab back
 document.addEventListener('visibilitychange', () => {

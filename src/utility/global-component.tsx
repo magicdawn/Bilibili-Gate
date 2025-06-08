@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { proxy, useSnapshot } from 'valtio'
 import { APP_CLS_ROOT } from '$common'
 import { AppRoot } from '$components/AppRoot'
+import type { AnyFunction } from './type'
 import type { ComponentType } from 'react'
 
 export function wrapComponent<IProps extends object>({
@@ -34,7 +35,7 @@ export function wrapComponent<IProps extends object>({
     )
   })
 
-  function wrapAction<T extends (...args: any[]) => any>(action: T) {
+  function wrapAction<T extends AnyFunction>(action: T) {
     return (...args: Parameters<T>): ReturnType<T> => {
       mount()
       return action(...args)
