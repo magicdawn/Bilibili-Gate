@@ -252,7 +252,7 @@ export default defineConfig(({ command, mode }) => ({
           'ua-parser-js': cdn.npmmirror('UAParser', 'dist/ua-parser.min.js'),
           'framer-motion': cdn.npmmirror('Motion', 'dist/framer-motion.js'),
           'localforage': cdn.npmmirror('localforage', 'dist/localforage.min.js'),
-          'pinyin-match': cdn.npmmirror('PinyinMatch', 'dist/main.min.js'),
+          'pinyin-match': cdn.npmmirror('PinyinMatch', 'dist/main.js'),
 
           // size:
           //  external 944kB + 36kB
