@@ -7,6 +7,7 @@ import { pEvent } from 'p-event'
 import PinyinMatch from 'pinyin-match'
 import { proxy, useSnapshot } from 'valtio'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
+import { HelpInfo } from '$components/_base/HelpInfo'
 import { colorPrimaryValue } from '$components/css-vars'
 import { IconForOpenExternalLink } from '$modules/icon'
 import { IconAnimatedChecked } from '$modules/icon/animated-checked'
@@ -71,6 +72,8 @@ export function ModalMoveFav({
     return uniqBy([...included, ...includedIgnoreCase, ...pinyinMatched], (x) => x.id)
   }, [folders, filterText])
 
+  const kbdClassName = 'cursor-pointer rounded bg-gate-bg-lv-3 p-x-1 text-gate-primary'
+
   return (
     <BaseModal
       show={show}
@@ -81,28 +84,34 @@ export function ModalMoveFav({
       clsModal='rounded-15px'
     >
       <div className={BaseModalClassNames.modalHeader}>
-        <div className='flex shrink-0 items-center gap-x-15px'>
+        <div className='flex shrink-0 items-center'>
           <div className={BaseModalClassNames.modalTitle}>
             <IconParkOutlineTransferData className='size-25px' />
             <span className='ml-5px'>选择目标收藏夹</span>
           </div>
 
           <Input
+            className='ml-15px'
             style={{ width: 200 }}
             allowClear
             placeholder='过滤: 支持拼音 / 首字母'
             value={filterText}
             onChange={(e) => setFilterText(e.target.value)}
           />
-
           {!!filterText && (
-            <span>
+            <span className='ml-5px'>
               <span className={clsx({ 'text-red': folders.length && !filteredFolders.length })}>
                 {filteredFolders.length}
               </span>{' '}
               / <span>{folders.length}</span>
             </span>
           )}
+
+          <HelpInfo className='ml-5px'>
+            1. 使用 <kbd className={kbdClassName}>r</kbd> 刷新收藏夹 <br />
+            2. 使用 <kbd className={kbdClassName}>esc</kbd> 取消操作, 关闭窗口 <br />
+            3. 使用 拼音 / 首字母 过滤收藏夹标题 <br />
+          </HelpInfo>
         </div>
         <ModalClose onClick={onHide} />
       </div>
@@ -141,7 +150,7 @@ export function ModalMoveFav({
                       setSelectedFolder({ id: f.id, title: f.title })
                     }}
                   >
-                    <span className='ml-6px size-20px flex flex-none items-center justify-center rounded-full bg-gate-primary color-white'>
+                    <span className='ml-6px size-24px flex-center flex-none rounded-full bg-gate-primary text-center color-white'>
                       {f.vol}
                     </span>
                     <span className='flex-1 px-4px'>
