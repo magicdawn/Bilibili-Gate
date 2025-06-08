@@ -4,8 +4,7 @@ import { Button, Spin } from 'antd'
 import mitt from 'mitt'
 import { pEvent } from 'p-event'
 import { proxy, useSnapshot } from 'valtio'
-import { BaseModal, BaseModalStyle, ModalClose } from '$components/_base/BaseModal'
-import { HelpInfo } from '$components/_base/HelpInfo'
+import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { colorPrimaryValue } from '$components/css-vars'
 import { IconAnimatedChecked } from '$modules/icon/animated-checked'
 import { fetchFavFolders } from '$modules/rec-services/fav/user-fav-service'
@@ -49,18 +48,15 @@ export function ModalMoveFav({
       width={900}
       clsModal='rounded-15px'
     >
-      <div css={BaseModalStyle.modalHeader} className='justify-between'>
-        <div css={BaseModalStyle.modalTitle}>
+      <div className={BaseModalClassNames.modalHeader}>
+        <div className={BaseModalClassNames.modalTitle}>
           <IconParkOutlineTransferData className='size-25px' />
-          <span className='ml-5px'>移动收藏到</span>
-          <HelpInfo>
-            <div>视频将从当前收藏夹移动到目标收藏夹</div>
-          </HelpInfo>
+          <span className='ml-5px'>选择目标收藏夹</span>
         </div>
         <ModalClose onClick={onHide} />
       </div>
 
-      <div css={BaseModalStyle.modalBody}>
+      <div className={clsx(BaseModalClassNames.modalBody, 'my-10px')}>
         <Spin
           spinning={$req.loading}
           indicator={
@@ -75,7 +71,7 @@ export function ModalMoveFav({
             />
           }
         >
-          <div className='grid grid-cols-4 mb-20px mt-20px min-h-100px gap-10px pr-15px'>
+          <div className='grid grid-cols-4 mb-10px min-h-100px gap-10px pr-15px'>
             {folders.map((f, index) => {
               const disabled = f.id === srcFavFolderId
               const active = !disabled && f.id === selectedFolder?.id
@@ -142,11 +138,8 @@ const { proxyProps, updateProps } = wrapComponent({
 const emitter = mitt<{ 'modal-close': void }>()
 
 function onHide() {
-  // esc 关闭, 等一个 tick, esc 先处理完
-  setTimeout(() => {
-    updateProps({ show: false })
-    emitter.emit('modal-close')
-  })
+  updateProps({ show: false })
+  emitter.emit('modal-close')
 }
 function onChoose(result: Result) {
   proxyProps.result = { ...result }

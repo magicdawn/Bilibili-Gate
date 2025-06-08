@@ -1,11 +1,18 @@
 import { css } from '@emotion/react'
 import { createPortal } from 'react-dom'
 import { APP_CLS_ROOT, APP_NAMESPACE } from '$common'
-import { zIndexBaseModal } from '$common/css-vars-export.module.scss'
+import { appClsDarkSelector, zIndexBaseModal } from '$common/css-vars-export.module.scss'
+import { borderColorValue } from '$components/css-vars'
 import { useIsDarkMode } from '$modules/dark-mode'
 import { hasMarginLeft, hasSize } from '$utility/css'
 import type { CssProp } from '$utility/type'
 import type { ComponentProps, MouseEvent } from 'react'
+
+export const BaseModalClassNames = {
+  modalHeader: 'py-10px border-b-0 flex items-center justify-between',
+  modalTitle: 'text-[1.5rem] mb-0 line-height-1.5 flex items-center',
+  modalBody: 'pt-0 flex-grow-1 overflow-y-auto',
+} as const
 
 export const BaseModalStyle = {
   modalMask: css`
@@ -13,7 +20,6 @@ export const BaseModalStyle = {
     inset: 0;
     background-color: rgba(0, 0, 0, 0.5);
     z-index: ${zIndexBaseModal};
-
     // make .model center
     display: flex;
     align-items: center;
@@ -27,32 +33,13 @@ export const BaseModalStyle = {
     background-color: #fff;
     border-radius: 10px;
     padding: 0 15px 15px 15px;
+    ${appClsDarkSelector} & {
+      border: 1px solid ${borderColorValue};
+    }
 
     display: flex;
     flex-direction: column;
     overflow: hidden;
-  `,
-
-  modalHeader: css`
-    padding-top: 10px;
-    padding-bottom: 10px;
-    border-bottom: none;
-    display: flex;
-    align-items: center;
-  `,
-
-  modalBody: css`
-    padding-top: 0;
-    flex-grow: 1;
-    overflow-y: auto;
-  `,
-
-  modalTitle: css`
-    font-size: 1.5rem;
-    margin-bottom: 0;
-    line-height: 1.5;
-    display: flex;
-    align-items: center;
   `,
 }
 

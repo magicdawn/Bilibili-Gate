@@ -6,7 +6,7 @@ import { pEvent } from 'p-event'
 import { createRoot } from 'react-dom/client'
 import { proxy, useSnapshot } from 'valtio'
 import { APP_CLS_ROOT } from '$common'
-import { BaseModal, BaseModalStyle, ModalClose } from '$components/_base/BaseModal'
+import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { AppRoot } from '$components/AppRoot'
 import { qrcodeConfirm } from './api'
 
@@ -64,13 +64,12 @@ export function TvQrCodeAuth() {
       width={260}
       clsModal='aspect-ratio-10/16'
     >
-      <div css={BaseModalStyle.modalHeader}>
-        <div css={BaseModalStyle.modalTitle}></div>
-        <div className='space' style={{ flex: 1 }}></div>
+      <div className={BaseModalClassNames.modalHeader}>
+        <div className={BaseModalClassNames.modalTitle}></div>
         <ModalClose onClick={onHide} />
       </div>
 
-      <div css={BaseModalStyle.modalBody} className='flex flex-col items-center justify-center text-center'>
+      <div className={clsx(BaseModalClassNames.modalBody, 'flex flex-col items-center justify-center text-center')}>
         <div className='mb-2px min-h-25px flex-center text-size-14px'>{message || ''}</div>
 
         {qrcodeUrl && (

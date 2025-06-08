@@ -6,7 +6,7 @@ import { delay } from 'es-toolkit'
 import { useSnapshot } from 'valtio'
 import { proxyMap } from 'valtio/utils'
 import { OPERATION_FAIL_MSG } from '$common'
-import { BaseModal, BaseModalStyle, ModalClose } from '$components/_base/BaseModal'
+import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { colorPrimaryValue } from '$components/css-vars'
 import { antMessage } from '$modules/antd'
@@ -130,8 +130,8 @@ export function ModalDislike({ show, onHide, item }: IProps) {
       width={350}
       clsModal='rounded-15px'
     >
-      <div css={BaseModalStyle.modalHeader} className='justify-between'>
-        <div css={BaseModalStyle.modalTitle}>
+      <div className={BaseModalClassNames.modalHeader}>
+        <div className={BaseModalClassNames.modalTitle}>
           <IconForDislike className='size-25px' />
           <span className='ml-5px'>我不想看</span>
           <HelpInfo>
@@ -147,7 +147,7 @@ export function ModalDislike({ show, onHide, item }: IProps) {
         <ModalClose onClick={onHide} />
       </div>
 
-      <div css={BaseModalStyle.modalBody} ref={modalBodyRef}>
+      <div className={BaseModalClassNames.modalBody} ref={modalBodyRef}>
         <Spin
           spinning={$req.loading}
           indicator={

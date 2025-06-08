@@ -3,7 +3,7 @@ import { Tabs } from 'antd'
 import { get, set } from 'es-toolkit/compat'
 import { proxy, useSnapshot } from 'valtio'
 import { __PROD__ } from '$common'
-import { BaseModal, BaseModalStyle, ModalClose } from '$components/_base/BaseModal'
+import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { antMessage } from '$modules/antd'
 import { useHotkeyForToggleEvolvedDarkMode } from '$modules/dark-mode'
 import { IconForConfig } from '$modules/icon'
@@ -73,17 +73,16 @@ export function ModalSettings({ show, onHide }: { show: boolean; onHide: () => v
         `,
       }}
     >
-      <div css={BaseModalStyle.modalHeader}>
-        <div css={BaseModalStyle.modalTitle}>
+      <div className={BaseModalClassNames.modalHeader}>
+        <div className={BaseModalClassNames.modalTitle}>
           <IconForConfig className='mr-4px mt--2px size-26px' />
           设置
         </div>
-        <div className='space' style={{ flex: 1 }}></div>
         <ModalClose onClick={onHide} />
       </div>
 
       {/* issue 设置项里面的滚动条怎么是双份的 */}
-      <main css={BaseModalStyle.modalBody} style={{ overflow: 'hidden' }}>
+      <main className={BaseModalClassNames.modalBody} style={{ overflow: 'hidden' }}>
         <Tabs
           tabPosition='left'
           size='middle'

@@ -2,7 +2,6 @@
  * context menus related
  */
 
-import { delay } from 'es-toolkit'
 import { useSnapshot } from 'valtio'
 import { appClsColorPrimary } from '$common/css-vars-export.module.scss'
 import { chooseTragetFavFolder } from '$components/ModalMoveFav'
@@ -531,7 +530,6 @@ export function useContextMenus({
                     const resource = `${item.id}:${item.type}`
                     const success = await UserFavService.removeFavs(item.folder.id, resource)
                     if (success) {
-                      await delay(1000)
                       onRemoveCurrent?.(item, cardData)
                     }
                   },

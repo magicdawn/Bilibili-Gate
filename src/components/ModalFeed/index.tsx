@@ -1,5 +1,5 @@
 import { css } from '@emotion/react'
-import { BaseModal, BaseModalStyle, ModalClose } from '$components/_base/BaseModal'
+import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { CollapseBtn } from '$components/_base/CollapseBtn'
 import { colorPrimaryValue } from '$components/css-vars'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
@@ -80,18 +80,7 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
     const { refreshing, onRefresh, extraInfo } = headerState
     return (
       <OnRefreshContext.Provider value={onRefresh}>
-        <div
-          css={[
-            BaseModalStyle.modalHeader,
-            S.modalHeader,
-            css`
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              column-gap: 15px;
-            `,
-          ]}
-        >
+        <div className={clsx(BaseModalClassNames.modalHeader, 'pr-15px gap-x-15px')}>
           <div className='left flex flex-shrink-1 flex-wrap items-center gap-x-15px gap-y-4px'>
             <VideoSourceTab onRefresh={onRefresh} />
             {extraInfo}
@@ -117,7 +106,7 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
       cssModal={[S.modal(useNarrowMode, useFullScreen), modalBorderCss]}
     >
       {renderHeader()}
-      <div css={[BaseModalStyle.modalBody, S.modalBody]} ref={scrollerRef}>
+      <div className={clsx(BaseModalClassNames.modalBody, 'pr-15px')} ref={scrollerRef}>
         <RecGrid
           shortcutEnabled={show}
           onScrollToTop={onScrollToTop}
