@@ -1,8 +1,10 @@
 import { css } from '@emotion/react'
 import { useRequest } from 'ahooks'
 import { Button, Empty, Input, Spin } from 'antd'
+import { uniqBy } from 'es-toolkit'
 import mitt from 'mitt'
 import { pEvent } from 'p-event'
+import PinyinMatch from 'pinyin-match'
 import { proxy, useSnapshot } from 'valtio'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { colorPrimaryValue } from '$components/css-vars'
@@ -39,18 +41,21 @@ export function ModalMoveFav({
     if (show) {
       $req.run()
     } else {
-      setFilterText(undefined)
+      // 🤔 is this really necessary
+      // setFilterText(undefined)
     }
   }, [show])
 
   const { folders } = useSnapshot(store)
   const filteredFolders = useMemo(() => {
-    return folders
-      .map((folder, index) => ({ ...folder, vol: index + 1 }))
-      .filter((folder) => {
-        if (!filterText) return true
-        return folder.title.toLowerCase().includes(filterText.toLowerCase())
-      })
+    const mapped = folders.map((folder, index) => ({ ...folder, vol: index + 1 }))
+    if (!filterText) return mapped
+
+    const included = mapped.filter((folder) => folder.title.includes(filterText))
+    const includedIgnoreCase = mapped.filter((folder) => folder.title.toLowerCase().includes(filterText.toLowerCase()))
+    const pinyinMatched = mapped.filter((folder) => PinyinMatch.match(folder.title, filterText))
+
+    return uniqBy([...included, ...includedIgnoreCase, ...pinyinMatched], (x) => x.id)
   }, [folders, filterText])
 
   return (
@@ -70,16 +75,19 @@ export function ModalMoveFav({
           </div>
 
           <Input
-            style={{ width: 150 }}
+            style={{ width: 180 }}
             allowClear
-            placeholder='过滤'
+            placeholder='过滤: 支持拼音 / 首字母'
             value={filterText}
             onChange={(e) => setFilterText(e.target.value)}
           />
 
           {!!filterText && (
             <span>
-              {filteredFolders.length}/{folders.length}
+              <span className={clsx({ 'text-red': folders.length && !filteredFolders.length })}>
+                {filteredFolders.length}
+              </span>{' '}
+              / <span>{folders.length}</span>
             </span>
           )}
         </div>
@@ -102,36 +110,43 @@ export function ModalMoveFav({
           }
         >
           <div className='grid grid-cols-4 mb-10px min-h-100px items-start gap-10px pr-15px'>
-            {!filteredFolders.length && <Empty className='grid-col-span-full' />}
-            {filteredFolders.map((f) => {
-              const disabled = f.id === srcFavFolderId
-              const active = !disabled && f.id === selectedFolder?.id
-              return (
-                <button
-                  key={f.id}
-                  data-id={f.id}
-                  className={clsx(
-                    { active },
-                    'relative flex items-center py-12px rounded-6px b-2px b-solid',
-                    active ? 'b-gate-primary' : 'b-gate-border',
-                  )}
-                  disabled={disabled}
-                  onClick={() => {
-                    setSelectedFolder({ id: f.id, title: f.title })
-                  }}
-                >
-                  <span className='ml-6px size-20px flex flex-none items-center justify-center rounded-full bg-gate-primary color-white'>
-                    {f.vol}
-                  </span>
-                  <span className='flex-1 px-4px'>
-                    {f.title} ({f.media_count})
-                  </span>
-                  <span className='mr-6px size-20px flex-none'>
-                    {active && <IconAnimatedChecked className='h-100% w-100%' color={colorPrimaryValue} useAnimation />}
-                  </span>
-                </button>
-              )
-            })}
+            {filteredFolders.length ? (
+              filteredFolders.map((f) => {
+                const disabled = f.id === srcFavFolderId
+                const active = !disabled && f.id === selectedFolder?.id
+                return (
+                  <button
+                    key={f.id}
+                    data-id={f.id}
+                    className={clsx(
+                      { active },
+                      'relative flex items-center py-12px rounded-6px b-2px b-solid',
+                      active ? 'b-gate-primary' : 'b-gate-border',
+                    )}
+                    disabled={disabled}
+                    onClick={() => {
+                      setSelectedFolder({ id: f.id, title: f.title })
+                    }}
+                  >
+                    <span className='ml-6px size-20px flex flex-none items-center justify-center rounded-full bg-gate-primary color-white'>
+                      {f.vol}
+                    </span>
+                    <span className='flex-1 px-4px'>
+                      {f.title} ({f.media_count})
+                    </span>
+                    <span className='mr-6px size-20px flex-none'>
+                      {active && (
+                        <IconAnimatedChecked className='h-100% w-100%' color={colorPrimaryValue} useAnimation />
+                      )}
+                    </span>
+                  </button>
+                )
+              })
+            ) : (
+              <Empty className='grid-col-span-full' image={Empty.PRESENTED_IMAGE_SIMPLE} description='未找到收藏夹'>
+                无过滤结果, 请清楚过滤词!
+              </Empty>
+            )}
           </div>
         </Spin>
       </div>

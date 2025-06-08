@@ -112,18 +112,24 @@ export async function favDeal({
   return success
 }
 
-export let defaultFavFolderId = 0
-export let defaultFavFolderName = ''
-export async function addFav(avid: string | number) {
-  if (!defaultFavFolderId || !defaultFavFolderName) {
+export let defaultFavFolderId: number | undefined
+export let defaultFavFolderTitle: string | undefined
+export async function addFav(avid: string | number, folderId?: number) {
+  if (!folderId && (!defaultFavFolderId || !defaultFavFolderTitle)) {
     // NOTE: 不使用 FavService, 因其包含 exclude fav folder 逻辑, 这里期望加入默认收藏夹
     const folders = await fetchFavFolders()
     const defaultFolder = folders.find((f) => isFavFolderDefault(f.attr)) ?? folders[0]
     if (!defaultFolder) return toast('没有找到默认收藏夹!')
     defaultFavFolderId = defaultFolder.id
-    defaultFavFolderName = defaultFolder.title
+    defaultFavFolderTitle = defaultFolder.title
   }
-  return await favDeal({ avid, add_media_ids: defaultFavFolderId.toString() })
+
+  folderId ||= defaultFavFolderId
+  if (!folderId) {
+    return toast('没有找到默认收藏夹!')
+  }
+
+  return await favDeal({ avid, add_media_ids: folderId.toString() })
 }
 
 export async function fetchFavFolders() {

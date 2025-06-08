@@ -3,7 +3,6 @@
  */
 
 import { useSnapshot } from 'valtio'
-import { appClsColorPrimary } from '$common/css-vars-export.module.scss'
 import { chooseTragetFavFolder } from '$components/ModalMoveFav'
 import {
   copyBvidInfos,
@@ -25,7 +24,7 @@ import {
   type RecItemType,
 } from '$define'
 import { EApiType } from '$define/index.shared'
-import { antMessage, defineAntMenus, type AntMenuItem } from '$modules/antd'
+import { antMessage, antModal, defineAntMenus, type AntMenuItem } from '$modules/antd'
 import { UserBlacklistService } from '$modules/bilibili/me/relations/blacklist'
 import { UserfollowService } from '$modules/bilibili/me/relations/follow'
 import { setNicknameCache } from '$modules/bilibili/user/nickname'
@@ -52,7 +51,7 @@ import {
 } from '$modules/rec-services/dynamic-feed/store'
 import { formatFavCollectionUrl, formatFavFolderUrl } from '$modules/rec-services/fav/fav-url'
 import { FavQueryKey, favStore } from '$modules/rec-services/fav/store'
-import { defaultFavFolderName, UserFavService } from '$modules/rec-services/fav/user-fav-service'
+import { defaultFavFolderTitle, UserFavService } from '$modules/rec-services/fav/user-fav-service'
 import { SHOW_SPACE_UPLOAD_ONLY, SpaceUploadQueryKey } from '$modules/rec-services/space-upload/store'
 import { settings, updateSettingsInnerArray } from '$modules/settings'
 import toast from '$utility/toast'
@@ -384,32 +383,47 @@ export function useContextMenus({
         },
       },
       {
-        test: isWatchlater(item),
-        key: 'add-fav',
-        icon: favFolderNames?.length ? (
-          <IconForFaved className={clsx('size-15px', appClsColorPrimary)} />
-        ) : (
-          <IconForFav className='size-15px' />
-        ),
-        label: favFolderNames?.length ? `已收藏 ${favFolderNames.map((n) => `「${n}」`).join('')}` : '快速收藏',
+        // 浏览收藏夹
+        test: isWatchlater(item) && !!favFolderNames?.length,
+        key: 'watchlater-faved:browse-fav-folder',
+        icon: <IconForFaved className='size-15px color-gate-primary' />,
+        label: `已收藏在 ${(favFolderNames || []).map((n) => `「${n}」`).join('')}`,
+        onClick() {
+          if (!avid) return
+          favFolderUrls?.forEach((u) => {
+            window.open(u, getLinkTarget())
+          })
+        },
+      },
+      {
+        // 快速收藏
+        test: isWatchlater(item) && !favFolderNames?.length,
+        key: 'watchlater:add-quick-fav',
+        icon: <IconForFav className='size-15px' />,
+        label: '收藏到「默认收藏夹」',
+        async onClick() {
+          if (!avid) return
+          const success = await UserFavService.addFav(avid)
+          if (success) {
+            antMessage.success(`已加入收藏夹「${defaultFavFolderTitle}」`)
+          }
+        },
+      },
+      {
+        // 收藏
+        test: isWatchlater(item) && !favFolderNames?.length,
+        key: 'watchlater:add-fav',
+        icon: <IconForFav className='size-15px' />,
+        label: '收藏到',
         async onClick() {
           if (!avid) return
 
-          const hasFaved = Boolean(favFolderNames?.length)
+          const targetFolder = await chooseTragetFavFolder(undefined)
+          if (!targetFolder) return // cancelled
 
-          // 浏览收藏夹
-          if (hasFaved) {
-            favFolderUrls?.forEach((u) => {
-              window.open(u, getLinkTarget())
-            })
-          }
-
-          // 快速收藏
-          else {
-            const success = await UserFavService.addFav(avid)
-            if (success) {
-              antMessage.success(`已加入收藏夹「${defaultFavFolderName}」`)
-            }
+          const success = await UserFavService.addFav(avid, targetFolder.id)
+          if (success) {
+            antMessage.success(`已加入收藏夹「${targetFolder.title}」`)
           }
         },
       },
@@ -527,6 +541,19 @@ export function useContextMenus({
                   icon: <IconMaterialSymbolsDeleteOutlineRounded className='size-15px' />,
                   async onClick() {
                     if (!isFav(item)) return
+
+                    // 经常误操作, 点到这项, 直接移除了...
+                    const confirm = await antModal.confirm({
+                      title: '移除收藏',
+                      content: (
+                        <>
+                          确定将视频「{item.title}」<br />
+                          从收藏夹「{item.folder.title}」中移除?
+                        </>
+                      ),
+                    })
+                    if (!confirm) return
+
                     const resource = `${item.id}:${item.type}`
                     const success = await UserFavService.removeFavs(item.folder.id, resource)
                     if (success) {
