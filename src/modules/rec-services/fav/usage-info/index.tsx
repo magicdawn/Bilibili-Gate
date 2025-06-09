@@ -12,7 +12,7 @@ import { sortListByName } from '$utility/sort'
 import { usePopupContainer } from '../../_base'
 import { dropdownMenuStyle } from '../../_shared'
 import { isFavFolderDefault, isFavFolderPrivate } from '../fav-util'
-import { favStore, type FavStore } from '../store'
+import { favStore, updateFavList, type FavStore } from '../store'
 import type { FavAllService } from '../service/fav-all'
 import type { FavFolderBasicService } from '../service/fav-folder'
 import type { TransferDirection } from 'antd/es/transfer'
@@ -25,13 +25,13 @@ export const IconForCollection = IconIonLayersOutline
 
 export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
   const { fav } = useSettingsSnapshot()
-  const { favFolders, selectedFavFolder, favCollections, selectedFavCollection, selectedLabel, selectedKey } =
+  const { folders, selectedFavFolder, collections, selectedFavCollection, selectedLabel, selectedKey } =
     useSnapshot(favStore)
   const onRefresh = useOnRefreshContext()
   const { ref, getPopupContainer } = usePopupContainer()
 
   useMount(() => {
-    favStore.updateList()
+    updateFavList()
   })
 
   // 分割线设置切换, 即时生效
@@ -45,7 +45,7 @@ export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
   // !#region scope selection dropdown
   const scopeSelectionDropdownMenus: AntMenuItem[] = useMemo(() => {
     const collectionSubMenus: AntMenuItem[] = []
-    const collectionGrouped = groupBy(favCollections, (x) => x.upper.name)
+    const collectionGrouped = groupBy(collections, (x) => x.upper.name)
     let entries = Object.entries(collectionGrouped).map(([upName, collections]) => ({
       upName,
       collections: sortListByName(collections, 'title'),
@@ -104,10 +104,10 @@ export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
           onRefresh?.()
         },
       },
-      !!favFolders.length && {
+      !!folders.length && {
         type: 'group',
         label: '收藏夹',
-        children: favFolders.map((f) => {
+        children: folders.map((f) => {
           const isDefault = isFavFolderDefault(f.attr)
           const isPrivate = isFavFolderPrivate(f.attr)
           const key: FavStore['selectedKey'] = `fav-folder:${f.id}`
@@ -127,13 +127,13 @@ export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
           }
         }),
       },
-      !!favCollections.length && {
+      !!collections.length && {
         type: 'group',
         label: '合集',
         children: collectionSubMenus,
       },
     ])
-  }, [favFolders, favCollections])
+  }, [folders, collections])
   const [scopeDropdownOpen, setScopeDropdownOpen] = useState(false)
 
   const dropdownButtonClassName = 'size-15px relative top-[-0.5px]'

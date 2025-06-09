@@ -11,7 +11,7 @@ import toast from '$utility/toast'
 import type { ItemsSeparator } from '$define'
 import { FavItemsOrder, handleItemsOrder } from '../fav-enum'
 import { formatFavFolderUrl, formatFavPlaylistUrl } from '../fav-url'
-import { favStore, updateFavFolderMediaCount } from '../store'
+import { favStore, updateFavFolderMediaCount, updateFavList } from '../store'
 import { FavItemsOrderSwitcher } from '../usage-info/fav-items-order'
 import type { IFavInnerService } from '../index'
 import type { FavItemExtend } from '../types'
@@ -95,8 +95,8 @@ export class FavFolderService implements IFavInnerService {
   async createService() {
     if (this.innerService) return
 
-    await favStore.updateList()
-    const entry = snapshot(favStore.favFolders).find((f) => f.id === this.folderId)
+    await updateFavList()
+    const entry = snapshot(favStore.folders).find((f) => f.id === this.folderId)
     assert(entry, `favStore.favFolders should have this entry[fid=${this.folderId}]`)
     this.entry = entry
 

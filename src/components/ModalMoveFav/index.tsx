@@ -5,26 +5,17 @@ import { uniqBy } from 'es-toolkit'
 import mitt from 'mitt'
 import { pEvent } from 'p-event'
 import PinyinMatch from 'pinyin-match'
-import { proxy, useSnapshot } from 'valtio'
+import { useSnapshot } from 'valtio'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { colorPrimaryValue } from '$components/css-vars'
 import { IconForOpenExternalLink } from '$modules/icon'
 import { IconAnimatedChecked } from '$modules/icon/animated-checked'
-import { fetchFavFolders } from '$modules/rec-services/fav/user-fav-service'
+import { favStore, updateFavFolderList } from '$modules/rec-services/fav/store'
 import { getUid } from '$utility/cookie'
 import { shouldDisableShortcut } from '$utility/dom'
 import { wrapComponent } from '$utility/global-component'
 import type { FavFolder } from '$modules/rec-services/fav/types/folders/list-all-folders'
-
-const store = proxy({
-  folders: [] as FavFolder[],
-})
-
-async function updateFavFolders() {
-  const folders = await fetchFavFolders()
-  store.folders = folders
-}
 
 export function ModalMoveFav({
   show,
@@ -37,7 +28,7 @@ export function ModalMoveFav({
   onChoose: (result: Result) => void
   srcFavFolderId: number | undefined
 }) {
-  const $req = useRequest(updateFavFolders, { manual: true })
+  const $req = useRequest(updateFavFolderList, { manual: true })
   const [selectedFolder, setSelectedFolder] = useState<Result | undefined>(undefined)
   const [filterText, setFilterText] = useState<string | undefined>(undefined)
 
@@ -45,7 +36,7 @@ export function ModalMoveFav({
     if (show) {
       $req.run()
     } else {
-      // 🤔 is this really necessary
+      // 🤔 is this really necessary ?
       // setFilterText(undefined)
     }
   }, [show])
@@ -55,12 +46,12 @@ export function ModalMoveFav({
     () => {
       if (!show) return
       if (shouldDisableShortcut()) return
-      $req.run()
+      $req.run(true)
     },
     { exactMatch: true },
   )
 
-  const { folders } = useSnapshot(store)
+  const { folders } = useSnapshot(favStore)
   const filteredFolders = useMemo(() => {
     const mapped = folders.map((folder, index) => ({ ...folder, vol: index + 1 }))
     if (!filterText) return mapped

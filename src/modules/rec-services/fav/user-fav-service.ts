@@ -11,6 +11,7 @@ import { getCsrfToken, getHasLogined, getUid } from '$utility/cookie'
 import toast from '$utility/toast'
 import { formatFavFolderUrl } from './fav-url'
 import { isFavFolderDefault } from './fav-util'
+import { favStore, updateFavFolderList } from './store'
 import type { FavFolderListAllJson } from './types/folders/list-all-folders'
 
 export const UserFavService = {
@@ -116,8 +117,8 @@ export let defaultFavFolderId: number | undefined
 export let defaultFavFolderTitle: string | undefined
 export async function addFav(avid: string | number, folderId?: number) {
   if (!folderId && (!defaultFavFolderId || !defaultFavFolderTitle)) {
-    // NOTE: 不使用 FavService, 因其包含 exclude fav folder 逻辑, 这里期望加入默认收藏夹
-    const folders = await fetchFavFolders()
+    await updateFavFolderList()
+    const { folders } = favStore
     const defaultFolder = folders.find((f) => isFavFolderDefault(f.attr)) ?? folders[0]
     if (!defaultFolder) return toast('没有找到默认收藏夹!')
     defaultFavFolderId = defaultFolder.id
@@ -132,7 +133,7 @@ export async function addFav(avid: string | number, folderId?: number) {
   return await favDeal({ avid, add_media_ids: folderId.toString() })
 }
 
-export async function fetchFavFolders() {
+export async function fetchAllFavFolders() {
   const res = await request.get('/x/v3/fav/folder/created/list-all', {
     params: { up_mid: getUid() },
   })

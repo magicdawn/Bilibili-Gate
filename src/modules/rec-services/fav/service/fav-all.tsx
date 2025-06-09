@@ -3,7 +3,7 @@ import pmap from 'promise.map'
 import { proxy, snapshot } from 'valtio'
 import { EApiType } from '$define/index.shared'
 import { FavItemsOrder } from '../fav-enum'
-import { favStore } from '../store'
+import { favStore, updateFavList } from '../store'
 import { ViewingAllExcludeFolderConfig } from '../usage-info'
 import { FavItemsOrderSwitcher } from '../usage-info/fav-items-order'
 import type { IFavInnerService } from '../index'
@@ -95,25 +95,25 @@ export class FavAllService implements IFavInnerService {
   private serviceCreated = false
   allServices: IFavInnerService[] = []
   private async createServices() {
-    await favStore.updateList()
-    const { favFolders, favCollections } = cloneDeep(snapshot(favStore))
+    await updateFavList()
+    const { folders, collections } = cloneDeep(snapshot(favStore))
 
     // fav-folders
-    this.allFolderServices = favFolders.map((f) => new FavFolderBasicService(f))
-    this.state.totalCountInFavFolders = favFolders
+    this.allFolderServices = folders.map((f) => new FavFolderBasicService(f))
+    this.state.totalCountInFavFolders = folders
       .filter((f) => !this.excludedFolderIds.includes(f.id.toString()))
       .reduce((count, f) => count + f.media_count, 0)
 
     // create services
     {
-      const folders = favFolders.filter((f) => !this.excludedFolderIds.includes(f.id.toString()))
+      const _folders = folders.filter((f) => !this.excludedFolderIds.includes(f.id.toString()))
       let itemsOrder = this.itemsOrder
       if (itemsOrder === FavItemsOrder.Initial) itemsOrder = FavItemsOrder.FavTimeDesc // 收藏夹没有 `默认`
-      this.allServices.push(...folders.map((f) => new FavFolderService(f.id, this.addSeparator, itemsOrder)))
+      this.allServices.push(..._folders.map((f) => new FavFolderService(f.id, this.addSeparator, itemsOrder)))
     }
     {
       this.allServices.push(
-        ...favCollections.map((c) => new FavCollectionService(c.id, this.addSeparator, this.itemsOrder)),
+        ...collections.map((c) => new FavCollectionService(c.id, this.addSeparator, this.itemsOrder)),
       )
     }
 

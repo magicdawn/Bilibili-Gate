@@ -1,3 +1,5 @@
+/* eslint-disable require-await */
+
 import { pick } from 'es-toolkit'
 import ms from 'ms'
 import pLimit from 'p-limit'
@@ -10,7 +12,7 @@ import { proxyMapWithGmStorage, subscribeOnKeys } from '$utility/valtio'
 import { fetchAllFavCollections } from './collection/api'
 import { FavItemsOrder } from './fav-enum'
 import { getSavedOrder } from './usage-info/fav-items-order'
-import { fetchFavFolders } from './user-fav-service'
+import { fetchAllFavFolders } from './user-fav-service'
 import type { FavCollectionDetailInfo } from './types/collections/collection-detail'
 import type { FavCollection } from './types/collections/list-all-collections'
 import type { FavFolder } from './types/folders/list-all-folders'
@@ -47,24 +49,21 @@ export const SHOW_FAV_TAB_ONLY =
   IN_BILIBILI_HOMEPAGE && (typeof QUERY_FAV_FOLDER_ID === 'number' || typeof QUERY_FAV_COLLECTION_ID === 'number')
 
 export const favStore = proxy({
-  // methods
-  updateList,
-
-  favFolders: [] as FavFolder[],
-  favFoldersUpdateAt: 0,
+  folders: [] as FavFolder[],
+  foldersUpdateAt: 0,
   selectedFavFolderId: QUERY_FAV_FOLDER_ID,
   get selectedFavFolder(): FavFolder | undefined {
     if (typeof this.selectedFavFolderId !== 'number') return
-    return this.favFolders.find((x) => x.id === this.selectedFavFolderId)
+    return this.folders.find((x) => x.id === this.selectedFavFolderId)
   },
 
-  favCollections: [] as FavCollection[],
-  favCollectionsUpdateAt: 0,
+  collections: [] as FavCollection[],
+  collectionsUpdateAt: 0,
   selectedFavCollectionId: QUERY_FAV_COLLECTION_ID,
   selectedFavCollectionDetailInfo: undefined as FavCollectionDetailInfo | undefined,
   get selectedFavCollection(): FavCollection | undefined {
     if (typeof this.selectedFavCollectionId !== 'number') return
-    return this.favCollections.find((x) => x.id === this.selectedFavCollectionId)
+    return this.collections.find((x) => x.id === this.selectedFavCollectionId)
   },
 
   get selectedKey(): 'all' | `${Exclude<FavSelectedKeyPrefix, 'all'>}:${number}` {
@@ -112,9 +111,60 @@ export const favStore = proxy({
   },
 })
 
+export function updateFavFolderMediaCount(targetFavFolderId: number, count: number | ((old: number) => number)) {
+  const folder = favStore.folders.find((x) => x.id === targetFavFolderId)
+  if (!folder) return // no target
+
+  const newCount = typeof count === 'function' ? count(folder.media_count) : count
+  if (newCount === folder.media_count) return // un-changed
+
+  folder.media_count = newCount
+  debug('update folder(id=%s title=%s) media_count to %s', folder.id, folder.title, newCount)
+}
+
+export function updateFavList(force = false) {
+  return Promise.all([updateFavFolderList(force), updateFavCollectionList(force)])
+}
+
+const _updateFavFolderList = reusePendingPromise(async () => {
+  const folders = await fetchAllFavFolders()
+  favStore.folders = folders
+  favStore.foldersUpdateAt = Date.now()
+})
+export async function updateFavFolderList(force = false) {
+  if (!force) {
+    const { folders, foldersUpdateAt } = favStore
+    const cacheValid = folders.length && foldersUpdateAt && Date.now() - foldersUpdateAt < ms('5min')
+    if (cacheValid) return
+  }
+  return _updateFavFolderList()
+}
+
+const _updateFavCollectionList = reusePendingPromise(async () => {
+  const collections = await fetchAllFavCollections()
+  favStore.collections = collections
+  favStore.collectionsUpdateAt = Date.now()
+})
+export async function updateFavCollectionList(force = false) {
+  if (!force) {
+    const { collections, collectionsUpdateAt } = favStore
+    const cacheValid = collections.length && collectionsUpdateAt && Date.now() - collectionsUpdateAt < ms('5min')
+    if (cacheValid) return
+  }
+  return _updateFavCollectionList()
+}
+
 /**
- * favStore: load and setup-persist
+ * side effects
  */
+if (SHOW_FAV_TAB_ONLY) {
+  subscribeKey(favStore, 'selectedLabel', () => {
+    if (!favStore.selectedLabel) return
+    setPageTitle(favStore.selectedLabel)
+  })
+}
+
+setupFavStore()
 async function setupFavStore() {
   if (!IN_BILIBILI_HOMEPAGE) return
   if (SHOW_FAV_TAB_ONLY) return
@@ -141,57 +191,3 @@ async function setupFavStore() {
     })
   })
 }
-
-export function updateFavFolderMediaCount(targetFavFolderId: number, count: number | ((old: number) => number)) {
-  const folder = favStore.favFolders.find((x) => x.id === targetFavFolderId)
-  if (!folder) return
-
-  const newCount = typeof count === 'function' ? count(folder.media_count) : count
-  if (newCount !== folder.media_count) {
-    folder.media_count = newCount
-    debug('update folder(id=%s title=%s) media_count to %s', folder.id, folder.title, newCount)
-  }
-}
-
-export function updateList(force = false) {
-  return Promise.all([updateFolderList(force), updateCollectionList(force)])
-}
-
-const _updateFolderList = reusePendingPromise(async () => {
-  const folders = await fetchFavFolders()
-  favStore.favFolders = folders
-  favStore.favFoldersUpdateAt = Date.now()
-})
-function updateFolderList(force = false) {
-  if (force) return
-  const { favFolders, favFoldersUpdateAt } = favStore
-  if (favFolders.length && favFoldersUpdateAt && Date.now() - favFoldersUpdateAt < ms('5min')) {
-    return
-  }
-  return _updateFolderList()
-}
-
-const _updateCollectionList = reusePendingPromise(async () => {
-  const collections = await fetchAllFavCollections()
-  favStore.favCollections = collections
-  favStore.favCollectionsUpdateAt = Date.now()
-})
-function updateCollectionList(force = false) {
-  if (force) return
-  const { favCollections, favCollectionsUpdateAt } = favStore
-  if (favCollections.length && favCollectionsUpdateAt && Date.now() - favCollectionsUpdateAt < ms('5min')) {
-    return
-  }
-  return _updateCollectionList()
-}
-
-/**
- * side effects
- */
-if (SHOW_FAV_TAB_ONLY) {
-  subscribeKey(favStore, 'selectedLabel', () => {
-    if (!favStore.selectedLabel) return
-    setPageTitle(favStore.selectedLabel)
-  })
-}
-setupFavStore()
