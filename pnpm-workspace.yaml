@@ -1,6 +1,5 @@
 overrides:
   vite-plugin-importer>babel-plugin-import: ^1.13.8
-  sass-embedded>@bufbuild/protobuf: ^2.5.0 # https://github.com/sass/embedded-host-node/issues/375
 
 allowedDeprecatedVersions:
   axios-userscript-adapter: '0'
