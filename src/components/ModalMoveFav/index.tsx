@@ -157,7 +157,7 @@ export function ModalMoveFav({
               })
             ) : (
               <Empty className='grid-col-span-full' image={Empty.PRESENTED_IMAGE_SIMPLE} description='未找到收藏夹'>
-                无过滤结果, 请清楚过滤词!
+                无过滤结果, 请清除过滤词!
               </Empty>
             )}
           </div>
