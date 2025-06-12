@@ -36,16 +36,18 @@ export const OPERATION_FAIL_MSG = '操作失败, 请重试 !!!'
 export const __DEV__ = import.meta.env.DEV
 export const __PROD__ = import.meta.env.PROD
 
+const TLD = 'bilibili.com'
 export enum BiliDomain {
-  Tld = '.bilibili.com',
-  Main = 'www.bilibili.com',
-  Space = 'space.bilibili.com',
-  Search = 'search.bilibili.com',
+  Tld = TLD,
+  Main = `www.${TLD}`,
+  Space = `space.${TLD}`,
+  Search = `search.${TLD}`,
 }
 
 const { hostname, pathname } = location
-export const IN_BILIBILI = hostname.endsWith(BiliDomain.Tld)
-export const IN_BILIBILI_HOMEPAGE = IN_BILIBILI && (pathname === '/' || pathname === '/index.html')
+export const IN_BILIBILI = hostname === BiliDomain.Tld || hostname.endsWith(`.${BiliDomain.Tld}`)
+export const IN_BILIBILI_HOMEPAGE =
+  (hostname === BiliDomain.Tld || hostname === BiliDomain.Main) && (pathname === '/' || pathname === '/index.html')
 // https://www.bilibili.com/video/BVxxx
 // https://www.bilibili.com/list/watchlater?bvid=BVxxx
 export const IN_BILIBILI_VIDEO_PLAY_PAGE =
