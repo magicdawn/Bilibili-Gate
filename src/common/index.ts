@@ -45,15 +45,15 @@ export enum BiliDomain {
 }
 
 const { hostname, pathname } = location
+// host predicate
 export const IN_BILIBILI = hostname === BiliDomain.Tld || hostname.endsWith(`.${BiliDomain.Tld}`)
-export const IN_BILIBILI_HOMEPAGE =
-  (hostname === BiliDomain.Tld || hostname === BiliDomain.Main) && (pathname === '/' || pathname === '/index.html')
-// https://www.bilibili.com/video/BVxxx
-// https://www.bilibili.com/list/watchlater?bvid=BVxxx
-export const IN_BILIBILI_VIDEO_PLAY_PAGE =
-  IN_BILIBILI && ['/video/', '/list/watchlater', '/bangumi/play/'].some((prefix) => pathname.startsWith(prefix))
+export const IN_BILIBILI_MAIN = [BiliDomain.Tld, BiliDomain.Main].includes(hostname)
 export const IN_BILIBILI_SPACE_PAGE = hostname === BiliDomain.Space
 export const IN_BILIBILI_SEARCH_PAGE = hostname === BiliDomain.Search
+// page predicate
+export const IN_BILIBILI_HOMEPAGE = IN_BILIBILI_MAIN && (pathname === '/' || pathname === '/index.html')
+export const IN_BILIBILI_VIDEO_PLAY_PAGE =
+  IN_BILIBILI_MAIN && ['/video/', '/list/watchlater', '/bangumi/play/'].some((prefix) => pathname.startsWith(prefix))
 
 /**
  * log with namespace
