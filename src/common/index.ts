@@ -28,6 +28,7 @@ export const APP_CLS_CARD = `${APP_NAMESPACE}-video-card`
 export const APP_CLS_CARD_ACTIVE = `${APP_NAMESPACE}-video-card-active`
 export const APP_CLS_CARD_COVER = `${APP_NAMESPACE}-video-card-cover`
 export const APP_CLS_TAB_BAR = `${APP_NAMESPACE}-tab-bar`
+export const APP_CLS_CARD_RECOMMEND_REASON = `${APP_NAMESPACE}-video-card__recommend-reason`
 
 export const REQUEST_FAIL_MSG = '请求失败, 请重试 !!!'
 export const OPERATION_FAIL_MSG = '操作失败, 请重试 !!!'

@@ -8,6 +8,7 @@ import { useRequest } from 'ahooks'
 import { Avatar } from 'antd'
 import dayjs from 'dayjs'
 import { useSnapshot } from 'valtio'
+import { APP_CLS_CARD_RECOMMEND_REASON } from '$common'
 import { isAppRecommend, isLive, isPcRecommend, isRank, type RecItemType } from '$define'
 import { EApiType, EAppApiDevice } from '$define/index.shared'
 import { PcRecGoto } from '$define/pc-recommend'
@@ -245,7 +246,7 @@ export const VideoCardBottom = memo(function ({
             )}
           </a>
           {!!recommendReason && (
-            <span css={S.recommendReason} title={recommendReason}>
+            <span className={APP_CLS_CARD_RECOMMEND_REASON} css={S.recommendReason} title={recommendReason}>
               {recommendReason}
             </span>
           )}
@@ -291,7 +292,7 @@ export const VideoCardBottom = memo(function ({
             {liveExtraDesc && <span className='ml-4px'>{liveExtraDesc}</span>}
           </a>
           {!!recommendReason && (
-            <span css={S.recommendReason} title={recommendReason}>
+            <span className={APP_CLS_CARD_RECOMMEND_REASON} css={S.recommendReason} title={recommendReason}>
               {recommendReason}
             </span>
           )}
