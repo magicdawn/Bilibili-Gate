@@ -24,7 +24,11 @@ const usingWind4 = defineConfig({
   postprocess: [createRemToPxProcessor()],
 })
 
-const USE_WIND4 = true
+/**
+ * 影响 @unocss/eslint-config className 顺序
+ * - wind4 有 bug, 会按照 alphabetical 排序
+ */
+const USE_WIND4 = false
 const usingConfig = USE_WIND4 ? usingWind4 : usingWind3
 
 export default defineConfig({

@@ -1,5 +1,4 @@
 import { css } from '@emotion/react'
-import { bgLv1Value } from '$components/css-vars'
 import { minmax } from '$utility/num'
 import type { PvideoData } from '$define'
 import { videoCardBorderRadiusValue } from '../../css-vars'
@@ -158,17 +157,13 @@ const PreviewImageInner = memo(function PreviewImageInner({
 })
 
 export function SimpleProgressBar({ progress, className, ...props }: { progress: number } & ComponentProps<'div'>) {
-  const backgroundColor = bgLv1Value
   return (
     <div
       {...props}
       data-role='track'
-      className={clsx('absolute bottom-0 left-0 right-0 h-2px', className)}
-      css={css`
-        background-color: ${backgroundColor};
-      `}
+      className={clsx('absolute bottom-0 left-0 right-0 h-2px bg-gate-bg-lv1', className)}
     >
-      <div data-role='bar' className='bg-gate-primary h-full' style={{ width: `${progress * 100}%` }} />
+      <div data-role='bar' className='h-full bg-gate-primary' style={{ width: `${progress * 100}%` }} />
     </div>
   )
 }
