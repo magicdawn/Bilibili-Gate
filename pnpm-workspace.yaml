@@ -4,6 +4,9 @@ overrides:
 allowedDeprecatedVersions:
   axios-userscript-adapter: '0'
 
+# Cannot find package '@typescript-eslint/types' imported from /Users/magicdawn/Library/pnpm/store/v10/links/@unocss/eslint-plugin/66.2.0/70a4455d790f6e243e6e767b4323f36948409e294a378cc7e80bf03a0217815c/node_modules/@unocss/eslint-plugin/dist/index.mjs
+# enableGlobalVirtualStore: true
+
 onlyBuiltDependencies:
   - '@biomejs/biome'
   - '@swc/core'
