@@ -297,7 +297,7 @@ export const LargePreview = forwardRef<ComponentRef<'div'>, LargePreviewProps>(
             className='relative h-100%'
             initial={{ opacity: 0, ...initial }}
             animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
-            transition={{ bounce: false, duration: animationDuration }}
+            transition={{ bounce: 0, duration: animationDuration }}
           >
             {position?.direction && (
               <PopoverArrow
