@@ -94,6 +94,7 @@ export const TabConfig: Record<ETab, TabConfigItem> = {
     icon: <IconForSpaceUpload className='size-16px' />,
     label: '投稿',
     desc: 'UP 视频投稿',
+    anonymousUsage: true, // 防止未登录 fallback 到 app-recommend
     extraHelpInfo: (
       <div className='ml-20px'>
         搜索词: 搜索相关作品 <br />
@@ -121,8 +122,10 @@ export function TabIcon({ tabKey, active, className }: TabIconProps) {
   return cloned
 }
 
+export const NEED_LOGIN_MESSAGE = '你需要登录B站后使用该功能! 如已完成登录, 请刷新网页重试~'
+
 export function toastNeedLogin() {
-  return toast('你需要登录B站后使用该功能! 如已完成登录, 请刷新网页重试~')
+  return toast(NEED_LOGIN_MESSAGE)
 }
 
 function gotoLogin() {

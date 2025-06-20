@@ -1,5 +1,5 @@
-import { proxy, useSnapshot } from 'valtio'
 import toast from './toast'
+import { valtioFactory } from './valtio'
 
 export function parseCookie(): Record<string, string> {
   const cookies: Record<string, string> = {}
@@ -39,19 +39,18 @@ export function getHasLogined(): boolean {
   return !!cookies.DedeUserID // SESSDATA 是 httponly
 }
 
-export const loginState = proxy({
-  cookie: document.cookie,
-  logined: getHasLogined(),
+export const $loginState = valtioFactory(() => {
+  return {
+    cookie: document.cookie,
+    logined: getHasLogined(),
+  }
 })
 
 export function checkLoginStatus(): boolean {
-  Object.assign(loginState, {
-    cookie: document.cookie,
-    logined: getHasLogined(),
-  })
-  return loginState.logined
+  $loginState.update()
+  return $loginState.state.value.logined
 }
 
 export function useHasLogined() {
-  return useSnapshot(loginState).logined
+  return $loginState.use().logined
 }

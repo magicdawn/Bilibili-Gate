@@ -1,11 +1,14 @@
-import { assert, orderBy, uniq } from 'es-toolkit'
+import { assert, once, orderBy, uniq } from 'es-toolkit'
 import pmap from 'promise.map'
 import QuickLRU from 'quick-lru'
 import { snapshot } from 'valtio'
+import { ShowMessageError } from '$components/RecGrid/error-detail'
+import { NEED_LOGIN_MESSAGE, toastNeedLogin } from '$components/RecHeader/tab-config'
 import { EApiType } from '$define/index.shared'
 import { getAllFollowGroups, getFollowGroupContent } from '$modules/bilibili/me/follow-group'
 import { getUserNickname } from '$modules/bilibili/user/nickname'
 import { getSpaceAccInfo } from '$modules/bilibili/user/space-acc-info'
+import { checkLoginStatus } from '$utility/cookie'
 import { setPageTitle } from '$utility/dom'
 import { parseSearchInput } from '$utility/search'
 import type { SpaceUploadItem, SpaceUploadItemExtend } from '$define'
@@ -65,6 +68,7 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
   override usageInfo: ReactNode = (<SpaceUploadUsageInfo />)
 
   override get hasMoreExceptQueue(): boolean {
+    if (this.isAnonymous) return false
     if (!this.service) return true
     return this.service.hasMore
   }
@@ -143,7 +147,18 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
     return this.singleUpService || this.mergeTimelineService
   }
 
+  isAnonymous = false
+  warnNeedLoginOnce = once(() => {
+    toastNeedLogin()
+  })
+
   override async fetchMore(abortSignal: AbortSignal): Promise<SpaceUploadItemExtend[] | undefined> {
+    if (!checkLoginStatus()) {
+      this.isAnonymous = true
+      this.warnNeedLoginOnce()
+      throw new ShowMessageError(NEED_LOGIN_MESSAGE)
+    }
+
     this.setPageTitle()
 
     await this.setupServices()

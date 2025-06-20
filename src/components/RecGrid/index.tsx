@@ -5,7 +5,7 @@
 import { css } from '@emotion/react'
 import { useEventListener, useLatest, usePrevious, useUnmountedRef } from 'ahooks'
 import { Divider } from 'antd'
-import { cloneDeep, delay, isEqual, noop } from 'es-toolkit'
+import { delay, isEqual, noop } from 'es-toolkit'
 import mitt from 'mitt'
 import ms from 'ms'
 import { useInView } from 'react-intersection-observer'
@@ -17,33 +17,29 @@ import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
 import { useModalDislikeVisible } from '$components/ModalDislike'
 import { useModalMoveFavVisible } from '$components/ModalMoveFav'
 import { useCurrentUsingTab, useSortedTabKeys } from '$components/RecHeader/tab'
-import { EHotSubTab, ETab } from '$components/RecHeader/tab-enum'
+import { ETab } from '$components/RecHeader/tab-enum'
 import { VideoCard } from '$components/VideoCard'
 import { getActiveCardBorderCss, useCardBorderCss } from '$components/VideoCard/card-border-css'
 import { createSharedEmitter, type VideoCardEmitter, type VideoCardEvents } from '$components/VideoCard/index.shared'
 import { filterRecItems } from '$components/VideoCard/process/filter'
-import { useLinkTarget } from '$components/VideoCard/use/useOpenRelated'
 import { EApiType } from '$define/index.shared'
 import { $headerHeight } from '$header'
 import { antMessage } from '$modules/antd'
-import { AntdTooltip } from '$modules/antd/custom'
-import { IconForOpenExternalLink } from '$modules/icon'
 import { multiSelectStore } from '$modules/multi-select/store'
 import { concatThenUniq, getGridRefreshCount, refreshForGrid } from '$modules/rec-services'
-import { hotStore } from '$modules/rec-services/hot'
 import { getServiceFromRegistry, type ServiceMap } from '$modules/rec-services/service-map.ts'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { isSafari } from '$ua'
 import type { IVideoCardData } from '$components/VideoCard/process/normalize'
 import type { RecItemType, RecItemTypeOrSeparator } from '$define'
 import * as classNames from '../video-grid.module.scss'
+import { ErrorDetail } from './error-detail'
 import { setCurrentGridSharedEmitter } from './unsafe-window-export'
 import { useRefresh } from './useRefresh'
 import { useShortcut } from './useShortcut'
 import { ENABLE_VIRTUAL_GRID, gridComponents } from './virtuoso.config'
 import type { OnRefresh } from './useRefresh'
 import type { CustomGridComponents, CustomGridContext } from './virtuoso.config'
-import type { AxiosError } from 'axios'
 import type { ForwardedRef, ReactNode } from 'react'
 
 const debug = baseDebug.extend('components:RecGrid')
@@ -550,85 +546,3 @@ const RecGridInner = memo(function ({
     gridSiblings: footer,
   })
 })
-
-const isAxiosError = (err: any): err is AxiosError => {
-  return err instanceof Error && err.name === 'AxiosError'
-}
-
-function inspectErr(err: any): ReactNode {
-  const nodes: ReactNode[] = []
-
-  const wrapParagraph = (key: string, node: ReactNode) => <p className='mt-10px'>{node}</p>
-
-  if (!(err instanceof Error)) {
-    nodes.push(<Fragment key='json-stringify-err'>{JSON.stringify(err)}</Fragment>)
-  }
-  // Error
-  else {
-    // display stack, fallback to message
-    if (err.stack) {
-      nodes.push(
-        wrapParagraph(
-          'error-stack',
-          <>
-            Error Stack: <br />
-            {err.stack}
-          </>,
-        ),
-      )
-    } else {
-      nodes.push(wrapParagraph('error-message', <>Error Message: {err.message}</>))
-    }
-
-    // add error cause
-    if (err.cause) {
-      nodes.push(wrapParagraph('error-cause', <>Error Cause: {inspectErr(err.cause)}</>))
-    }
-
-    // if it's axios error
-    if (isAxiosError(err)) {
-      const _err = cloneDeep(err)
-      // hide sensitive access_key
-      if (_err.config?.params?.access_key) {
-        _err.config.params.access_key = '*'.repeat(_err.config.params.access_key.length)
-      }
-      nodes.push(wrapParagraph('axios-config', <>axios config: {JSON.stringify(_err.config, null, 2)}</>))
-    }
-  }
-
-  return nodes
-}
-
-function ErrorDetail({ err, tab }: { err: any; tab: ETab }) {
-  const target = useLinkTarget()
-  const errDetail: ReactNode = useMemo(() => inspectErr(err), [err])
-  return (
-    <div className='p-20px text-center text-size-20px'>
-      <AntdTooltip
-        title={
-          <div className='py-10px'>
-            <h3>错误详情</h3>
-            <div className='max-h-50vh overflow-hidden overflow-y-auto whitespace-pre-wrap break-normal'>
-              {errDetail}
-            </div>
-          </div>
-        }
-      >
-        <p className='flex cursor-pointer items-center justify-center'>
-          <IconTablerFaceIdError className='mr-4px' />
-          出错了, 请刷新重试!
-        </p>
-      </AntdTooltip>
-
-      {tab === ETab.Hot && hotStore.subtab === EHotSubTab.PopularWeekly && (
-        <p className='mt-8px flex items-center justify-center'>
-          可能需手动输入验证码
-          <IconForOpenExternalLink className='ml-12px' />
-          <a href='https://www.bilibili.com/v/popular/weekly' target={target} className='ml-2px'>
-            每周必看
-          </a>
-        </p>
-      )}
-    </div>
-  )
-}
