@@ -77,7 +77,6 @@ export class ShowMessageError extends Error {
 
 export function ErrorDetail({ err, tab }: { err: any; tab: ETab }) {
   const target = useLinkTarget()
-  debugger
   const errLabel: ReactNode = useMemo(() => getErrorLabel(err), [err])
   const errDetail: ReactNode = useMemo(() => inspectErr(err), [err])
   return (
