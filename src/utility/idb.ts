@@ -10,6 +10,8 @@ import { APP_NAMESPACE } from '$common'
 import { whenIdle } from './dom'
 import type { AsyncReturnType } from 'type-fest'
 
+export type IdbCache<T> = ReturnType<typeof getIdbCache<T>>
+
 export function getIdbCache<T>(tableName: string) {
   const db = localforage.createInstance({
     driver: localforage.INDEXEDDB,
@@ -40,7 +42,7 @@ export function wrapWithIdbCache<T extends AnyAsyncFunction>({
 }: {
   fn: T
   generateKey: (...args: Parameters<T>) => string
-  tableName: string
+  tableName: string | IdbCache<unknown>
   ttl: number
   concurrency?: number
   autoCleanUp?: boolean
@@ -49,7 +51,7 @@ export function wrapWithIdbCache<T extends AnyAsyncFunction>({
   type ValueType = AsyncReturnType<T>
   type CacheEntry = { ts: number; val: ValueType }
 
-  const cache = getIdbCache<CacheEntry>(tableName)
+  const cache = typeof tableName === 'string' ? getIdbCache<CacheEntry>(tableName) : (tableName as IdbCache<CacheEntry>)
 
   const cleanUp = throttle(() => {
     cache.db.iterate((cached: CacheEntry, key) => {

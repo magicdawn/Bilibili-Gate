@@ -1,4 +1,4 @@
-import { assert, shuffle, uniqBy } from 'es-toolkit'
+import { assert, shuffle } from 'es-toolkit'
 import ms from 'ms'
 import { snapshot } from 'valtio'
 import { REQUEST_FAIL_MSG } from '$common'
@@ -6,7 +6,7 @@ import { CustomTargetLink } from '$components/VideoCard/use/useOpenRelated'
 import { EApiType } from '$define/index.shared'
 import { IconForOpenExternalLink, IconForPlayer } from '$modules/icon'
 import { isWebApiSuccess, request } from '$request'
-import { wrapWithIdbCache } from '$utility/idb'
+import { getIdbCache, wrapWithIdbCache } from '$utility/idb'
 import toast from '$utility/toast'
 import type { ItemsSeparator } from '$define'
 import { FavItemsOrder, handleItemsOrder } from '../fav-enum'
@@ -47,6 +47,12 @@ function isFavFolderApiSuppoetedOrder(order: FavItemsOrder): order is FavFolderA
   return FAV_FOLDER_API_SUPPOETED_ORDER.includes(order)
 }
 
+// 收藏夹全部内容缓存
+const favFolderAllItemsCache = getIdbCache('fav-folder-all-items')
+export async function clearFavFolderAllItemsCache(folderId: number) {
+  await favFolderAllItemsCache.delete(folderId)
+}
+
 export class FavFolderService implements IFavInnerService {
   needLoadAll: boolean
   constructor(
@@ -85,11 +91,12 @@ export class FavFolderService implements IFavInnerService {
     }
   }
 
-  entry?: FavFolder
+  entry: FavFolder | undefined
   innerService: FavFolderBasicService | undefined
   // https://www.totaltypescript.com/tips/use-assertion-functions-inside-classes
-  assertInnerService(): asserts this is SetNonNullable<this, 'innerService'> {
+  assertInnerService(): asserts this is SetNonNullable<FavFolderService, 'innerService' | 'entry'> {
     assert(this.innerService, 'this.innerService should not be undefined')
+    assert(this.entry, 'this.entry should not be undefined')
   }
 
   async createService() {
@@ -133,7 +140,6 @@ export class FavFolderService implements IFavInnerService {
     // normal
     else {
       const ret = await this.innerService?.loadMore(abortSignal)
-      if (ret?.length) await this.addToFetchAllItemsWithCache(ret)
       this.runSideEffects()
       return ret
     }
@@ -142,12 +148,12 @@ export class FavFolderService implements IFavInnerService {
   private allItemsLoaded = false
   private bufferQueue: FavItemExtend[] = []
   private async loadAllItems(abortSignal: AbortSignal) {
-    const allItems = await this.fetchAllItemsWithCache(abortSignal)
+    const allItems = await this.fetchAllItems(abortSignal)
     this.bufferQueue = handleItemsOrder(allItems, this.itemsOrder)
     this.allItemsLoaded = true
     this.runSideEffects()
   }
-  private __fetchAllItems = async (abortSignal: AbortSignal = new AbortController().signal) => {
+  private _fetchAllItems = async (abortSignal: AbortSignal) => {
     this.assertInnerService()
     const allItems: FavItemExtend[] = []
     while (this.innerService.hasMore && !abortSignal.aborted) {
@@ -156,21 +162,17 @@ export class FavFolderService implements IFavInnerService {
     }
     return allItems
   }
-  // __fetchAllItems will result multiple requests, so cache it
-  private fetchAllItemsWithCache = wrapWithIdbCache({
-    fn: this.__fetchAllItems,
-    tableName: 'fav-folder-all-items',
+  // __fetchAllItems may results multiple requests, so cache it
+  private _fetchAllItemsWithCache = wrapWithIdbCache({
+    fn: this._fetchAllItems,
+    tableName: favFolderAllItemsCache,
     generateKey: () => `${this.folderId}`,
     ttl: ms('5min'),
   })
-  private addToFetchAllItemsWithCache = async (items: FavItemExtend[]) => {
-    const { cache, generateKey, shouldReuseCached } = this.fetchAllItemsWithCache
-
-    const cached = await cache.get(generateKey())
-    if (!cached || !shouldReuseCached(cached)) return
-
-    const newItems = uniqBy([...cached.val, ...items], (x) => x.bvid)
-    await cache.set(generateKey(), { ...cached, val: newItems })
+  private fetchAllItems = (abortSignal: AbortSignal) => {
+    this.assertInnerService()
+    const shouldUseCache = this.entry.media_count > FavFolderBasicService.PAGE_SIZE * 3 // this is affordable
+    return shouldUseCache ? this._fetchAllItemsWithCache(abortSignal) : this._fetchAllItems(abortSignal)
   }
 
   private runSideEffects() {
@@ -186,6 +188,8 @@ export class FavFolderService implements IFavInnerService {
 }
 
 export class FavFolderBasicService {
+  static PAGE_SIZE = 20
+
   constructor(
     public entry: FavFolder,
     public itemsOrder: FavFolderApiSuppoetedOrder = FavItemsOrder.FavTimeDesc,
@@ -211,7 +215,7 @@ export class FavFolderBasicService {
       params: {
         media_id: this.entry.id,
         pn: this.page + 1, // start from 1
-        ps: 20,
+        ps: FavFolderBasicService.PAGE_SIZE,
         keyword: '',
         order, // mtime(最近收藏)  view(最多播放) pubtime(最新投稿)
         type: '0', // unkown

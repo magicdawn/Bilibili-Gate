@@ -50,6 +50,7 @@ import {
   QUERY_DYNAMIC_UP_MID,
 } from '$modules/rec-services/dynamic-feed/store'
 import { formatFavCollectionUrl, formatFavFolderUrl } from '$modules/rec-services/fav/fav-url'
+import { clearFavFolderAllItemsCache } from '$modules/rec-services/fav/service/fav-folder'
 import { FavQueryKey, favStore } from '$modules/rec-services/fav/store'
 import { defaultFavFolderTitle, UserFavService } from '$modules/rec-services/fav/user-fav-service'
 import { SHOW_SPACE_UPLOAD_ONLY, SpaceUploadQueryKey } from '$modules/rec-services/space-upload/store'
@@ -531,6 +532,8 @@ export function useContextMenus({
                     const success = await UserFavService.moveFavs(resources, srcFavFolderId, targetFolder.id)
                     if (!success) return
 
+                    clearFavFolderAllItemsCache(item.folder.id)
+                    clearFavFolderAllItemsCache(targetFolder.id)
                     currentGridSharedEmitter.emit('remove-cards', [uniqIds, titles, true])
                     antMessage.success(`已移动 ${uniqIds.length} 个视频到「${targetFolder.title}」收藏夹`)
                   },
@@ -556,9 +559,10 @@ export function useContextMenus({
 
                     const resource = `${item.id}:${item.type}`
                     const success = await UserFavService.removeFavs(item.folder.id, resource)
-                    if (success) {
-                      onRemoveCurrent?.(item, cardData)
-                    }
+                    if (!success) return
+
+                    clearFavFolderAllItemsCache(item.folder.id)
+                    onRemoveCurrent?.(item, cardData)
                   },
                 },
               ]
