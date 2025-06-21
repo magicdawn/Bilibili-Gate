@@ -16,7 +16,7 @@ function wrapWithParagraph(node: ReactNode) {
   return <p className='mt-10px'>{node}</p>
 }
 
-function inspectErr(err: any): ReactNode {
+function inspectErrDetail(err: any): ReactNode {
   if (!(err instanceof Error)) {
     return wrapWithParagraph(JSON.stringify(err))
   }
@@ -40,7 +40,7 @@ function inspectErr(err: any): ReactNode {
 
   // add error cause
   if (err.cause) {
-    errCause = <>Error Cause: {inspectErr(err.cause)}</>
+    errCause = <>Error Cause: {inspectErrDetail(err.cause)}</>
   }
 
   // if it's axios error
@@ -62,7 +62,7 @@ function inspectErr(err: any): ReactNode {
   )
 }
 
-function getErrorLabel(err: any): ReactNode {
+function getErrLabel(err: any): ReactNode {
   if (err && err instanceof ShowMessageError && err.message) return err.message
   return '出错了, 请刷新重试!'
 }
@@ -77,8 +77,8 @@ export class ShowMessageError extends Error {
 
 export function ErrorDetail({ err, tab }: { err: any; tab: ETab }) {
   const target = useLinkTarget()
-  const errLabel: ReactNode = useMemo(() => getErrorLabel(err), [err])
-  const errDetail: ReactNode = useMemo(() => inspectErr(err), [err])
+  const errLabel = useMemo(() => getErrLabel(err), [err])
+  const errDetail = useMemo(() => inspectErrDetail(err), [err])
   return (
     <div className='p-20px text-center text-size-20px'>
       <AntdTooltip
