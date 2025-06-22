@@ -1,33 +1,25 @@
+/* eslint-disable require-await */
+
 import { css } from '@emotion/react'
 import { useLockFn, useRequest, useUpdateLayoutEffect } from 'ahooks'
-import { Spin } from 'antd'
+import { Button, Spin } from 'antd'
 import { clsx } from 'clsx'
-import { delay } from 'es-toolkit'
+import Emittery from 'emittery'
 import { useSnapshot } from 'valtio'
 import { proxyMap } from 'valtio/utils'
-import { OPERATION_FAIL_MSG } from '$common'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { colorPrimaryValue } from '$components/css-vars'
-import { antMessage } from '$modules/antd'
 import { IconForDislike } from '$modules/icon'
 import { IconAnimatedChecked } from '$modules/icon/animated-checked'
 import { shouldDisableShortcut } from '$utility/dom'
 import { wrapComponent } from '$utility/global-component'
-import { toastRequestFail } from '$utility/toast'
-import type { AppRecItem, AppRecItemExtend } from '$define'
-import { dislike } from '../VideoCard/services/'
-
-interface IProps {
-  show: boolean
-  onHide: () => void
-  item: AppRecItem | null
-}
+import type { MouseEvent } from 'react'
 
 export type Reason = { id: number; name: string; toast: string }
 
-const dislikedIds = proxyMap<string, Reason>()
-function useDislikedIds() {
+export const dislikedIds = proxyMap<string, Reason>()
+export function useDislikedIds() {
   return useSnapshot(dislikedIds)
 }
 export function useDislikedReason(id?: string | false) {
@@ -39,61 +31,64 @@ export function delDislikeId(id: string) {
   dislikedIds.delete(id)
 }
 
-export function ModalDislike({ show, onHide, item }: IProps) {
-  const $req = useRequest((item: AppRecItem, reason: Reason) => dislike(item, reason.id), {
-    manual: true,
-  })
+// Q: why callback 的形式
+// A: okAction 表示 Modal Ok 后的动作
+//    okAction 可能失败, 这样的情况不希望关闭 modal, 有重试的机会; 使用 promise 处理 onAction fail 的情况串起来会比较复杂
+//    boolean 表示 okAction success, success 后关闭 modal
+export type OkAction = (reason: Reason) => boolean | undefined | void | Promise<boolean | undefined | void>
 
-  const onDislike = useLockFn(async (reason: Reason) => {
-    if (!item) return
+const defaultProps = {
+  show: false,
+  reasons: [] as Reason[],
+  onHide,
+  okAction: undefined as OkAction | undefined,
+}
 
-    let success = false
-    let message: string = ''
-    let err: Error | undefined
-    try {
-      ;({ success, message } = await $req.runAsync(item, reason))
-    } catch (e) {
-      err = e as Error
-    }
-    if (err) {
-      console.error(err.stack || err)
-      return toastRequestFail()
-    }
+const { proxyProps, updateProps } = wrapComponent({
+  Component: ModalDislike,
+  containerClassName: 'show-dislike-container',
+  defaultProps,
+})
 
-    if (success) {
-      antMessage.success('已标记不想看')
-      dislikedIds.set(item.param, { ...reason })
-      await delay(100)
-      onHide()
-    } else {
-      // fail
-      antMessage.error(message || OPERATION_FAIL_MSG)
-    }
-  })
+const emitter = new Emittery<{ 'modal-close': undefined }>()
 
-  const reasons = useMemo(() => item?.three_point?.dislike_reasons || [], [item])
+function onHide() {
+  emitter.emit('modal-close')
+  updateProps({ show: false, reasons: [], okAction: undefined })
+}
 
+export async function chooseDislikeReason(reasons: Reason[], okAction: OkAction) {
+  updateProps({ show: true, reasons, okAction })
+  await emitter.once('modal-close')
+}
+
+export const useModalDislikeVisible = function () {
+  return useSnapshot(proxyProps).show
+}
+
+export function ModalDislike({ show, reasons, onHide, okAction }: typeof defaultProps) {
   const modalBodyRef = useRef<HTMLDivElement>(null)
+  const keyPressEnabled = () => !!show && !!reasons?.length
 
-  const keyPressEnabled = () => !!show && !!item
-
-  const KEYS = ['1', '2', '3', '4', '5', '6']
-  useKeyPress(KEYS, (e) => {
-    if (!keyPressEnabled()) return
-    if (!KEYS.includes(e.key)) return
-
-    const index = Number(e.key) - 1
-    if (!(index >= 0 && index < reasons.length)) return
-    setActiveIndex(index)
-
-    const btn = modalBodyRef.current?.querySelectorAll<HTMLButtonElement>('.reason')[index]
-    btn?.click()
-  })
+  const $req = useRequest(async (reason: Reason) => okAction?.(reason), { manual: true })
+  const okActionLoading = $req.loading
 
   const [activeIndex, setActiveIndex] = useState(reasons.length - 1)
   useUpdateLayoutEffect(() => {
     setActiveIndex(reasons.length - 1)
   }, [reasons])
+
+  const KEYS = ['1', '2', '3', '4', '5', '6']
+  useKeyPress(KEYS, (e) => {
+    if (!keyPressEnabled()) return
+    if (!KEYS.includes(e.key)) return
+    if (!reasons?.length) return
+
+    const index = Number(e.key) - 1
+    if (!(index >= 0 && index < reasons.length)) return
+
+    setActiveIndex(index)
+  })
 
   const increaseIndex = useMemoizedFn((by: number) => {
     if (!keyPressEnabled()) return
@@ -104,22 +99,21 @@ export function ModalDislike({ show, onHide, item }: IProps) {
     if (newIndex > len - 1) newIndex = newIndex % len
     setActiveIndex(newIndex)
   })
-
   useKeyPress('uparrow', () => increaseIndex(-1), { exactMatch: true })
   useKeyPress('downarrow', () => increaseIndex(1), { exactMatch: true })
-  useKeyPress(
-    'enter',
-    (e) => {
-      if (!keyPressEnabled()) return
-      if (activeIndex < 0 || activeIndex > reasons.length - 1) return
-      e.preventDefault()
-      e.stopImmediatePropagation()
 
-      const btn = modalBodyRef.current?.querySelector<HTMLButtonElement>('.reason.active')
-      btn?.click()
-    },
-    { exactMatch: true },
-  )
+  const onOk = useLockFn(async (e: KeyboardEvent | MouseEvent) => {
+    if (!keyPressEnabled()) return
+    if (activeIndex < 0 || activeIndex > reasons.length - 1) return
+    const reason = reasons[activeIndex]
+    if (!reason) return
+
+    e.preventDefault()
+    e.stopPropagation()
+    const result = await $req.runAsync(reason)
+    if (result) onHide()
+  })
+  useKeyPress('enter', onOk, { exactMatch: true })
 
   return (
     <BaseModal
@@ -139,8 +133,8 @@ export function ModalDislike({ show, onHide, item }: IProps) {
             操作说明: <br />
             <div className='ml-10px'>
               1. 使用删除键打开弹窗, Esc 关闭 <br />
-              2. 数字键直接选择并提交 <br />
-              3. 也可以使用方向键选择, 回车键提交 <br />
+              2. 数字键 或 方向键选择 <br />
+              3. 回车键 或 确定按钮提交 <br />
             </div>
           </HelpInfo>
         </div>
@@ -149,7 +143,7 @@ export function ModalDislike({ show, onHide, item }: IProps) {
 
       <div className={BaseModalClassNames.modalBody} ref={modalBodyRef}>
         <Spin
-          spinning={$req.loading}
+          spinning={okActionLoading}
           indicator={
             <IconSvgSpinnersBarsRotateFade
               className='text-gate-primary'
@@ -175,10 +169,9 @@ export function ModalDislike({ show, onHide, item }: IProps) {
                     'relative flex items-center py-12px rounded-6px b-2px b-solid',
                     active ? 'b-gate-primary' : 'b-gate-border',
                   )}
-                  disabled={$req.loading}
+                  disabled={okActionLoading}
                   onClick={() => {
                     setActiveIndex(index)
-                    onDislike(reason)
                   }}
                 >
                   <span
@@ -198,33 +191,16 @@ export function ModalDislike({ show, onHide, item }: IProps) {
           </div>
         </Spin>
       </div>
+
+      <div className='mt-2 flex items-center justify-between'>
+        <div className='flex-v-center gap-x-10px'></div>
+        <div className='flex-v-center gap-x-10px'>
+          <Button onClick={onHide}>取消</Button>
+          <Button type='primary' onClick={onOk} loading={okActionLoading}>
+            确定
+          </Button>
+        </div>
+      </div>
     </BaseModal>
   )
-}
-
-const { proxyProps, updateProps } = wrapComponent<IProps>({
-  Component: ModalDislike,
-  containerClassName: 'show-dislike-container',
-  defaultProps: {
-    show: false,
-    onHide,
-    item: null,
-  },
-})
-
-export const useModalDislikeVisible = function () {
-  return useSnapshot(proxyProps).show
-}
-
-function onHide() {
-  // esc 关闭, 等一个 tick, esc 先处理完
-  setTimeout(() => {
-    updateProps({ show: false, item: null })
-  })
-}
-
-export function showModalDislike(item: AppRecItemExtend) {
-  // 已经是 dislike 状态
-  if (item?.param && dislikedIds.has(item.param)) return
-  updateProps({ show: true, item })
 }

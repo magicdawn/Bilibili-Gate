@@ -2,13 +2,16 @@
  * 我不想看
  */
 
-import { showModalDislike } from '$components/ModalDislike'
+import { useLockFn } from 'ahooks'
+import { OPERATION_FAIL_MSG } from '$common'
+import { chooseDislikeReason, dislikedIds, type Reason } from '$components/ModalDislike'
 import { isAppRecommend, type RecItemType } from '$define'
 import { EApiType } from '$define/index.shared'
 import { antMessage } from '$modules/antd'
 import { IconForDislike } from '$modules/icon'
-import toast from '$utility/toast'
+import toast, { toastRequestFail } from '$utility/toast'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
+import { dislike } from '../services'
 import type { MouseEvent } from 'react'
 
 export const dislikeIcon = <IconForDislike className='size-16px' />
@@ -27,7 +30,7 @@ export function useDislikeRelated({
 
   const hasDislikeEntry = isAppRecommend(item) && !!item.three_point?.dislike_reasons?.length
 
-  const onTriggerDislike = useMemoizedFn((e?: MouseEvent) => {
+  const onTriggerDislike = useMemoizedFn(async (e?: MouseEvent) => {
     e?.preventDefault()
     e?.stopPropagation()
 
@@ -39,10 +42,42 @@ export function useDislikeRelated({
     }
 
     if (!authed) {
-      return toast('请先获取 access_key ~')
+      return toast('请先获取 access_key !')
     }
 
-    showModalDislike(item)
+    // 已经是 dislike 状态
+    if (item?.param && dislikedIds.has(item.param)) {
+      return
+    }
+
+    await chooseDislikeReason(item.three_point?.dislike_reasons || [], handleConfirmDislike)
+  })
+
+  const handleConfirmDislike = useLockFn(async (reason: Reason) => {
+    if (!isAppRecommend(item)) return
+
+    let success = false
+    let message: string = ''
+    let err: Error | undefined
+    try {
+      ;({ success, message } = await dislike(item, reason.id))
+    } catch (e) {
+      err = e as Error
+    }
+    if (err) {
+      console.error(err.stack || err)
+      return toastRequestFail()
+    }
+
+    if (success) {
+      antMessage.success('已标记不想看')
+      dislikedIds.set(item.param, { ...reason })
+    } else {
+      // fail
+      antMessage.error(message || OPERATION_FAIL_MSG)
+    }
+
+    return success
   })
 
   const dislikeButtonEl = hasDislikeEntry && (

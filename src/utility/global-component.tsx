@@ -42,7 +42,10 @@ export function wrapComponent<IProps extends object>({
     }
   }
 
-  const updateProps = wrapAction((newProps: Partial<IProps>) => {
+  type PartialWithStrictValues<T> = {
+    [K in keyof T]?: T[K]
+  }
+  const updateProps = wrapAction((newProps: PartialWithStrictValues<IProps>) => {
     Object.assign(proxyProps, newProps)
   })
 

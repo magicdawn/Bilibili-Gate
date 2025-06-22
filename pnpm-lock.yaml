@@ -59,6 +59,9 @@ importers:
       debug:
         specifier: ^4.4.1
         version: 4.4.1
+      emittery:
+        specifier: ^1.2.0
+        version: 1.2.0
       es-toolkit:
         specifier: ^1.39.3
         version: 1.39.3
@@ -2709,6 +2712,10 @@ packages:
 
   electron-to-chromium@1.5.151:
     resolution: {integrity: sha512-Rl6uugut2l9sLojjS4H4SAr3A4IgACMLgpuEMPYCVcKydzfyPrn5absNRju38IhQOf/NwjJY8OGWjlteqYeBCA==}
+
+  emittery@1.2.0:
+    resolution: {integrity: sha512-KxdRyyFcS85pH3dnU8Y5yFUm2YJdaHwcBZWrfG8o89ZY9a13/f9itbN+YG3ELbBo9Pg5zvIozstmuV8bX13q6g==}
+    engines: {node: '>=14.16'}
 
   emmet@2.4.4:
     resolution: {integrity: sha512-v8Mwpjym55CS3EjJgiCLWUB3J2HSR93jhzXW325720u8KvYxdI2voYLstW3pHBxFz54H6jFjayR9G4LfTG0q+g==}
@@ -7725,6 +7732,8 @@ snapshots:
   duplexer@0.1.2: {}
 
   electron-to-chromium@1.5.151: {}
+
+  emittery@1.2.0: {}
 
   emmet@2.4.4:
     dependencies:
