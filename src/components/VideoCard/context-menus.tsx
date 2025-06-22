@@ -418,14 +418,11 @@ export function useContextMenus({
         label: '收藏到',
         async onClick() {
           if (!avid) return
-
-          const targetFolder = await chooseTragetFavFolder(undefined)
-          if (!targetFolder) return // cancelled
-
-          const success = await UserFavService.addFav(avid, targetFolder.id)
-          if (success) {
-            antMessage.success(`已加入收藏夹「${targetFolder.title}」`)
-          }
+          await chooseTragetFavFolder(undefined, async (targetFolder) => {
+            const success = await UserFavService.addFav(avid, targetFolder.id)
+            if (success) antMessage.success(`已加入收藏夹「${targetFolder.title}」`)
+            return success
+          })
         },
       },
 
@@ -526,16 +523,15 @@ export function useContextMenus({
                       titles = [item.title]
                     }
 
-                    const targetFolder = await chooseTragetFavFolder(item.folder.id)
-                    if (!targetFolder) return
-
-                    const success = await UserFavService.moveFavs(resources, srcFavFolderId, targetFolder.id)
-                    if (!success) return
-
-                    clearFavFolderAllItemsCache(item.folder.id)
-                    clearFavFolderAllItemsCache(targetFolder.id)
-                    currentGridSharedEmitter.emit('remove-cards', [uniqIds, titles, true])
-                    antMessage.success(`已移动 ${uniqIds.length} 个视频到「${targetFolder.title}」收藏夹`)
+                    await chooseTragetFavFolder(item.folder.id, async (targetFolder) => {
+                      const success = await UserFavService.moveFavs(resources, srcFavFolderId, targetFolder.id)
+                      if (!success) return
+                      clearFavFolderAllItemsCache(item.folder.id)
+                      clearFavFolderAllItemsCache(targetFolder.id)
+                      currentGridSharedEmitter.emit('remove-cards', [uniqIds, titles, true])
+                      antMessage.success(`已移动 ${uniqIds.length} 个视频到「${targetFolder.title}」收藏夹`)
+                      return success
+                    })
                   },
                 },
                 {

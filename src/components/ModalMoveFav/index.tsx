@@ -1,14 +1,15 @@
+/* eslint-disable require-await */
 import { css } from '@emotion/react'
 import { useRequest } from 'ahooks'
 import { Button, Empty, Input, Spin } from 'antd'
+import Emittery from 'emittery'
 import { uniqBy } from 'es-toolkit'
-import mitt from 'mitt'
-import { pEvent } from 'p-event'
 import PinyinMatch from 'pinyin-match'
 import { useSnapshot } from 'valtio'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { colorPrimaryValue } from '$components/css-vars'
+import { antMessage } from '$modules/antd'
 import { IconForOpenExternalLink } from '$modules/icon'
 import { IconAnimatedChecked } from '$modules/icon/animated-checked'
 import { favStore, updateFavFolderList } from '$modules/rec-services/fav/store'
@@ -17,24 +18,47 @@ import { shouldDisableShortcut } from '$utility/dom'
 import { wrapComponent } from '$utility/global-component'
 import type { FavFolder } from '$modules/rec-services/fav/types/folders/list-all-folders'
 
-export function ModalMoveFav({
-  show,
+type Result = Pick<FavFolder, 'id' | 'title'>
+type OkAction = (result: Result) => boolean | undefined | void | Promise<boolean | undefined | void>
+type IProps = typeof defaultProps
+
+const defaultProps = {
+  show: false,
+  srcFavFolderId: undefined as number | undefined,
   onHide,
-  onChoose,
-  srcFavFolderId,
-}: {
-  show: boolean
-  onHide: () => void
-  onChoose: (result: Result) => void
-  srcFavFolderId: number | undefined
-}) {
-  const $req = useRequest(updateFavFolderList, { manual: true })
+  okAction: undefined as OkAction | undefined,
+}
+
+const { proxyProps, updateProps } = wrapComponent<IProps>({
+  Component: ModalMoveFav,
+  containerClassName: 'ModalMoveFav',
+  defaultProps,
+})
+
+export function useModalMoveFavVisible() {
+  return useSnapshot(proxyProps).show
+}
+
+const emitter = new Emittery<{ 'modal-close': undefined }>()
+function onHide() {
+  updateProps({ show: false })
+  emitter.emit('modal-close')
+}
+
+export async function chooseTragetFavFolder(srcFavFolderId: number | undefined, okAction: OkAction) {
+  updateProps({ show: true, srcFavFolderId, okAction })
+  await emitter.once('modal-close')
+}
+
+export function ModalMoveFav({ show, onHide, srcFavFolderId, okAction }: IProps) {
+  const $updateFoldersReq = useRequest(updateFavFolderList, { manual: true })
+  const $okActionReq = useRequest(async (result: Result) => okAction?.(result), { manual: true })
   const [selectedFolder, setSelectedFolder] = useState<Result | undefined>(undefined)
   const [filterText, setFilterText] = useState<string | undefined>(undefined)
 
   useEffect(() => {
     if (show) {
-      $req.run()
+      $updateFoldersReq.run()
     } else {
       // 🤔 is this really necessary ?
       // setFilterText(undefined)
@@ -46,7 +70,7 @@ export function ModalMoveFav({
     () => {
       if (!show) return
       if (shouldDisableShortcut()) return
-      $req.run(true)
+      $updateFoldersReq.run(true)
     },
     { exactMatch: true },
   )
@@ -64,6 +88,12 @@ export function ModalMoveFav({
   }, [folders, filterText])
 
   const kbdClassName = 'cursor-pointer rounded bg-gate-bg-lv-3 p-x-1 text-gate-primary'
+
+  const onOk = useMemoizedFn(async () => {
+    if (!selectedFolder) return antMessage.error('请选择一个收藏夹')
+    const success = await $okActionReq.runAsync(selectedFolder)
+    if (success) onHide()
+  })
 
   return (
     <BaseModal
@@ -109,7 +139,7 @@ export function ModalMoveFav({
 
       <div className={clsx(BaseModalClassNames.modalBody)}>
         <Spin
-          spinning={$req.loading}
+          spinning={$updateFoldersReq.loading || $okActionReq.loading}
           indicator={
             <IconSvgSpinnersBarsRotateFade
               className='text-gate-primary'
@@ -174,52 +204,11 @@ export function ModalMoveFav({
 
         <div className='flex-v-center gap-x-10px'>
           <Button onClick={onHide}>取消</Button>
-          <Button
-            type='primary'
-            onClick={() => {
-              if (!selectedFolder) return
-              onChoose(selectedFolder)
-            }}
-          >
+          <Button type='primary' onClick={onOk} loading={$okActionReq.loading}>
             确定
           </Button>
         </div>
       </div>
     </BaseModal>
   )
-}
-
-type Result = Pick<FavFolder, 'id' | 'title'>
-
-const { proxyProps, updateProps } = wrapComponent({
-  Component: ModalMoveFav,
-  containerClassName: 'ModalMoveFav',
-  defaultProps: {
-    onHide,
-    onChoose,
-    show: false,
-    result: undefined as Result | undefined,
-    srcFavFolderId: undefined as number | undefined,
-  },
-})
-
-const emitter = mitt<{ 'modal-close': void }>()
-
-function onHide() {
-  updateProps({ show: false })
-  emitter.emit('modal-close')
-}
-function onChoose(result: Result) {
-  proxyProps.result = { ...result }
-  onHide()
-}
-
-export function useModalMoveFavVisible() {
-  return useSnapshot(proxyProps).show
-}
-
-export async function chooseTragetFavFolder(srcFavFolderId: number | undefined) {
-  updateProps({ show: true, srcFavFolderId, result: undefined })
-  await pEvent(emitter, 'modal-close')
-  return proxyProps.result
 }
