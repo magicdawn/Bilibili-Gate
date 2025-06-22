@@ -77,7 +77,9 @@ export function wrapWithIdbCache<T extends AnyAsyncFunction>({
     }
   }
 
-  const fnMemoized = pMemoize<T, string>(fn, {
+  const fnLimited = concurrency && concurrency > 0 ? (limitFunction(fn, { concurrency }) as T) : fn
+
+  const fnMemoized = pMemoize<T, string>(fnLimited, {
     cacheKey(args) {
       return generateKey(...args)
     },
@@ -100,9 +102,7 @@ export function wrapWithIdbCache<T extends AnyAsyncFunction>({
     },
   })
 
-  const fnLimited = concurrency && concurrency > 0 ? (limitFunction(fnMemoized, { concurrency }) as T) : fnMemoized
-
-  Object.defineProperties(fnLimited, {
+  Object.defineProperties(fnMemoized, {
     cache: { value: cache },
     cleanUp: { value: cleanUp },
     generateKey: { value: generateKey },
@@ -110,7 +110,7 @@ export function wrapWithIdbCache<T extends AnyAsyncFunction>({
     queryCache: { value: queryCache },
   })
 
-  return fnLimited as typeof fnLimited & {
+  return fnMemoized as typeof fnMemoized & {
     cache: typeof cache
     cleanUp: typeof cleanUp
     generateKey: typeof generateKey
