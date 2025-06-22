@@ -1,8 +1,7 @@
 import { css } from '@emotion/react'
 import { QRCode } from 'antd'
+import Emittery from 'emittery'
 import { once } from 'es-toolkit'
-import mitt from 'mitt'
-import { pEvent } from 'p-event'
 import { createRoot } from 'react-dom/client'
 import { proxy, useSnapshot } from 'valtio'
 import { APP_CLS_ROOT } from '$common'
@@ -28,15 +27,14 @@ export function showQrCodeModal(data: Partial<typeof initialValue>) {
   updateStore({ ...initialValue, ...data, show: true })
 }
 
+const emitter = new Emittery<{ hide: undefined }>()
+
 export function hideQrCodeModal() {
-  emitter.emit('hide')
   updateStore({ ...initialValue })
+  emitter.emit('hide')
 }
-
-const emitter = mitt<{ hide: void }>()
-
 export function whenQrCodeModalHide() {
-  return pEvent(emitter, 'hide')
+  return emitter.once('hide')
 }
 
 /**

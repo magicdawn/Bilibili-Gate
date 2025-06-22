@@ -5,14 +5,14 @@
 import { css } from '@emotion/react'
 import { useEventListener, useLatest, usePrevious, useUnmountedRef } from 'ahooks'
 import { Divider } from 'antd'
+import Emittery from 'emittery'
 import { delay, isEqual, noop } from 'es-toolkit'
-import mitt from 'mitt'
 import ms from 'ms'
 import { useInView } from 'react-intersection-observer'
 import { VirtuosoGrid } from 'react-virtuoso'
 import { useSnapshot } from 'valtio'
 import { APP_CLS_GRID, baseDebug } from '$common'
-import { useMittOn } from '$common/hooks/useMitt'
+import { useEmitterOn } from '$common/hooks/useEmitter'
 import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
 import { useModalDislikeVisible } from '$components/ModalDislike'
 import { useModalMoveFavVisible } from '$components/ModalMoveFav'
@@ -289,7 +289,7 @@ const RecGridInner = memo(function ({
       return (
         emitterCache.get(cacheKey) ||
         (() => {
-          const instance = mitt<VideoCardEvents>()
+          const instance = new Emittery<VideoCardEvents>()
           emitterCache.set(cacheKey, instance)
           return instance
         })()
@@ -301,7 +301,7 @@ const RecGridInner = memo(function ({
   useEffect(() => setCurrentGridSharedEmitter(sharedEmitter), [sharedEmitter])
 
   const [activeLargePreviewUniqId, setActiveLargePreviewUniqId] = useState<string | undefined>(undefined)
-  useMittOn(sharedEmitter, 'show-large-preview', setActiveLargePreviewUniqId)
+  useEmitterOn(sharedEmitter, 'show-large-preview', setActiveLargePreviewUniqId)
   const activeLargePreviewItemIndex = useMemo(() => {
     if (!activeLargePreviewUniqId) return
     return usingVideoItems.findIndex((item) => item.uniqId === activeLargePreviewUniqId)
@@ -385,7 +385,7 @@ const RecGridInner = memo(function ({
       return newItems
     })
   })
-  useMittOn(sharedEmitter, 'remove-cards', ([uniqIds, titles, silent]) => handleRemoveCards(uniqIds, titles, silent))
+  useEmitterOn(sharedEmitter, 'remove-cards', ([uniqIds, titles, silent]) => handleRemoveCards(uniqIds, titles, silent))
 
   /**
    * footer for infinite scroll

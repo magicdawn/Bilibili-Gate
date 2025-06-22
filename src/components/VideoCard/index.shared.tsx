@@ -1,5 +1,5 @@
 import { css } from '@emotion/react'
-import mitt, { type Emitter } from 'mitt'
+import Emittery from 'emittery'
 import { APP_SHORT_PREFIX } from '$common'
 import { antMessage } from '$modules/antd'
 import { IconForOpenExternalLink, IconForPlayer } from '$modules/icon'
@@ -105,20 +105,20 @@ export const VideoLinkOpenModeConfig: Record<VideoLinkOpenMode, VideoLinkOpenMod
 
 export type VideoCardEvents = {
   // for cancel card
-  'cancel-dislike': void
+  'cancel-dislike': undefined
 
   // for normal card
-  'open': void
-  'open-in-popup': void
-  'open-with-large-preview-visible': void
-  'toggle-watch-later': void
-  'trigger-dislike': void
-  'start-preview-animation': void
-  'hotkey-preview-animation': void
+  'open': undefined
+  'open-in-popup': undefined
+  'open-with-large-preview-visible': undefined
+  'toggle-watch-later': undefined
+  'trigger-dislike': undefined
+  'start-preview-animation': undefined
+  'hotkey-preview-animation': undefined
 }
-export type VideoCardEmitter = Emitter<VideoCardEvents>
+export type VideoCardEmitter = Emittery<VideoCardEvents>
 export function createVideoCardEmitter() {
-  return mitt<VideoCardEvents>()
+  return new Emittery<VideoCardEvents>()
 }
 
 export type SharedEmitterEvents = {
@@ -126,9 +126,9 @@ export type SharedEmitterEvents = {
   'show-large-preview': string
   'remove-cards': [uniqIds: string[], titles?: string[], silent?: boolean]
 }
-export type SharedEmitter = Emitter<SharedEmitterEvents>
+export type SharedEmitter = Emittery<SharedEmitterEvents>
 export function createSharedEmitter() {
-  return mitt<SharedEmitterEvents>()
+  return new Emittery<SharedEmitterEvents>()
 }
 
 export const defaultEmitter = createVideoCardEmitter()

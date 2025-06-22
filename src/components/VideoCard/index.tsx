@@ -3,9 +3,9 @@ import { useLockFn } from 'ahooks'
 import { Dropdown } from 'antd'
 import { APP_CLS_CARD, APP_CLS_CARD_ACTIVE, APP_CLS_CARD_COVER, APP_CLS_ROOT, APP_KEY_PREFIX, appWarn } from '$common'
 import { zIndexVideoCardContextMenu } from '$common/css-vars-export.module.scss'
+import { useEmitterOn } from '$common/hooks/useEmitter'
 import { isEmptyFragment } from '$common/hooks/useIsEmptyFragment'
 import { useLessFrequentFn } from '$common/hooks/useLessFrequentFn'
-import { useMittOn } from '$common/hooks/useMitt'
 import { useRefStateBox } from '$common/hooks/useRefState'
 import { Picture } from '$components/_base/Picture'
 import { useDislikedReason } from '$components/ModalDislike'
@@ -411,17 +411,17 @@ const VideoCardInner = memo(function VideoCardInner({
    * expose actions
    */
 
-  useMittOn(emitter, 'open', () => onOpenWithMode())
-  useMittOn(emitter, 'open-in-popup', onOpenInPopup)
-  useMittOn(emitter, 'open-with-large-preview-visible', () => {
+  useEmitterOn(emitter, 'open', () => onOpenWithMode())
+  useEmitterOn(emitter, 'open-in-popup', onOpenInPopup)
+  useEmitterOn(emitter, 'open-with-large-preview-visible', () => {
     if (!largePreviewVisible) return
     hideLargePreview()
     onOpenWithMode()
   })
-  useMittOn(emitter, 'toggle-watch-later', () => onToggleWatchlater())
-  useMittOn(emitter, 'trigger-dislike', () => onTriggerDislike())
-  useMittOn(emitter, 'start-preview-animation', onStartPreviewAnimation)
-  useMittOn(emitter, 'hotkey-preview-animation', onHotkeyPreviewAnimation)
+  useEmitterOn(emitter, 'toggle-watch-later', () => void onToggleWatchlater())
+  useEmitterOn(emitter, 'trigger-dislike', () => void onTriggerDislike())
+  useEmitterOn(emitter, 'start-preview-animation', onStartPreviewAnimation)
+  useEmitterOn(emitter, 'hotkey-preview-animation', onHotkeyPreviewAnimation)
 
   /**
    * context menu

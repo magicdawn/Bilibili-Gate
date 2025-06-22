@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import { APP_NAMESPACE, OPERATION_FAIL_MSG } from '$common'
-import { useMittOn } from '$common/hooks/useMitt'
+import { useEmitterOn } from '$common/hooks/useEmitter'
 import { delDislikeId } from '$components/ModalDislike'
 import { antMessage } from '$modules/antd'
 import { UserBlacklistService } from '$modules/bilibili/me/relations/blacklist'
@@ -140,7 +140,7 @@ export const DislikedCard = memo(function DislikedCard({
     }
   })
 
-  useMittOn(emitter, 'cancel-dislike', onCancelDislike)
+  useEmitterOn(emitter, 'cancel-dislike', onCancelDislike)
 
   return (
     <div css={blockedCardCss.wrapper}>

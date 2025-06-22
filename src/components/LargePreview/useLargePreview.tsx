@@ -1,7 +1,7 @@
 import { useClickAway, useEventListener, useLockFn, useRequest } from 'ahooks'
 import { useSnapshot } from 'valtio'
 import { __PROD__, APP_CLS_CARD, appLog, BiliDomain } from '$common'
-import { useMittOn } from '$common/hooks/useMitt'
+import { useEmitterOn } from '$common/hooks/useEmitter'
 import { useRefBox, useRefStateBox } from '$common/hooks/useRefState'
 import { openNewTab } from '$modules/gm'
 import { IconForLoading } from '$modules/icon'
@@ -133,7 +133,7 @@ export function useLargePreviewRelated({
     triggerElement.set(undefined)
     hideAt.set(Date.now())
   })
-  useMittOn(sharedEmitter, 'show-large-preview', (srcUniqId) => {
+  useEmitterOn(sharedEmitter, 'show-large-preview', (srcUniqId) => {
     if (srcUniqId === uniqId) return
     clearTimers()
     hide()

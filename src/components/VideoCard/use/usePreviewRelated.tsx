@@ -1,7 +1,7 @@
 import { useEventListener, useMemoizedFn, useRafState, useUnmountedRef } from 'ahooks'
 import { delay } from 'es-toolkit'
 import { __PROD__, appLog } from '$common'
-import { useMittOn } from '$common/hooks/useMitt'
+import { useEmitterOn } from '$common/hooks/useEmitter'
 import { useRefBox, useRefStateBox, type RefBox, type RefStateBox } from '$common/hooks/useRefState'
 import { settings } from '$modules/settings'
 import { minmax } from '$utility/num'
@@ -114,7 +114,7 @@ export function usePreviewRelated({
     isHoveringAfterDelayBox.set(false)
   })
   useEventListener('mouseleave', _mouseleaveAction, { target: videoPreviewWrapperRef })
-  useMittOn(sharedEmitter, 'mouseenter', (srcUniqId) => {
+  useEmitterOn(sharedEmitter, 'mouseenter', (srcUniqId) => {
     if (srcUniqId === uniqId) return
     _mouseleaveAction()
   })

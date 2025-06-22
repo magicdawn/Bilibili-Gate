@@ -46,7 +46,7 @@ export async function getAccessKeyByQrCode() {
     const p1 = delay(1500) // wait enough time
     const p2 = whenQrCodeModalHide() // if user click close, quick break
     await Promise.race([p1, p2])
-    p2.cancel()
+    p2.off()
     if (shouldBreak()) return
 
     // poll
