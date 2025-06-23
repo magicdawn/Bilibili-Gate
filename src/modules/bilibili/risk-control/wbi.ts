@@ -45,14 +45,14 @@ type Keys = { img_key: string; sub_key: string }
 const keysCache = dailyCache<{ val: Keys; ts: number }>('wbi-keys')
 
 // 获取最新的 img_key 和 sub_key
-async function getWbiKeys(): Promise<Keys> {
+const getWbiKeys = reusePendingPromise(async function (): Promise<Keys> {
   const cached = await keysCache.get()
   const shouldReuse = cached?.val && cached?.ts && Date.now() - cached.ts <= ms('6h')
   if (shouldReuse) return cached.val
-  return __fetchWbiKeys()
-}
+  return fetchWbiKeys()
+})
 
-const __fetchWbiKeys = reusePendingPromise(async () => {
+async function fetchWbiKeys() {
   // 直接用 axios, 防止与 $request 循环依赖
   const res = await axios.get('/x/web-interface/nav', { baseURL: HOST_API })
   const json = res.data
@@ -65,7 +65,7 @@ const __fetchWbiKeys = reusePendingPromise(async () => {
   // save cache
   await keysCache.set({ val: keys, ts: Date.now() })
   return keys
-})
+}
 
 // 对 imgKey 和 subKey 进行字符顺序打乱编码
 const mixinKeyEncTab = [
