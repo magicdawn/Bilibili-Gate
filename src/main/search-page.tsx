@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import { useHover } from 'ahooks'
-import { limitFunction } from 'p-limit'
+import { limitFunction } from 'promise.map'
 import { createPortal } from 'react-dom'
 import { APP_NAMESPACE } from '$common'
 import { AppRoot } from '$components/AppRoot'
@@ -22,17 +22,14 @@ export function initSearchPage() {
 }
 
 function addLargePreviewForSearchResults() {
-  const run = limitFunction(
-    () => {
-      const itemsSelector = '.video-list-item:has(> .bili-video-card),div:has(> .bili-video-card)'
-      const list = Array.from(document.querySelectorAll<HTMLDivElement>(itemsSelector))
-      for (const el of list) addLargePreview(el)
-    },
-    { concurrency: 1 },
-  )
+  const run = limitFunction(() => {
+    const itemsSelector = '.video-list-item:has(> .bili-video-card),div:has(> .bili-video-card)'
+    const list = Array.from(document.querySelectorAll<HTMLDivElement>(itemsSelector))
+    for (const el of list) addLargePreview(el)
+  }, 1)
 
   run()
-  const ob = new MutationObserver(run)
+  const ob = new MutationObserver(() => run())
   ob.observe(document.body, { childList: true, subtree: true })
 }
 

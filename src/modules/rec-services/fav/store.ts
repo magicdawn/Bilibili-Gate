@@ -2,7 +2,7 @@
 
 import { pick } from 'es-toolkit'
 import ms from 'ms'
-import pLimit from 'p-limit'
+import { pLimit } from 'promise.map'
 import { proxy } from 'valtio'
 import { subscribeKey } from 'valtio/utils'
 import { baseDebug, IN_BILIBILI_HOMEPAGE } from '$common'

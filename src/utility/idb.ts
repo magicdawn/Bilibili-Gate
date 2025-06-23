@@ -4,8 +4,8 @@
 
 import { isNil, throttle } from 'es-toolkit'
 import localforage from 'localforage'
-import { limitFunction } from 'p-limit'
 import pMemoize, { type AnyAsyncFunction } from 'p-memoize'
+import { limitFunction } from 'promise.map'
 import { APP_NAMESPACE } from '$common'
 import { whenIdle } from './dom'
 import type { AsyncReturnType } from 'type-fest'
@@ -77,7 +77,7 @@ export function wrapWithIdbCache<T extends AnyAsyncFunction>({
     }
   }
 
-  const fnLimited = concurrency && concurrency > 0 ? (limitFunction(fn, { concurrency }) as T) : fn
+  const fnLimited = concurrency && concurrency > 0 ? (limitFunction(fn, concurrency) as T) : fn
 
   const fnMemoized = pMemoize<T, string>(fnLimited, {
     cacheKey(args) {

@@ -1,4 +1,4 @@
-import pLimit from 'p-limit'
+import { pLimit } from 'promise.map'
 import { isSafari } from '$ua'
 
 export function openNewTab(url: string, active = true) {

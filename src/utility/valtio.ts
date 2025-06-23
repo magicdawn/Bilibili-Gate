@@ -1,5 +1,5 @@
 import { isEqual, pick, throttle, toMerged } from 'es-toolkit'
-import pLimit from 'p-limit'
+import { pLimit } from 'promise.map'
 import { proxy, snapshot, subscribe, useSnapshot } from 'valtio'
 import { proxyMap, proxySet } from 'valtio/utils'
 import { reciveGmValueUpdatesFromOtherTab } from '$modules/gm'
