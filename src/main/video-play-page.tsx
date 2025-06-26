@@ -1,18 +1,25 @@
+import { BvCode, type BV1String } from '@mgdn/bvid'
 import { delay } from 'es-toolkit'
 import ms from 'ms'
 import { baseDebug } from '$common'
+import { chooseTragetFavFolder } from '$components/ModalMoveFav'
 import { ForceAutoPlay, PlayerScreenMode, QueryKey } from '$components/VideoCard/index.shared'
 import { hasDocumentPictureInPicture, openInPipOrPopup } from '$components/VideoCard/use/useOpenRelated'
+import { antMessage } from '$modules/antd'
 import { getBiliPlayer } from '$modules/bilibili/player'
 import { getBiliPlayerConfigAutoPlay } from '$modules/bilibili/player-config'
+import { UserFavService } from '$modules/rec-services/fav/user-fav-service'
+import { settings } from '$modules/settings'
 import { isMac } from '$ua'
-import { setupAppRootForNoneHomepage } from './shared'
+import { poll, shouldDisableShortcut } from '$utility/dom'
+import { setupForNoneHomepage } from './shared'
 
 const debug = baseDebug.extend('main:video-play-page')
 
 export async function initVideoPlayPage() {
-  setupAppRootForNoneHomepage()
+  setupForNoneHomepage()
   registerGmCommands()
+  setupCustomFavPicker()
   await handleFullscreen()
   await handleForceAutoPlay()
 }
@@ -20,6 +27,7 @@ export async function initVideoPlayPage() {
 function registerGmCommands() {
   registerOpenInPipCommand()
   registerOpenInIinaCommand()
+  registerAddToFavCommand()
 }
 
 function registerOpenInPipCommand() {
@@ -113,4 +121,47 @@ function openInIina() {
   // open in iina
   const iinaUrl = `iina://open?url=${encodeURIComponent(location.href)}`
   window.open(iinaUrl, '_self')
+}
+
+function registerAddToFavCommand() {
+  GM.registerMenuCommand?.('⭐️ 加入收藏', addToFav)
+}
+async function setupCustomFavPicker() {
+  if (!settings.fav.useCustomFavPicker.onPlayPage) return false
+  document.addEventListener(
+    'keydown',
+    (e) => {
+      if (e.key !== 'e') return
+      if (shouldDisableShortcut()) return
+      e.stopImmediatePropagation()
+      e.preventDefault()
+      addToFav()
+    },
+    { capture: true },
+  )
+
+  const el = await poll(() => document.querySelector<HTMLDivElement>('.video-fav.video-toolbar-left-item'), {
+    interval: 100,
+    timeout: 5_000,
+  })
+  el?.addEventListener(
+    'click',
+    (e) => {
+      e.stopImmediatePropagation()
+      e.preventDefault()
+      addToFav()
+    },
+    { capture: true },
+  )
+}
+
+async function addToFav() {
+  const bvid = /^\/video\/(?<bvid>BV\w+)\//.exec(location.pathname)?.groups?.bvid
+  if (!bvid) return
+  const avid = BvCode.bv2av(bvid as BV1String)
+  await chooseTragetFavFolder(undefined, async (targetFolder) => {
+    const success = await UserFavService.addFav(avid, targetFolder.id)
+    if (success) antMessage.success(`已加入收藏夹「${targetFolder.title}」`)
+    return success
+  })
 }

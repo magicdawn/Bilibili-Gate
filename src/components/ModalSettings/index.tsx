@@ -14,6 +14,7 @@ import { TabPaneAdvance } from './tab-panes/pane-advance'
 import { TabPaneBasic } from './tab-panes/pane-basic'
 import { TabPaneCustomUI, useHotkeyForConfigBorder } from './tab-panes/pane-custom-ui'
 import { TabPaneFilter } from './tab-panes/pane-filter'
+import { TabPaneOtherPages } from './tab-panes/pane-other-pages'
 import { TabPaneRecTabsConfig } from './tab-panes/pane-rec-tab-config'
 import { SettingsGroup, sharedCss } from './tab-panes/shared'
 import { ThemesSelect } from './theme'
@@ -38,6 +39,7 @@ const enum TabPaneKey {
   CustomUi = 'custom-ui',
   ThemeSelect = 'theme-select',
   VideoSourceTabConfig = 'video-source-tab-config',
+  OtherPages = 'other-pages',
   Advance = 'advance',
 }
 
@@ -134,6 +136,11 @@ export function ModalSettings({ show, onHide }: { show: boolean; onHide: () => v
               label: 'Tab 设置',
               key: TabPaneKey.VideoSourceTabConfig,
               children: <TabPaneRecTabsConfig />,
+            },
+            {
+              label: '其他页面',
+              key: TabPaneKey.OtherPages,
+              children: <TabPaneOtherPages />,
             },
             {
               label: '高级设置',

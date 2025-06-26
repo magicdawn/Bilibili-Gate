@@ -125,6 +125,9 @@ export const initialSettings = {
     // useShuffle: false, // 打乱顺序
     addSeparator: true, // 收藏夹分割线
     excludedFolderIds: [] as string[], // 忽略的收藏夹
+    useCustomFavPicker: {
+      onPlayPage: false,
+    },
   },
 
   /**

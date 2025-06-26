@@ -67,7 +67,7 @@ export enum ERankApiType {
 
 export function getRankTabRequestConfig(rankTab: IRankTab): { apiType: ERankApiType; url: string } {
   /*
-   original obfuscated code:
+   original minified code:
    !["anime", "guochuang", "documentary", "movie", "tv", "variety"].includes(null == o ? void 0 : o.type)) {
         e.next = 26;
         break

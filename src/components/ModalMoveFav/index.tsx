@@ -6,6 +6,7 @@ import Emittery from 'emittery'
 import { uniqBy } from 'es-toolkit'
 import PinyinMatch from 'pinyin-match'
 import { useSnapshot } from 'valtio'
+import { kbdClassName } from '$common/shared-classnames'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { colorPrimaryValue } from '$components/css-vars'
@@ -87,8 +88,6 @@ export function ModalMoveFav({ show, onHide, srcFavFolderId, okAction }: IProps)
     return uniqBy([...included, ...includedIgnoreCase, ...pinyinMatched], (x) => x.id)
   }, [folders, filterText])
 
-  const kbdClassName = 'cursor-pointer rounded bg-gate-bg-lv-3 p-x-1 text-gate-primary'
-
   const onOk = useMemoizedFn(async () => {
     if (!selectedFolder) return antMessage.error('请选择一个收藏夹')
     const success = await $okActionReq.runAsync(selectedFolder)
@@ -163,7 +162,7 @@ export function ModalMoveFav({ show, onHide, srcFavFolderId, okAction }: IProps)
                     data-id={f.id}
                     className={clsx(
                       { active },
-                      'relative flex items-center py-12px rounded-6px b-2px b-solid',
+                      'relative flex items-center py-12px rounded-6px bg-transparent cursor-pointer b-2px b-solid',
                       active ? 'b-gate-primary' : 'b-gate-border',
                     )}
                     disabled={disabled}
