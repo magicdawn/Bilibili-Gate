@@ -63,8 +63,8 @@ export const initialSettings = {
 
     // current largePreview: videoPreview
     videoPreview: {
-      useMp4: false, // mp4 | dash (mp4: single video, dash: video only, no audio)
-      useScale: true, // scale effect
+      useMp4: true, // mp4 | dash (mp4: single video, dash: video only, no audio)
+      useScale: false, // scale effect
       useVideoCardAsTrigger: false, // video card as trigger, v0.31.0 第一个版本就是这样的, 后改为 ActionButton
       addTo: {
         searchPage: true,
