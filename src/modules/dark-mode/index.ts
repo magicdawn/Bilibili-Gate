@@ -1,6 +1,7 @@
 import { delay } from 'es-toolkit'
 import { subscribe } from 'valtio'
 import { appClsDark } from '$common/css-vars-export.module.scss'
+import { poll } from '$utility/dom'
 import { valtioFactory } from '$utility/valtio'
 
 /**
@@ -14,16 +15,19 @@ type IConfigItem = {
   trigger?: string
   isTrigger?: (el: HTMLElement) => boolean
   triggerInner?: string
-  detect: () => boolean
+  getDetectEl: () => HTMLElement | null
+  detect: (el: HTMLElement) => boolean
 }
 export const DarkModeConfig = {
   Evolved: {
-    detect: () => document.body.classList.contains('dark'),
+    getDetectEl: () => document.body,
+    detect: (el) => el.classList.contains('dark'),
     trigger: '.custom-navbar-item[role="listitem"][data-name="darkMode"]',
     triggerInner: '.navbar-dark-mode[item="darkMode"]',
   },
   Bili: {
-    detect: () => !!window['__css-map__']?.href.includes('dark'),
+    getDetectEl: () => document.querySelector<HTMLLinkElement>('#__css-map__'),
+    detect: (el) => (el as HTMLLinkElement).href.includes('dark'),
     isTrigger: (el) => {
       const a = el.closest('.avatar-panel-popover a.single-link-item')
       if (!a) return false
@@ -34,10 +38,16 @@ export const DarkModeConfig = {
   },
 } as const satisfies Record<string, IConfigItem>
 
+const detect = (item: IConfigItem): boolean => {
+  const el = item.getDetectEl()
+  if (!el) return false
+  return item.detect(el)
+}
+
 const $darkMode = valtioFactory(() => {
   return (
-    DarkModeConfig.Bili.detect() ||
-    DarkModeConfig.Evolved.detect() ||
+    detect(DarkModeConfig.Bili) ||
+    detect(DarkModeConfig.Evolved) ||
     document.body.classList.contains('bilibili-helper-dark-mode') ||
     document.documentElement.classList.contains('dark') // what's this, I don't remember
   )
@@ -66,6 +76,15 @@ ob.observe(document.documentElement, {
   attributes: true,
   attributeFilter: ['data-darkreader-scheme'],
 })
+
+deferBiliDefaultDetect()
+async function deferBiliDefaultDetect() {
+  // Q: why this
+  // A: production build 运行的比官方脚本更快~
+  const link = await poll(DarkModeConfig.Bili.getDetectEl)
+  if (!link) return
+  ob.observe(link, { attributes: true })
+}
 
 document.addEventListener('click', darkModeTriggerClickHandler, { passive: true })
 async function darkModeTriggerClickHandler(e: MouseEvent) {
