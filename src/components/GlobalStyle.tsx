@@ -1,6 +1,6 @@
 import { css as _css, css, Global } from '@emotion/react'
 import { APP_CLS_ROOT, IN_BILIBILI_HOMEPAGE } from '$common'
-import { appBgId, appColorPrimaryId } from '$common/css-vars-export.module.scss'
+import { appBgId, appPrimaryColorId, appTextColorId } from '$common/css-vars-export.module.scss'
 import { useAntLinkColorGlobalStyle } from '$common/emotion-css'
 import { $headerWidth, $usingEvolevdHeader, useBackToTopRight } from '$header'
 import { useIsDarkMode } from '$modules/dark-mode'
@@ -21,6 +21,11 @@ export function GlobalStyle() {
   const width = $headerWidth.use() ?? 90
   const padding = '0 10px'
 
+  const fallback = {
+    text: dark ? '#fff' : '#333',
+    bgDark: '#222',
+  }
+
   return (
     <>
       <Global
@@ -29,8 +34,9 @@ export function GlobalStyle() {
           modalGlobalStyle,
           _css`
             :root {
-              ${appColorPrimaryId}: ${colorPrimary};
-              ${appBgId}: ${dark ? '#222' : style.pureRecommend.useWhiteBackground ? `var(--bg1, #fff)` : `var(--bg2, #F6F7F8)`};
+              ${appPrimaryColorId}: ${colorPrimary};
+              ${appBgId}: ${dark ? `var(--bg1, ${fallback.bgDark})` : style.pureRecommend.useWhiteBackground ? `var(--bg1, #fff)` : `var(--bg2, #F6F7F8)`};
+              ${appTextColorId}: var(--text1, ${fallback.text});
             }
           `,
         ]}

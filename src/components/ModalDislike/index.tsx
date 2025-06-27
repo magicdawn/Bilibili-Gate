@@ -9,7 +9,7 @@ import { useSnapshot } from 'valtio'
 import { proxyMap } from 'valtio/utils'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { HelpInfo } from '$components/_base/HelpInfo'
-import { colorPrimaryValue } from '$components/css-vars'
+import { primaryColorValue } from '$components/css-vars'
 import { IconForDislike } from '$modules/icon'
 import { IconAnimatedChecked } from '$modules/icon/animated-checked'
 import { shouldDisableShortcut } from '$utility/dom'
@@ -177,13 +177,13 @@ export function ModalDislike({ show, reasons, onHide, okAction }: typeof default
                   <span
                     data-cls='reason-no'
                     className='ml-6px size-20px flex flex-none items-center justify-center rounded-full color-white'
-                    style={{ backgroundColor: colorPrimaryValue }}
+                    style={{ backgroundColor: primaryColorValue }}
                   >
                     {index + 1}
                   </span>
                   <span className='flex-1 px-4px'>{reason.name}</span>
                   <span className='mr-6px size-20px flex-none'>
-                    {active && <IconAnimatedChecked className='h-100% w-100%' color={colorPrimaryValue} useAnimation />}
+                    {active && <IconAnimatedChecked className='h-100% w-100%' color={primaryColorValue} useAnimation />}
                   </span>
                 </button>
               )

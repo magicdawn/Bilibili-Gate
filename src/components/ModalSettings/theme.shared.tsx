@@ -1,20 +1,20 @@
-import { colorPrimaryValue } from '$components/css-vars'
+import { primaryColorValue } from '$components/css-vars'
 import { $evolvedThemeColor } from '$header'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import LX_THEMES from './lx-themes.json'
 
 // https://github.com/argyleink/gui-challenges/blob/main/color-palettes/oklch-palette.css
 export const primaryPalatte = {
-  swatch1: `oklch(from ${colorPrimaryValue} 99% .02 h)`,
-  swatch2: `oklch(from ${colorPrimaryValue} 90% .1 h)`,
-  swatch3: `oklch(from ${colorPrimaryValue} 80% .2 h)`,
-  swatch4: `oklch(from ${colorPrimaryValue} 72% .25 h)`,
-  swatch5: `oklch(from ${colorPrimaryValue} 67% .31 h)`,
-  swatch6: `oklch(from ${colorPrimaryValue} 50% .27 h)`,
-  swatch7: `oklch(from ${colorPrimaryValue} 35% .25 h)`,
-  swatch8: `oklch(from ${colorPrimaryValue} 25% .2 h)`,
-  swatch9: `oklch(from ${colorPrimaryValue} 13% .2 h)`,
-  swatch10: `oklch(from ${colorPrimaryValue} 5% .1 h)`,
+  swatch1: `oklch(from ${primaryColorValue} 99% .02 h)`,
+  swatch2: `oklch(from ${primaryColorValue} 90% .1 h)`,
+  swatch3: `oklch(from ${primaryColorValue} 80% .2 h)`,
+  swatch4: `oklch(from ${primaryColorValue} 72% .25 h)`,
+  swatch5: `oklch(from ${primaryColorValue} 67% .31 h)`,
+  swatch6: `oklch(from ${primaryColorValue} 50% .27 h)`,
+  swatch7: `oklch(from ${primaryColorValue} 35% .25 h)`,
+  swatch8: `oklch(from ${primaryColorValue} 25% .2 h)`,
+  swatch9: `oklch(from ${primaryColorValue} 13% .2 h)`,
+  swatch10: `oklch(from ${primaryColorValue} 5% .1 h)`,
 }
 
 export interface LxTheme {

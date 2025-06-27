@@ -6,7 +6,7 @@ import { useSnapshot } from 'valtio'
 import { __PROD__ } from '$common'
 import { APP_CLS_USE_ANT_LINK_COLOR, buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { HelpInfo } from '$components/_base/HelpInfo'
-import { colorPrimaryValue } from '$components/css-vars'
+import { primaryColorValue } from '$components/css-vars'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { CHARGE_ONLY_TEXT } from '$components/VideoCard/top-marks'
 import { antMessage } from '$modules/antd'
@@ -117,7 +117,7 @@ export function usePopoverRelated({
       content={popoverContent}
       styles={{ body: { border: `1px solid ${usePopoverBorderColor()}` } }}
     >
-      <Badge dot={showPopoverBadge} color={colorPrimaryValue} offset={[-5, 5]}>
+      <Badge dot={showPopoverBadge} color={primaryColorValue} offset={[-5, 5]}>
         <Button className='icon-only-round-button' css={popoverOpen && buttonOpenCss}>
           <IconForPopoverTrigger className='ml-1px' />
         </Button>
@@ -477,7 +477,7 @@ function FollowGroupActions({ followGroup, onRefresh }: { followGroup: FollowGro
               {disabled && (
                 <p
                   css={css`
-                    color: oklch(from ${colorPrimaryValue} calc(1 - l) calc(c + 0.1) h);
+                    color: oklch(from ${primaryColorValue} calc(1 - l) calc(c + 0.1) h);
                     font-style: italic;
                   `}
                 >

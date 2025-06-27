@@ -1,7 +1,7 @@
 import { css } from '@emotion/css'
 import { APP_CLS_ROOT, OPERATION_FAIL_MSG, REQUEST_FAIL_MSG } from '$common'
 import { zIndexToast } from '$common/css-vars-export.module.scss'
-import { colorPrimaryValue } from '$components/css-vars'
+import { primaryColorValue } from '$components/css-vars'
 
 const toastContainer = css`
   position: fixed;
@@ -19,7 +19,7 @@ const toastContainer = css`
 
   color: #fff;
   background-color: #ffb243;
-  background-color: ${colorPrimaryValue};
+  background-color: ${primaryColorValue};
   border-radius: 6px;
   white-space: pre-wrap;
 `

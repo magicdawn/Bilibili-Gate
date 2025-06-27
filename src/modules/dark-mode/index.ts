@@ -1,8 +1,7 @@
 import { delay } from 'es-toolkit'
 import { subscribe } from 'valtio'
 import { appClsDark } from '$common/css-vars-export.module.scss'
-import { settings } from '$modules/settings'
-import { subscribeOnKeys, valtioFactory } from '$utility/valtio'
+import { valtioFactory } from '$utility/valtio'
 
 /**
  * using dark-mode?
@@ -47,28 +46,13 @@ export function useIsDarkMode() {
   return $darkMode.use()
 }
 
-/**
- * color & bg-color 相关
- */
-export const $colors = valtioFactory(() => {
-  const bg = window.getComputedStyle(document.body).backgroundColor
-  const c = window.getComputedStyle(document.body).color
-  return { bg, c }
-})
-export function useColors() {
-  return $colors.use()
-}
-
-setTimeout($colors.updateThrottled, 2000) // when onload complete
 const onDarkModeChange = () => {
-  $colors.updateThrottled()
   $darkMode.get()
     ? document.documentElement.classList.add(appClsDark)
     : document.documentElement.classList.remove(appClsDark)
 }
 onDarkModeChange()
 subscribe($darkMode.state, onDarkModeChange)
-subscribeOnKeys(settings.style.pureRecommend, ['useWhiteBackground'], () => setTimeout($colors.updateThrottled, 500))
 
 const ob = new MutationObserver(async () => {
   await delay(0)
@@ -90,7 +74,6 @@ async function darkModeTriggerClickHandler(e: MouseEvent) {
   if (!isClickOnTrigger) return
   await delay(0)
   $darkMode.updateThrottled()
-  $colors.updateThrottled()
 }
 
 window.addEventListener('unload', () => {

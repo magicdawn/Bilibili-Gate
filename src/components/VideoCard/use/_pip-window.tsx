@@ -5,7 +5,7 @@ import { App } from 'antd'
 import { APP_CLS_ROOT } from '$common'
 import { useLessFrequentFn } from '$common/hooks/useLessFrequentFn'
 import { AppRoot } from '$components/AppRoot'
-import { colorPrimaryValue } from '$components/css-vars'
+import { primaryColorValue } from '$components/css-vars'
 import { openNewTab } from '$modules/gm'
 import { settings } from '$modules/settings'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
@@ -87,7 +87,7 @@ export function PipWindowContent({ newHref, pipWindow }: { pipWindow: Window; ne
 
 const S = {
   button: css`
-    /* border: 1px solid ${colorPrimaryValue}; */
+    /* border: 1px solid ${primaryColorValue}; */
     svg {
       width: 14px;
       height: 14px;

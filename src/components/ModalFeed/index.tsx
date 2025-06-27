@@ -1,7 +1,7 @@
 import { css } from '@emotion/react'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { CollapseBtn } from '$components/_base/CollapseBtn'
-import { colorPrimaryValue } from '$components/css-vars'
+import { primaryColorValue } from '$components/css-vars'
 import { useModalDislikeVisible } from '$components/ModalDislike'
 import { useModalMoveFavVisible } from '$components/ModalMoveFav'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
@@ -60,7 +60,7 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
   const modalBorderCss = useMemo(() => {
     const borderWidth = useFullScreen ? 5 : 1
     return css`
-      border: ${borderWidth}px solid ${colorPrimaryValue};
+      border: ${borderWidth}px solid ${primaryColorValue};
     `
   }, [useFullScreen])
 

@@ -1,9 +1,9 @@
 import { css } from '@emotion/react'
 import { createPortal } from 'react-dom'
+import { useUnoMerge } from 'unocss-merge/react'
 import { APP_CLS_ROOT, APP_NAMESPACE } from '$common'
 import { appClsDarkSelector, zIndexBaseModal } from '$common/css-vars-export.module.scss'
 import { borderColorValue } from '$components/css-vars'
-import { useIsDarkMode } from '$modules/dark-mode'
 import { hasMarginLeft, hasSize } from '$utility/css'
 import type { CssProp } from '$utility/type'
 import type { ComponentProps, MouseEvent } from 'react'
@@ -29,8 +29,6 @@ export const BaseModalStyle = {
   modal: css`
     width: 500px;
     max-height: calc(90vh - 50px);
-
-    background-color: #fff;
     border-radius: 10px;
     padding: 0 15px 15px 15px;
 
@@ -89,25 +87,6 @@ export function BaseModal({
 }: BaseModalProps) {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const containerId = useId()
-  const isDarkMode = useIsDarkMode()
-
-  const { bg, c } = useMemo(() => {
-    const bg = window.getComputedStyle(document.body).backgroundColor
-    const c = window.getComputedStyle(document.body).color
-    return { bg, c }
-  }, [isDarkMode])
-
-  const wrapperStyle: CSSProperties = useMemo(() => {
-    return isDarkMode
-      ? {
-          '--bg': bg,
-          '--c': c,
-          'backgroundColor': bg,
-          'color': c,
-        }
-      : // 白色不用特殊处理
-        {}
-  }, [bg, c, isDarkMode])
 
   const onMaskClick = useMemoizedFn((e: MouseEvent) => {
     const target = e.target as HTMLElement
@@ -144,6 +123,8 @@ export function BaseModal({
     { exactMatch: true },
   )
 
+  const modalClassName = useUnoMerge('bg-gate-bg', 'text-gate-text', clsModal)
+
   if (!show) {
     return null
   }
@@ -151,12 +132,7 @@ export function BaseModal({
   return createPortal(
     <div className={clsx(APP_CLS_ROOT, { [APP_CLS_MODAL_VISIBLE]: show })} data-id={`base-modal-${containerId}`}>
       <div className={clsModalMask} css={[BaseModalStyle.modalMask, cssModalMask]} onClick={onMaskClick}>
-        <div
-          style={{ ...wrapperStyle, width }}
-          className={clsModal}
-          css={[BaseModalStyle.modal, cssModal]}
-          ref={wrapperRef}
-        >
+        <div style={{ width }} className={modalClassName} css={[BaseModalStyle.modal, cssModal]} ref={wrapperRef}>
           {children}
         </div>
       </div>

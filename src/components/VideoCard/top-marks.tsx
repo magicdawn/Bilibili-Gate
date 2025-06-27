@@ -1,5 +1,5 @@
 import { Dropdown } from 'antd'
-import { colorPrimaryValue } from '$components/css-vars'
+import { primaryColorValue } from '$components/css-vars'
 import { isDynamicFeed, isFav, isWatchlater, type RankItemExtend, type RecItemType } from '$define'
 import { EApiType } from '$define/index.shared'
 import { openNewTab } from '$modules/gm'
@@ -41,7 +41,7 @@ export function ChargeOnlyTag() {
 /* https://color.adobe.com/zh/metals-color-theme-18770781/ */
 function getColor(no: number) {
   const medalColors = ['#FFD700', '#C0C0C0', '#B36700']
-  return medalColors[no - 1] ?? colorPrimaryValue
+  return medalColors[no - 1] ?? primaryColorValue
 }
 
 export function RankNumMark({ item }: { item: RankItemExtend }) {

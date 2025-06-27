@@ -2,7 +2,7 @@ import { css as _css, css } from '@emotion/react'
 import { useHover } from 'ahooks'
 import { AnimatePresence, motion } from 'framer-motion'
 import { setForwardedRef } from '$common/hooks/mixed-ref'
-import { colorPrimaryValue } from '$components/css-vars'
+import { primaryColorValue } from '$components/css-vars'
 import { zIndexLeftMarks, zIndexRightActions } from '../index.shared'
 import type { ComponentProps, ComponentRef, ReactNode } from 'react'
 
@@ -48,7 +48,7 @@ const S = {
       padding: 4px 8px;
       color: #fff;
       background-color: rgba(0, 0, 0, 0.8);
-      background-color: ${colorPrimaryValue};
+      background-color: ${primaryColorValue};
     `,
     _css`
       ${inlinePosition}: -${tooltipOffset}px;

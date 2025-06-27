@@ -10,7 +10,7 @@
 import { css as _css, css } from '@emotion/react'
 import { useSnapshot } from 'valtio'
 import { APP_NAMESPACE } from '$common'
-import { bgLv1Value, bgLv2Value, borderColorValue, colorPrimaryValue } from '$components/css-vars'
+import { bgLv1Value, bgLv2Value, borderColorValue, primaryColorValue } from '$components/css-vars'
 import { multiSelectStore } from '$modules/multi-select/store'
 import { useSettingsSnapshot } from '$modules/settings'
 import { tweakLightness } from '$utility/css'
@@ -18,14 +18,14 @@ import type { CssProp } from '$utility/type'
 import { bgValue, videoCardBorderRadiusValue } from '../css-vars'
 import { isDisplayAsList } from './index.shared'
 
-const c = tweakLightness(colorPrimaryValue, 0.1)
+const c = tweakLightness(primaryColorValue, 0.1)
 
 const Styles = {
   normalBorder: css`
     border-color: ${borderColorValue};
   `,
   activeBorder: css`
-    border-color: ${colorPrimaryValue};
+    border-color: ${primaryColorValue};
     box-shadow: 0px 0px 9px 4px ${c};
   `,
   rounded: css`

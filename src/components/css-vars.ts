@@ -9,9 +9,12 @@ export const cssVar = (id: string) => {
   return `var(${id})`
 }
 
-export const colorPrimaryValue = cssVar(cssVars.appColorPrimaryId)
-export const borderColorValue = cssVar(cssVars.appBorderColorId)
 export const videoCardBorderRadiusValue = cssVar(cssVars.appVideoCardBorderRadiusId)
+
+// colors
+export const primaryColorValue = cssVar(cssVars.appPrimaryColorId)
+export const borderColorValue = cssVar(cssVars.appBorderColorId)
+export const textColorValue = cssVar(cssVars.appTextColorId)
 
 export const bgValue = cssVar(cssVars.appBgId)
 export const bgLv1Value = cssVar(cssVars.appBgLv1Id)

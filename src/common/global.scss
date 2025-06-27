@@ -5,10 +5,6 @@
   #{$app-custom-font-id}: #{meta.inspect($app-custom-font-value)};
 }
 
-.#{$app-cls-color-primary} {
-  color: var(#{$app-color-primary-id});
-}
-
 // colors
 :root {
   #{$app-border-color-id}: oklch(from var($app-bg-id) calc(l - 0.05) c h); // #fff -> #eee
@@ -31,7 +27,7 @@
   .bili-video-card {
     .bili-video-card__info--tit:hover, // fix https://github.com/magicdawn/Bilibili-Gate/issues/168
     a:not(.disable-hover):hover {
-      color: var($app-color-primary-id) !important;
+      color: var($app-primary-color-id) !important;
     }
   }
 

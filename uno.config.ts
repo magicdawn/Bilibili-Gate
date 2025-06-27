@@ -42,8 +42,9 @@ export default defineConfig({
   theme: {
     colors: {
       gate: {
-        primary: 'var(--bilibili-gate--color-primary)',
+        primary: 'var(--bilibili-gate--primary-color)',
         border: 'var(--bilibili-gate--border-color)',
+        text: 'var(--bilibili-gate--text-color)',
         bg: {
           DEFAULT: 'var(--bilibili-gate--bg)',
           lv: {

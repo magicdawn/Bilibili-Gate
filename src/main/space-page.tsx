@@ -3,7 +3,7 @@ import { useUnoMerge } from 'unocss-merge/react'
 import { proxy, useSnapshot } from 'valtio'
 import { APP_NAME, APP_NAMESPACE } from '$common'
 import { AppRoot } from '$components/AppRoot'
-import { colorPrimaryValue } from '$components/css-vars'
+import { primaryColorValue } from '$components/css-vars'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconForDynamicFeed, IconForSpaceUpload } from '$modules/icon'
 import { DynamicFeedQueryKey } from '$modules/rec-services/dynamic-feed/store'
@@ -126,8 +126,8 @@ function ActionButtons() {
   const btnCss = css`
     border-color: rgb(255 255 255 / 33%);
     &:hover {
-      border-color: ${colorPrimaryValue};
-      background-color: ${colorPrimaryValue};
+      border-color: ${primaryColorValue};
+      background-color: ${primaryColorValue};
     }
   `
 

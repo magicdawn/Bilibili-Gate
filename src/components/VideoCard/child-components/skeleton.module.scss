@@ -1,36 +1,39 @@
 @use '../../../common/css-vars' as *;
 
+$skeleton-selectors:
+  '.bili-video-card__skeleton--cover', '.bili-video-card__skeleton--text', '.bili-video-card__skeleton--light',
+  '.bili-video-card__skeleton--avatar';
+
 :global {
-  body {
-    .bili-video-card__skeleton--cover,
-    .bili-video-card__skeleton--text,
-    .bili-video-card__skeleton--light,
-    .bili-video-card__skeleton--avatar {
+  .#{$app-cls-root} {
+    #{$skeleton-selectors} {
       background: linear-gradient(135deg, rgba(0, 0, 0, 0.06) 25%, rgba(0, 0, 0, 0.15) 37%, rgba(0, 0, 0, 0.06) 63%);
+    }
+    .bili-video-card__skeleton--text.tiny {
+      margin-top: 4px;
+      width: 15%;
     }
   }
 
-  // other type already handled by Bilibili-Evolved
-  #{$app-cls-dark-selector} .bili-video-card__skeleton--avatar {
-    background-color: #444;
-  }
-
-  .bili-video-card__skeleton--text.tiny {
-    margin-top: 4px;
-    width: 15%;
+  // using dark mode
+  #{$app-cls-dark-selector} .#{$app-cls-root} {
+    // Q: why 多加一层
+    // A: skeleton-selectors 是一个 list, scss 语法需要, 否则编译结果不对!
+    #{$skeleton-selectors} {
+      background-color: #444;
+    }
   }
 }
 
 .skeleton-active {
-  :global(.bili-video-card__skeleton--cover),
-  :global(.bili-video-card__skeleton--text),
-  :global(.bili-video-card__skeleton--light),
-  :global(.bili-video-card__skeleton--avatar) {
-    background-size: 400% 100%;
-    animation-name: ant-skeleton-loading;
-    animation-duration: 2s;
-    animation-timing-function: ease;
-    animation-iteration-count: infinite;
+  :global {
+    #{$skeleton-selectors} {
+      background-size: 400% 100%;
+      animation-name: local(ant-skeleton-loading);
+      animation-duration: 2s;
+      animation-timing-function: ease;
+      animation-iteration-count: infinite;
+    }
   }
 }
 

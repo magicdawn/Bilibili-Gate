@@ -1,7 +1,7 @@
 import { BvCode } from '@mgdn/bvid'
 import dayjs from 'dayjs'
 import { appWarn } from '$common'
-import { colorPrimaryValue } from '$components/css-vars'
+import { primaryColorValue } from '$components/css-vars'
 import {
   isAppRecommend,
   isDynamicFeed,
@@ -469,7 +469,7 @@ function apiWatchlaterAdapter(item: WatchlaterItemExtend): IVideoCardData {
 
 const fillWithColorPrimary = styled.createClass`
   & path {
-    fill: ${colorPrimaryValue};
+    fill: ${primaryColorValue};
   }
 `
 

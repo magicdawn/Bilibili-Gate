@@ -7,15 +7,16 @@ $app-name: bilibili-gate;
 $app-cls-root: #{$app-name}-root;
 $app-cls-dark: #{$app-name}-using-dark;
 $app-cls-dark-selector: 'html.#{$app-cls-dark}';
-$app-cls-color-primary: #{$app-name}-color-primary;
 
 // color
 $bili-pink: #ff6699;
 
 // app general
 // NOTE: uno.config.ts use these variables
-$app-color-primary-id: --#{$app-name}--color-primary;
+$app-primary-color-id: --#{$app-name}--primary-color;
 $app-border-color-id: --#{$app-name}--border-color;
+$app-text-color-id: --#{$app-name}--text-color;
+
 $app-bg-id: --#{$app-name}--bg;
 $app-bg-lv1-id: --#{$app-name}--bg-lv1;
 $app-bg-lv2-id: --#{$app-name}--bg-lv2;
@@ -53,11 +54,13 @@ $use-export: false !default;
 @if $use-export {
   :export {
     // ids
-    app-color-primary-id: $app-color-primary-id;
-    app-border-color-id: $app-border-color-id;
     app-custom-font-id: $app-custom-font-id;
     app-video-card-border-radius-id: $app-video-card-border-radius-id;
 
+    // colors
+    app-primary-color-id: $app-primary-color-id;
+    app-border-color-id: $app-border-color-id;
+    app-text-color-id: $app-text-color-id;
     app-bg-id: $app-bg-id;
     app-bg-lv1-id: $app-bg-lv1-id;
     app-bg-lv2-id: $app-bg-lv2-id;
@@ -71,7 +74,6 @@ $use-export: false !default;
     app-cls-root: $app-cls-root;
     app-cls-dark: $app-cls-dark;
     app-cls-dark-selector: #{string.unquote($app-cls-dark-selector)};
-    app-cls-color-primary: $app-cls-color-primary;
 
     // z-index
     z-index-rec-header: $z-index-rec-header;

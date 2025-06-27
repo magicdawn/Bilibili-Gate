@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom'
 import { APP_CLS_CARD, APP_CLS_CARD_COVER, baseDebug } from '$common'
 import { zIndexVideoCardLargePreview } from '$common/css-vars-export.module.scss'
 import { useMixedRef } from '$common/hooks/mixed-ref'
-import { colorPrimaryValue } from '$components/css-vars'
+import { primaryColorValue } from '$components/css-vars'
 import { useSettingsSnapshot } from '$modules/settings'
 import { isSafari } from '$ua'
 import type { ComponentRef, ReactNode } from 'react'
@@ -312,7 +312,7 @@ export const LargePreview = forwardRef<ComponentRef<'div'>, LargePreviewProps>(
               css={css`
                 background-color: rgba(255 255 255 / 0.5);
                 backdrop-filter: blur(10px);
-                box-shadow: 0px 0px 1px 1px ${colorPrimaryValue};
+                box-shadow: 0px 0px 1px 1px ${primaryColorValue};
               `}
             >
               {children}
@@ -372,7 +372,7 @@ function PopoverArrow({
         `,
         extra,
         _css`
-          border-${direction}-color: ${colorPrimaryValue};
+          border-${direction}-color: ${primaryColorValue};
         `,
       ]}
     />
