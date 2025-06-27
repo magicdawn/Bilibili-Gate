@@ -1,11 +1,11 @@
 /* eslint-disable require-await */
 
-import { pick } from 'es-toolkit'
+import { isNil, pick } from 'es-toolkit'
 import ms from 'ms'
 import { pLimit } from 'promise.map'
 import { proxy } from 'valtio'
 import { subscribeKey } from 'valtio/utils'
-import { baseDebug, IN_BILIBILI_HOMEPAGE } from '$common'
+import { baseDebug, IN_BILIBILI_HOMEPAGE, IN_BILIBILI_VIDEO_PLAY_PAGE } from '$common'
 import { reusePendingPromise } from '$utility/async'
 import { setPageTitle } from '$utility/dom'
 import { proxyMapWithGmStorage, subscribeOnKeys } from '$utility/valtio'
@@ -16,6 +16,7 @@ import { fetchAllFavFolders } from './user-fav-service'
 import type { FavCollectionDetailInfo } from './types/collections/collection-detail'
 import type { FavCollection } from './types/collections/list-all-collections'
 import type { FavFolder } from './types/folders/list-all-folders'
+import type { ReadonlyKeysOf } from 'type-fest'
 
 const debug = baseDebug.extend('modules:rec-services:fav:store')
 
@@ -166,18 +167,22 @@ if (SHOW_FAV_TAB_ONLY) {
 
 setupFavStore()
 async function setupFavStore() {
-  if (!IN_BILIBILI_HOMEPAGE) return
+  if (!(IN_BILIBILI_HOMEPAGE || IN_BILIBILI_VIDEO_PLAY_PAGE)) return
   if (SHOW_FAV_TAB_ONLY) return
 
   const storageKey = 'fav-store'
-  const persistStoreKeys = ['selectedFavFolderId', 'selectedFavCollectionId'] as const satisfies (keyof FavStore)[]
+  type WriteableKey = Exclude<keyof FavStore, ReadonlyKeysOf<FavStore>>
+  const persistStoreKeys: WriteableKey[] = ['selectedFavFolderId', 'selectedFavCollectionId', 'folders']
 
   // load
-  const val = await GM.getValue(storageKey)
+  debugger
+  const val = (await GM.getValue(storageKey)) as FavStore | undefined
   if (val) {
-    const picked = pick(val as FavStore, persistStoreKeys)
     for (const key of persistStoreKeys) {
-      favStore[key] = picked[key]
+      if (!isNil(val[key])) {
+        // @ts-ignore
+        favStore[key] = val[key]
+      }
     }
   }
 
