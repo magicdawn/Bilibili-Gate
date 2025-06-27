@@ -5,7 +5,6 @@ import { proxy, useSnapshot } from 'valtio'
 import { __PROD__ } from '$common'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { antMessage } from '$modules/antd'
-import { useHotkeyForToggleEvolvedDarkMode } from '$modules/dark-mode'
 import { IconForConfig } from '$modules/icon'
 import { settings } from '$modules/settings'
 import { shouldDisableShortcut } from '$utility/dom'
@@ -55,7 +54,6 @@ export function ModalSettingsHotkey() {
   useHotkeyForConfig(['shift.m'], 'autoPreviewWhenHover', '鼠标悬浮后自动开始预览')
   useHotkeyForConfig(['shift.c'], 'useNarrowMode', '居中模式')
   useHotkeyForConfigBorder()
-  useHotkeyForToggleEvolvedDarkMode()
   return null
 }
 

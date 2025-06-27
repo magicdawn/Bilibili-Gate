@@ -3,6 +3,8 @@
 declare const __SCRIPT_VERSION__: string
 
 interface Window {
+  ['__css-map__']?: HTMLLinkElement
+
   documentPictureInPicture?: {
     requestWindow: (options: { width?: number; height?: number; disallowReturnToOpener?: boolean }) => Promise<Window>
   }
