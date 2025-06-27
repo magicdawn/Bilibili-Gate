@@ -21,10 +21,13 @@ export function GlobalStyle() {
   const width = $headerWidth.use() ?? 90
   const padding = '0 10px'
 
-  const fallback = {
-    text: dark ? '#fff' : '#333',
-    bgDark: '#222',
-  }
+  const fallback = useMemo(() => {
+    return {
+      text: dark ? '#fff' : '#333',
+      bgSrc: dark ? '--bg1' : style.pureRecommend.useWhiteBackground ? '--bg1' : '--bg2',
+      bgFallback: dark ? '#222' : style.pureRecommend.useWhiteBackground ? '#fff' : '#f6f7f8',
+    }
+  }, [dark, style.pureRecommend.useWhiteBackground])
 
   return (
     <>
@@ -35,7 +38,7 @@ export function GlobalStyle() {
           _css`
             :root {
               ${appPrimaryColorId}: ${colorPrimary};
-              ${appBgId}: ${dark ? `var(--bg1, ${fallback.bgDark})` : style.pureRecommend.useWhiteBackground ? `var(--bg1, #fff)` : `var(--bg2, #F6F7F8)`};
+              ${appBgId}: var(${fallback.bgSrc}, ${fallback.bgFallback});
               ${appTextColorId}: var(--text1, ${fallback.text});
             }
           `,

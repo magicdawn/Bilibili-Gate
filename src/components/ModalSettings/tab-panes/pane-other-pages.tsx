@@ -27,6 +27,14 @@ export function TabPaneOtherPages() {
           }
         />
       </SettingsGroup>
+
+      <SettingsGroup title='搜索页'>
+        <CheckboxSettingItem
+          configPath='videoCard.videoPreview.addTo.searchPage'
+          label='浮动预览: 添加到「搜索页」'
+          tooltip={<>在搜索页的视频也添加「浮动预览」</>}
+        />
+      </SettingsGroup>
     </div>
   )
 }

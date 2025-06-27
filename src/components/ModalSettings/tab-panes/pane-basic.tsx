@@ -191,7 +191,6 @@ export function TabPaneBasic() {
                 'videoCard.actions.openInPipWindow',
                 'videoCard.videoPreview.useMp4',
                 'videoCard.videoPreview.useScale',
-                'videoCard.videoPreview.addTo.searchPage',
                 'videoCard.videoPreview.useVideoCardAsTrigger',
                 'pipWindow.defaultLocked',
                 'pipWindow.autoWebFullscreen',
@@ -256,12 +255,6 @@ export function TabPaneBasic() {
                   </ul>
                 </>
               }
-            />
-            <CheckboxSettingItem
-              configPath='videoCard.videoPreview.addTo.searchPage'
-              disabled={!showLargePreview}
-              label='浮动预览: 添加到「搜索页」'
-              tooltip={<>在搜索页的视频也添加「浮动预览」</>}
             />
           </div>
           <div className='flex flex-col'>
