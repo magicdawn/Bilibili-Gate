@@ -175,7 +175,6 @@ async function setupFavStore() {
   const persistStoreKeys: WriteableKey[] = ['selectedFavFolderId', 'selectedFavCollectionId', 'folders']
 
   // load
-  debugger
   const val = (await GM.getValue(storageKey)) as FavStore | undefined
   if (val) {
     for (const key of persistStoreKeys) {
