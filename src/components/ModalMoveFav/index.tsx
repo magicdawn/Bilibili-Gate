@@ -9,7 +9,6 @@ import { useSnapshot } from 'valtio'
 import { kbdClassName } from '$common/shared-classnames'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { HelpInfo } from '$components/_base/HelpInfo'
-import { primaryColorValue } from '$components/css-vars'
 import { antMessage } from '$modules/antd'
 import { IconForOpenExternalLink } from '$modules/icon'
 import { IconAnimatedChecked } from '$modules/icon/animated-checked'
@@ -177,9 +176,7 @@ export function ModalMoveFav({ show, onHide, srcFavFolderId, okAction }: IProps)
                       {f.title} ({f.media_count})
                     </span>
                     <span className='mr-6px size-20px flex-none'>
-                      {active && (
-                        <IconAnimatedChecked className='h-100% w-100%' color={primaryColorValue} useAnimation />
-                      )}
+                      {active && <IconAnimatedChecked className='h-100% w-100% color-gate-primary' useAnimation />}
                     </span>
                   </button>
                 )
