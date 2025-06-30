@@ -39,7 +39,7 @@ export function ThemesSelect() {
       {ThemeGroups.map(({ name, themes, tooltip }) => {
         return (
           <Fragment key={name}>
-            <div className='mt-10px flex items-center text-size-1.5em'>
+            <div className='mt-2 flex items-center text-size-1.5em'>
               {name}
               <HelpInfo
                 className='size-16px'
@@ -48,7 +48,7 @@ export function ThemesSelect() {
                 {tooltip}
               </HelpInfo>
             </div>
-            <div className='flex flex-wrap gap-x-8px gap-y-2px'>
+            <div className='flex flex-wrap gap-x-5px gap-y-2px'>
               {themes.map((t) => {
                 const isActive = activeId === t.id
                 const isCustom = t.isCustom
@@ -57,7 +57,7 @@ export function ThemesSelect() {
                 // 初始 prevActiveId 为 undefined
                 const useAnimation = !!prevActiveId && prevActiveId !== t.id
 
-                const innerSize = 30
+                const innerSize = 25
                 const outerSize = innerSize + 8
 
                 let previewWrapper: ReactNode = (

@@ -1,3 +1,4 @@
+import { PURPLE_COLORS } from 'purple-colors'
 import { primaryColorValue } from '$components/css-vars'
 import { $evolvedThemeColor } from '$header'
 import { settings, useSettingsSnapshot } from '$modules/settings'
@@ -93,7 +94,11 @@ export const ThemeGroups: {
     themes: [
       DEFAULT_BILI_PINK_THEME,
       { id: 'bilibili-blue', name: 'B站蓝', colorPrimary: '#00aeec' },
-      { id: 'app-靓紫', name: '靓紫', colorPrimary: '#8500ff' },
+      { id: 'app-custom-高能红', name: '高能红', colorPrimary: '#fd453e' },
+      { id: 'app-custom-咸蛋黄', name: '咸蛋黄', colorPrimary: '#ffc034' },
+      { id: 'app-custom-早苗绿', name: '早苗绿', colorPrimary: '#85c255' },
+      { id: 'app-custom-宝石蓝', name: '宝石蓝', colorPrimary: '#0095ef' },
+      { id: 'app-custom-罗兰紫', name: '罗兰紫', colorPrimary: '#a029ac' },
       {
         id: BIBIBILI_EVOLVED_SYNC_ID,
         name: 'B-Evolved',
@@ -106,16 +111,6 @@ export const ThemeGroups: {
         ),
       },
       COLOR_PICKER_THEME,
-    ],
-  },
-  {
-    name: '移动端',
-    themes: [
-      { id: 'app-custom-高能红', name: '高能红', colorPrimary: '#fd453e' },
-      { id: 'app-custom-咸蛋黄', name: '咸蛋黄', colorPrimary: '#ffc034' },
-      { id: 'app-custom-早苗绿', name: '早苗绿', colorPrimary: '#85c255' },
-      { id: 'app-custom-宝石蓝', name: '宝石蓝', colorPrimary: '#0095ef' },
-      { id: 'app-custom-罗兰紫', name: '罗兰紫', colorPrimary: '#a029ac' },
     ],
   },
   {
@@ -145,6 +140,28 @@ export const ThemeGroups: {
         <a target='_blank' href='https://www.bilibili.com/video/BV1xu411q7sU/'>
           BV1xu411q7sU
         </a>
+      </>
+    ),
+  },
+  {
+    name: '紫定能行',
+    themes: PURPLE_COLORS.map((color) => ({
+      id: `purple-colors-${color.name}`,
+      name: color.nameZh,
+      colorPrimary: color.hex,
+      tooltip: (
+        <>
+          {color.name} {color.nameZh} <br />
+          {color.desc}
+        </>
+      ),
+    })),
+    tooltip: (
+      <>
+        提取自{' '}
+        <a target='_blank' href='https://magicdawn.github.io/purple-colors/'>
+          purple-colors
+        </a>{' '}
       </>
     ),
   },
