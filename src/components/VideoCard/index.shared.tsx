@@ -143,14 +143,13 @@ export const displayAsListCss = {
   card: css`
     grid-column: 1 / -1;
   `,
-
   cardWrap: css`
     display: flex;
     column-gap: 20px;
   `,
-
   cover: css`
-    width: 20%;
+    width: clamp(250px, 20%, 400px);
+    flex-shrink: 0;
   `,
 }
 

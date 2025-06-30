@@ -236,6 +236,8 @@ const VideoCardInner = memo(function VideoCardInner({
     appWarn(`none (${allowed.join(',')}) goto type %s`, goto, item)
   }
 
+  const displayingAsList = isDisplayAsList(cardDisplay)
+
   const aspectRatioFromItem = useMemo(() => getRecItemDimension({ item })?.aspectRatio, [item])
 
   const imagePreviewDataBox = useRefStateBox<ImagePreviewData | undefined>(undefined)
@@ -276,7 +278,7 @@ const VideoCardInner = memo(function VideoCardInner({
   // single ref 与 useEventListener 配合不是很好, 故使用两个 ref
   const cardRef = useRef<ComponentRef<'div'> | null>(null)
   const coverRef = useRef<ComponentRef<'a'> | null>(null)
-  const videoPreviewWrapperRef = cardUseBorder && !isDisplayAsList(cardDisplay) ? cardRef : coverRef
+  const videoPreviewWrapperRef = cardUseBorder && !displayingAsList ? cardRef : coverRef
 
   const {
     onStartPreviewAnimation,
@@ -400,6 +402,9 @@ const VideoCardInner = memo(function VideoCardInner({
 
   const handleCardClick: MouseEventHandler<HTMLDivElement> = useMemoizedFn((e) => {
     if (!cardUseBorder) return
+
+    // click from a antd.Dropdown context menu, displayingAsList时可重现
+    if ((e.target as HTMLElement).closest('.ant-dropdown-menu')) return
 
     // already handled by <a>
     if ((e.target as HTMLElement).closest('a')) return
@@ -528,7 +533,7 @@ const VideoCardInner = memo(function VideoCardInner({
           transition: border-radius 0.2s ease-in-out;
         }
       `,
-      !isDisplayAsList(cardDisplay) &&
+      !displayingAsList &&
         (isHovering || active || multiSelecting || (cardUseBorder && !cardUseBorderOnlyOnHover)) &&
         css`
           ${prefixCls} & {
@@ -537,7 +542,7 @@ const VideoCardInner = memo(function VideoCardInner({
           }
         `,
     ]
-  }, [cardDisplay, isHovering, active, multiSelecting, cardUseBorder, cardUseBorderOnlyOnHover])
+  }, [displayingAsList, isHovering, active, multiSelecting, cardUseBorder, cardUseBorderOnlyOnHover])
 
   // 防止看不清封面边界: (封面与背景色接近)
   const shouldMakeCoverClear = useMemo(() => {
@@ -562,7 +567,7 @@ const VideoCardInner = memo(function VideoCardInner({
           isolation: isolate; // new stacking context
         `,
         coverRoundCss,
-        isDisplayAsList(cardDisplay) && displayAsListCss.cover,
+        displayingAsList && displayAsListCss.cover,
       ]}
       onClick={handleVideoLinkClick}
       onContextMenu={(e) => {
@@ -638,6 +643,7 @@ const VideoCardInner = memo(function VideoCardInner({
     <VideoCardBottom
       item={item}
       cardData={cardData}
+      cardDisplay={cardDisplay}
       handleVideoLinkClick={multiSelecting ? toggleMultiSelect : handleVideoLinkClick}
     />
   )
@@ -679,7 +685,7 @@ const VideoCardInner = memo(function VideoCardInner({
             position: static;
             height: 100%;
           `,
-          isDisplayAsList(cardDisplay) && displayAsListCss.cardWrap,
+          displayingAsList && displayAsListCss.cardWrap,
         ]}
         onClick={multiSelecting ? toggleMultiSelect : handleCardClick}
         onContextMenu={(e) => {
@@ -694,7 +700,7 @@ const VideoCardInner = memo(function VideoCardInner({
   }
 
   const wrappedContent: ReactNode =
-    cardUseBorder && !isDisplayAsList(cardDisplay)
+    cardUseBorder && !displayingAsList
       ? wrapDropdown(
           wrapCardWrapper(
             <>

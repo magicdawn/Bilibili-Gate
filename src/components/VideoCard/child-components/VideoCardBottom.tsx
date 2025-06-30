@@ -18,6 +18,7 @@ import { formatSpaceUrl } from '$modules/rec-services/dynamic-feed/shared'
 import { ELiveStatus } from '$modules/rec-services/live/live-enum'
 import { settings } from '$modules/settings'
 import { getAvatarSrc } from '$utility/image'
+import { isDisplayAsList, type ECardDisplay } from '../index.shared'
 import { DESC_SEPARATOR } from '../process/normalize'
 import { useLinkTarget } from '../use/useOpenRelated'
 import type { IVideoCardData } from '../process/normalize'
@@ -45,6 +46,17 @@ const S = {
     padding-block: 0;
     padding-inline: 2px;
     /* margin-left: -4px; */
+  `,
+
+  recommendReasonInList: css`
+    margin-top: 10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: auto;
+    white-space: normal;
   `,
 
   appBadge: css`
@@ -81,14 +93,17 @@ export const VideoCardBottom = memo(function ({
   cardData,
   handleVideoLinkClick,
   className,
+  cardDisplay,
 }: {
   item: RecItemType
   cardData: IVideoCardData
   handleVideoLinkClick?: MouseEventHandler
   className?: string
+  cardDisplay?: ECardDisplay
 }) {
   const { useBorder } = useSnapshot(settings.style.videoCard)
   const target = useLinkTarget()
+  const displayingAsList = isDisplayAsList(cardDisplay)
 
   const {
     // video
@@ -157,7 +172,14 @@ export const VideoCardBottom = memo(function ({
    * 带头像, 更分散(recommend-reason 单独一行)
    */
   return (
-    <div className={clsx('mt-15px px-5px flex gap-x-5px', useBorder ? 'mb-10px' : 'mb-5px', className)}>
+    <div
+      className={clsx(
+        !displayingAsList ? 'pt-15px' : 'pt-5px',
+        'px-5px flex gap-x-5px overflow-hidden',
+        useBorder ? 'mb-10px' : 'mb-5px',
+        className,
+      )}
+    >
       {/* avatar */}
       {!!authorMid && !hideAvatar && (
         <a
@@ -221,6 +243,16 @@ export const VideoCardBottom = memo(function ({
   )
 
   function renderDesc() {
+    const recommendReasonEl: ReactNode = !!recommendReason && (
+      <span
+        className={APP_CLS_CARD_RECOMMEND_REASON}
+        css={[S.recommendReason, displayingAsList && S.recommendReasonInList]}
+        title={recommendReason}
+      >
+        {recommendReason}
+      </span>
+    )
+
     if (isNormalVideo) {
       let date: ReactNode
       if (pubts || pubtsFromApi) {
@@ -245,11 +277,7 @@ export const VideoCardBottom = memo(function ({
               </span>
             )}
           </a>
-          {!!recommendReason && (
-            <span className={APP_CLS_CARD_RECOMMEND_REASON} css={S.recommendReason} title={recommendReason}>
-              {recommendReason}
-            </span>
-          )}
+          {recommendReasonEl}
         </>
       )
     }
@@ -291,11 +319,7 @@ export const VideoCardBottom = memo(function ({
             {authorName}
             {liveExtraDesc && <span className='ml-4px'>{liveExtraDesc}</span>}
           </a>
-          {!!recommendReason && (
-            <span className={APP_CLS_CARD_RECOMMEND_REASON} css={S.recommendReason} title={recommendReason}>
-              {recommendReason}
-            </span>
-          )}
+          {recommendReasonEl}
         </>
       )
     }
