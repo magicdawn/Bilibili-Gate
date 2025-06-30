@@ -159,7 +159,7 @@ async function setupCustomFavPicker() {
 
 async function addToFav() {
   const bvid = getCurrentPageBvid()
-  if (!bvid) return
+  if (!bvid) return antMessage.error('无法解析视频 BVID !')
   const avid = BvCode.bv2av(bvid as BV1String)
   await chooseTragetFavFolder(undefined, async (targetFolder) => {
     const success = await UserFavService.addFav(avid, targetFolder.id)
