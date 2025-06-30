@@ -18,16 +18,12 @@ import './modules/settings' // load config first
 
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
-import {
-  IN_BILIBILI_HOMEPAGE,
-  IN_BILIBILI_SEARCH_PAGE,
-  IN_BILIBILI_SPACE_PAGE,
-  IN_BILIBILI_VIDEO_PLAY_PAGE,
-} from '$common'
+import { IN_BILIBILI_HOMEPAGE, IN_BILIBILI_SEARCH_PAGE, IN_BILIBILI_SPACE_PAGE } from '$common'
 import { initHomepage } from '$main/homepage'
 import { initSearchPage } from '$main/search-page'
 import { initSpacePage } from '$main/space-page'
 import { initVideoPlayPage } from '$main/video-play-page'
+import { IN_BILIBILI_VIDEO_PLAY_PAGE } from '$modules/pages/video-play-page'
 
 dayjs.extend(duration)
 

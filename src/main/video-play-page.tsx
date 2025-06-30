@@ -8,6 +8,7 @@ import { hasDocumentPictureInPicture, openInPipOrPopup } from '$components/Video
 import { antMessage } from '$modules/antd'
 import { getBiliPlayer } from '$modules/bilibili/player'
 import { getBiliPlayerConfigAutoPlay } from '$modules/bilibili/player-config'
+import { getCurrentPageBvid } from '$modules/pages/video-play-page'
 import { UserFavService } from '$modules/rec-services/fav/user-fav-service'
 import { settings } from '$modules/settings'
 import { isMac } from '$ua'
@@ -127,7 +128,8 @@ function registerAddToFavCommand() {
   GM.registerMenuCommand?.('⭐️ 加入收藏', addToFav)
 }
 async function setupCustomFavPicker() {
-  if (!settings.fav.useCustomFavPicker.onPlayPage) return false
+  if (!settings.fav.useCustomFavPicker.onPlayPage) return
+  if (!getCurrentPageBvid()) return
   document.addEventListener(
     'keydown',
     (e) => {
@@ -156,7 +158,7 @@ async function setupCustomFavPicker() {
 }
 
 async function addToFav() {
-  const bvid = /^\/video\/(?<bvid>BV\w+)\//.exec(location.pathname)?.groups?.bvid
+  const bvid = getCurrentPageBvid()
   if (!bvid) return
   const avid = BvCode.bv2av(bvid as BV1String)
   await chooseTragetFavFolder(undefined, async (targetFolder) => {

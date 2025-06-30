@@ -52,8 +52,6 @@ export const IN_BILIBILI_SPACE_PAGE = hostname === BiliDomain.Space
 export const IN_BILIBILI_SEARCH_PAGE = hostname === BiliDomain.Search
 // page predicate
 export const IN_BILIBILI_HOMEPAGE = IN_BILIBILI_MAIN && (pathname === '/' || pathname === '/index.html')
-export const IN_BILIBILI_VIDEO_PLAY_PAGE =
-  IN_BILIBILI_MAIN && ['/video/', '/list/watchlater', '/bangumi/play/'].some((prefix) => pathname.startsWith(prefix))
 
 /**
  * log with namespace

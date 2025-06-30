@@ -123,7 +123,7 @@ export function BaseModal({
     { exactMatch: true },
   )
 
-  const modalClassName = useUnoMerge('bg-gate-bg', 'text-gate-text', clsModal)
+  const modalClassName = useUnoMerge('bg-gate-bg text-gate-text', clsModal)
 
   if (!show) {
     return null
