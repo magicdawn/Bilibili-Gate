@@ -45,7 +45,7 @@ function onHide() {
   emitter.emit('modal-close')
 }
 
-export async function chooseTragetFavFolder(srcFavFolderId: number | undefined, okAction: OkAction) {
+export async function pickFavFolder(srcFavFolderId: number | undefined, okAction: OkAction) {
   updateProps({ show: true, srcFavFolderId, okAction })
   await emitter.once('modal-close')
 }

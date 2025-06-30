@@ -2,7 +2,7 @@ import { BvCode, type BV1String } from '@mgdn/bvid'
 import { delay } from 'es-toolkit'
 import ms from 'ms'
 import { baseDebug } from '$common'
-import { chooseTragetFavFolder } from '$components/ModalMoveFav'
+import { pickFavFolder } from '$components/ModalMoveFav'
 import { ForceAutoPlay, PlayerScreenMode, QueryKey } from '$components/VideoCard/index.shared'
 import { hasDocumentPictureInPicture, openInPipOrPopup } from '$components/VideoCard/use/useOpenRelated'
 import { antMessage } from '$modules/antd'
@@ -161,7 +161,7 @@ async function addToFav() {
   const bvid = getCurrentPageBvid()
   if (!bvid) return antMessage.error('无法解析视频 BVID !')
   const avid = BvCode.bv2av(bvid as BV1String)
-  await chooseTragetFavFolder(undefined, async (targetFolder) => {
+  await pickFavFolder(undefined, async (targetFolder) => {
     const success = await UserFavService.addFav(avid, targetFolder.id)
     if (success) antMessage.success(`已加入收藏夹「${targetFolder.title}」`)
     return success

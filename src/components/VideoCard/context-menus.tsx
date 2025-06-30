@@ -3,7 +3,7 @@
  */
 
 import { useSnapshot } from 'valtio'
-import { chooseTragetFavFolder } from '$components/ModalMoveFav'
+import { pickFavFolder } from '$components/ModalMoveFav'
 import {
   copyBvidInfos,
   copyBvidsSingleLine,
@@ -418,7 +418,7 @@ export function useContextMenus({
         label: '收藏到',
         async onClick() {
           if (!avid) return
-          await chooseTragetFavFolder(undefined, async (targetFolder) => {
+          await pickFavFolder(undefined, async (targetFolder) => {
             const success = await UserFavService.addFav(avid, targetFolder.id)
             if (success) antMessage.success(`已加入收藏夹「${targetFolder.title}」`)
             return success
@@ -523,7 +523,7 @@ export function useContextMenus({
                       titles = [item.title]
                     }
 
-                    await chooseTragetFavFolder(item.folder.id, async (targetFolder) => {
+                    await pickFavFolder(item.folder.id, async (targetFolder) => {
                       const success = await UserFavService.moveFavs(resources, srcFavFolderId, targetFolder.id)
                       if (!success) return
                       clearFavFolderAllItemsCache(item.folder.id)

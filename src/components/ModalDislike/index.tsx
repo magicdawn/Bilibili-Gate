@@ -56,7 +56,7 @@ function onHide() {
   updateProps({ show: false, reasons: [], okAction: undefined })
 }
 
-export async function chooseDislikeReason(reasons: Reason[], okAction: OkAction) {
+export async function pickDislikeReason(reasons: Reason[], okAction: OkAction) {
   updateProps({ show: true, reasons, okAction })
   await emitter.once('modal-close')
 }
