@@ -57,7 +57,7 @@ export function ThemesSelect() {
                 // 初始 prevActiveId 为 undefined
                 const useAnimation = !!prevActiveId && prevActiveId !== t.id
 
-                const innerSize = 25
+                const innerSize = 28
                 const outerSize = innerSize + 8
 
                 let previewWrapper: ReactNode = (
