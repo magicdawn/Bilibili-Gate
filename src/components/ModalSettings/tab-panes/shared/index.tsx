@@ -5,7 +5,7 @@ import type { ComponentProps, ReactNode } from 'react'
 import type { Merge } from 'type-fest'
 
 export const sharedClassNames = {
-  tabPane: 'overflow-y-auto min-h-362px max-h-[max(362px,calc(90vh-50px-56px-15px))]',
+  tabPane: 'overflow-y-auto min-h-362px max-h-[max(362px,calc(90vh-50px-56px-15px))] pr-12px',
   settingsGroup: 'mb-10px',
   settingsGroupTitle: 'text-2em flex items-center',
   settingsGroupSubTitle: 'text-1.3em flex items-center mt-15px',
