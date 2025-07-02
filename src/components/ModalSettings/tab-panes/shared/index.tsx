@@ -36,7 +36,7 @@ export function SettingsGroup({
       </div>
       <div
         data-role='settings-group-content'
-        className={useUnoMerge('flex flex-col gap-y-5px text-[default] [&_button:first-child]:ml-0', contentClassName)}
+        className={useUnoMerge('flex flex-col gap-y-5px [&_button:first-child]:ml-0', contentClassName)}
       >
         {/* the content */}
         {children}
