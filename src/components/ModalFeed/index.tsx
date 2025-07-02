@@ -1,7 +1,5 @@
-import { css } from '@emotion/react'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { CollapseBtn } from '$components/_base/CollapseBtn'
-import { primaryColorValue } from '$components/css-vars'
 import { useModalDislikeVisible } from '$components/ModalDislike'
 import { useModalMoveFavVisible } from '$components/ModalMoveFav'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
@@ -14,33 +12,6 @@ import { antMessage } from '$modules/antd'
 import { useSettingsSnapshot } from '$modules/settings'
 import type { HeaderState } from '$components/RecGrid'
 
-const S = {
-  modalMask: (narrowMode: boolean) =>
-    narrowMode &&
-    css`
-      background-color: rgba(0, 0, 0, 0.9);
-    `,
-
-  modal: (narrowMode: boolean, fullScreenMode: boolean) => [
-    css`
-      width: calc(100vw - 30px);
-      height: calc(100vh - 30px);
-      max-height: unset;
-      padding-right: 0; // 滚动条右移
-    `,
-    narrowMode &&
-      css`
-        width: ${325 * 2 + 40}px;
-        height: calc(100vh - 10px);
-      `,
-    fullScreenMode &&
-      css`
-        width: 100vw;
-        height: 100vh;
-      `,
-  ],
-}
-
 interface IProps {
   show: boolean
   onHide: () => void
@@ -48,20 +19,17 @@ interface IProps {
 
 export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
   const scrollerRef = useRef<HTMLDivElement>(null)
-
   const {
     // 双列模式
     useNarrowMode,
     // 全屏模式
     modalFeedFullScreen,
   } = useSettingsSnapshot()
-
   const useFullScreen = !useNarrowMode && modalFeedFullScreen
-  const modalBorderCss = useMemo(() => {
-    const borderWidth = useFullScreen ? 5 : 1
-    return css`
-      border: ${borderWidth}px solid ${primaryColorValue};
-    `
+
+  const modalBorderCls = useMemo(() => {
+    const borderWidth = useFullScreen ? 'b-5px' : 'b-1px'
+    return clsx(borderWidth, 'b-solid b-gate-primary')
   }, [useFullScreen])
 
   const onScrollToTop = useMemoizedFn(() => {
@@ -99,12 +67,16 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
     )
   }
 
+  const clsModalMask = clsx({ ['bg-black/90%']: useNarrowMode })
+
+  // pr-0 滚动条右移
+  const clsBase = 'w-[calc(100vw-30px)] h-[calc(100vh-30px)] max-h-unset pr-0'
+  const clsNarrow = 'w-[calc(325*2+40px)] h-[calc(100vh-10px)]'
+  const clsFullScreen = 'w-full h-full'
+  const clsModal = clsx(clsBase, { [clsNarrow]: useNarrowMode, [clsFullScreen]: useFullScreen }, modalBorderCls)
+
   return (
-    <BaseModal
-      {...{ show, onHide }}
-      cssModalMask={S.modalMask(useNarrowMode)}
-      cssModal={[S.modal(useNarrowMode, useFullScreen), modalBorderCss]}
-    >
+    <BaseModal show={show} onHide={onHide} clsModalMask={clsModalMask} clsModal={clsModal}>
       {renderHeader()}
       <div className={clsx(BaseModalClassNames.modalBody, 'pr-15px')} ref={scrollerRef}>
         <RecGrid

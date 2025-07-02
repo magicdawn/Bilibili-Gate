@@ -1,4 +1,3 @@
-import { css } from '@emotion/react'
 import { QRCode } from 'antd'
 import Emittery from 'emittery'
 import { once } from 'es-toolkit'
@@ -56,11 +55,9 @@ export function TvQrCodeAuth() {
       onHide={onHide}
       hideWhenMaskOnClick={false}
       hideWhenEsc={false}
-      cssModalMask={css`
-        backdrop-filter: blur(10px);
-      `}
-      width={260}
+      clsModalMask='backdrop-blur-10px'
       clsModal='aspect-ratio-10/16'
+      width={260}
     >
       <div className={BaseModalClassNames.modalHeader}>
         <div className={BaseModalClassNames.modalTitle}></div>

@@ -55,6 +55,14 @@ export default defineConfig({
         },
       },
     },
+    zIndex: {
+      'gate-rec-header': 'var(--bilibili-gate--z-rec-header)',
+      'gate-base-modal': 'var(--bilibili-gate--z-base-modal)',
+      'gate-antd-popup-base': 'var(--bilibili-gate--z-antd-popup-base)',
+      'gate-video-card-large-preview': 'var(--bilibili-gate--z-video-card-large-preview)',
+      'gate-video-card-context-menu': 'var(--bilibili-gate--z-video-card-context-menu)',
+      'gate-toast': 'var(--bilibili-gate--z-toast)',
+    },
   },
 
   shortcuts: {

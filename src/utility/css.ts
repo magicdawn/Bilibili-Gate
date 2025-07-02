@@ -1,5 +1,3 @@
-import { uniq } from 'es-toolkit'
-
 export type Lcha = Partial<Record<'l' | 'c' | 'h' | 'alpha', number>>
 
 export type DeltaLcha = {
@@ -22,22 +20,4 @@ export function tweakColorWithOklch(
 
 export function tweakLightness(originalColor: string, delta: number) {
   return tweakColorWithOklch(originalColor, { deltaL: delta })
-}
-
-export function getClassList(className?: string) {
-  return uniq(
-    (className || '')
-      .split(' ')
-      .map((x) => x.trim())
-      .filter(Boolean),
-  )
-}
-
-export function hasSize(className?: string) {
-  return getClassList(className).some((x) => x.startsWith('size-'))
-}
-
-export function hasMarginLeft(className?: string) {
-  const classList = getClassList(className)
-  return classList.some((x) => x.startsWith('ml-') || x.startsWith('mx-'))
 }

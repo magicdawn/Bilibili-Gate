@@ -62,16 +62,12 @@ export function ModalSettings({ show, onHide }: { show: boolean; onHide: () => v
 
   return (
     <BaseModal
-      {...{
-        show,
-        onHide,
-        hideWhenMaskOnClick: true,
-        hideWhenEsc: true,
-        cssModal: css`
-          width: 900px;
-          max-height: unset;
-        `,
-      }}
+      show={show}
+      onHide={onHide}
+      hideWhenMaskOnClick={true}
+      hideWhenEsc={true}
+      width={900}
+      clsModal='max-h-unset'
     >
       <div className={BaseModalClassNames.modalHeader}>
         <div className={BaseModalClassNames.modalTitle}>

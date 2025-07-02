@@ -1,5 +1,5 @@
+import { useUnoMerge } from 'unocss-merge/react'
 import { AntdTooltip } from '$modules/antd/custom'
-import { hasMarginLeft, hasSize } from '$utility/css'
 import type { ComponentType, ReactNode } from 'react'
 
 const DefaultIconComponent = IconParkOutlineTips
@@ -15,11 +15,8 @@ export function HelpInfo({
   tooltipProps?: Partial<ComponentProps<typeof AntdTooltip>>
   IconComponent?: ComponentType<ComponentProps<'svg'>>
 } & ComponentProps<'svg'>) {
-  const _className = useMemo(() => {
-    return clsx('cursor-pointer', !hasSize(className) && 'size-16px', !hasMarginLeft(className) && 'ml-4px', className)
-  }, [className])
-
   IconComponent ??= DefaultIconComponent
+  const _className = useUnoMerge('cursor-pointer size-16px ml-4px', className)
   const icon = <IconComponent {...restSvgProps} className={_className} />
 
   return (

@@ -2,46 +2,20 @@ import { css } from '@emotion/react'
 import { createPortal } from 'react-dom'
 import { useUnoMerge } from 'unocss-merge/react'
 import { APP_CLS_ROOT, APP_NAMESPACE } from '$common'
-import { appClsDarkSelector, zIndexBaseModal } from '$common/css-vars-export.module.scss'
-import { borderColorValue } from '$components/css-vars'
-import { hasMarginLeft, hasSize } from '$utility/css'
-import type { CssProp } from '$utility/type'
 import type { ComponentProps, MouseEvent } from 'react'
 
 export const BaseModalClassNames = {
+  modalMask: 'fixed inset-0 bg-black/50 z-gate-base-modal flex items-center justify-center',
+  modal: [
+    'w-500px max-h-[calc(90vh-50px)]',
+    'rounded-10px b-1px b-transparent b-solid dark:b-gate-border',
+    'bg-gate-bg text-gate-text',
+    'px-15px pb-15px  flex flex-col overflow-hidden',
+  ].join(' '),
   modalHeader: 'py-10px border-b-0 flex items-center justify-between',
   modalTitle: 'text-[1.5rem] mb-0 line-height-1.5 flex items-center',
   modalBody: 'pt-0 flex-grow-1 overflow-y-auto',
 } as const
-
-export const BaseModalStyle = {
-  modalMask: css`
-    position: fixed;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: ${zIndexBaseModal};
-    // make .model center
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  `,
-
-  modal: css`
-    width: 500px;
-    max-height: calc(90vh - 50px);
-    border-radius: 10px;
-    padding: 0 15px 15px 15px;
-
-    border: 1px solid transparent;
-    ${appClsDarkSelector} & {
-      border-color: ${borderColorValue};
-    }
-
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  `,
-}
 
 type BaseModalProps = {
   show: boolean
@@ -50,11 +24,7 @@ type BaseModalProps = {
 
   // classNames
   clsModalMask?: string
-  cssModalMask?: CssProp
-
   clsModal?: string
-  cssModal?: CssProp
-
   width?: CSSProperties['width']
 
   // behaviors
@@ -76,17 +46,13 @@ export function BaseModal({
   children,
 
   clsModalMask,
-  cssModalMask,
-
   clsModal,
-  cssModal,
-
   width,
+
   hideWhenMaskOnClick = false,
   hideWhenEsc = false,
 }: BaseModalProps) {
   const wrapperRef = useRef<HTMLDivElement>(null)
-  const containerId = useId()
 
   const onMaskClick = useMemoizedFn((e: MouseEvent) => {
     const target = e.target as HTMLElement
@@ -123,16 +89,17 @@ export function BaseModal({
     { exactMatch: true },
   )
 
-  const modalClassName = useUnoMerge('bg-gate-bg text-gate-text', clsModal)
+  const _clsModalMask = useUnoMerge(BaseModalClassNames.modalMask, clsModalMask)
+  const _clsModal = useUnoMerge(BaseModalClassNames.modal, clsModal)
 
   if (!show) {
     return null
   }
 
   return createPortal(
-    <div className={clsx(APP_CLS_ROOT, { [APP_CLS_MODAL_VISIBLE]: show })} data-id={`base-modal-${containerId}`}>
-      <div className={clsModalMask} css={[BaseModalStyle.modalMask, cssModalMask]} onClick={onMaskClick}>
-        <div style={{ width }} className={modalClassName} css={[BaseModalStyle.modal, cssModal]} ref={wrapperRef}>
+    <div className={clsx(APP_CLS_ROOT, { [APP_CLS_MODAL_VISIBLE]: show })} data-role='base-modal'>
+      <div className={_clsModalMask} onClick={onMaskClick}>
+        <div className={_clsModal} style={{ width }} ref={wrapperRef}>
           {children}
         </div>
       </div>
@@ -142,14 +109,6 @@ export function BaseModal({
 }
 
 export const ModalClose = ({ className, ...props }: ComponentProps<'svg'>) => {
-  return (
-    <IconParkOutlineClose
-      {...props}
-      className={clsx(
-        'cursor-pointer',
-        { 'size-18px': !hasSize(className), 'ml-10px': !hasMarginLeft(className) },
-        className,
-      )}
-    />
-  )
+  const _className = useUnoMerge('cursor-pointer size-18px ml-10px', className)
+  return <IconParkOutlineClose {...props} className={_className} />
 }

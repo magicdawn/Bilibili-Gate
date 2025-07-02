@@ -20,6 +20,16 @@
   }
 }
 
+// z-index
+:root {
+  --#{$app-name}--z-rec-header: #{$z-index-rec-header};
+  --#{$app-name}--z-base-modal: #{$z-index-base-modal};
+  --#{$app-name}--z-antd-popup-base: #{$z-index-antd-popup-base};
+  --#{$app-name}--z-video-card-large-preview: #{$z-index-video-card-large-preview};
+  --#{$app-name}--z-video-card-context-menu: #{$z-index-video-card-context-menu};
+  --#{$app-name}--z-toast: #{$z-index-toast};
+}
+
 .#{$app-cls-root} {
   font-family: $app-using-font;
   --back-top-right: 24px;
@@ -31,8 +41,18 @@
     }
   }
 
+  .ant-btn {
+    font-size: 13px;
+    // line-height: 24px;
+    &:disabled {
+      cursor: wait;
+    }
+  }
   .ant-btn > span.ant-btn-icon {
     line-height: 0;
+  }
+  .ant-radio-button-wrapper-disabled {
+    cursor: wait;
   }
 }
 
@@ -40,26 +60,6 @@
   .#{$app-cls-root} {
     --back-top-right: 16px;
   }
-}
-
-.primary-btn:disabled {
-  &:active,
-  &:hover {
-    cursor: wait;
-    background-color: inherit;
-  }
-}
-
-.ant-btn {
-  font-size: 13px;
-  // line-height: 24px;
-  &:disabled {
-    cursor: wait;
-  }
-}
-
-.ant-radio-button-wrapper-disabled {
-  cursor: wait;
 }
 
 // fix ant-tooltip a style
@@ -100,13 +100,3 @@ body .ant-btn.ant-btn-variant-solid {
     background: var(--ant-color-primary);
   }
 }
-
-// @history
-//  1. B站默认样式 color: inherited, 导致显示黑色
-//  2. 太广, fallback 到单独覆盖 https://github.com/magicdawn/Bilibili-Gate/issues/141
-// .#{$app-cls-root} a:where(:not(.ant-btn)) {
-//   color: var(--ant-color-link);
-//   &:visited {
-//     color: var(--ant-color-link);
-//   }
-// }
