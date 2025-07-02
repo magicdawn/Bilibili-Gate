@@ -308,10 +308,8 @@ export const LargePreview = forwardRef<ComponentRef<'div'>, LargePreviewProps>(
               />
             )}
             <div
-              className='h-full overflow-hidden rounded-20px'
+              className='h-full overflow-hidden rounded-20px bg-white/50% backdrop-blur-10px'
               css={css`
-                background-color: rgba(255 255 255 / 0.5);
-                backdrop-filter: blur(10px);
                 box-shadow: 0px 0px 1px 1px ${primaryColorValue};
               `}
             >

@@ -15,7 +15,7 @@ import { TabPaneCustomUI, useHotkeyForConfigBorder } from './tab-panes/pane-cust
 import { TabPaneFilter } from './tab-panes/pane-filter'
 import { TabPaneOtherPages } from './tab-panes/pane-other-pages'
 import { TabPaneRecTabsConfig } from './tab-panes/pane-rec-tab-config'
-import { sharedCss } from './tab-panes/shared'
+import { sharedClassNames } from './tab-panes/shared'
 import { ThemesSelect } from './theme'
 
 function useHotkeyForConfig(hotkey: string | string[], configPath: BooleanSettingsPath, label: string) {
@@ -114,7 +114,7 @@ export function ModalSettings({ show, onHide }: { show: boolean; onHide: () => v
               label: '主题选择',
               key: TabPaneKey.ThemeSelect,
               children: (
-                <div css={sharedCss.tabPane}>
+                <div className={sharedClassNames.tabPane}>
                   <ThemesSelect />
                 </div>
               ),

@@ -1,5 +1,6 @@
 import { Tag } from 'antd'
 import { isEqual, pick } from 'es-toolkit'
+import { useUnoMerge } from 'unocss-merge/react'
 import { APP_NAME } from '$common'
 import { antMessage } from '$modules/antd'
 import { settings, useSettingsSnapshot } from '$modules/settings'
@@ -7,7 +8,7 @@ import { shouldDisableShortcut } from '$utility/dom'
 import type { Settings } from '$modules/settings'
 import { explainForFlag } from '../index.shared'
 import { CheckboxSettingItem } from '../setting-item'
-import { ResetPartialSettingsButton, SettingsGroup, sharedCss } from './shared'
+import { ResetPartialSettingsButton, SettingsGroup, sharedClassNames } from './shared'
 
 type CardBorderState = Partial<Pick<Settings['style']['videoCard'], 'useBorder' | 'useBorderOnlyOnHover'>>
 const borderCycleList: CardBorderState[] = [
@@ -43,10 +44,15 @@ export function useHotkeyForConfigBorder() {
 export function TabPaneCustomUI() {
   const { style } = useSettingsSnapshot()
 
+  const rootClassName = useUnoMerge(
+    sharedClassNames.tabPane,
+    'flex flex-col flex-wrap content-start gap-x-30px gap-y-10px',
+  )
+
   const itemsContainerClassName = 'flex flex-col gap-y-4px'
 
   return (
-    <div css={sharedCss.tabPane} className='flex flex-col flex-wrap content-start gap-x-30px gap-y-10px'>
+    <div className={rootClassName}>
       {/* 通用 */}
       <SettingsGroup
         title={

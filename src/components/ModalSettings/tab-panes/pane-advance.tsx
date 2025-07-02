@@ -23,7 +23,7 @@ import { exportSettings, importSettings } from '$modules/settings/file-backup'
 import { articleDraft, restoreOmitPaths } from '$modules/settings/index.shared'
 import { set_HAS_RESTORED_SETTINGS } from '../../../modules/settings/restore-flag'
 import { toastAndReload } from '../index.shared'
-import { ResetPartialSettingsButton, SettingsGroup, sharedCss } from './shared'
+import { ResetPartialSettingsButton, SettingsGroup, sharedClassNames } from './shared'
 
 function onResetSettings() {
   resetSettings()
@@ -49,7 +49,7 @@ export function TabPaneAdvance() {
   const [internalKeysExpanded, setInternalKeysExpanded] = useState<boolean>(false)
 
   return (
-    <div css={sharedCss.tabPane}>
+    <div className={sharedClassNames.tabPane}>
       <SettingsGroup title='设置项'>
         <Space size={20}>
           <Popconfirm title='确定' description='确定恢复默认设置? 此操作不可逆!' onConfirm={onResetSettings}>

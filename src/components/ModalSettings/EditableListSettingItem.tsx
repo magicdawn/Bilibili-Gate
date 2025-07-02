@@ -102,15 +102,7 @@ export function EditableListSettingItem({
             })}
           </div>
         ) : (
-          <Empty
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description='空空如也'
-            css={css`
-              &.ant-empty-normal {
-                margin-block: 5px;
-              }
-            `}
-          />
+          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description='空空如也' className='[&.ant-empty-normal]:my-5px' />
         )}
       </div>
     </>

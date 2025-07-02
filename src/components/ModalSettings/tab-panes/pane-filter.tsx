@@ -5,7 +5,7 @@ import { CheckboxSettingItem, SwitchSettingItem } from '$components/ModalSetting
 import { IconForInfo } from '$modules/icon'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { EditableListSettingItem } from '../EditableListSettingItem'
-import { SettingsGroup, sharedCss } from './shared'
+import { SettingsGroup, sharedClassNames } from './shared'
 import type { ComponentProps } from 'react'
 
 export function TabPaneFilter() {
@@ -42,7 +42,7 @@ export function TabPaneFilter() {
   }
 
   return (
-    <div css={sharedCss.tabPane} className='pr-15px'>
+    <div className={clsx(sharedClassNames.tabPane, 'pr-15px')}>
       <SettingsGroup
         title={
           <>
@@ -58,7 +58,7 @@ export function TabPaneFilter() {
       >
         <div className='grid grid-cols-2 gap-x-15px'>
           <div className='col'>
-            <div css={sharedCss.settingsGroupSubTitle}>视频</div>
+            <div className={sharedClassNames.settingsGroupSubTitle}>视频</div>
             <div className='flex flex-col gap-y-5px'>
               <div className='flex items-center'>
                 <CheckboxSettingItem
@@ -128,7 +128,7 @@ export function TabPaneFilter() {
           </div>
 
           <div className='col'>
-            <div css={sharedCss.settingsGroupSubTitle}>图文</div>
+            <div className={sharedClassNames.settingsGroupSubTitle}>图文</div>
             <CheckboxSettingItem
               configPath='filter.hideGotoTypePicture'
               label='过滤图文类型推荐'
@@ -147,7 +147,7 @@ export function TabPaneFilter() {
               {...getExemptFollowedTooltipProps('图文')}
             />
 
-            <div css={sharedCss.settingsGroupSubTitle}>影视</div>
+            <div className={sharedClassNames.settingsGroupSubTitle}>影视</div>
             <CheckboxSettingItem
               configPath='filter.hideGotoTypeBangumi'
               label='过滤影视类型推荐'
@@ -161,7 +161,7 @@ export function TabPaneFilter() {
           </div>
 
           <div className='col'>
-            <div css={sharedCss.settingsGroupSubTitle}>
+            <div className={sharedClassNames.settingsGroupSubTitle}>
               UP
               <HelpInfo>
                 根据 UP 过滤视频 <br />
@@ -187,7 +187,7 @@ export function TabPaneFilter() {
           </div>
 
           <div className='col'>
-            <div css={sharedCss.settingsGroupSubTitle}>
+            <div className={sharedClassNames.settingsGroupSubTitle}>
               <span>标题</span>
               <HelpInfo>
                 根据标题关键词过滤视频 <br />

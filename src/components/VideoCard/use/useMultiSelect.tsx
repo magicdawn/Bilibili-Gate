@@ -1,16 +1,9 @@
-import { css } from '@emotion/css'
 import { multiSelectStore } from '$modules/multi-select/store'
 import { zIndexMultiSelectBg } from '../index.shared'
 import type { SyntheticEvent } from 'react'
 
 export const IconForMultiSelectUnchecked = IconLucideCircle
 export const IconForMultiSelectChecked = IconLucideCircleCheck
-
-const clsForIconChecked = css`
-  g {
-    fill: inherit;
-  }
-`
 
 export function useMultiSelectRelated({
   multiSelecting,
@@ -44,8 +37,7 @@ export function useMultiSelectRelated({
     <Icon
       onClick={toggleMultiSelect}
       className={clsx(
-        clsForIconChecked,
-        'size-30px cursor-pointer text-white',
+        'size-30px cursor-pointer text-white [&_g]:fill-inherit',
         multiSelected ? 'fill-gate-primary' : 'fill-none',
       )}
     />

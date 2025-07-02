@@ -10,7 +10,7 @@ import { antMessage } from '$modules/antd'
 import { IconForCopy } from '$modules/icon'
 import { updateSettings, useSettingsSnapshot } from '$modules/settings'
 import { explainForFlag, toastAndReload } from '../index.shared'
-import { ResetPartialSettingsButton, SettingsGroup, sharedCss } from './shared'
+import { ResetPartialSettingsButton, SettingsGroup, sharedClassNames } from './shared'
 
 export function TabPaneBasic() {
   const {
@@ -45,7 +45,7 @@ export function TabPaneBasic() {
   })
 
   return (
-    <div css={sharedCss.tabPane}>
+    <div className={sharedClassNames.tabPane}>
       <SettingsGroup
         title={
           <>

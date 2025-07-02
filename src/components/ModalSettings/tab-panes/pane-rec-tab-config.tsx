@@ -6,7 +6,6 @@ import { css } from '@emotion/react'
 import { Checkbox, Collapse, Empty, Radio, Space } from 'antd'
 import { useSnapshot } from 'valtio'
 import { HelpInfo } from '$components/_base/HelpInfo'
-import { bgLv2Value, bgLv3Value } from '$components/css-vars'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { useSortedTabKeys } from '$components/RecHeader/tab'
 import { TabConfig, TabIcon } from '$components/RecHeader/tab-config'
@@ -32,7 +31,7 @@ import { settings, updateSettings, updateSettingsInnerArray, useSettingsSnapshot
 import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 import { TagItemDisplay } from '../EditableListSettingItem'
 import { explainForFlag } from '../index.shared'
-import { ResetPartialSettingsButton, SettingsGroup, sharedCss } from './shared'
+import { ResetPartialSettingsButton, SettingsGroup, sharedClassNames } from './shared'
 import type { DragEndEvent } from '@dnd-kit/core'
 import type { CSSProperties } from 'react'
 
@@ -45,14 +44,8 @@ export function TabPaneRecTabsConfig() {
   }
 
   return (
-    <div css={sharedCss.tabPane}>
-      <div
-        css={css`
-          display: grid;
-          grid-template-columns: 250px 1fr;
-          column-gap: 50px;
-        `}
-      >
+    <div className={sharedClassNames.tabPane}>
+      <div className='grid grid-cols-[250px_1fr] gap-x-50px'>
         <SettingsGroup
           title={
             <>
@@ -252,19 +245,8 @@ function VideoSourceTabSortableItem({ id }: { id: ETab }) {
       key={id}
       ref={setNodeRef}
       style={style}
+      className='mt-8px h-35px flex items-center justify-between b-1px b-gate-bg-lv-2 rounded-6px b-solid pl-10px pr-6px'
       {...attributes}
-      css={css`
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        height: 35px;
-
-        padding-left: 10px;
-        padding-right: 6px;
-        border: 1px solid ${bgLv2Value};
-        border-radius: 6px;
-        margin-top: 8px;
-      `}
     >
       <Checkbox
         value={id}
@@ -286,15 +268,7 @@ function VideoSourceTabSortableItem({ id }: { id: ETab }) {
       <div
         {...listeners}
         ref={setActivatorNodeRef}
-        css={css`
-          cursor: grab;
-          font-size: 0;
-          padding: 3px 5px;
-          border-radius: 5px;
-          &:hover {
-            background-color: ${bgLv3Value};
-          }
-        `}
+        className='cursor-grab rounded-5px px-5px py-3px text-size-0 hover:bg-gate-bg-lv-3'
       >
         <IconParkOutlineDrag className='size-18px' />
       </div>

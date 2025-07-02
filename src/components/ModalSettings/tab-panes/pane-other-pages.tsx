@@ -1,11 +1,11 @@
 import { APP_NAME } from '$common'
 import { kbdClassName } from '$common/shared-classnames'
 import { CheckboxSettingItem } from '../setting-item'
-import { SettingsGroup, sharedCss } from './shared'
+import { SettingsGroup, sharedClassNames } from './shared'
 
 export function TabPaneOtherPages() {
   return (
-    <div css={sharedCss.tabPane}>
+    <div className={sharedClassNames.tabPane}>
       <SettingsGroup title='视频播放页'>
         <CheckboxSettingItem
           configPath='fav.useCustomFavPicker.onPlayPage'
