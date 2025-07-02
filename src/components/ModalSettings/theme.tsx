@@ -117,7 +117,11 @@ export function ThemesSelect() {
 
                 // wrap tooltip
                 if (t.tooltip) {
-                  el = <AntdTooltip title={t.tooltip}>{el}</AntdTooltip>
+                  el = (
+                    <AntdTooltip title={t.tooltip} color={t.colorPrimary}>
+                      {el}
+                    </AntdTooltip>
+                  )
                 }
 
                 // wrap with key

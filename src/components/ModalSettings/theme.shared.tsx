@@ -21,7 +21,6 @@ export const primaryPalatte = {
 export interface LxTheme {
   id: string
   name: string
-  isDark?: boolean
   isCustom?: boolean
   colorPrimary: string
   tooltip?: ReactNode
@@ -30,17 +29,15 @@ export interface LxTheme {
 export const DEFAULT_BILI_PINK_THEME: LxTheme = {
   id: 'default-bili-pink',
   name: 'B站粉',
-  isDark: false,
-  isCustom: false,
-  colorPrimary: '#ff6699',
+  colorPrimary: '#f69',
+  tooltip: 'B站品牌色',
 }
 
 export const COLOR_PICKER_THEME: LxTheme = {
   id: 'color-picker',
   name: '自定义',
-  isDark: false,
   isCustom: true,
-  colorPrimary: '#ff6699',
+  colorPrimary: DEFAULT_BILI_PINK_THEME.colorPrimary,
 }
 
 function toThemes(groupName: string, definitionStr: string): LxTheme[] {
@@ -93,7 +90,7 @@ export const ThemeGroups: {
     name: '预设',
     themes: [
       DEFAULT_BILI_PINK_THEME,
-      { id: 'bilibili-blue', name: 'B站蓝', colorPrimary: '#00aeec' },
+      { id: 'bilibili-blue', name: 'B站蓝', colorPrimary: '#00aeec', tooltip: 'B站品牌色' },
       { id: 'app-custom-高能红', name: '高能红', colorPrimary: '#fd453e' },
       { id: 'app-custom-咸蛋黄', name: '咸蛋黄', colorPrimary: '#ffc034' },
       { id: 'app-custom-早苗绿', name: '早苗绿', colorPrimary: '#85c255' },
