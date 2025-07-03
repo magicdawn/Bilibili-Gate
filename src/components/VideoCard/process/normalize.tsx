@@ -1,7 +1,6 @@
 import { BvCode } from '@mgdn/bvid'
 import dayjs from 'dayjs'
 import { appWarn } from '$common'
-import { primaryColorValue } from '$components/css-vars'
 import {
   isAppRecommend,
   isDynamicFeed,
@@ -28,7 +27,6 @@ import {
 } from '$define'
 import { EApiType } from '$define/index.shared'
 import { PcRecGoto } from '$define/pc-recommend'
-import { styled } from '$libs'
 import { AntdTooltip } from '$modules/antd/custom'
 import { isFavFolderPrivate } from '$modules/rec-services/fav/fav-util'
 import { IconForCollection, IconForPrivateFolder, IconForPublicFolder } from '$modules/rec-services/fav/usage-info'
@@ -467,12 +465,6 @@ function apiWatchlaterAdapter(item: WatchlaterItemExtend): IVideoCardData {
   }
 }
 
-const fillWithColorPrimary = styled.createClass`
-  & path {
-    fill: ${primaryColorValue};
-  }
-`
-
 function apiFavAdapter(item: FavItemExtend): IVideoCardData {
   const belongsToTitle = item.from === 'fav-folder' ? item.folder.title : item.collection.title
 
@@ -482,6 +474,9 @@ function apiFavAdapter(item: FavItemExtend): IVideoCardData {
     marginRight: 4,
     marginTop: -2,
   }
+
+  const fillWithColorPrimary = '[&_path]:fill-gate-primary'
+
   const iconInTitle =
     item.from === 'fav-folder' ? (
       isFavFolderPrivate(item.folder.attr) ? (
