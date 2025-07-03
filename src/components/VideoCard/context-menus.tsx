@@ -543,6 +543,7 @@ export function useContextMenus({
 
                     // 经常误操作, 点到这项, 直接移除了...
                     const confirm = await antModal.confirm({
+                      centered: true,
                       title: '移除收藏',
                       content: (
                         <>
