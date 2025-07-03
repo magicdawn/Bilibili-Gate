@@ -20,7 +20,7 @@ message.config(messageConfig)
 export function AntdStaticFunctionsSetup() {
   const h = $headerHeight.use()
   return (
-    <App component={'div'} message={{ ...messageConfig, top: h - 4 }}>
+    <App message={{ ...messageConfig, top: h - 4 }}>
       <SetupInner />
     </App>
   )

@@ -2,10 +2,9 @@ import createEmotion from '@emotion/css/create-instance'
 import { css, Global } from '@emotion/react'
 import { useHover } from 'ahooks'
 import { App } from 'antd'
-import { APP_CLS_ROOT } from '$common'
+import { APP_CLS_ROOT, APP_NAMESPACE } from '$common'
 import { useLessFrequentFn } from '$common/hooks/useLessFrequentFn'
 import { AppRoot } from '$components/AppRoot'
-import { primaryColorValue } from '$components/css-vars'
 import { openNewTab } from '$modules/gm'
 import { settings } from '$modules/settings'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
@@ -18,6 +17,17 @@ export function renderInPipWindow(newHref: string, pipWindow: Window) {
     container: cssInsertContainer,
   })
 
+  // copy related stylesheets: 主要是 uno.css
+  Array.from(document.querySelectorAll('style'))
+    .filter((s) => {
+      return s.textContent?.includes(APP_NAMESPACE)
+    })
+    .forEach((s) => {
+      const style = pipWindow.document.createElement('style')
+      style.textContent = s.textContent
+      pipWindow.document.head.appendChild(style)
+    })
+
   const container = document.createElement('div')
   container.classList.add(APP_CLS_ROOT)
   container.style.lineHeight = '0'
@@ -26,7 +36,7 @@ export function renderInPipWindow(newHref: string, pipWindow: Window) {
   const root = createRoot(container)
   root.render(
     <AppRoot emotionCache={cache} styleProviderProps={{ container: cssInsertContainer }} injectGlobalStyle>
-      <App component={false} message={{ getContainer: () => pipWindow.document.body }}>
+      <App message={{ getContainer: () => pipWindow.document.body }}>
         <PipWindowContent newHref={newHref} pipWindow={pipWindow} />
       </App>
     </AppRoot>,
@@ -56,27 +66,15 @@ export function PipWindowContent({ newHref, pipWindow }: { pipWindow: Window; ne
         ]}
       />
 
-      <iframe
-        src={newHref}
-        css={css`
-          width: 100%;
-          height: 100vh;
-          border: none;
-        `}
-      />
+      <iframe src={newHref} className='h-100vh w-full border-none' />
 
       <LockOverlay locked={locked} />
 
       <div
-        css={css`
-          position: fixed;
-          z-index: 9999;
-          right: 10px;
-          top: 10px;
-          display: ${hovering ? 'flex' : 'none'};
-          column-gap: 6px;
-          flex-direction: row-reverse;
-        `}
+        className={clsx(
+          'fixed z-9999 right-10px top-10px items-center gap-x-6px flex-row-reverse',
+          hovering ? 'flex' : 'hidden',
+        )}
       >
         <CloseThenOpenButton pipWindow={pipWindow} newHref={newHref} />
         <LockButton locked={locked} setLocked={setLocked} />
@@ -85,15 +83,7 @@ export function PipWindowContent({ newHref, pipWindow }: { pipWindow: Window; ne
   )
 }
 
-const S = {
-  button: css`
-    /* border: 1px solid ${primaryColorValue}; */
-    svg {
-      width: 14px;
-      height: 14px;
-    }
-  `,
-}
+const actionButtonExtraClassName = '[&_svg]:size-14px'
 
 function LockOverlay({ locked }: { locked: boolean }) {
   const { message } = App.useApp()
@@ -104,15 +94,8 @@ function LockOverlay({ locked }: { locked: boolean }) {
   return (
     locked && (
       <div
-        className='locked-overlay'
+        className={clsx('locked-overlay', 'fixed inset-0 z-9999 bg-transparent select-none')}
         onClick={onOverlayClick}
-        css={css`
-          position: fixed;
-          inset: 0;
-          z-index: 9999;
-          background-color: transparent;
-          user-select: none;
-        `}
       />
     )
   )
@@ -133,7 +116,7 @@ function CloseThenOpenButton({ newHref, pipWindow }: { pipWindow: Window; newHre
       icon={<IconRadixIconsOpenInNewWindow />}
       tooltip={'新窗口打开'}
       onClick={onClick}
-      css={S.button}
+      className={actionButtonExtraClassName}
     />
   )
 }
@@ -144,7 +127,7 @@ function CloseButton({ pipWindow }: { pipWindow: Window }) {
       inlinePosition={'right'}
       icon={<IconRadixIconsCross2 />}
       tooltip={'关闭'}
-      css={S.button}
+      className={actionButtonExtraClassName}
       onClick={() => {
         pipWindow.close()
       }}
@@ -164,7 +147,7 @@ function LockButton({
       inlinePosition={'right'}
       icon={locked ? <IconRadixIconsLockClosed /> : <IconRadixIconsLockOpen1 />}
       tooltip={locked ? '已锁定, 点击解锁' : '已解锁, 点击锁定'}
-      css={S.button}
+      className={actionButtonExtraClassName}
       onClick={() => setLocked((x) => !x)}
     />
   )

@@ -1,12 +1,11 @@
 /* eslint-disable require-await */
-import { css } from '@emotion/react'
 import { useRequest } from 'ahooks'
 import { Button, Empty, Input, Spin } from 'antd'
 import Emittery from 'emittery'
 import { uniqBy } from 'es-toolkit'
 import PinyinMatch from 'pinyin-match'
 import { useSnapshot } from 'valtio'
-import { kbdClassName } from '$common/shared-classnames'
+import { antSpinIndicator, kbdClassName } from '$common/shared-ui'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { antMessage } from '$modules/antd'
@@ -136,20 +135,7 @@ export function ModalMoveFav({ show, onHide, srcFavFolderId, okAction }: IProps)
       </div>
 
       <div className={clsx(BaseModalClassNames.modalBody)}>
-        <Spin
-          spinning={$updateFoldersReq.loading || $okActionReq.loading}
-          indicator={
-            <IconSvgSpinnersBarsRotateFade
-              className='text-gate-primary'
-              css={css`
-                .ant-spin .ant-spin-dot& {
-                  width: 25px;
-                  height: 25px;
-                }
-              `}
-            />
-          }
-        >
+        <Spin spinning={$updateFoldersReq.loading || $okActionReq.loading} indicator={antSpinIndicator}>
           <div className='grid grid-cols-4 mb-10px min-h-100px items-start gap-10px pr-15px'>
             {filteredFolders.length ? (
               filteredFolders.map((f) => {

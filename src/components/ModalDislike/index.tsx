@@ -1,12 +1,12 @@
 /* eslint-disable require-await */
 
-import { css } from '@emotion/react'
 import { useLockFn, useRequest, useUpdateLayoutEffect } from 'ahooks'
 import { Button, Spin } from 'antd'
 import { clsx } from 'clsx'
 import Emittery from 'emittery'
 import { useSnapshot } from 'valtio'
 import { proxyMap } from 'valtio/utils'
+import { antSpinIndicator } from '$common/shared-ui'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { IconForDislike } from '$modules/icon'
@@ -141,20 +141,7 @@ export function ModalDislike({ show, reasons, onHide, okAction }: typeof default
       </div>
 
       <div className={BaseModalClassNames.modalBody} ref={modalBodyRef}>
-        <Spin
-          spinning={okActionLoading}
-          indicator={
-            <IconSvgSpinnersBarsRotateFade
-              className='text-gate-primary'
-              css={css`
-                .ant-spin .ant-spin-dot& {
-                  width: 25px;
-                  height: 25px;
-                }
-              `}
-            />
-          }
-        >
+        <Spin spinning={okActionLoading} indicator={antSpinIndicator}>
           <div className='reason-list mb-20px mt-20px flex flex-col gap-y-10px'>
             {reasons.map((reason, index) => {
               const active = index === activeIndex

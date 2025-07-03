@@ -63,11 +63,11 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0
       es-toolkit:
-        specifier: ^1.39.5
-        version: 1.39.5
+        specifier: ^1.39.6
+        version: 1.39.6
       fast-sort-lens:
-        specifier: ^0.0.3
-        version: 0.0.3
+        specifier: ^0.0.4
+        version: 0.0.4
       framer-motion:
         specifier: ^12.23.0
         version: 12.23.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -117,8 +117,8 @@ importers:
         specifier: ^1.0.39
         version: 1.0.39
       unocss-merge:
-        specifier: ^0.4.1
-        version: 0.4.1(react@18.3.1)
+        specifier: ^0.4.3
+        version: 0.4.3(react@18.3.1)
       valtio:
         specifier: ^2.1.5
         version: 2.1.5(@types/react@18.3.18)(react@18.3.1)
@@ -2752,8 +2752,8 @@ packages:
     resolution: {integrity: sha512-FGgH2h8zKNim9ljj7dankFPcICIK9Cp5bm+c2gQSYePhpaG5+esrLODihIorn+Pe6FGJzWhXQotPv73jTaldXA==}
     engines: {node: '>= 0.4'}
 
-  es-toolkit@1.39.5:
-    resolution: {integrity: sha512-z9V0qU4lx1TBXDNFWfAASWk6RNU6c6+TJBKE+FLIg8u0XJ6Yw58Hi0yX8ftEouj6p1QARRlXLFfHbIli93BdQQ==}
+  es-toolkit@1.39.6:
+    resolution: {integrity: sha512-uiVjnLem6kkfXumlwUEWEKnwUN5QbSEB0DHy2rNJt0nkYcob5K0TXJ7oJRzhAcvx+SRmz4TahKyN5V9cly/IPA==}
 
   esbuild@0.17.19:
     resolution: {integrity: sha512-XQ0jAPFkK/u3LcVRcvVHQcTIqD6E2H1fvZMA5dQPSOWb3suUbWbfbRf94pjc0bNzRYLfIrDRQXr7X+LHIm5oHw==}
@@ -3035,8 +3035,8 @@ packages:
   fast-levenshtein@2.0.6:
     resolution: {integrity: sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==}
 
-  fast-sort-lens@0.0.3:
-    resolution: {integrity: sha512-dDPkd1RN/H3xEZ4AknP9WkO+ZNbDfh9LHEdUVm2xtAMxd3R7kOMZsjKmvAvUz7Koes7IHu4yXoOYPaRGcsX/yg==}
+  fast-sort-lens@0.0.4:
+    resolution: {integrity: sha512-uMNMBf6A7hZdlq3xJarWEg6Asn1a3SjRnt2TXyslFWW5WI5ikWTWENaUjKPqd8sv0WJZKD1uptwRw2O9zML6ZA==}
 
   fast-sort@3.4.1:
     resolution: {integrity: sha512-76uvGPsF6So53sZAqenP9UVT3p5l7cyTHkLWVCMinh41Y8NDrK1IYXJgaBMfc1gk7nJiSRZp676kddFG2Aa5+A==}
@@ -4956,10 +4956,13 @@ packages:
   unist-util-visit@5.0.0:
     resolution: {integrity: sha512-MR04uvD+07cwl/yhVuVWAtw+3GOR/knlL55Nd/wAdblk27GCVt3lqpTivy/tkJcZoNPzTwS1Y+KMojlLDhoTzg==}
 
-  unocss-merge@0.4.1:
-    resolution: {integrity: sha512-WS0nQg3ZV1khBSWuvwMqrgEX++XTBA9G4FmCBXBpnjo2E8vBBXMNtcOwJBRVcGBIkE1te8u6Y/uVOl7EXwLnSg==}
+  unocss-merge@0.4.3:
+    resolution: {integrity: sha512-fPj1rhK8/uk7dAXvKro4RtwhowP0M20mOJjL18HUgkiB7hITV7+uQfbIFiIwi6FZjr70CieZ70YCJwF+06KOHQ==}
     peerDependencies:
       react: '>=18'
+    peerDependenciesMeta:
+      react:
+        optional: true
 
   unocss@66.3.2:
     resolution: {integrity: sha512-u5FPNsjI2Ah1wGtpmteVxWe6Bja9Oggg25IeAatJCoDd1LxtLm0iHr+I0RlSq0ZwewMWzx/Qlmrw7jU0ZMO+0Q==}
@@ -6144,7 +6147,7 @@ snapshots:
   '@magicdawn/eslint-config@1.5.6(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.35.1(@typescript-eslint/parser@8.35.1(eslint@9.30.1(jiti@2.4.2))(typescript@5.8.3))(eslint@9.30.1(jiti@2.4.2))(typescript@5.8.3))(@typescript-eslint/utils@8.35.1(eslint@9.30.1(jiti@2.4.2))(typescript@5.8.3))(@unocss/eslint-plugin@66.3.2(eslint@9.30.1(jiti@2.4.2))(typescript@5.8.3))(eslint-import-resolver-node@0.3.9)(eslint@9.30.1(jiti@2.4.2))(typescript@5.8.3)':
     dependencies:
       '@sxzz/eslint-config': 7.0.4(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.35.1(@typescript-eslint/parser@8.35.1(eslint@9.30.1(jiti@2.4.2))(typescript@5.8.3))(eslint@9.30.1(jiti@2.4.2))(typescript@5.8.3))(@typescript-eslint/utils@8.35.1(eslint@9.30.1(jiti@2.4.2))(typescript@5.8.3))(@unocss/eslint-plugin@66.3.2(eslint@9.30.1(jiti@2.4.2))(typescript@5.8.3))(eslint-import-resolver-node@0.3.9)(eslint@9.30.1(jiti@2.4.2))(typescript@5.8.3)
-      es-toolkit: 1.39.5
+      es-toolkit: 1.39.6
       eslint: 9.30.1(jiti@2.4.2)
       eslint-config-prettier: 10.1.5(eslint@9.30.1(jiti@2.4.2))
       eslint-flat-config-utils: 2.1.0
@@ -7763,7 +7766,7 @@ snapshots:
     dependencies:
       es-errors: 1.3.0
 
-  es-toolkit@1.39.5: {}
+  es-toolkit@1.39.6: {}
 
   esbuild@0.17.19:
     optionalDependencies:
@@ -8187,7 +8190,7 @@ snapshots:
 
   fast-levenshtein@2.0.6: {}
 
-  fast-sort-lens@0.0.3:
+  fast-sort-lens@0.0.4:
     dependencies:
       fast-sort: 3.4.1
 
@@ -10253,8 +10256,8 @@ snapshots:
       unist-util-is: 6.0.0
       unist-util-visit-parents: 6.0.1
 
-  unocss-merge@0.4.1(react@18.3.1):
-    dependencies:
+  unocss-merge@0.4.3(react@18.3.1):
+    optionalDependencies:
       react: 18.3.1
 
   unocss@66.3.2(postcss@8.5.3)(vite@6.3.5(@types/node@24.0.10)(jiti@2.4.2)(sass-embedded@1.89.2)(sass@1.89.2)(tsx@4.19.2)(yaml@2.8.0))(vue@3.5.12(typescript@5.8.3)):

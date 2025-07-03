@@ -60,7 +60,7 @@ export function RankNumMark({ item }: { item: RankItemExtend }) {
   const { triggerRef, tooltipEl } = useTooltip({
     inlinePosition: 'left',
     tooltip,
-    tooltipOffset: 2,
+    tooltipClassName: 'left--2px',
   })
 
   const roundButtonClassName = 'flex-center size-28px rounded-full color-white relative whitespace-nowrap'

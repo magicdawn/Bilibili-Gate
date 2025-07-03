@@ -1,70 +1,36 @@
-import { css as _css, css } from '@emotion/react'
 import { useHover } from 'ahooks'
 import { AnimatePresence, motion } from 'framer-motion'
+import { unoMerge } from 'unocss-merge'
+import { useUnoMerge } from 'unocss-merge/react'
 import { setForwardedRef } from '$common/hooks/mixed-ref'
-import { primaryColorValue } from '$components/css-vars'
-import { zIndexLeftMarks, zIndexRightActions } from '../index.shared'
+import { clsZLeftMarks, clsZRightActions } from '../index.shared'
 import type { ComponentProps, ComponentRef, ReactNode } from 'react'
 
 export type InlinePosition = 'left' | 'right'
 
-const getZIndex = (inlinePosition: InlinePosition) => {
-  return {
-    left: zIndexLeftMarks,
-    right: zIndexRightActions,
-  }[inlinePosition]
+const C = {
+  top: (inlinePosition: InlinePosition) =>
+    clsx(
+      'absolute top-8px',
+      inlinePosition === 'left' ? 'left-8px' : 'right-8px',
+      inlinePosition === 'left' ? clsZLeftMarks : clsZRightActions,
+    ),
+
+  topContainer: (inlinePosition: InlinePosition) =>
+    clsx(
+      C.top(inlinePosition),
+      'flex items-center gap-x-5px',
+      inlinePosition === 'left' ? 'flex-row' : 'flex-row-reverse',
+    ),
+
+  tooltip: (inlinePosition: InlinePosition) =>
+    clsx(
+      'absolute bottom--6px pointer-events-none select-none translate-y-100% text-12px whitespace-nowrap rounded-4px line-height-18px py-4px px-8px text-white bg-gate-primary',
+      inlinePosition === 'left' ? 'left--5px' : 'right--5px',
+    ),
 }
 
-const S = {
-  top: (inlinePosition: InlinePosition) => css`
-    position: absolute;
-    top: 8px;
-    ${inlinePosition}: 8px;
-    /* transform: translateZ(0); */
-    z-index: ${getZIndex(inlinePosition)};
-  `,
-
-  topContainer: (inlinePosition: InlinePosition) => [
-    S.top(inlinePosition),
-    css`
-      display: flex;
-      align-items: center;
-      flex-direction: ${inlinePosition === 'left' ? 'row' : 'row-reverse'};
-      column-gap: 5px;
-    `,
-  ],
-
-  tooltip: (inlinePosition: InlinePosition, tooltipOffset = 5) => [
-    css`
-      position: absolute;
-      bottom: -6px;
-      pointer-events: none;
-      user-select: none;
-      transform: translateY(100%);
-      font-size: 12px;
-      white-space: nowrap;
-      border-radius: 4px;
-      line-height: 18px;
-      padding: 4px 8px;
-      color: #fff;
-      background-color: rgba(0, 0, 0, 0.8);
-      background-color: ${primaryColorValue};
-    `,
-    _css`
-      ${inlinePosition}: -${tooltipOffset}px;
-    `,
-  ],
-}
-
-export { S as VideoCardActionStyle }
-
-const buttonInnerSvgCss = css`
-  /* svg-icon */
-  svg {
-    pointer-events: none;
-    user-select: none;
-  }
-`
+export { C as VideoCardActionsClassNames }
 
 // div / motion.div props 不兼容的 key
 type InCompatibleDivProps = 'onAnimationStart' | 'onDragStart' | 'onDragEnd' | 'onDrag'
@@ -97,7 +63,7 @@ export const VideoCardActionButton = memo(
       const { triggerRef, tooltipEl } = useTooltip({ inlinePosition, tooltip })
 
       const _className = useMemo(() => {
-        return clsx(
+        return unoMerge(
           'action-button',
           'relative size-28px rounded-6px cursor-pointer bg-[rgb(33_33_33_/_0.7)] color-white',
           'b-1px b-solid',
@@ -105,6 +71,7 @@ export const VideoCardActionButton = memo(
           'hover:b-gate-primary',
           useMotion ? 'inline-flex' : visible ? 'inline-flex' : 'hidden',
           'items-center justify-center',
+          '[&_svg]:(select-none pointer-events-none)',
           className,
         )
       }, [active, className, visible, useMotion])
@@ -112,7 +79,6 @@ export const VideoCardActionButton = memo(
       const sharedProps = {
         ...divProps,
         className: _className,
-        css: buttonInnerSvgCss,
         ref: (el: HTMLDivElement) => {
           triggerRef.current = el
           setForwardedRef(forwardedRef, el)
@@ -141,16 +107,19 @@ export const VideoCardActionButton = memo(
 export function useTooltip({
   inlinePosition,
   tooltip,
-  tooltipOffset,
+  tooltipClassName,
 }: {
   inlinePosition: InlinePosition
   tooltip: ReactNode
-  tooltipOffset?: number
+  tooltipClassName?: string
 }) {
   const triggerRef = useRef<ComponentRef<'div'> | null>(null)
   const hovering = useHover(triggerRef)
   const tooltipEl = (
-    <span style={{ display: hovering ? 'block' : 'none' }} css={S.tooltip(inlinePosition, tooltipOffset)}>
+    <span
+      style={{ display: hovering ? 'block' : 'none' }}
+      className={useUnoMerge(C.tooltip(inlinePosition), tooltipClassName)}
+    >
       {tooltip}
     </span>
   )

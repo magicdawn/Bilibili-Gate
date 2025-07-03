@@ -1,11 +1,11 @@
-import { css } from '@emotion/react'
 import { useHover } from 'ahooks'
 import { limitFunction } from 'promise.map'
 import { createPortal } from 'react-dom'
+import { useUnoMerge } from 'unocss-merge/react'
 import { APP_NAMESPACE } from '$common'
 import { AppRoot } from '$components/AppRoot'
 import { useLargePreviewRelated } from '$components/LargePreview/useLargePreview'
-import { VideoCardActionStyle } from '$components/VideoCard/child-components/VideoCardActions'
+import { VideoCardActionsClassNames } from '$components/VideoCard/child-components/VideoCardActions'
 import { defaultSharedEmitter } from '$components/VideoCard/index.shared'
 import { settings } from '$modules/settings'
 import { isInIframe, setupForNoneHomepage } from './shared'
@@ -85,14 +85,7 @@ function LargePreviewSetup({ el }: { el: HTMLDivElement }) {
 
   return (
     <>
-      <div
-        css={[
-          VideoCardActionStyle.top('right'),
-          css`
-            right: ${8 + 28 + 5}px;
-          `,
-        ]}
-      >
+      <div className={useUnoMerge(VideoCardActionsClassNames.top('right'), 'right-[calc(8px+28px+5px)]')}>
         {largePreviewActionButtonEl}
       </div>
       {/* .bili-video-card__wrap 有 z-index: 1, 需要 escape */}

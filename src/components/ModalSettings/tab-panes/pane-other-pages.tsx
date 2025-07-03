@@ -1,5 +1,5 @@
 import { APP_NAME } from '$common'
-import { kbdClassName } from '$common/shared-classnames'
+import { kbdClassName } from '$common/shared-ui'
 import { CheckboxSettingItem } from '../setting-item'
 import { SettingsGroup, sharedClassNames } from './shared'
 

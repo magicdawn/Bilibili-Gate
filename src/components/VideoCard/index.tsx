@@ -1,6 +1,7 @@
 import { css } from '@emotion/react'
 import { useLockFn } from 'ahooks'
 import { Dropdown } from 'antd'
+import { useUnoMerge } from 'unocss-merge/react'
 import { APP_CLS_CARD, APP_CLS_CARD_ACTIVE, APP_CLS_CARD_COVER, APP_CLS_ROOT, APP_KEY_PREFIX, appWarn } from '$common'
 import { zIndexVideoCardContextMenu } from '$common/css-vars-export.module.scss'
 import { useEmitterOn } from '$common/hooks/useEmitter'
@@ -40,7 +41,7 @@ import { useLargePreviewRelated } from '../LargePreview/useLargePreview'
 import { multiSelectedCss, useBlockedCardCss } from './card-border-css'
 import { BlacklistCard, DislikedCard, SkeletonCard } from './child-components/other-type-cards'
 import { SimpleProgressBar } from './child-components/PreviewImage'
-import { VideoCardActionStyle } from './child-components/VideoCardActions'
+import { VideoCardActionsClassNames } from './child-components/VideoCardActions'
 import { VideoCardBottom } from './child-components/VideoCardBottom'
 import { useContextMenus } from './context-menus'
 import {
@@ -621,9 +622,11 @@ const VideoCardInner = memo(function VideoCardInner({
       {/* left-marks */}
       {hasTopLeftMarks && (
         <div
-          className='left-top-marks'
-          css={VideoCardActionStyle.topContainer('left')}
-          style={{ columnGap: multiSelecting ? 10 : undefined }}
+          className={useUnoMerge(
+            'left-top-marks',
+            VideoCardActionsClassNames.topContainer('left'),
+            multiSelecting ? 'gap-x-10px' : undefined,
+          )}
         >
           {topLeftMarksEl}
         </div>
@@ -631,7 +634,7 @@ const VideoCardInner = memo(function VideoCardInner({
 
       {/* right-actions */}
       {hasTopRightActions && (
-        <div className='right-actions' css={VideoCardActionStyle.topContainer('right')}>
+        <div className={clsx('right-actions', VideoCardActionsClassNames.topContainer('right'))}>
           {topRightActionsEl}
         </div>
       )}
