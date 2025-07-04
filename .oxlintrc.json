@@ -1,7 +1,10 @@
 {
+  "plugins": ["typescript", "unicorn", "oxc", "react"],
   "rules": {
     "no-unused-vars": "off",
     "react/jsx-no-undef": "off",
-    "react/jsx-no-target-blank": "off"
+    "react/jsx-no-target-blank": "off",
+    "react/exhaustive-deps": "off",
+    "react/rules-of-hooks": "error"
   }
 }

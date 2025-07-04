@@ -509,6 +509,11 @@ const VideoCardInner = memo(function VideoCardInner({
 
   const hasTopLeftMarks = !isEmptyFragment(topLeftMarksEl)
   const hasTopRightActions = !isEmptyFragment(topRightActionsEl)
+  const clsTopLeftMarksContainer = useUnoMerge(
+    'left-top-marks',
+    VideoCardActionsClassNames.topContainer('left'),
+    multiSelecting ? 'gap-x-10px' : undefined,
+  )
 
   const watchlaterProgressBar =
     isWatchlater(item) && item.progress > 0 ? (
@@ -620,17 +625,7 @@ const VideoCardInner = memo(function VideoCardInner({
       {multiSelectBgEl}
 
       {/* left-marks */}
-      {hasTopLeftMarks && (
-        <div
-          className={useUnoMerge(
-            'left-top-marks',
-            VideoCardActionsClassNames.topContainer('left'),
-            multiSelecting ? 'gap-x-10px' : undefined,
-          )}
-        >
-          {topLeftMarksEl}
-        </div>
-      )}
+      {hasTopLeftMarks && <div className={clsTopLeftMarksContainer}>{topLeftMarksEl}</div>}
 
       {/* right-actions */}
       {hasTopRightActions && (

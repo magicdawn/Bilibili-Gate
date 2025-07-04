@@ -33,7 +33,7 @@ export function concatThenUniq(existing: RecItemTypeOrSeparator[], newItems: Rec
   return uniqBy([...existing, ...newItems], recItemUniqer)
 }
 
-const usePcApi = (tab: ETab): tab is ETab.PcRecommend | ETab.KeepFollowOnly =>
+const willUsePcApi = (tab: ETab): tab is ETab.PcRecommend | ETab.KeepFollowOnly =>
   tab === ETab.PcRecommend || tab === ETab.KeepFollowOnly
 
 async function fetchMinCount(count: number, fetcherOptions: FetcherOptions, filterMultiplier = 5) {
@@ -70,7 +70,7 @@ async function fetchMinCount(count: number, fetcherOptions: FetcherOptions, filt
       debug('getMinCount: addMore(restCount = %s) times=%s', restCount, times)
     } else {
       // 常规
-      const pagesize = usePcApi(tab) ? PcRecService.PAGE_SIZE : AppRecService.PAGE_SIZE
+      const pagesize = willUsePcApi(tab) ? PcRecService.PAGE_SIZE : AppRecService.PAGE_SIZE
 
       const multipler = anyFilterEnabled(tab)
         ? filterMultiplier // 过滤, 需要大基数
@@ -87,7 +87,7 @@ async function fetchMinCount(count: number, fetcherOptions: FetcherOptions, filt
       )
     }
 
-    if (usePcApi(tab)) {
+    if (willUsePcApi(tab)) {
       const service = getServiceFromRegistry(servicesRegistry, tab)
       cur = (await service.loadMoreBatch(times, abortSignal)) || []
       hasMore = service.hasMore

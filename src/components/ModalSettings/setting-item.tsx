@@ -1,3 +1,5 @@
+/* oxlint-disable react/rules-of-hooks */
+
 import { Button, Checkbox, Switch } from 'antd'
 import { get, set } from 'es-toolkit/compat'
 import { AntdTooltip } from '$modules/antd/custom'
