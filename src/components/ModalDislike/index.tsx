@@ -152,7 +152,7 @@ export function ModalDislike({ show, reasons, onHide, okAction }: typeof default
                   className={clsx(
                     'reason',
                     { active },
-                    'relative flex items-center py-12px rounded-6px b-2px b-solid',
+                    'relative flex items-center b-2px rounded-6px b-solid py-12px',
                     active ? 'b-gate-primary' : 'b-gate-border',
                   )}
                   disabled={okActionLoading}

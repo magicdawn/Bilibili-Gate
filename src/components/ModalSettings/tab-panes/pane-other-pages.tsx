@@ -18,7 +18,7 @@ export function TabPaneOtherPages() {
                 <li>
                   <span className='flex-v-center'>
                     支持从收藏夹图标 或 快捷键
-                    <kbd className={clsx(kbdClassName, 'mx-1 h-14px line-height-14px py-0')}>e</kbd>
+                    <kbd className={clsx(kbdClassName, 'mx-1 h-14px py-0 line-height-14px')}>e</kbd>
                     触发
                   </span>
                 </li>

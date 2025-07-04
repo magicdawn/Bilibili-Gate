@@ -145,7 +145,7 @@ export function TabPaneAdvance() {
             >
               <IconParkOutlineDownC
                 className={clsx(
-                  'size-16px transition-transform transition-300',
+                  'size-16px transition-300 transition-transform',
                   internalKeysExpanded ? 'rotate-180' : 'rotate-0',
                 )}
               />

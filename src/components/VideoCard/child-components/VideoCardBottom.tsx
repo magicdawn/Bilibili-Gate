@@ -175,7 +175,7 @@ export const VideoCardBottom = memo(function ({
     <div
       className={clsx(
         !displayingAsList ? 'pt-15px' : 'pt-5px',
-        'px-5px flex gap-x-5px overflow-hidden',
+        'flex gap-x-5px overflow-hidden px-5px',
         useBorder ? 'mb-10px' : 'mb-5px',
         className,
       )}
@@ -186,7 +186,7 @@ export const VideoCardBottom = memo(function ({
           href={authorHref}
           target={target}
           className={clsx(
-            'self-start flex-center rounded-full relative p-1px ring-1px',
+            'relative flex-center self-start rounded-full p-1px ring-1px',
             streaming ? 'ring-gate-primary' : 'ring-gate-border',
           )}
         >

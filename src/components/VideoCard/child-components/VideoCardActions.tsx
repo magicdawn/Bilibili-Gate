@@ -25,7 +25,7 @@ const C = {
 
   tooltip: (inlinePosition: InlinePosition) =>
     clsx(
-      'absolute bottom--6px pointer-events-none select-none translate-y-100% text-12px whitespace-nowrap rounded-4px line-height-18px py-4px px-8px text-white bg-gate-primary',
+      'pointer-events-none absolute bottom--6px translate-y-100% select-none whitespace-nowrap rounded-4px bg-gate-primary px-8px py-4px text-12px text-white line-height-18px',
       inlinePosition === 'left' ? 'left--5px' : 'right--5px',
     ),
 }

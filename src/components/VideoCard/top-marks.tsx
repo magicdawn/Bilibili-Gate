@@ -22,9 +22,9 @@ export function ChargeOnlyTag() {
   return (
     <div
       className={clsx(
-        'rounded-2px ml-4px',
+        'ml-4px rounded-2px',
         'flex-center py-1px pl-4px pr-6px',
-        'bg-gate-primary color-white text-center text-size-10px line-height-[17px] whitespace-nowrap',
+        'whitespace-nowrap bg-gate-primary text-center text-size-10px color-white line-height-[17px]',
       )}
     >
       <svg width='16' height='17' viewBox='0 0 16 17' fill='none' xmlns='http://www.w3.org/2000/svg'>
@@ -63,7 +63,7 @@ export function RankNumMark({ item }: { item: RankItemExtend }) {
     tooltipClassName: 'left--2px',
   })
 
-  const roundButtonClassName = 'flex-center size-28px rounded-full color-white relative whitespace-nowrap'
+  const roundButtonClassName = 'relative size-28px flex-center whitespace-nowrap rounded-full color-white'
   const roundButtonStyle: CSSProperties = useMemo(
     () => ({ backgroundColor: getColor(item.rankingNo) }),
     [item.rankingNo],
@@ -116,7 +116,7 @@ export function SomeBadge({ icon, label, className }: { icon?: ReactNode; label?
   return (
     <span
       className={clsx(
-        'h-16px line-height-16px rounded-8px pl-4px pr-6px bg-gate-primary inline-flex items-center justify-center',
+        'h-16px inline-flex items-center justify-center rounded-8px bg-gate-primary pl-4px pr-6px line-height-16px',
         className,
       )}
     >

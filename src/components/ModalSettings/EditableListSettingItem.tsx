@@ -81,9 +81,9 @@ export function EditableListSettingItem({
         {list.length ? (
           <div
             className={clsx(
-              'flex flex-wrap items-start gap-y-5px gap-x-10px',
+              'flex flex-wrap items-start gap-x-10px gap-y-5px',
               'py-5px pl-5px pr-10px',
-              'overflow-y-auto max-h-250px',
+              'max-h-250px overflow-y-auto',
             )}
           >
             {list.map((t) => {
@@ -121,7 +121,7 @@ export const TagItemDisplay = forwardRef<HTMLDivElement, TagItemDisplayProps>(
       <div
         ref={ref}
         className={clsx(
-          'b-1px b-solid b-gate-border rounded-5px relative inline-flex items-center px-6px py-2px hover:(b-gate-primary color-gate-primary)',
+          'relative inline-flex items-center b-1px b-gate-border rounded-5px b-solid px-6px py-2px hover:(b-gate-primary color-gate-primary)',
           className,
         )}
         {...restProps}

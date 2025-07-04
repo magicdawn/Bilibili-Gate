@@ -72,7 +72,7 @@ export function PipWindowContent({ newHref, pipWindow }: { pipWindow: Window; ne
 
       <div
         className={clsx(
-          'fixed z-9999 right-10px top-10px items-center gap-x-6px flex-row-reverse',
+          'fixed right-10px top-10px z-9999 flex-row-reverse items-center gap-x-6px',
           hovering ? 'flex' : 'hidden',
         )}
       >
@@ -94,7 +94,7 @@ function LockOverlay({ locked }: { locked: boolean }) {
   return (
     locked && (
       <div
-        className={clsx('locked-overlay', 'fixed inset-0 z-9999 bg-transparent select-none')}
+        className={clsx('locked-overlay', 'fixed inset-0 z-9999 select-none bg-transparent')}
         onClick={onOverlayClick}
       />
     )

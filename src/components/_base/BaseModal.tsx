@@ -5,16 +5,16 @@ import { APP_CLS_ROOT, APP_NAMESPACE } from '$common'
 import type { ComponentProps, MouseEvent } from 'react'
 
 export const BaseModalClassNames = {
-  modalMask: 'fixed inset-0 bg-black/50 z-gate-base-modal flex items-center justify-center',
+  modalMask: 'fixed inset-0 z-gate-base-modal flex items-center justify-center bg-black/50',
   modal: [
     'w-500px max-h-[calc(90vh-50px)]',
     'rounded-10px b-1px b-transparent b-solid dark:b-gate-border',
     'bg-gate-bg text-gate-text',
     'px-15px pb-15px  flex flex-col overflow-hidden',
   ].join(' '),
-  modalHeader: 'py-10px border-b-0 flex items-center justify-between',
-  modalTitle: 'text-[1.5rem] mb-0 line-height-1.5 flex items-center',
-  modalBody: 'pt-0 flex-grow-1 overflow-y-auto',
+  modalHeader: 'flex items-center justify-between border-b-0 py-10px',
+  modalTitle: 'mb-0 flex items-center text-[1.5rem] line-height-1.5',
+  modalBody: 'flex-grow-1 overflow-y-auto pt-0',
 } as const
 
 type BaseModalProps = {

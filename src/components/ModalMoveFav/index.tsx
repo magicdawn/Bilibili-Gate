@@ -147,7 +147,7 @@ export function ModalMoveFav({ show, onHide, srcFavFolderId, okAction }: IProps)
                     data-id={f.id}
                     className={clsx(
                       { active },
-                      'relative flex items-center py-12px rounded-6px bg-transparent cursor-pointer b-2px b-solid',
+                      'relative flex cursor-pointer items-center b-2px rounded-6px b-solid bg-transparent py-12px',
                       active ? 'b-gate-primary' : 'b-gate-border',
                     )}
                     disabled={disabled}

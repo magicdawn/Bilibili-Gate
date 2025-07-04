@@ -133,7 +133,7 @@ export const RecHeader = forwardRef<
             data-raw-class='area-header'
             className={clsx(
               APP_CLS_TAB_BAR,
-              'relative flex flex-row items-center justify-between gap-x-15px h-auto px-0 py-8px mb-0',
+              'relative mb-0 h-auto flex flex-row items-center justify-between gap-x-15px px-0 py-8px',
             )}
           >
             <div

@@ -29,7 +29,7 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
 
   const modalBorderCls = useMemo(() => {
     const borderWidth = useFullScreen ? 'b-5px' : 'b-1px'
-    return clsx(borderWidth, 'b-solid b-gate-primary')
+    return clsx(borderWidth, 'b-gate-primary b-solid')
   }, [useFullScreen])
 
   const onScrollToTop = useMemoizedFn(() => {
@@ -48,7 +48,7 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
     const { refreshing, onRefresh, extraInfo } = headerState
     return (
       <OnRefreshContext.Provider value={onRefresh}>
-        <div className={clsx(BaseModalClassNames.modalHeader, 'pr-15px gap-x-15px')}>
+        <div className={clsx(BaseModalClassNames.modalHeader, 'gap-x-15px pr-15px')}>
           <div className='left flex flex-shrink-1 flex-wrap items-center gap-x-15px gap-y-4px'>
             <VideoSourceTab onRefresh={onRefresh} />
             {extraInfo}
@@ -70,9 +70,9 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
   const clsModalMask = clsx({ ['bg-black/90%']: useNarrowMode })
 
   // pr-0 滚动条右移
-  const clsBase = 'w-[calc(100vw-30px)] h-[calc(100vh-30px)] max-h-unset pr-0'
-  const clsNarrow = 'w-[calc(325*2+40px)] h-[calc(100vh-10px)]'
-  const clsFullScreen = 'w-full h-full'
+  const clsBase = 'h-[calc(100vh-30px)] max-h-unset w-[calc(100vw-30px)] pr-0'
+  const clsNarrow = 'h-[calc(100vh-10px)] w-[calc(325*2+40px)]'
+  const clsFullScreen = 'h-full w-full'
   const clsModal = clsx(clsBase, { [clsNarrow]: useNarrowMode, [clsFullScreen]: useFullScreen }, modalBorderCls)
 
   return (

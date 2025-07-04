@@ -136,7 +136,7 @@ export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
   }, [folders, collections])
   const [scopeDropdownOpen, setScopeDropdownOpen] = useState(false)
 
-  const dropdownButtonClassName = 'size-15px relative top-[-0.5px]'
+  const dropdownButtonClassName = 'relative top-[-0.5px] size-15px'
   const dropdownButtonIcon = selectedFavFolder ? (
     isFavFolderPrivate(selectedFavFolder.attr) ? (
       <IconForPrivateFolder className={dropdownButtonClassName} />

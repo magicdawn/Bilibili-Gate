@@ -65,7 +65,7 @@ export function ThemesSelect() {
                     data-role='preview-wrapper'
                     style={{ width: outerSize }}
                     className={clsx(
-                      'aspect-1 b-solid b-2px rounded-full my-0 mx-auto',
+                      'mx-auto my-0 aspect-1 b-2px rounded-full b-solid',
                       isActive ? 'b-gate-primary' : 'b-transparent',
                       'flex items-center justify-center text-size-0',
                     )}
