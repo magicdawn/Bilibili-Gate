@@ -2,7 +2,6 @@
  * 推荐内容, 无限滚动
  */
 
-import { css } from '@emotion/react'
 import { useEventListener, useLatest, usePrevious, useUnmountedRef } from 'ahooks'
 import { Divider } from 'antd'
 import Emittery from 'emittery'
@@ -14,6 +13,7 @@ import { useSnapshot } from 'valtio'
 import { APP_CLS_GRID, baseDebug } from '$common'
 import { useEmitterOn } from '$common/hooks/useEmitter'
 import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
+import { clsGateVideoGridDivider } from '$common/shared.module.scss'
 import { useModalDislikeVisible } from '$components/ModalDislike'
 import { useModalMoveFavVisible } from '$components/ModalMoveFav'
 import { useCurrentUsingTab, useSortedTabKeys } from '$components/RecHeader/tab'
@@ -476,24 +476,7 @@ const RecGridInner = memo(function ({
   const renderItem = (item: RecItemTypeOrSeparator) => {
     if (item.api === EApiType.Separator) {
       return (
-        <Divider
-          key={item.uniqId}
-          className='grid-col-span-full'
-          css={css`
-            .ant-divider-inner-text {
-              display: inline-flex;
-              align-items: center;
-              min-height: 30px;
-              a {
-                color: var(--ant-color-link);
-                &:hover {
-                  color: var(--ant-color-primary);
-                }
-              }
-            }
-          `}
-          orientation='left'
-        >
+        <Divider key={item.uniqId} className={clsx('grid-col-span-full', clsGateVideoGridDivider)} orientation='left'>
           {item.content}
         </Divider>
       )

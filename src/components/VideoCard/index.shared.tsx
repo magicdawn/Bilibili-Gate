@@ -163,14 +163,8 @@ export function useIsDisplayAsList() {
 }
 
 // video-card 内部 z-index
-export const zIndexWatchlaterProgressBar = 2
-export const zIndexPreviewImageWrapper = 3
-export const zIndexMultiSelectBg = 4
-export const zIndexLeftMarks = 5 // top-left Marks
-export const zIndexRightActions = 6 // top-right Actions
-
 export const clsZWatchlaterProgressBar = 'z-2'
 export const clsZPreviewImageWrapper = 'z-3'
 export const clsZMultiSelectBg = 'z-4'
-export const clsZLeftMarks = 'z-5'
-export const clsZRightActions = 'z-6'
+export const clsZLeftMarks = 'z-5' // top-left Marks
+export const clsZRightActions = 'z-6' // top-right Actions

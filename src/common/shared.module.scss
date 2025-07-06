@@ -1,0 +1,15 @@
+.cls-gate-video-grid-divider {
+  :global {
+    .ant-divider-inner-text {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      a {
+        color: var(--ant-color-link);
+        &:hover {
+          color: var(--ant-color-primary);
+        }
+      }
+    }
+  }
+}

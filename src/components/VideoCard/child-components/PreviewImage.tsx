@@ -8,7 +8,6 @@ import type { ComponentProps, ComponentPropsWithoutRef, ComponentRef } from 'rea
  * see https://github.com/magicdawn/bilibili-gate/issues/112
  * useMouse 使用的是 document.addEventListener, 不用它响应 mousemove 事件
  */
-
 const clsPreviewImageWrapper = clsx(
   'pointer-events-none absolute inset-0 overflow-hidden',
   clsZPreviewImageWrapper,

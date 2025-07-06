@@ -1,4 +1,3 @@
-import { css } from '@emotion/react'
 import { cloneElement, type ReactElement, type ReactNode } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
 import {
@@ -53,15 +52,8 @@ export const TabConfig: Record<ETab, TabConfigItem> = {
   },
   [ETab.Watchlater]: {
     icon: (
-      <IconForWatchlater
-        className='size-17px'
-        css={css`
-          /* circle 使用的是 fill, 在 tab 中显示太细了 */
-          .circle {
-            stroke: currentColor;
-          }
-        `}
-      />
+      // circle 使用的是 fill, 在 tab 中显示太细了
+      <IconForWatchlater className='size-17px [&_.circle]:stroke-current' />
     ),
     label: '稍后再看',
     desc: '你添加的稍后再看; 默认随机乱序, 可在设置中关闭乱序',

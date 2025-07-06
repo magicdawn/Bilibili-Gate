@@ -2,7 +2,6 @@ import { closestCenter, DndContext, PointerSensor, useSensor, useSensors } from 
 import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { css } from '@emotion/react'
 import { Checkbox, Collapse, Empty, Radio, Space } from 'antd'
 import { useSnapshot } from 'valtio'
 import { HelpInfo } from '$components/_base/HelpInfo'
@@ -250,14 +249,7 @@ function VideoSourceTabSortableItem({ id }: { id: ETab }) {
     >
       <Checkbox
         value={id}
-        className='inline-flex items-center'
-        css={css`
-          .ant-checkbox + span {
-            user-select: none;
-            display: inline-flex;
-            align-items: center;
-          }
-        `}
+        className='inline-flex items-center [&_.ant-checkbox+span]:(inline-flex select-none items-center)'
       >
         <TabIcon tabKey={id} className='mr-5px' />
         <AntdTooltip align={{ offset: [0, -6] }} title={desc}>

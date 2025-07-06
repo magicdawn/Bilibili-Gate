@@ -1,9 +1,7 @@
-import { css } from '@emotion/react'
 import { useUnoMerge } from 'unocss-merge/react'
 import { proxy, useSnapshot } from 'valtio'
 import { APP_NAME, APP_NAMESPACE } from '$common'
 import { AppRoot } from '$components/AppRoot'
-import { primaryColorValue } from '$components/css-vars'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconForDynamicFeed, IconForSpaceUpload } from '$modules/icon'
 import { DynamicFeedQueryKey } from '$modules/rec-services/dynamic-feed/store'
@@ -122,14 +120,7 @@ function ActionButtons() {
   const { mid, collectionId, followed, isSearching, searchKeyword } = useSnapshot(state)
   if (!mid) return
 
-  const btnClassName = 'w-34px rounded-full'
-  const btnCss = css`
-    border-color: rgb(255 255 255 / 33%);
-    &:hover {
-      border-color: ${primaryColorValue};
-      background-color: ${primaryColorValue};
-    }
-  `
+  const btnClassName = 'w-34px b-white/33% rounded-full hover:(b-gate-primary bg-gate-primary)'
 
   // 投稿
   let btnSpaceUpload: ReactNode
@@ -142,7 +133,6 @@ function ActionButtons() {
       <ActionButton
         key='btnSpaceUpload'
         className={btnClassName}
-        css={btnCss}
         href={href}
         tooltip={`在「${APP_NAME}」中查看 UP 的投稿`}
       >
@@ -159,7 +149,6 @@ function ActionButtons() {
       <ActionButton
         key='btnDynamicFeed'
         className={btnClassName}
-        css={btnCss}
         href={href}
         tooltip={`在「${APP_NAME}」中查看 UP 的动态`}
       >
@@ -175,7 +164,6 @@ function ActionButtons() {
       <ActionButton
         key='btnViewCollection'
         className={btnClassName}
-        css={btnCss}
         href={`https://www.bilibili.com/?${FavQueryKey.CollectionIdFull}=${collectionId}`}
         target='_blank'
         tooltip={`在「${APP_NAME}」中查看合集`}
@@ -203,30 +191,12 @@ function ActionButton({
   ...restProps
 }: ComponentProps<'a'> & { tooltip?: ReactNode }) {
   const { usingNewSpacePage } = useSnapshot(state)
-  const _className = useUnoMerge('w-150px rounded-6px', className)
+  const _className = useUnoMerge(
+    'w-150px rounded-6px cursor-pointer flex items-center justify-center h-34px text-14px font-700 color-white transition-property-all transition-duration-300 b-1px b-solid b-white/20% bg-white/14% hover:bg-white/40%',
+    className,
+  )
   const btn = usingNewSpacePage ? (
-    <a
-      href={href}
-      className={_className}
-      style={style}
-      {...restProps}
-      css={css`
-        cursor: pointer;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 34px;
-        font-size: 14px;
-        font-weight: 700;
-        color: var(--text_white);
-        transition: all 0.3s;
-        border: 1px solid rgb(255 255 255 / 20%);
-        background-color: rgb(255 255 255 / 14%);
-        &:hover {
-          background-color: rgb(255 255 255 / 40%);
-        }
-      `}
-    >
+    <a {...restProps} href={href} className={_className} style={style}>
       {children}
     </a>
   ) : (

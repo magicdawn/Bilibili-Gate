@@ -1,4 +1,3 @@
-import { css } from '@emotion/react'
 import { Button } from 'antd'
 import { useAnimate } from 'framer-motion'
 import { useSnapshot } from 'valtio'
@@ -72,15 +71,10 @@ export const RefreshButton = forwardRef<RefreshButtonActions, RefreshButtonProps
 
   return (
     <Button
-      disabled={refreshing}
-      className={clsx(className, 'flex items-center gap-x-4px')}
-      style={style}
-      css={css`
-        &.ant-btn:not(:disabled):focus-visible {
-          outline: none;
-        }
-      `}
       ref={btn}
+      style={style}
+      className={clsx('flex items-center gap-x-4px [&.ant-btn:not(:disabled):focus-visible]:outline-0', className)}
+      disabled={refreshing}
       onClick={onClick}
     >
       <IconForRoll ref={scope} className='size-14px' />

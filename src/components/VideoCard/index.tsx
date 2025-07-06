@@ -45,11 +45,11 @@ import { VideoCardActionsClassNames } from './child-components/VideoCardActions'
 import { VideoCardBottom } from './child-components/VideoCardBottom'
 import { useContextMenus } from './context-menus'
 import {
+  clsZWatchlaterProgressBar,
   defaultEmitter,
   defaultSharedEmitter,
   displayAsListCss,
   isDisplayAsList,
-  zIndexWatchlaterProgressBar,
 } from './index.shared'
 import { normalizeCardData } from './process/normalize'
 import { fetchImagePreviewData, isImagePreviewDataValid } from './services'
@@ -519,10 +519,7 @@ const VideoCardInner = memo(function VideoCardInner({
     isWatchlater(item) && item.progress > 0 ? (
       <SimpleProgressBar
         progress={item.progress / item.duration}
-        css={css`
-          z-index: ${zIndexWatchlaterProgressBar};
-          height: 3px;
-        `}
+        className={clsx('h-3px', clsZWatchlaterProgressBar)}
       />
     ) : undefined
 

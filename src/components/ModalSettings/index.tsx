@@ -57,6 +57,20 @@ export function ModalSettingsHotkey() {
   return null
 }
 
+const customTabsCss = css`
+  &.ant-tabs {
+    .ant-tabs-tab {
+      justify-content: end;
+      padding-inline: 5px 15px; /* 8 24 */
+    }
+
+    /* https://github.com/ant-design/ant-design/issues/43541 */
+    .ant-tabs-nav-operations {
+      display: none;
+    }
+  }
+`
+
 export function ModalSettings({ show, onHide }: { show: boolean; onHide: () => void }) {
   const { tab } = useSnapshot(modalSettingsStore)
 
@@ -82,21 +96,7 @@ export function ModalSettings({ show, onHide }: { show: boolean; onHide: () => v
         <Tabs
           tabPosition='left'
           size='middle'
-          css={css`
-            &.ant-tabs {
-              .ant-tabs-tab {
-                justify-content: end;
-                /* 8 24 */
-                padding-inline: 5px 15px;
-                /* --ant-tabs-vertical-item-margin: 10px 0 0 0; */
-              }
-
-              /* https://github.com/ant-design/ant-design/issues/43541 */
-              .ant-tabs-nav-operations {
-                display: none;
-              }
-            }
-          `}
+          css={customTabsCss}
           activeKey={tab}
           onChange={(tab) => (modalSettingsStore.tab = tab as TabPaneKey)}
           items={[

@@ -1,5 +1,5 @@
 import { multiSelectStore } from '$modules/multi-select/store'
-import { zIndexMultiSelectBg } from '../index.shared'
+import { clsZMultiSelectBg } from '../index.shared'
 import type { SyntheticEvent } from 'react'
 
 export const IconForMultiSelectUnchecked = IconLucideCircle
@@ -27,8 +27,7 @@ export function useMultiSelectRelated({
   const multiSelectBgEl = multiSelecting && (
     <div
       onClick={toggleMultiSelect}
-      className='absolute inset-0 flex items-center justify-center bg-black/10'
-      style={{ zIndex: zIndexMultiSelectBg }}
+      className={clsx('absolute inset-0 flex items-center justify-center bg-black/10', clsZMultiSelectBg)}
     />
   )
 
