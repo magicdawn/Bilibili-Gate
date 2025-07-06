@@ -1,4 +1,3 @@
-import { css } from '@emotion/react'
 import { Input } from 'antd'
 import { useSnapshot } from 'valtio'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
@@ -8,22 +7,6 @@ import { GenericOrderSwitcher } from '../_shared/generic-order-switcher'
 import { SpaceUploadOrderConfig } from './api'
 import { SpaceUploadQueryKey, spaceUploadStore } from './store'
 import type { SpaceUploadOrder } from './api'
-
-const fixAntdInputSearchAddonCss = css`
-  .ant-input-group-addon {
-    button {
-      vertical-align: top;
-      &:not(:first-child) {
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
-      }
-      &:not(:last-child) {
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
-      }
-    }
-  }
-`
 
 export function SpaceUploadUsageInfo() {
   const { searchText, filterText, allowedOrders, usingOrder } = useSnapshot(spaceUploadStore, { sync: true })

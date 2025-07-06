@@ -1,3 +1,7 @@
+//
+// 修改此文件注意同步修改 uno.config.ts shortcuts
+//
+
 @use 'sass:string';
 
 $app-name: bilibili-gate;
@@ -12,7 +16,6 @@ $app-cls-dark-selector: 'html.#{$app-cls-dark}';
 $bili-pink: #ff6699;
 
 // app general
-// NOTE: uno.config.ts use these variables
 $app-primary-color-id: --#{$app-name}--primary-color;
 $app-border-color-id: --#{$app-name}--border-color;
 $app-text-color-id: --#{$app-name}--text-color;

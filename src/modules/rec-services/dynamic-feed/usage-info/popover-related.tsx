@@ -1,4 +1,3 @@
-import { css } from '@emotion/react'
 import { useRequest } from 'ahooks'
 import { Badge, Button, Checkbox, Input, Popover, Radio } from 'antd'
 import { delay, throttle } from 'es-toolkit'
@@ -249,12 +248,7 @@ function PopoverContent({
         <div className={classes.sectionTilte}>最短时长</div>
         <div>
           <Radio.Group
-            css={css`
-              overflow: hidden;
-              .ant-radio-button-wrapper {
-                padding-inline: 10px; // 原始 15px
-              }
-            `}
+            className='overflow-hidden [&_.ant-radio-button-wrapper]:px-10px' // 原始 15px
             buttonStyle='solid'
             value={filterMinDuration}
             onChange={async (v) => {
@@ -474,16 +468,7 @@ function FollowGroupActions({ followGroup, onRefresh }: { followGroup: FollowGro
           title={
             <>
               <FollowGroupMechanismNote />
-              {disabled && (
-                <p
-                  css={css`
-                    color: oklch(from ${primaryColorValue} calc(1 - l) calc(c + 0.1) h);
-                    font-style: italic;
-                  `}
-                >
-                  当前分组 UP 数量: {midCount}, 无需设置
-                </p>
-              )}
+              {disabled && <p className='text-yellow-400 italic'>当前分组 UP 数量: {midCount}, 无需设置</p>}
             </>
           }
         >

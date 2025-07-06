@@ -1,28 +1,19 @@
-import { css } from '@emotion/react'
 import { minmax } from '$utility/num'
 import type { PvideoData } from '$define'
-import { videoCardBorderRadiusValue } from '../../css-vars'
-import { zIndexPreviewImageWrapper } from '../index.shared'
+import { clsZPreviewImageWrapper } from '../index.shared'
 import type { ComponentProps, ComponentPropsWithoutRef, ComponentRef } from 'react'
 
-const S = {
-  previewImageWrapper: css`
-    position: absolute;
-    inset: 0;
-    z-index: ${zIndexPreviewImageWrapper};
-    overflow: hidden;
+/**
+ * 关于 `pointer-events: none`
+ * see https://github.com/magicdawn/bilibili-gate/issues/112
+ * useMouse 使用的是 document.addEventListener, 不用它响应 mousemove 事件
+ */
 
-    /* see https://github.com/magicdawn/bilibili-gate/issues/112 */
-    /* useMouse 使用的是 document.addEventListener, 不用它响应 mousemove 事件 */
-    pointer-events: none;
-
-    // 配合进度条, 底部不需要圆角
-    border-top-left-radius: ${videoCardBorderRadiusValue};
-    border-top-right-radius: ${videoCardBorderRadiusValue};
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-  `,
-}
+const clsPreviewImageWrapper = clsx(
+  'pointer-events-none absolute inset-0 overflow-hidden',
+  clsZPreviewImageWrapper,
+  'rounded-b-none rounded-t-gate-video-card', // 配合进度条, 底部不需要圆角
+)
 
 /**
  * previewProgress 代表进度条进度
@@ -42,7 +33,7 @@ export type PreviewImageRef = {
 
 export const PreviewImage = memo(
   forwardRef<PreviewImageRef, IProps & ComponentPropsWithoutRef<'div'>>(function (
-    { videoDuration, pvideo, progress, t, ...restProps },
+    { videoDuration, pvideo, progress, t, className, ...restProps },
     ref,
   ) {
     const rootElRef = useRef<ComponentRef<'div'>>(null)
@@ -83,7 +74,7 @@ export const PreviewImage = memo(
     }
 
     return (
-      <div {...restProps} ref={rootElRef} css={S.previewImageWrapper}>
+      <div {...restProps} ref={rootElRef} className={clsx(clsPreviewImageWrapper, className)}>
         {!!(pvideo && size.width && size.height && usingProgress) && <PreviewImageInner {...innerProps} />}
       </div>
     )

@@ -63,6 +63,9 @@ export default defineConfig({
       'gate-video-card-context-menu': 'var(--bilibili-gate--z-video-card-context-menu)',
       'gate-toast': 'var(--bilibili-gate--z-toast)',
     },
+    borderRadius: {
+      'gate-video-card': 'var(--bilibili-gate--video-card--border-radius)',
+    },
   },
 
   shortcuts: {

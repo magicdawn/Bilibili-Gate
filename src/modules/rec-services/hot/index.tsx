@@ -1,4 +1,3 @@
-import { css } from '@emotion/react'
 import { Button, Dropdown, Space } from 'antd'
 import { useSnapshot } from 'valtio'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
@@ -32,11 +31,6 @@ export function isHotTabUsingShuffle(shuffleForPopularWeekly?: boolean) {
 }
 
 const imgOf = (src: string) => <img src={src} alt='' className='size-18px' />
-const groupedButtonCss = css`
-  .ant-btn-icon {
-    line-height: 0;
-  }
-`
 
 const HotSubTabConfig = {
   [EHotSubTab.PopularGeneral]: {
@@ -156,7 +150,7 @@ function HotUsageInfo({ children }: { children?: ReactNode }) {
               key={subtab}
             >
               <Button
-                css={groupedButtonCss}
+                className='[&_.ant-btn-icon]:line-height-0'
                 icon={icon}
                 variant={active ? 'solid' : 'outlined'}
                 color={active ? 'primary' : 'default'}

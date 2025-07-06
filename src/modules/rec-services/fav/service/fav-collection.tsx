@@ -14,7 +14,7 @@ import { FavItemsOrderSwitcher } from '../usage-info/fav-items-order'
 import type { IFavInnerService } from '../index'
 import type { FavItemExtend } from '../types'
 import type { FavCollectionDetailInfo, FavCollectionDetailMedia } from '../types/collections/collection-detail'
-import { FAV_PAGE_SIZE, favSeparatorCss } from './_base'
+import { clsFavSeparator, FAV_PAGE_SIZE } from './_base'
 
 export class FavCollectionService implements IFavInnerService {
   constructor(
@@ -145,13 +145,13 @@ export function FavCollectionSeparator({ service }: { service: FavCollectionServ
           </>
         }
       >
-        <CustomTargetLink href={formatFavCollectionUrl(service.collectionId)} css={favSeparatorCss.item}>
+        <CustomTargetLink href={formatFavCollectionUrl(service.collectionId)} className={clsFavSeparator}>
           <IconForOpenExternalLink className='size-16px' />
           {info?.title}
         </CustomTargetLink>
       </AntdTooltip>
       {firstBvid && (
-        <CustomTargetLink href={formatBvidUrl(firstBvid)} css={favSeparatorCss.item}>
+        <CustomTargetLink href={formatBvidUrl(firstBvid)} className={clsFavSeparator}>
           <IconForPlayer className='size-16px' />
           播放全部
         </CustomTargetLink>

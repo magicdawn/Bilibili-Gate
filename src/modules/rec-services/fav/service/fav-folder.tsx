@@ -17,17 +17,17 @@ import type { IFavInnerService } from '../index'
 import type { FavItemExtend } from '../types'
 import type { FavFolder } from '../types/folders/list-all-folders'
 import type { FavFolderDetailInfo, ResourceListJSON } from '../types/folders/list-folder-items'
-import { FAV_PAGE_SIZE, favSeparatorCss } from './_base'
+import { clsFavSeparator, FAV_PAGE_SIZE } from './_base'
 import type { SetNonNullable } from 'type-fest'
 
 export function FavFolderSeparator({ service }: { service: FavFolderBasicService }) {
   return (
     <>
-      <CustomTargetLink href={formatFavFolderUrl(service.entry.id, service.entry.attr)} css={favSeparatorCss.item}>
+      <CustomTargetLink href={formatFavFolderUrl(service.entry.id, service.entry.attr)} className={clsFavSeparator}>
         <IconForOpenExternalLink className='size-16px' />
         {service.entry.title}
       </CustomTargetLink>
-      <CustomTargetLink href={formatFavPlaylistUrl(service.entry.id)} css={favSeparatorCss.item}>
+      <CustomTargetLink href={formatFavPlaylistUrl(service.entry.id)} className={clsFavSeparator}>
         <IconForPlayer className='size-16px' />
         播放全部
       </CustomTargetLink>
