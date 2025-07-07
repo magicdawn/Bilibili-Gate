@@ -45,10 +45,10 @@ export function MultiSelectButton({
       <Popover
         styles={{ body: { border: `1px solid ${popoverBorderColor}` } }}
         content={
-          <div className='max-w-280px'>
+          <div className='max-w-288px'>
             <div className='flex flex-wrap items-center gap-x-15px gap-y-2px'>
               <Button className='inline-flex items-center' onClick={() => multiSelectStore.selectedIdSet.clear()}>
-                <IconMaterialSymbolsDeleteOutlineRounded className='size-16px' />
+                <IconMaterialSymbolsDeleteOutlineRounded className='size-18px' />
                 清空
               </Button>
               <Button
@@ -73,6 +73,7 @@ export function MultiSelectButton({
                 <IconIcOutlineSwapHoriz className='size-18px' />
                 反选
               </Button>
+
               <div className='flex-basis-100%' />
 
               <Button
