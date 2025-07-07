@@ -1,6 +1,6 @@
 import { InputNumber, Tag } from 'antd'
 import { isNil } from 'es-toolkit'
-import { HelpInfo } from '$components/_base/HelpInfo'
+import { HelpInfo, TOOLTIP_BLACK_BG_COLOR } from '$components/_base/HelpInfo'
 import { CheckboxSettingItem, SwitchSettingItem } from '$components/ModalSettings/setting-item'
 import { IconForInfo } from '$modules/icon'
 import { settings, useSettingsSnapshot } from '$modules/settings'
@@ -27,7 +27,7 @@ export function TabPaneFilter() {
   ): Partial<ComponentProps<typeof CheckboxSettingItem>> => {
     return {
       label: '「已关注」豁免',
-      tooltipProps: { color: 'rgba(0, 0, 0, 0.85)' },
+      tooltipProps: { color: TOOLTIP_BLACK_BG_COLOR },
       tooltip: (
         <>
           「已关注」内容不考虑过滤条件, 总是展示

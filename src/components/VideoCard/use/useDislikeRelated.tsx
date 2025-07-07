@@ -4,7 +4,7 @@
 
 import { useLockFn } from 'ahooks'
 import { OPERATION_FAIL_MSG } from '$common'
-import { dislikedIds, pickDislikeReason, type Reason } from '$components/ModalDislike'
+import { dislikedIds, pickDislikeReason, type DislikeReason } from '$components/ModalDislike'
 import { isAppRecommend, type RecItemType } from '$define'
 import { EApiType } from '$define/index.shared'
 import { antMessage } from '$modules/antd'
@@ -53,7 +53,7 @@ export function useDislikeRelated({
     await pickDislikeReason(item.three_point?.dislike_reasons || [], handleConfirmDislike)
   })
 
-  const handleConfirmDislike = useLockFn(async (reason: Reason) => {
+  const handleConfirmDislike = useLockFn(async (reason: DislikeReason) => {
     if (!isAppRecommend(item)) return
 
     let success = false

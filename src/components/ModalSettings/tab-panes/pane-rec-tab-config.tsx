@@ -249,7 +249,7 @@ function VideoSourceTabSortableItem({ id }: { id: ETab }) {
     >
       <Checkbox
         value={id}
-        className='inline-flex items-center [&_.ant-checkbox+span]:(inline-flex select-none items-center)'
+        className='inline-flex items-center [&_.ant-checkbox-label]:(inline-flex select-none items-center)'
       >
         <TabIcon tabKey={id} className='mr-5px' />
         <AntdTooltip align={{ offset: [0, -6] }} title={desc}>

@@ -148,9 +148,7 @@ export function TabPaneBasic() {
         <Space size={20}>
           <div className='flex-v-center'>
             默认打开模式
-            <HelpInfo
-              tooltipProps={{ color: 'rgba(0, 0, 0, 0.85)' }} // 默认使用 colorPrimary, 链接可能看不清
-            >
+            <HelpInfo useBlackBg>
               选择点击视频(封面图片 或 标题)时打开的模式 <br />
               {openModeOptions.map(({ value, config }) => {
                 return (

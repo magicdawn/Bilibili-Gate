@@ -41,10 +41,7 @@ export function ThemesSelect() {
           <Fragment key={name}>
             <div className='mt-2 flex items-center text-size-1.5em'>
               {name}
-              <HelpInfo
-                className='size-16px'
-                tooltipProps={{ color: 'rgba(0, 0, 0, 0.85)' }} // 默认使用 colorPrimary, 链接可能看不清
-              >
+              <HelpInfo className='size-16px' useBlackBg>
                 {tooltip}
               </HelpInfo>
             </div>

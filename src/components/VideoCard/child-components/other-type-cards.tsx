@@ -5,7 +5,7 @@ import { antMessage } from '$modules/antd'
 import { UserBlacklistService } from '$modules/bilibili/me/relations/blacklist'
 import { IconForBlacklist, IconForReset } from '$modules/icon'
 import { toastRequestFail } from '$utility/toast'
-import type { Reason } from '$components/ModalDislike'
+import type { DislikeReason } from '$components/ModalDislike'
 import type { AppRecItemExtend, RecItemType } from '$define'
 import { videoCardBorderRadiusValue } from '../../css-vars'
 import { defaultEmitter } from '../index.shared'
@@ -47,7 +47,7 @@ const blockedCardClassNames = {
   action: 'relative flex-1',
   actionInner:
     'absolute left-0 top-0 h-full w-full flex items-center justify-center b-t-1px b-t-[var(--bilibili-gate-separator-color)] b-t-solid transition-duration-300 transition-property-[border-color]',
-  actionInnerButton: 'flex items-center text-16px color-inherit',
+  actionButton: 'flex items-center p-15px text-16px color-inherit',
 }
 
 export const DislikedCard = memo(function DislikedCard({
@@ -58,7 +58,7 @@ export const DislikedCard = memo(function DislikedCard({
 }: {
   item: AppRecItemExtend
   cardData: IVideoCardData
-  dislikedReason: Reason
+  dislikedReason: DislikeReason
   emitter?: VideoCardEmitter
 }) {
   const onCancelDislike = useMemoizedFn(async () => {
@@ -115,7 +115,7 @@ function __BottomRevertAction({
       {/* 需要它撑起高度 */}
       <VideoCardBottom item={item} cardData={cardData} className='invisible' />
       <div className={blockedCardClassNames.actionInner}>
-        <button onClick={onClick}>
+        <button className={blockedCardClassNames.actionButton} onClick={onClick}>
           <IconForReset className='mr-4px mt--2px size-16px' />
           撤销
         </button>

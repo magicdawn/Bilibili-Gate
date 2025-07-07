@@ -15,16 +15,15 @@ import { shouldDisableShortcut } from '$utility/dom'
 import { wrapComponent } from '$utility/global-component'
 import type { MouseEvent } from 'react'
 
-export type Reason = { id: number; name: string; toast: string }
+export type DislikeReason = { id: number; name: string; toast: string }
 
-export const dislikedIds = proxyMap<string, Reason>()
+export const dislikedIds = proxyMap<string, DislikeReason>()
 export function useDislikedIds() {
   return useSnapshot(dislikedIds)
 }
-export function useDislikedReason(id?: string | false) {
+export function useDislikedReason(id: string | undefined) {
   const map = useDislikedIds()
-  if (!id) return undefined
-  return map.get(id)
+  return id ? map.get(id) : undefined
 }
 export function delDislikeId(id: string) {
   dislikedIds.delete(id)
@@ -34,11 +33,11 @@ export function delDislikeId(id: string) {
 // A: okAction 表示 Modal Ok 后的动作
 //    okAction 可能失败, 这样的情况不希望关闭 modal, 有重试的机会; 使用 promise 处理 onAction fail 的情况串起来会比较复杂
 //    boolean 表示 okAction success, success 后关闭 modal
-export type OkAction = (reason: Reason) => boolean | undefined | void | Promise<boolean | undefined | void>
+export type OkAction = (reason: DislikeReason) => boolean | undefined | void | Promise<boolean | undefined | void>
 
 const defaultProps = {
   show: false,
-  reasons: [] as Reason[],
+  reasons: [] as DislikeReason[],
   onHide,
   okAction: undefined as OkAction | undefined,
 }
@@ -56,7 +55,7 @@ function onHide() {
   updateProps({ show: false, reasons: [], okAction: undefined })
 }
 
-export async function pickDislikeReason(reasons: Reason[], okAction: OkAction) {
+export async function pickDislikeReason(reasons: DislikeReason[], okAction: OkAction) {
   updateProps({ show: true, reasons, okAction })
   await emitter.once('modal-close')
 }
@@ -69,7 +68,7 @@ export function ModalDislike({ show, reasons, onHide, okAction }: typeof default
   const modalBodyRef = useRef<HTMLDivElement>(null)
   const keyPressEnabled = () => !!show && !!reasons?.length
 
-  const $req = useRequest(async (reason: Reason) => okAction?.(reason), { manual: true })
+  const $req = useRequest(async (reason: DislikeReason) => okAction?.(reason), { manual: true })
   const okActionLoading = $req.loading
 
   const [activeIndex, setActiveIndex] = useState(reasons.length - 1)
@@ -177,14 +176,11 @@ export function ModalDislike({ show, reasons, onHide, okAction }: typeof default
         </Spin>
       </div>
 
-      <div className='mt-2 flex items-center justify-between'>
-        <div className='flex-v-center gap-x-10px'></div>
-        <div className='flex-v-center gap-x-10px'>
-          <Button onClick={onHide}>取消</Button>
-          <Button type='primary' onClick={onOk} loading={okActionLoading}>
-            确定
-          </Button>
-        </div>
+      <div className='mt-2 flex items-center justify-end gap-x-10px'>
+        <Button onClick={onHide}>取消</Button>
+        <Button type='primary' onClick={onOk} loading={okActionLoading}>
+          确定
+        </Button>
       </div>
     </BaseModal>
   )

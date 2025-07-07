@@ -104,7 +104,7 @@ export const VideoCard = memo(function VideoCard({
   // `false`  => when item provided
   loading = loading ?? !item
 
-  const dislikedReason = useDislikedReason(item?.api === EApiType.AppRecommend && item.param)
+  const dislikedReason = useDislikedReason(item?.api === EApiType.AppRecommend ? item.param : undefined)
   const cardData = useMemo(() => item && normalizeCardData(item), [item])
 
   // state

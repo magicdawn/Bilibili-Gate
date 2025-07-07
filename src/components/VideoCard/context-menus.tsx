@@ -183,6 +183,14 @@ export function useContextMenus({
   const hasUnfollowEntry = followed
   const onUnfollowUp = useMemoizedFn(async () => {
     if (!authorMid) return
+
+    const confirm = await antModal.confirm({
+      centered: true,
+      title: '取消关注',
+      content: <>确定取消关注「{authorName}」?</>,
+    })
+    if (!confirm) return
+
     const success = await UserfollowService.unfollow(authorMid)
     if (success) {
       antMessage.success('已取消关注')

@@ -4,24 +4,26 @@ import type { ComponentType, ReactNode } from 'react'
 
 const DefaultIconComponent = IconParkOutlineTips
 
+export const TOOLTIP_BLACK_BG_COLOR = 'rgb(0 0 0 / 0.85)'
+
 export function HelpInfo({
   children,
   tooltipProps,
   IconComponent,
   className,
+  useBlackBg,
   ...restSvgProps
 }: {
   children?: ReactNode // tooltip content
   tooltipProps?: Partial<ComponentProps<typeof AntdTooltip>>
   IconComponent?: ComponentType<ComponentProps<'svg'>>
+  useBlackBg?: boolean // 默认使用 colorPrimary, 链接可能看不清
 } & ComponentProps<'svg'>) {
   IconComponent ??= DefaultIconComponent
-  const _className = useUnoMerge('cursor-pointer size-16px ml-4px', className)
-  const icon = <IconComponent {...restSvgProps} className={_className} />
-
+  const icon = <IconComponent {...restSvgProps} className={useUnoMerge('cursor-pointer size-16px ml-4px', className)} />
   return (
     !!children && (
-      <AntdTooltip {...tooltipProps} title={children}>
+      <AntdTooltip color={useBlackBg ? TOOLTIP_BLACK_BG_COLOR : undefined} {...tooltipProps} title={children}>
         {icon}
       </AntdTooltip>
     )
