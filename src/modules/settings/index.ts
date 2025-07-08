@@ -4,7 +4,6 @@ import { proxy, snapshot, subscribe, useSnapshot } from 'valtio'
 import { baseDebug, IN_BILIBILI_HOMEPAGE } from '$common'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { ECardDisplay, VideoLinkOpenMode } from '$components/VideoCard/index.shared'
-import { EAppApiDevice } from '$define/index.shared'
 import { reciveGmValueUpdatesFromOtherTab } from '$modules/gm'
 import { WatchlaterItemsOrder } from '$modules/rec-services/watchlater/watchlater-enum'
 import { getLeafPaths, type BooleanPaths, type LeafPaths, type ListPaths } from '$utility/object-paths'
@@ -34,7 +33,6 @@ export const initialSettings = {
    * tab = app-recommend
    */
   appRecommend: {
-    deviceParamForApi: EAppApiDevice.ipad,
     addOtherTabContents: false, // this flag will results MUCH more requests
   },
 
@@ -399,10 +397,6 @@ export function runSettingsMigration(val: object | undefined) {
     ['style.videoCard.useBorder', 'styleUseCardBorder'],
     ['style.videoCard.useBorderOnlyOnHover', 'styleUseCardBorderOnlyOnHover'],
     ['style.videoCard.useBoxShadow', 'styleUseCardBoxShadow'],
-
-    // 2024-12-17
-    ['appRecommend.deviceParamForApi', 'appApiDecice'],
-
     // 2025-04-23
     ['pipWindow.defaultLocked', 'pipWindowDefaultLocked'],
   ]

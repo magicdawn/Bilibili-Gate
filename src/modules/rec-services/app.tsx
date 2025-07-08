@@ -5,7 +5,7 @@ import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { useOnRefreshContext, type OnRefresh } from '$components/RecGrid/useRefresh'
 import { getFollowedStatus } from '$components/VideoCard/process/filter'
 import { isAppRecommend, type AppRecItem, type AppRecItemExtend, type RecItemType } from '$define'
-import { EApiType, EAppApiDevice } from '$define/index.shared'
+import { EApiType } from '$define/index.shared'
 import { getVideoDetail } from '$modules/bilibili/video/video-detail'
 import { getSettingsSnapshot } from '$modules/settings'
 import { gmrequest } from '$request'
@@ -24,14 +24,7 @@ type AppRecServiceConfig = ReturnType<typeof getAppRecServiceConfig>
 
 export function getAppRecServiceConfig() {
   const snap = getSettingsSnapshot().appRecommend
-
-  let deviceParamForApi: EAppApiDevice = snap.deviceParamForApi
-  if (!Object.values(EAppApiDevice).includes(deviceParamForApi)) {
-    deviceParamForApi = EAppApiDevice.ipad
-  }
-
   return {
-    deviceParamForApi,
     addOtherTabContents: snap.addOtherTabContents,
   }
 }
@@ -69,7 +62,7 @@ export class AppRecService extends BaseTabService<RecItemType> {
   otherTabServices: IService[] = []
   constructor(public config: AppRecServiceConfig) {
     super(AppRecService.PAGE_SIZE)
-    this.innerService = new AppRecInnerService(this.config.deviceParamForApi)
+    this.innerService = new AppRecInnerService()
     this.allServices = [this.innerService]
     this.initOtherTabServices()
   }
@@ -156,28 +149,17 @@ export class AppRecService extends BaseTabService<RecItemType> {
 class AppRecInnerService implements IService {
   // 无法指定, 16 根据返回得到
   static PAGE_SIZE = 16
-
-  constructor(public deviceParamForApi: EAppApiDevice) {}
-
   hasMore = true
 
-  private async getRecommend(device: EAppApiDevice) {
-    let platformParams: Record<string, string | number> = {}
-    if (device === EAppApiDevice.android) {
-      platformParams = { mobi_app: 'android' }
-    }
-    if (device === EAppApiDevice.ipad) {
-      // has avatar, date, etc. see BewlyBewly's usage
-      platformParams = { mobi_app: 'iphone', device: 'pad' }
-    }
-
+  private async getRecommend() {
     // /x/feed/index
     const res = await gmrequest.get(`${HOST_APP}/x/v2/feed/index`, {
       timeout: 20_000,
       responseType: 'json',
       params: {
         build: '1',
-        ...platformParams,
+        mobi_app: 'iphone',
+        device: 'pad',
         // idx: 返回的 items.idx 为传入 idx+1, idx+2, ...
         idx: Math.floor(Date.now() / 1000) + randomInt(1000),
       },
@@ -205,9 +187,7 @@ class AppRecInnerService implements IService {
 
   // 一次不够, 多来几次
   async getRecommendTimes(abortSignal: AbortSignal, times: number) {
-    let list: AppRecItem[] = (
-      await Promise.all(range(times).map(() => this.getRecommend(this.deviceParamForApi)))
-    ).flat()
+    let list: AppRecItem[] = (await Promise.all(range(times).map(() => this.getRecommend()))).flat()
 
     // rm ad & unsupported card_type
     list = list.filter((item) => {
@@ -236,7 +216,6 @@ class AppRecInnerService implements IService {
         ...item,
         api: EApiType.AppRecommend,
         uniqId: `${EApiType.AppRecommend}-${item.param}`,
-        device: this.deviceParamForApi as any, // android | ipad
       } satisfies AppRecItemExtend
     })
 
@@ -250,12 +229,7 @@ class AppRecInnerService implements IService {
 export async function fetchAppRecommendFollowedPubDate(item: RecItemType, cardData: IVideoCardData) {
   const { bvid, goto, recommendReason } = cardData
   const isNormalVideo = goto === 'av'
-  const shouldFetch =
-    isAppRecommend(item) &&
-    item.device === EAppApiDevice.ipad &&
-    isNormalVideo &&
-    !!bvid &&
-    getFollowedStatus(recommendReason)
+  const shouldFetch = isAppRecommend(item) && isNormalVideo && !!bvid && getFollowedStatus(recommendReason)
   if (!shouldFetch) return
 
   const detail = await getVideoDetail(bvid)

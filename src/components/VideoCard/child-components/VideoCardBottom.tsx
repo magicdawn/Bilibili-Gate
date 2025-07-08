@@ -9,8 +9,8 @@ import { Avatar } from 'antd'
 import dayjs from 'dayjs'
 import { useSnapshot } from 'valtio'
 import { APP_CLS_CARD_RECOMMEND_REASON } from '$common'
-import { isAppRecommend, isLive, isPcRecommend, isRank, type RecItemType } from '$define'
-import { EApiType, EAppApiDevice } from '$define/index.shared'
+import { isLive, isPcRecommend, isRank, type RecItemType } from '$define'
+import { EApiType } from '$define/index.shared'
 import { PcRecGoto } from '$define/pc-recommend'
 import { IconForLive } from '$modules/icon'
 import { fetchAppRecommendFollowedPubDate } from '$modules/rec-services/app'
@@ -160,15 +160,6 @@ export const VideoCardBottom = memo(function ({
   }, [isNormalVideo, authorName, pubts, pubtsFromApi, pubdateDisplay, pubdateDisplayForTitleAttr])
 
   /**
-   * https://github.com/magicdawn/bilibili-gate/issues/110
-   */
-  const ENABLE_HIDE_AVATAR = false
-  let hideAvatar = false
-  if (ENABLE_HIDE_AVATAR && isAppRecommend(item) && item.device === EAppApiDevice.android) {
-    hideAvatar = true
-  }
-
-  /**
    * 带头像, 更分散(recommend-reason 单独一行)
    */
   return (
@@ -181,7 +172,7 @@ export const VideoCardBottom = memo(function ({
       )}
     >
       {/* avatar */}
-      {!!authorMid && !hideAvatar && (
+      {!!authorMid && (
         <a
           href={authorHref}
           target={target}

@@ -12,7 +12,6 @@ import {
   isRank,
   isSpaceUpload,
   isWatchlater,
-  type AndroidAppRecItemExtend,
   type AppRecItemExtend,
   type DynamicFeedItemExtend,
   type IpadAppRecItemExtend,
@@ -36,7 +35,7 @@ import { spaceUploadAvatarCache } from '$modules/rec-services/space-upload'
 import { toHttps } from '$utility/url'
 import { formatDuration, formatTimeStamp, getVideoInvalidReason, parseCount, parseDuration } from '$utility/video'
 import type { FavItemExtend } from '$modules/rec-services/fav/types'
-import { AppRecStatItemFieldMap, defineStatItems, getField } from '../stat-item'
+import { defineStatItems } from '../stat-item'
 import type { StatItemField, StatItemType } from '../stat-item'
 import type { ReactNode } from 'react'
 
@@ -140,100 +139,9 @@ export function normalizeCardData(item: RecItemType) {
 }
 
 function apiAppAdapter(item: AppRecItemExtend): IVideoCardData {
-  return item.device === 'android' ? apiAndroidAppAdapter(item) : apiIpadAppAdapter(item)
+  return apiIpadAppAdapter(item)
 }
 
-function apiAndroidAppAdapter(item: AndroidAppRecItemExtend): IVideoCardData {
-  const extractCountFor = (target: StatItemField) => {
-    const { cover_left_icon_1, cover_left_text_1, cover_left_icon_2, cover_left_text_2 } = item
-    if (cover_left_icon_1 && AppRecStatItemFieldMap[cover_left_icon_1] === target) {
-      return parseCount(cover_left_text_1)
-    }
-    if (cover_left_icon_2 && AppRecStatItemFieldMap[cover_left_icon_2] === target) {
-      return parseCount(cover_left_text_2)
-    }
-  }
-
-  const avid = item.param
-  const bvid = BvCode.av2bv(Number(item.param))
-  const cid = item.player_args?.cid
-
-  const href = (() => {
-    // valid uri
-    if (item.uri.startsWith('http://') || item.uri.startsWith('https://')) {
-      return item.uri
-    }
-
-    // more see https://github.com/magicdawn/bilibili-gate/issues/23#issuecomment-1533079590
-
-    if (item.goto === 'av') {
-      return `/video/${bvid}/`
-    }
-
-    if (item.goto === 'bangumi') {
-      appWarn(`bangumi uri should not starts with 'bilibili://': %s`, item.uri)
-      return item.uri
-    }
-
-    // goto = picture, 可能是专栏 or 动态
-    // 动态的 url 是 https://t.bilibili.com, 使用 uri
-    // 专栏的 url 是 bilibili://article/<id>
-    if (item.goto === 'picture') {
-      const id = /^bilibili:\/\/article\/(\d+)$/.exec(item.uri)?.[1]
-      if (id) return `/read/cv${id}`
-      return item.uri
-    }
-
-    return item.uri
-  })()
-
-  return {
-    // video
-    avid,
-    bvid,
-    cid,
-    goto: item.goto,
-    href,
-    title: item.title,
-    cover: item.cover,
-    pubts: undefined,
-    pubdateDisplay: undefined,
-    duration: item.player_args?.duration || 0,
-    durationStr: formatDuration(item.player_args?.duration),
-    recommendReason: item.rcmd_reason,
-
-    // stat
-    play: extractCountFor('play'),
-    danmaku: extractCountFor('danmaku'),
-    bangumiFollow: extractCountFor('bangumi:follow'),
-    like: undefined,
-    coin: undefined,
-    favorite: undefined,
-
-    // e.g 2023-09-17
-    // cover_left_1_content_description: "156点赞"
-    // cover_left_icon_1: 20
-    // cover_left_text_1: "156"
-    statItems: [
-      item.cover_left_text_1 && {
-        field: getField(item.cover_left_icon_1),
-        value: item.cover_left_text_1,
-      },
-      item.cover_left_text_2 && {
-        field: getField(item.cover_left_icon_2),
-        value: item.cover_left_text_2,
-      },
-    ].filter(Boolean),
-
-    // author
-    authorName: item.args.up_name,
-    authorFace: undefined,
-    authorMid: String(item.args.up_id!),
-
-    appBadge: item.badge,
-    appBadgeDesc: item.desc_button?.text || item.desc || '',
-  }
-}
 function apiIpadAppAdapter(item: IpadAppRecItemExtend): IVideoCardData {
   const extractCountFor = (target: StatItemField) => {
     const { cover_left_text_1, cover_left_text_2, cover_left_text_3 } = item

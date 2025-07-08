@@ -2,14 +2,13 @@ import { closestCenter, DndContext, PointerSensor, useSensor, useSensors } from 
 import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { Checkbox, Collapse, Empty, Radio, Space } from 'antd'
+import { Checkbox, Collapse, Empty, Space } from 'antd'
 import { useSnapshot } from 'valtio'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { useSortedTabKeys } from '$components/RecHeader/tab'
 import { TabConfig, TabIcon } from '$components/RecHeader/tab-config'
 import { CONFIGURABLE_TAB_KEYS, ETab } from '$components/RecHeader/tab-enum'
-import { EAppApiDevice } from '$define/index.shared'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
 import { getUserNickname } from '$modules/bilibili/user/nickname'
@@ -151,22 +150,6 @@ export function TabPaneRecTabsConfig() {
               App 推荐
             </div>
             <div className='flex flex-col gap-y-5px'>
-              <div className='flex items-center'>
-                App API 设备类型
-                <HelpInfo className='ml-5px mr-10px'>
-                  默认 ipad, 视频有 头像/日期 等信息
-                  <br />
-                  可选 android, 有图文类型的推荐
-                </HelpInfo>
-                <Radio.Group
-                  optionType='button'
-                  buttonStyle='solid'
-                  size='small'
-                  options={[EAppApiDevice.ipad, EAppApiDevice.android]}
-                  value={appRecommend.deviceParamForApi}
-                  onChange={(e) => void (settings.appRecommend.deviceParamForApi = e.target.value)}
-                />
-              </div>
               <div className='flex items-center'>{appRecShowContentFromOtherTabEl()}</div>
             </div>
           </div>

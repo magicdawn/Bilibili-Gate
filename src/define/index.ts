@@ -5,10 +5,8 @@ import type { SpaceUploadItem } from '$modules/rec-services/space-upload/types/s
 import type { FavItemExtend } from '../modules/rec-services/fav/types'
 import type { WatchlaterItem } from '../modules/rec-services/watchlater/types'
 import { EApiType } from './index.shared'
-import type { android } from './app-recommend.android'
 import type { ipad } from './app-recommend.ipad'
 import type { DmJson } from './dm'
-import type { EAppApiDevice } from './index.shared'
 import type { DynamicFeedItem } from './pc-dynamic-feed'
 import type { PcRecItem } from './pc-recommend'
 import type { PopularGeneralItem } from './popular-general'
@@ -27,27 +25,14 @@ export type { SpaceUploadItem, SpaceUploadJson } from '$modules/rec-services/spa
 /**
  * app
  */
-
-// export { AppRecItem, AppRecommendJson } from './app-recommend.android'
-
-export type AndroidAppRecItem = android.AppRecItem
 export type IpadAppRecItem = ipad.AppRecItem
-
-export interface AndroidAppRecItemExtend extends AndroidAppRecItem {
-  uniqId: string
-  api: EApiType.AppRecommend
-  device: EAppApiDevice.android
-}
-
 export interface IpadAppRecItemExtend extends ipad.AppRecItem {
   uniqId: string
   api: EApiType.AppRecommend
-  device: EAppApiDevice.ipad
 }
-
-export type AppRecItem = AndroidAppRecItem | IpadAppRecItem
-export type AppRecItemExtend = AndroidAppRecItemExtend | IpadAppRecItemExtend
-export type AppRecommendJson = android.AppRecommendJson | ipad.AppRecommendJson
+export type AppRecItem = IpadAppRecItem
+export type AppRecItemExtend = IpadAppRecItemExtend
+export type AppRecommendJson = ipad.AppRecommendJson
 
 export type RecItemTypeOrSeparator = RecItemType | ItemsSeparator
 
@@ -57,7 +42,6 @@ export type ItemsSeparator = { uniqId: string; api: EApiType.Separator; content:
  * ItemExtend
  */
 export type RecItemType =
-  | AndroidAppRecItemExtend
   | IpadAppRecItemExtend
   | PcRecItemExtend
   | DynamicFeedItemExtend
