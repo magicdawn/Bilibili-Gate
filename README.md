@@ -20,18 +20,19 @@
 
 - [x] App 推荐: 将手机 App 推荐内容搬到桌面
 - [x] App 推荐: 我不想看, 用于推荐系统反馈
-- [x] 推荐视频过滤: 支持按视频属性(播放量 / 时长 / 标题) / 按 UP 过滤推荐视频
-- [x] 动态: 支持分组查看动态, 支持搜索过滤动态, 支持过滤「全部」动态, 支持缓存全部动态本地快速搜索
+- [x] 视频过滤: 支持按视频属性(播放量 / 时长 / 标题) / 按 UP 过滤推荐视频
+- [x] 视频预览: 支持浮动预览视频; 使用画中画窗口预览 / 观看视频
+- [x] 动态: 分组动态; 动态搜索词过滤; 过滤「全部」动态; 支持缓存全部动态本地快速搜索等
 - [x] 一站式体验, 方便快捷的访问: 动态 / 稍后再看 / 收藏 / 热门等内容
-- [x] 随机的乐趣: 稍后再看, 收藏, 每周必看等支持随机顺序
+- [x] 随机: 稍后再看, 收藏, 每周必看等支持随机顺序
 - [x] 主题设置: 预设主题 + color-picker 自定义
-- [x] Bilibili-Evolved 适配: 夜间模式 / 自定义顶栏 / 主题色
+- [x] Bilibili-Evolved 适配: 深色模式 / 自定义顶栏 / 主题色
 - [x] 完善的键盘支持
-- [x] IINA
+- [x] macOS IINA 支持
 
 ## 链接
 
-- 源代码 https://github.com/magicdawn/bilibili-gate 如果对你有用,请来个 Star :)
+- 源代码 https://github.com/magicdawn/bilibili-gate 如果对你有用,请在 GitHub 点个 Star :)
 - 从 GitHub 安装
   - [Release](https://github.com/magicdawn/bilibili-gate/raw/release/bilibili-gate.user.js) (GreasyFork 版本自动同步源)
   - [Release 最小化版本](https://github.com/magicdawn/bilibili-gate/raw/release/bilibili-gate.mini.user.js)
@@ -65,7 +66,7 @@ bilibili-app-recommend 用户可以通过文件导出全部设置迁移到 Bilib
 ### 与 [Bilibili-Evolved](https://github.com/the1812/Bilibili-Evolved) 的兼容性
 
 - ❌ 首页相关 (如清爽首页 / 极简首页)
-- ✅ 夜间模式
+- ✅ 深色模式
 - ✅ 自定义顶栏
 - ✅ [自定义字体](https://github.com/the1812/Bilibili-Evolved/discussions/4846)
 
@@ -73,11 +74,6 @@ bilibili-app-recommend 用户可以通过文件导出全部设置迁移到 Bilib
 
 - ❌ 不兼容, 检测到 BewlyBewly 后, 本脚本会自动退出.
 - 使用特殊的地址强制启用本脚本 https://www.bilibili.com/#/bilibili-gate/
-
-### 你可能不需要这个脚本 :)
-
-- B 站桌面端已上线, 支持 macOS / Windows, 首页推荐流
-- B 站内测首页也是推荐流
 
 ## 介绍
 
@@ -174,15 +170,15 @@ _\* 截图均为不带 access_key 匿名获取, 不代表作者喜好_
 
 ![image](https://github.com/magicdawn/bilibili-gate/assets/4067115/75516f49-43e0-4827-aa4c-3216b7f51374)
 ![image](https://github.com/magicdawn/bilibili-gate/assets/4067115/f113f8bd-56bb-4482-a54d-2dbcd3e429c1)
-
 ![image](https://github.com/magicdawn/bilibili-gate/assets/4067115/9674e212-9ff9-4d97-a2fd-46561d762b65)
 
 - 仅 APP 推荐 Tab, 获取 access_key 后可用
 
-#### 夜间模式兼容
+#### 深色模式兼容
 
-- 方案1: 使用 [Bilibili-Evolved](https://github.com/the1812/Bilibili-Evolved) 提供的深色模式切换, 这个脚本适配了 Evolved 的夜间模式.
-- 方案2: 使用 [Dark Reader](https://chromewebstore.google.com/detail/dark-reader/eimadpbcbfnmbkopoojfekhnkhdbieeh) 扩展: 无适配, 但基本可用.
+- ✅ B站内测深色模式: 已适配
+- ✅ [Bilibili-Evolved](https://github.com/the1812/Bilibili-Evolved) 深色模式: 已适配
+- 或使用 [Dark Reader](https://chromewebstore.google.com/detail/dark-reader/eimadpbcbfnmbkopoojfekhnkhdbieeh) 扩展: 无适配, 但基本可用.
 
 #### 视频过滤
 
@@ -278,10 +274,10 @@ pnpm build # build 完会自动使用 Chrome 打开安装地址
 
 ## 支持
 
-- 如果对你有用,请来个 Star :)
+- 如果对你有用, 请在 GitHub 点个 Star :)
 - 如果你喜欢这个项目, 可以 「[爱发电](https://afdian.com/a/magicdawn)」 支持一下
 
-![afdian-magicdawn_w375](https://hub.gitmirror.com/raw.githubusercontent.com/magicdawn/magicdawn/master/images/afdian-magicdawn_w375_v2.jpg)
+![afdian-magicdawn_w375](https://raw.githubusercontent.com/magicdawn/magicdawn/master/images/afdian-magicdawn_w375_v2.jpg)
 
 ### 赞助者
 
