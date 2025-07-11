@@ -8,10 +8,10 @@ import { registerSettingsGmCommand } from '$components/RecHeader/modals'
 import { SectionRecommend } from '$components/SectionRecommend'
 import { settings } from '$modules/settings'
 import { isSafari } from '$ua'
-import { tryAction, tryToRemove } from '$utility/dom'
+import { poll, tryAction, tryToRemove } from '$utility/dom'
 
 // in this entry, if no insert point found, render to document body
-const isHashEntry = (location.hash || '').startsWith(`#/${APP_NAMESPACE}/`)
+const isHashEntry = location.hash.startsWith(`#/${APP_NAMESPACE}/`)
 
 const bewlyEnabledSelector = 'html.bewly-design:not(:has(#i_cecream))'
 
@@ -37,18 +37,14 @@ function tryDetectBewlyBewly() {
 let root: Root | undefined
 
 export async function initHomepage() {
-  // 提示有插件影响
-  tryToRemove('.adblock-tips')
-  // 变灰
-  tryAction('html.gray', (el) => el.classList.remove('gray'))
-  // 登录-大会员券
-  tryToRemove('.vip-login-tip')
+  tryToRemove('.adblock-tips') // 提示有插件影响
+  tryAction('html.gray', (el) => el.classList.remove('gray')) // 变灰
+  tryToRemove('.vip-login-tip') // 登录-大会员券
 
   registerSettingsGmCommand()
 
   if (hasBewlyBewly()) {
-    appWarn(`quit for using bewly-design`)
-    return
+    return appWarn(`quit for using bewly-design`)
   }
 
   if (settings.pureRecommend) {
@@ -60,28 +56,16 @@ export async function initHomepage() {
 }
 
 async function initHomepageSection() {
-  const timeout = 10 * 1000 // 10s
-  const timeoutAt = Date.now() + timeout
-
-  let insert: ((reactNode: HTMLElement) => void) | undefined
-  while (Date.now() <= timeoutAt) {
-    if (document.querySelector('.bili-feed4-layout')) {
-      insert = (reactNode) =>
-        document.querySelector('.bili-feed4-layout')?.insertAdjacentElement('afterbegin', reactNode)
-      break
-    }
-    await delay(200)
-  }
-
-  if (!insert) {
-    appWarn(`init fail`)
+  const layoutEl = await poll(() => document.querySelector('.bili-feed4-layout'))
+  if (!layoutEl) {
+    appWarn(`init fail, can not find .bili-feed4-layout`)
     return
   }
 
   // attach to dom
   const container = document.createElement('section')
   container.classList.add(APP_CLS_ROOT)
-  insert(container)
+  layoutEl.insertAdjacentElement('afterbegin', container)
 
   root = createRoot(container)
   root.render(

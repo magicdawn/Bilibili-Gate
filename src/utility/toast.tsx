@@ -2,7 +2,7 @@ import { APP_CLS_ROOT, OPERATION_FAIL_MSG, REQUEST_FAIL_MSG } from '$common'
 
 const ToastClassNames = {
   default:
-    'fixed left-50% top-50% z-gate-toast max-w-450px min-w-200px w-[max-content] translate-x-50% translate-y-50% whitespace-pre-wrap rounded-6px bg-gate-primary px-24px py-12px text-14px text-white',
+    'fixed left-50% top-50% z-gate-toast max-w-450px min-w-200px w-[max-content] translate-x--50% translate-y--50% whitespace-pre-wrap rounded-6px bg-gate-primary px-24px py-12px text-14px text-white',
   singleLine: 'text-center',
 }
 
