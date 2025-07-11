@@ -25,3 +25,13 @@ pnpm add -D typescript@5.4.5
 ## `mitt` v.s `emittery`
 
 emittery 可以直接 `emitter.once('event'): Promise<Data>`, 可以省掉 `p-event` 的使用
+
+## `@unocss/eslint-plugin`
+
+pnpm-workspace.yaml
+
+```yaml
+overrides:
+  # self published version of https://github.com/unocss/unocss/pull/4801
+  '@unocss/eslint-plugin': 'npm:@magicdawn/unocss__eslint-plugin@dev'
+```
