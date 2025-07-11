@@ -5,10 +5,9 @@ overrides:
 allowedDeprecatedVersions:
   axios-userscript-adapter: '0'
 
-enableGlobalVirtualStore: true
-
-configDependencies:
-  '@pnpm/plugin-esm-node-path': 0.1.2+sha512-KzcFbJpNJHRZ60GpXmc6CoBX/zjy+fKEf/OOYdRbAlxV/Kf/f6pDNUDIVTQU8a5DHt6ODXq5mndwJPlryqMj1A==
+# enableGlobalVirtualStore: true
+# configDependencies:
+#   '@pnpm/plugin-esm-node-path': 0.1.2+sha512-KzcFbJpNJHRZ60GpXmc6CoBX/zjy+fKEf/OOYdRbAlxV/Kf/f6pDNUDIVTQU8a5DHt6ODXq5mndwJPlryqMj1A==
 
 onlyBuiltDependencies:
   - '@biomejs/biome'
