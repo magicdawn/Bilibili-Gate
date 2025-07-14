@@ -1,5 +1,5 @@
 import { LogLevel, type GridComponents } from 'react-virtuoso'
-import type { ComponentType } from 'react'
+import type { ComponentType, MutableRefObject } from 'react'
 import type { SetRequired } from 'type-fest'
 
 /**
@@ -17,8 +17,8 @@ if (ENABLE_VIRTUAL_GRID) {
 }
 
 export type CustomGridContext = {
-  footerContent: React.ReactNode
-  containerRef: React.MutableRefObject<HTMLDivElement | null>
+  footerContent: ReactNode
+  containerRef: MutableRefObject<HTMLDivElement | null>
   gridClassName: string
 }
 

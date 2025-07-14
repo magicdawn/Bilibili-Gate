@@ -20,7 +20,7 @@ export function SettingsGroup({
 }: Merge<
   ComponentProps<'div'>,
   {
-    children?: React.ReactNode
+    children?: ReactNode
     title: ReactNode
     titleClassName?: string
     contentClassName?: string
