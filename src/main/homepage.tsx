@@ -91,6 +91,7 @@ async function initHomepagePureRecommend() {
 
   const biliLayout = document.createElement('div')
   biliLayout.classList.add('bili-feed4-layout', 'pure-recommend')
+  await poll(() => document.querySelector('body #i_cecream'), { interval: 20 }) // biliLayout should come after header+channel
   document.body.appendChild(biliLayout)
 
   const container = document.createElement('section')
