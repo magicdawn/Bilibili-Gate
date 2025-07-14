@@ -213,7 +213,7 @@ export default defineConfig(({ command, mode }) => ({
         'grant': [
           'GM.xmlHttpRequest', // axios gm adapter use
         ],
-        'run-at': 'document-end', // default: violentmonkey: document-end; tampermonkey: document-idle
+        'run-at': 'document-body', // default: violentmonkey: document-end; tampermonkey: document-idle
         'tag': ['bilibili'],
         ...(command === 'build'
           ? {
