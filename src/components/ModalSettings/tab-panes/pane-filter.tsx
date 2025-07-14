@@ -33,7 +33,7 @@ export function TabPaneFilter() {
           「已关注」内容不考虑过滤条件, 总是展示
           <br />
           "豁免" 一词来源{' '}
-          <a target='_blank' href='https://github.com/magicdawn/bilibili-gate/issues/1#issuecomment-2197868587'>
+          <a target='_blank' href='https://github.com/magicdawn/Bilibili-Gate/issues/1#issuecomment-2197868587'>
             pilipala
           </a>
         </>

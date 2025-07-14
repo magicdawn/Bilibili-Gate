@@ -5,7 +5,7 @@ import type { UserConfig } from '@commitlint/types'
 /**
  * why: 我把 performance perf, 打成了 pref, preference, 直到 release changelog 里没有, 才发现 typo
  * 还是加个 Lint 吧
- * see https://github.com/magicdawn/bilibili-gate/commit/7439247
+ * see https://github.com/magicdawn/Bilibili-Gate/commit/7439247
  */
 
 const Configuration: UserConfig = {

@@ -574,7 +574,7 @@ const VideoCardInner = memo(function VideoCardInner({
       ]}
       onClick={handleVideoLinkClick}
       onContextMenu={(e) => {
-        // try to solve https://github.com/magicdawn/bilibili-gate/issues/92
+        // try to solve https://github.com/magicdawn/Bilibili-Gate/issues/92
         // can't reproduce on macOS
         e.preventDefault()
       }}

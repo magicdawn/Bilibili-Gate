@@ -5,7 +5,7 @@ import type { ComponentProps, ComponentPropsWithoutRef, ComponentRef } from 'rea
 
 /**
  * 关于 `pointer-events: none`
- * see https://github.com/magicdawn/bilibili-gate/issues/112
+ * see https://github.com/magicdawn/Bilibili-Gate/issues/112
  * useMouse 使用的是 document.addEventListener, 不用它响应 mousemove 事件
  */
 const clsPreviewImageWrapper = clsx(

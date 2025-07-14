@@ -172,7 +172,7 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
       // 不过滤已关注视频
       if (followed && filter.exemptForFollowed.video) return true
 
-      // https://github.com/magicdawn/bilibili-gate/issues/87
+      // https://github.com/magicdawn/Bilibili-Gate/issues/87
       // 反向推送, 蜜汁操作.
       if (recommendReason === '关注了你') {
         debug('filter out by recommendReason-rule: %s %o', recommendReason, { bvid, title })

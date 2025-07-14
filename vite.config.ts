@@ -193,7 +193,7 @@ export default defineConfig(({ command, mode }) => ({
         'namespace': 'https://magicdawn.fun',
         'icon': 'https://www.bilibili.com/favicon.ico',
         'author': 'magicdawn',
-        'supportURL': 'https://github.com/magicdawn/bilibili-gate/issues',
+        'supportURL': 'https://github.com/magicdawn/Bilibili-Gate/issues',
         'homepageURL': 'https://greasyfork.org/zh-CN/scripts/443530-bilibili-gate',
         downloadURL,
         updateURL,

@@ -75,7 +75,7 @@ async function initHomepageSection() {
   )
 
   // header
-  // https://github.com/magicdawn/bilibili-gate/issues/30
+  // https://github.com/magicdawn/Bilibili-Gate/issues/30
   // SectionRecommend: 这个 header channel fixed 样式有问题
   // 尝试修复太复杂了, 这里直接移除. 其功能有替代: 滚动到首页顶部查看分区
   tryToRemove('.bili-feed4 .header-channel')

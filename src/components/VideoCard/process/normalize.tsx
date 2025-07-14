@@ -178,7 +178,7 @@ function apiIpadAppAdapter(item: IpadAppRecItemExtend): IVideoCardData {
       return item.uri
     }
 
-    // more see https://github.com/magicdawn/bilibili-gate/issues/23#issuecomment-1533079590
+    // more see https://github.com/magicdawn/Bilibili-Gate/issues/23#issuecomment-1533079590
 
     if (item.goto === 'av') {
       return `/video/${bvid}/`
