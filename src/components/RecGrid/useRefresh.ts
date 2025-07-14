@@ -1,21 +1,20 @@
 import { useUnmount } from 'ahooks'
-import { attempt, isEqual } from 'es-toolkit'
+import { attempt, attemptAsync, isEqual } from 'es-toolkit'
 import { createContext } from 'react'
 import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
 import { TabConfig } from '$components/RecHeader/tab-config'
 import { ETab } from '$components/RecHeader/tab-enum'
-import { DisposableStackPolyfill } from '$modules/polyfills/explicit-resource-management'
 import { getGridRefreshCount } from '$modules/rec-services'
 import { getDynamicFeedServiceConfig, type DynamicFeedRecService } from '$modules/rec-services/dynamic-feed'
 import { getFavServiceConfig, type FavRecService } from '$modules/rec-services/fav'
 import { hotStore, type HotRecService } from '$modules/rec-services/hot'
-import type { RecItemTypeOrSeparator } from '$define'
 import {
   createServiceMap,
   getServiceFromRegistry,
   type FetcherOptions,
   type ServiceMap,
-} from '../../modules/rec-services/service-map'
+} from '$modules/rec-services/service-map'
+import type { RecItemTypeOrSeparator } from '$define'
 import { setGlobalGridItems } from './unsafe-window-export'
 import type { Debugger } from 'debug'
 
@@ -65,7 +64,6 @@ export function useRefresh({
 
   const refresh: OnRefresh = useMemoizedFn(async (reuse = false) => {
     const start = performance.now()
-    const stack = new DisposableStackPolyfill()
 
     // when already in refreshing
     if (refreshingBox.val) {
@@ -114,13 +112,6 @@ export function useRefresh({
     setError(undefined)
     itemsBox.set([])
     hasMoreBox.set(true)
-    // defer actions
-    stack.defer(() => {
-      // refreshing
-      refreshingBox.set(false)
-      // hasMore
-      hasMoreBox.set(getServiceFromRegistry(servicesRegistry, tab).hasMore)
-    })
 
     await preAction?.()
 
@@ -128,34 +119,34 @@ export function useRefresh({
     const _signal = _abortController.signal
     setRefreshAbortController(_abortController)
 
-    const onError = (err: any) => {
-      refreshingBox.set(false)
+    function _onAny() {
+      refreshingBox.set(false) // refreshing
+      setShowSkeleton(false)
+    }
+    function onError(err: any) {
+      _onAny()
       hasMoreBox.set(false)
       console.error(err)
       setError(err)
     }
-    const doFetch = async () => {
-      let currentItems: RecItemTypeOrSeparator[] = []
-      let err: any
-      const fetcherOptions: FetcherOptions = {
-        tab,
-        abortSignal: _signal,
-        servicesRegistry,
-      }
-      try {
-        currentItems = await fetcher(fetcherOptions)
-      } catch (e) {
-        err = e
-      }
+    function onSuccess() {
+      _onAny()
+      hasMoreBox.set(getServiceFromRegistry(servicesRegistry, tab).hasMore)
+    }
 
+    async function doFetch() {
+      const [err, currentItems] = await attemptAsync(() =>
+        fetcher({
+          tab,
+          abortSignal: _signal,
+          servicesRegistry,
+        }),
+      )
       // explicit aborted
-      if (_signal.aborted) {
-        debug('refresh(): tab=%s [aborted], ignoring rest code', tab)
-        return
-      }
-
+      if (_signal.aborted) return debug('refresh(): tab=%s [aborted], ignoring rest code', tab)
       if (err) return onError(err)
-      itemsBox.set(currentItems)
+
+      itemsBox.set(currentItems ?? [])
       return true // mark success
     }
 
@@ -173,9 +164,6 @@ export function useRefresh({
     // create new service
     else {
       setShowSkeleton(true)
-      stack.defer(() => {
-        setShowSkeleton(false)
-      })
       willRefresh = true
     }
 
@@ -190,9 +178,8 @@ export function useRefresh({
       if (!success) return
     }
 
-    stack.dispose() // Q: why not `using stack = new DisposableStackPolyfill()`  A: skip dispose when aborted
+    onSuccess()
     await postAction?.()
-
     const cost = performance.now() - start
     debug('refresh(): tab=%s [success] cost %s ms', tab, cost.toFixed(0))
   })

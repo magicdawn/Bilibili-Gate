@@ -13,6 +13,5 @@ onlyBuiltDependencies:
   - '@biomejs/biome'
   - '@parcel/watcher'
   - '@swc/core'
-  - core-js-pure
   - esbuild
   - unrs-resolver

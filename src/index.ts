@@ -14,8 +14,7 @@ import '$common/global.scss' // styles
 import '$common/shared.module.scss'
 import '$components/video-grid.module.scss' // css modules 与 emtion 混用, 先 import 作为 base 的 css modules
 import 'virtual:uno.css'
-import './modules/polyfills/explicit-resource-management' // polyfills
-import './modules/settings' // load config first
+import '$modules/settings' // load config first
 
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'

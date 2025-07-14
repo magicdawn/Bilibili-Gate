@@ -31,15 +31,3 @@ declare module '*.css' {
 declare module '*.scss' {
   never
 }
-
-declare module 'core-js-pure/internals/is-forced' {
-  export const POLYFILL: string
-  export const NATIVE: string
-  export const data: Record<string, typeof NATIVE | typeof POLYFILL>
-}
-declare module 'core-js-pure/actual/disposable-stack' {
-  export default DisposableStack
-}
-declare module 'core-js-pure/actual/async-disposable-stack' {
-  export default AsyncDisposableStack
-}
