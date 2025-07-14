@@ -281,31 +281,30 @@ export function TabPaneBasic() {
             <ResetPartialSettingsButton paths={['autoPreviewWhenKeyboardSelect', 'autoPreviewWhenHover']} />
           </>
         }
+        contentClassName='flex-row flex-wrap items-center gap-x-10px'
       >
-        <div className='flex flex-wrap items-center gap-x-10px'>
-          <CheckboxSettingItem
-            configPath='autoPreviewWhenKeyboardSelect'
-            label='键盘选中后自动开始预览'
-            tooltip={
-              <>
-                手动预览快捷键: <Tag color='green'>.</Tag> or <Tag color='green'>p</Tag>
-                <br />
-                切换设置快捷键: <Tag color='green'>shift+p</Tag>
-              </>
-            }
-          />
+        <CheckboxSettingItem
+          configPath='autoPreviewWhenKeyboardSelect'
+          label='键盘选中后自动开始预览'
+          tooltip={
+            <>
+              手动预览快捷键: <Tag color='green'>.</Tag> or <Tag color='green'>p</Tag>
+              <br />
+              切换设置快捷键: <Tag color='green'>shift+p</Tag>
+            </>
+          }
+        />
 
-          <CheckboxSettingItem
-            configPath='autoPreviewWhenHover'
-            label='鼠标悬浮后自动开始预览'
-            tooltip={
-              <>
-                鼠标悬浮后自动开始预览, 预览不再跟随鼠标位置 <br />
-                切换设置快捷键: <Tag color='green'>shift+m</Tag>
-              </>
-            }
-          />
-        </div>
+        <CheckboxSettingItem
+          configPath='autoPreviewWhenHover'
+          label='鼠标悬浮后自动开始预览'
+          tooltip={
+            <>
+              鼠标悬浮后自动开始预览, 预览不再跟随鼠标位置 <br />
+              切换设置快捷键: <Tag color='green'>shift+m</Tag>
+            </>
+          }
+        />
       </SettingsGroup>
 
       <SettingsGroup
@@ -328,11 +327,9 @@ export function TabPaneBasic() {
             GitHub 主页
           </Button>
         </AntdTooltip>
-        <AntdTooltip title='V我50, 看看实力'>
-          <Button href='https://afdian.com/a/magicdawn' target='_blank'>
-            「爱发电」支持
-          </Button>
-        </AntdTooltip>
+        <Button href='https://afdian.com/a/magicdawn' target='_blank'>
+          「爱发电」支持
+        </Button>
 
         <Button href='https://greasyfork.org/zh-CN/scripts/443530-bilibili-gate' target='_blank'>
           GreasyFork 主页
