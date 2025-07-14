@@ -2,7 +2,7 @@
 
 ## 之后版本的更新记录在 GitHub Release 查看
 
-https://github.com/magicdawn/bilibili-gate/releases
+https://github.com/magicdawn/Bilibili-Gate/releases
 
 ## v0.22.3
 
@@ -72,9 +72,9 @@ details
 - 小窗打开: 在 edge 下添加一个关闭按钮.
 - 过滤: 支持过滤 goto=bangumi 内容.
 
-![image](https://github.com/magicdawn/bilibili-gate/assets/4067115/4a95b052-2b9d-4db4-912b-25cc0233f177)
+![image](https://github.com/magicdawn/Bilibili-Gate/assets/4067115/4a95b052-2b9d-4db4-912b-25cc0233f177)
 
-![image](https://github.com/magicdawn/bilibili-gate/assets/4067115/ced2c989-5818-4f5e-b582-b6c0507f50c9)
+![image](https://github.com/magicdawn/Bilibili-Gate/assets/4067115/ced2c989-5818-4f5e-b582-b6c0507f50c9)
 
 details
 
@@ -256,7 +256,7 @@ details
 
 ## v0.21.0
 
-- 之前内测首页现在是默认首页, 去掉分区首页的支持 see [#71](https://github.com/magicdawn/bilibili-gate/discussions/71)
+- 之前内测首页现在是默认首页, 去掉分区首页的支持 see [#71](https://github.com/magicdawn/Bilibili-Gate/discussions/71)
 - rename 纯推荐模式 -> 全屏模式, 并默认启用
 - rename styleFancy -> 新卡片样式, 并默认启用
 
@@ -290,7 +290,7 @@ details
 - 动态支持搜索
 - 其他不值一提的变更
 
-![image](https://github.com/magicdawn/bilibili-gate/assets/4067115/f506ddee-b59f-4918-a275-67d01f2e8fd0)
+![image](https://github.com/magicdawn/Bilibili-Gate/assets/4067115/f506ddee-b59f-4918-a275-67d01f2e8fd0)
 
 ## v0.20.4
 
@@ -376,7 +376,7 @@ details:
 
 ## v0.19.6
 
-- fix 预览卡片变高的问题, [#65](https://github.com/magicdawn/bilibili-gate/issues/65) & [#66](https://github.com/magicdawn/bilibili-gate/issues/66)
+- fix 预览卡片变高的问题, [#65](https://github.com/magicdawn/Bilibili-Gate/issues/65) & [#66](https://github.com/magicdawn/Bilibili-Gate/issues/66)
 
 其他
 
@@ -472,7 +472,7 @@ details:
 - 设置页切换 panel 关闭后, 再次打开会保留 panel, 刷新回到默认
 - 新设置项, 可拖动排序推荐 Tab
 
-![image](https://github.com/magicdawn/bilibili-gate/assets/4067115/45c09e2d-2f51-4750-b0c7-9daceb393eb1)
+![image](https://github.com/magicdawn/Bilibili-Gate/assets/4067115/45c09e2d-2f51-4750-b0c7-9daceb393eb1)
 
 details:
 
@@ -618,7 +618,7 @@ detail
 - 动态右键菜单: 快速筛选 UP
 - 「查看更多」弹窗也支持 extraInfo 了
 
-![image](https://github.com/magicdawn/bilibili-gate/assets/4067115/06a08386-4d90-4178-875d-4241eaec38f9)
+![image](https://github.com/magicdawn/Bilibili-Gate/assets/4067115/06a08386-4d90-4178-875d-4241eaec38f9)
 
 ## v0.17.7
 
@@ -674,11 +674,11 @@ detail
 - feat: 收藏 Tab, 支持过滤收藏夹
 - feat: video source tab, 改成 localStorage 存储, 切换 Tab 不会触发备份
 
-![image](https://github.com/magicdawn/bilibili-gate/assets/4067115/41408b67-fbad-4e3d-b181-dd51f3b42518)
+![image](https://github.com/magicdawn/Bilibili-Gate/assets/4067115/41408b67-fbad-4e3d-b181-dd51f3b42518)
 
-![image](https://github.com/magicdawn/bilibili-gate/assets/4067115/6c76638f-eba4-4b51-92e6-76feef154c26)
+![image](https://github.com/magicdawn/Bilibili-Gate/assets/4067115/6c76638f-eba4-4b51-92e6-76feef154c26)
 
-![image](https://github.com/magicdawn/bilibili-gate/assets/4067115/021fa5f4-1639-4f26-89ae-98eba0ac62f8)
+![image](https://github.com/magicdawn/Bilibili-Gate/assets/4067115/021fa5f4-1639-4f26-89ae-98eba0ac62f8)
 
 ## v0.16.8
 
@@ -688,9 +688,9 @@ detail
 
 - feat: 支持在推荐 Tab 快速拉黑视频作者
 
-![image](https://github.com/magicdawn/bilibili-gate/assets/4067115/b7cbe6de-dc4c-4c45-909a-0392aaa66add)
+![image](https://github.com/magicdawn/Bilibili-Gate/assets/4067115/b7cbe6de-dc4c-4c45-909a-0392aaa66add)
 
-![image](https://github.com/magicdawn/bilibili-gate/assets/4067115/a48df3b5-0028-4100-8780-c40b61134b63)
+![image](https://github.com/magicdawn/Bilibili-Gate/assets/4067115/a48df3b5-0028-4100-8780-c40b61134b63)
 
 ## v0.16.6
 
@@ -727,7 +727,7 @@ Noteable changes:
 - 所有 Tab: 稍后再看状态改为全局状态, 推荐/动态/收藏 等 Tab 中的视频可以保持稍后再看状态.
 - 稍后再看 Tab: 移除稍后再看, 可以看到是否已经添加收藏. 在清理稍候再看列表时比较有用.
 
-![image](https://github.com/magicdawn/bilibili-gate/assets/4067115/26053d9c-2543-4ffb-ac20-9b052a6807c2)
+![image](https://github.com/magicdawn/Bilibili-Gate/assets/4067115/26053d9c-2543-4ffb-ac20-9b052a6807c2)
 
 ## v0.16.2
 
@@ -783,7 +783,7 @@ Noteable changes:
 - fix: update watchlater usageInfo after removeCard
 - feat: add script icon
 
-FULL https://github.com/magicdawn/bilibili-gate/compare/v0.14.3...main
+FULL https://github.com/magicdawn/Bilibili-Gate/compare/v0.14.3...main
 
 ## v0.14.3 2023-06-16
 
@@ -926,7 +926,7 @@ FULL https://github.com/magicdawn/bilibili-gate/compare/v0.14.3...main
 ## v0.11.4 2023-05-22
 
 - feat: add more themes
-  ![image](https://github.com/magicdawn/bilibili-gate/assets/4067115/7884359f-6b35-4ca3-8842-9815a4487d04)
+  ![image](https://github.com/magicdawn/Bilibili-Gate/assets/4067115/7884359f-6b35-4ca3-8842-9815a4487d04)
 
 ## v0.11.3 2023-05-21
 
@@ -948,7 +948,7 @@ FULL https://github.com/magicdawn/bilibili-gate/compare/v0.14.3...main
 - feat: 设置弹框使用 Tab 分割
 - feat: 引入 lx-music-desktop 中的主题选择, 墙裂推荐「重斤球紫」🤳
 
-![image](https://github.com/magicdawn/bilibili-gate/assets/4067115/456c8045-4c79-4044-a8bb-ca46dcc17dc4)
+![image](https://github.com/magicdawn/Bilibili-Gate/assets/4067115/456c8045-4c79-4044-a8bb-ca46dcc17dc4)
 
 ## v0.10.10 2023-05-13
 
@@ -1110,7 +1110,7 @@ FULL https://github.com/magicdawn/bilibili-gate/compare/v0.14.3...main
 
 ## v0.4.3 2022-08-18
 
-- 修复移动到视频卡片, 停留, 视频预览显示不正确的问题. ([没有进度条, 预览显示不正确](https://github.com/magicdawn/bilibili-gate/issues/5#issuecomment-1216453427))
+- 修复移动到视频卡片, 停留, 视频预览显示不正确的问题. ([没有进度条, 预览显示不正确](https://github.com/magicdawn/Bilibili-Gate/issues/5#issuecomment-1216453427))
 
 ## v0.4.2 2022-08-13
 
