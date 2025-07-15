@@ -4,13 +4,13 @@ import react from '@vitejs/plugin-react'
 import reactSwc from '@vitejs/plugin-react-swc'
 import { interopImportCJSDefault } from 'node-cjs-interop'
 import postcssMediaMinmax from 'postcss-media-minmax'
-import { visualizer } from 'rollup-plugin-visualizer'
 import typedScssModulesOriginal from 'typed-scss-modules'
 import UnoCSS from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 import Icons from 'unplugin-icons/vite'
 import { defineConfig, type ConfigEnv, type PluginOption } from 'vite'
+import { analyzer } from 'vite-bundle-analyzer'
 import importer from 'vite-plugin-importer'
 import Inspect from 'vite-plugin-inspect'
 import monkey, { cdn } from 'vite-plugin-monkey'
@@ -253,6 +253,7 @@ export default defineConfig(({ command, mode }) => ({
           'framer-motion': cdn.npmmirror('Motion', 'dist/framer-motion.js'),
           'localforage': cdn.npmmirror('localforage', 'dist/localforage.min.js'),
           'pinyin-match': cdn.npmmirror('PinyinMatch', 'dist/main.js'),
+          'spark-md5': cdn.npmmirror('SparkMD5', 'spark-md5.min.js'),
 
           // size:
           //  external 944kB + 36kB
@@ -282,8 +283,9 @@ export default defineConfig(({ command, mode }) => ({
     // visualize
     process.env.NODE_ENV === 'production' &&
       process.argv.includes('--analyze') &&
-      visualizer({
-        open: true,
+      analyzer({
+        openAnalyzer: true,
+        analyzerPort: 'auto',
       }),
 
     mode === 'development' && Inspect(),
@@ -293,7 +295,6 @@ export default defineConfig(({ command, mode }) => ({
 /**
  * babel-plugin-import related
  */
-
 function getBabelImportPlugins(command: ConfigEnv['command']): PluginOption[] {
   return [
     command === 'build' &&
