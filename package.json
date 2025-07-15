@@ -8,7 +8,7 @@
   "scripts": {
     "prepare": "husky",
     "dev": "vite",
-    "_typecheck": "tsc --noEmit",
+    "_typecheck": "tsc -b --noEmit",
     "_lint": "oxlint",
     "typecheck": "turbo _typecheck",
     "lint": "turbo _lint",

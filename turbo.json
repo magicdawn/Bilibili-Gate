@@ -8,7 +8,7 @@
     },
     "_typecheck": {
       "dependsOn": ["build:scss"],
-      "inputs": ["src/**/*.{ts,tsx}", "tsconfig.json", "tsconfig.*.json"]
+      "inputs": ["tsconfig.json", "tsconfig.*.json", "src/**/*.{ts,tsx}", "*.ts"]
     },
     "_lint": {
       "inputs": [

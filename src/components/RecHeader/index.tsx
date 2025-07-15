@@ -104,7 +104,7 @@ export const RecHeader = forwardRef<
       <OnRefreshContext.Provider value={onRefresh}>
         <div
           ref={stickyRef}
-          data-role='area-header-wrapper'
+          data-role='tab-bar-wrapper'
           className={clsx({ sticky })}
           css={
             pureRecommend &&
@@ -131,7 +131,7 @@ export const RecHeader = forwardRef<
           }
         >
           <div
-            data-role='area-header'
+            data-role='tab-bar'
             className={clsx(
               APP_CLS_TAB_BAR,
               'relative mb-0 h-auto flex flex-row items-center justify-between gap-x-15px px-0 py-8px',
