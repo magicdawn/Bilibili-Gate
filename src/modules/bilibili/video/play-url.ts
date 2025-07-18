@@ -47,9 +47,9 @@ export async function getVideoPlayUrl(
   videoId: string | number,
   cid: number,
   useMp4: boolean = false,
-  preferNormalCdn: boolean = false,
+  usePreferredCdn: boolean = false,
 ) {
-  const params: Record<string, any> = {
+  const params: Record<string, string | number> = {
     cid,
     fnver: 0,
     fnval: useMp4 ? 1 : 16, // 1:mp4, 16:dash
@@ -67,15 +67,8 @@ export async function getVideoPlayUrl(
   const res = await request.get('/x/player/wbi/playurl', { params })
   const json = res.data as VideoPlayUrlJson
 
-  function getUrlPriority(url: string) {
-    const { hostname } = new URL(url)
-    if (preferNormalCdn && (hostname.includes('mcdn') || hostname.includes('pcdn'))) {
-      return 1
-    }
-    return 10
-  }
   function reOrderUrls(urls: string[]) {
-    return fastOrderBy(urls, [getUrlPriority], ['desc'])
+    return fastOrderBy(urls, [(u) => getUrlPriority(u, usePreferredCdn)], ['desc'])
   }
 
   // mp4
@@ -91,4 +84,20 @@ export async function getVideoPlayUrl(
   const video = fastOrderBy(json.data?.dash?.video || [], ['id', 'codecid'], ['desc', 'desc'])
   const dashUrls = video.map((x) => reOrderUrls([x.baseUrl, ...(x.backupUrl || [])])[0]).filter(Boolean)
   return dashUrls
+}
+
+// https://github.com/the1812/Bilibili-Evolved/issues/3234#issuecomment-1504764774
+const enum PlayUrlPriority {
+  Mirror = 100,
+  Default = 10,
+  MCDN = 2,
+  PCDN = 1,
+}
+function getUrlPriority(url: string, usePreferredCdn: boolean) {
+  if (!usePreferredCdn) return PlayUrlPriority.Default
+  const { hostname, searchParams, pathname } = new URL(url)
+  if (hostname.includes('mcdn') || searchParams.get('os') === 'mcdn') return PlayUrlPriority.MCDN
+  if (pathname.startsWith('/v1/resource/')) return PlayUrlPriority.PCDN
+  if (hostname.includes('-mirror')) return PlayUrlPriority.Mirror
+  return PlayUrlPriority.Default
 }

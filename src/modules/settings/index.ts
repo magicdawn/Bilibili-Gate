@@ -68,7 +68,7 @@ export const initialSettings = {
         searchPage: true,
       },
       __internal: {
-        preferNormalCdn: false,
+        usePreferredCdn: false,
       },
     },
   },
@@ -399,6 +399,8 @@ export function runSettingsMigration(val: object | undefined) {
     ['style.videoCard.useBoxShadow', 'styleUseCardBoxShadow'],
     // 2025-04-23
     ['pipWindow.defaultLocked', 'pipWindowDefaultLocked'],
+    // 2025-07-18
+    ['videoCard.videoPreview.__internal.usePreferredCdn', 'videoCard.videoPreview.__internal.preferNormalCdn'],
   ]
   // 伪代码: savedConfig[newName] = savedConfig[legacyName]
   for (const [configPath, legacyConfigPath] of config) {

@@ -68,7 +68,7 @@ export function useLargePreviewRelated({
   const {
     useMp4,
     useVideoCardAsTrigger,
-    __internal: { preferNormalCdn },
+    __internal: { usePreferredCdn },
   } = useSnapshot(settings.videoCard.videoPreview)
 
   const videoPreviewDataBox = useRefStateBox<VideoPreviewData | undefined>(undefined)
@@ -79,14 +79,14 @@ export function useLargePreviewRelated({
       bvid,
       cid,
       useMp4,
-      preferNormalCdn,
+      usePreferredCdn,
       aspectRatioFromItem,
     })
     videoPreviewDataBox.set(data)
   })
   useUpdateEffect(() => {
     videoPreviewDataBox.set(undefined)
-  }, [useMp4, preferNormalCdn])
+  }, [useMp4, usePreferredCdn])
 
   const $req = useRequest(tryFetchVideoPreviewData, {
     manual: true,
@@ -236,7 +236,9 @@ export function useLargePreviewRelated({
         poster={cover}
         className='size-full object-contain' // avoid 'cover', this video may goto fullscreen
       >
-        {videoPreviewDataBox.state?.playUrls?.map((url, i) => <source key={i} src={url} />)}
+        {videoPreviewDataBox.state?.playUrls?.map((url, i) => (
+          <source key={i} src={url} />
+        ))}
       </RecoverableVideo>
       {/* action buttons */}
       <div className='absolute right-10px top-10px flex flex-row-reverse items-center justify-start gap-x-5px'>

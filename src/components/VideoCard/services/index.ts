@@ -143,16 +143,16 @@ export const fetchVideoPreviewData = reusePendingPromise(
     bvid,
     cid,
     useMp4,
-    preferNormalCdn,
+    usePreferredCdn,
     aspectRatioFromItem,
   }: {
     bvid: string
     cid: number | undefined
     useMp4: boolean
-    preferNormalCdn: boolean
+    usePreferredCdn: boolean
     aspectRatioFromItem: number | undefined
   }) => {
-    const cacheKey = JSON.stringify([bvid, useMp4, preferNormalCdn])
+    const cacheKey = JSON.stringify([bvid, useMp4, usePreferredCdn])
     const cached = videoPreviewCache.get(cacheKey)
     if (cached) return cached
 
@@ -167,7 +167,7 @@ export const fetchVideoPreviewData = reusePendingPromise(
       }
     }
 
-    playUrls = await getVideoPlayUrl(bvid, cid, useMp4, preferNormalCdn)
+    playUrls = await getVideoPlayUrl(bvid, cid, useMp4, usePreferredCdn)
     debug('playUrl: bvid=%s cid=%s %s', bvid, cid, playUrls)
     if (playUrls) {
       videoPreviewCache.set(cacheKey, { playUrls, dimension })

@@ -22,7 +22,7 @@ import {
 import { exportSettings, importSettings } from '$modules/settings/file-backup'
 import { articleDraft, restoreOmitPaths } from '$modules/settings/index.shared'
 import { set_HAS_RESTORED_SETTINGS } from '../../../modules/settings/restore-flag'
-import { toastAndReload } from '../index.shared'
+import { explainForFlag, toastAndReload } from '../index.shared'
 import { ResetPartialSettingsButton, SettingsGroup, sharedClassNames } from './shared'
 
 function onResetSettings() {
@@ -161,7 +161,17 @@ export function TabPaneAdvance() {
                 <CheckboxSettingItem
                   key={k}
                   configPath={k as BooleanSettingsPath}
-                  tooltip={k}
+                  tooltip={
+                    <>
+                      {k}
+                      {INTERNAL_BOOLEAN_TOOLTIPS[k] && (
+                        <>
+                          <br />
+                          {INTERNAL_BOOLEAN_TOOLTIPS[k]}
+                        </>
+                      )}
+                    </>
+                  }
                   label={startCase(
                     k.startsWith('__internal') ? k.slice('__internal'.length) : k.replaceAll('__internal.', ''),
                   )}
@@ -173,4 +183,13 @@ export function TabPaneAdvance() {
       </SettingsGroup>
     </div>
   )
+}
+
+const INTERNAL_BOOLEAN_TOOLTIPS: Partial<Record<BooleanSettingsPath, ReactNode>> = {
+  'videoCard.videoPreview.__internal.usePreferredCdn': (
+    <>
+      用于「浮动预览」视频播放 <br />
+      {explainForFlag('使用优选 CDN (降低 MCDN & PCDN 优先级)', '使用默认 CDN')}
+    </>
+  ),
 }
