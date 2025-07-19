@@ -64,11 +64,9 @@ export const initialSettings = {
       useMp4: true, // mp4 | dash (mp4: single video, dash: video only, no audio)
       useScale: false, // scale effect
       useVideoCardAsTrigger: false, // video card as trigger, v0.31.0 第一个版本就是这样的, 后改为 ActionButton
+      usePreferredCdn: true,
       addTo: {
         searchPage: true,
-      },
-      __internal: {
-        usePreferredCdn: true,
       },
     },
   },

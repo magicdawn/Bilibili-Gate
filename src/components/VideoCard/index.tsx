@@ -201,10 +201,7 @@ const VideoCardInner = memo(function VideoCardInner({
     },
     videoCard: {
       actions: videoCardActions,
-      videoPreview: {
-        useMp4,
-        __internal: { usePreferredCdn },
-      },
+      videoPreview: { usePreferredCdn },
     },
     spaceUpload: { showVol },
   } = useSettingsSnapshot()

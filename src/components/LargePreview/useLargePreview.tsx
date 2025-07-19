@@ -65,11 +65,7 @@ export function useLargePreviewRelated({
   cardRef,
   videoCardAsTriggerRef,
 }: UseLargePreviewOptions) {
-  const {
-    useMp4,
-    useVideoCardAsTrigger,
-    __internal: { usePreferredCdn },
-  } = useSnapshot(settings.videoCard.videoPreview)
+  const { useMp4, useVideoCardAsTrigger, usePreferredCdn } = useSnapshot(settings.videoCard.videoPreview)
 
   const videoPreviewDataBox = useRefStateBox<VideoPreviewData | undefined>(undefined)
   const tryFetchVideoPreviewData = useLockFn(async () => {

@@ -189,6 +189,7 @@ export function TabPaneBasic() {
                 'videoCard.actions.showLargePreview',
                 'videoCard.actions.openInPipWindow',
                 'videoCard.videoPreview.useMp4',
+                'videoCard.videoPreview.usePreferredCdn',
                 'videoCard.videoPreview.useScale',
                 'videoCard.videoPreview.useVideoCardAsTrigger',
                 'pipWindow.defaultLocked',
@@ -230,15 +231,19 @@ export function TabPaneBasic() {
               configPath='videoCard.videoPreview.useMp4'
               disabled={!showLargePreview}
               label='浮动预览: 使用 mp4'
-              tooltip={
-                <>{explainForFlag('使用 mp4, 最高 720p, 有声音', '使用 dash, 最高 1080p, 无声音, 理论上更快')}</>
-              }
+              tooltip={explainForFlag('使用 mp4, 最高 720p, 有声音', '使用 dash, 最高 1080p, 无声音, 理论上更快')}
+            />
+            <CheckboxSettingItem
+              configPath='videoCard.videoPreview.usePreferredCdn'
+              disabled={!showLargePreview}
+              label='浮动预览: 使用优选 CDN'
+              tooltip={explainForFlag('使用优选 CDN (降低 MCDN & PCDN 优先级)', '使用默认 CDN')}
             />
             <CheckboxSettingItem
               configPath='videoCard.videoPreview.useScale'
               disabled={!showLargePreview}
               label='浮动预览: 使用放大效果'
-              tooltip={<>{explainForFlag('浮动预览面板: 放大展开 (类似浮图秀)', '浮动预览面板: 滑动展开')}</>}
+              tooltip={explainForFlag('浮动预览面板: 放大展开 (类似浮图秀)', '浮动预览面板: 滑动展开')}
             />
             <CheckboxSettingItem
               configPath='videoCard.videoPreview.useVideoCardAsTrigger'
