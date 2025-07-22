@@ -9,7 +9,7 @@ import { watchlaterState } from '$modules/rec-services/watchlater'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
 import { watchlaterAdd, watchlaterDel } from '../services'
 import type { VideoCardInnerProps } from '..'
-import type { IVideoCardData } from '../process/normalize'
+import type { IVideoCardData } from '../../../modules/filter/normalize'
 import type { MouseEvent } from 'react'
 
 /**

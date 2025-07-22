@@ -19,7 +19,7 @@ import {
   VideoLinkOpenMode,
   VideoLinkOpenModeKey,
 } from '../index.shared'
-import type { IVideoCardData } from '../process/normalize'
+import type { IVideoCardData } from '../../../modules/filter/normalize'
 import { renderInPipWindow } from './_pip-window'
 import type { ComponentProps, MouseEvent, MouseEventHandler, ReactNode } from 'react'
 

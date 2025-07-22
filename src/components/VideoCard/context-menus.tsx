@@ -57,11 +57,11 @@ import { SHOW_SPACE_UPLOAD_ONLY, SpaceUploadQueryKey } from '$modules/rec-servic
 import { settings, updateSettingsInnerArray } from '$modules/settings'
 import toast from '$utility/toast'
 import type { OnRefresh } from '$components/RecGrid/useRefresh'
+import { getFollowedStatus, isApiRecLike } from '../../modules/filter'
+import type { IVideoCardData } from '../../modules/filter/normalize'
 import { copyContent } from './index.shared'
-import { getFollowedStatus, isApiRecLike } from './process/filter'
 import { watchlaterAdd } from './services'
 import { getLinkTarget } from './use/useOpenRelated'
-import type { IVideoCardData } from './process/normalize'
 import type { watchlaterDel } from './services'
 import type { MouseEvent } from 'react'
 

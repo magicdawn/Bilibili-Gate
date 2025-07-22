@@ -5,6 +5,7 @@ import { borderColorValue } from '$components/css-vars'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
 import { getUserNickname } from '$modules/bilibili/user/nickname'
+import { parseUpRepresent } from '$modules/filter/parse'
 import { formatSpaceUrl } from '$modules/rec-services/dynamic-feed/shared'
 import {
   getNewestValueOfSettingsInnerArray,
@@ -139,21 +140,7 @@ export const TagItemDisplay = forwardRef<HTMLDivElement, TagItemDisplayProps>(
 )
 
 function UpTagItemDisplay({ tag }: { tag: string }) {
-  const regMidWithRemark = /^(?<mid>\d+)\((?<remark>[\S ]+)\)$/
-  const regMid = /^\d+$/
-
-  const { mid, remark } = useMemo<{ mid?: string; remark?: string }>(() => {
-    if (regMidWithRemark.test(tag)) {
-      const groups = regMidWithRemark.exec(tag)?.groups
-      const mid = groups?.mid
-      const remark = groups?.remark
-      return { mid, remark }
-    } else if (regMid.test(tag)) {
-      return { mid: tag }
-    } else {
-      return {}
-    }
-  }, [tag])
+  const { mid, remark } = useMemo(() => parseUpRepresent(tag), [tag])
 
   const [nicknameByMid, setNicknameByMid] = useState<string | undefined>(undefined)
   useEffect(() => {
@@ -181,7 +168,7 @@ function UpTagItemDisplay({ tag }: { tag: string }) {
           备注: {remark} <br />
           {remark === nicknameByMid && (
             <>
-              P.S 备注是之前的数据, 现在你只需要填写 mid, 会自动获取昵称 <br />
+              P.S "备注" 与 "用户昵称" 相同, 是之前的数据, 现在你只需要填写 mid, 会自动获取昵称 <br />
             </>
           )}
         </>

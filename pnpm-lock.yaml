@@ -40,8 +40,8 @@ importers:
         specifier: 3.9.0
         version: 3.9.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       antd:
-        specifier: 5.26.5
-        version: 5.26.5(date-fns@2.30.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: 5.26.6
+        version: 5.26.6(date-fns@2.30.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       axios:
         specifier: ^0.30.0
         version: 0.30.0(debug@4.4.1)
@@ -140,8 +140,8 @@ importers:
         specifier: ^11.13.5
         version: 11.13.5
       '@iconify/json':
-        specifier: ^2.2.359
-        version: 2.2.359
+        specifier: ^2.2.360
+        version: 2.2.360
       '@magicdawn/eslint-config':
         specifier: ^1.5.7
         version: 1.5.7(@magicdawn/unocss__eslint-plugin@66.3.3-dev.1(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.35.1(@typescript-eslint/parser@8.35.1(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(@typescript-eslint/parser@8.35.1(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(@typescript-eslint/utils@8.35.1(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint-import-resolver-node@0.3.9)(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3)
@@ -1122,8 +1122,8 @@ packages:
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
     engines: {node: '>=18.18'}
 
-  '@iconify/json@2.2.359':
-    resolution: {integrity: sha512-nOIaROD3xeLiFGvJu0YIgeu4Hqbmz6T71b0lsFv1TY6Uu6Lk/5Z8GhDByIE2/zfgxvxfv3f+5A/DkLHmMXYu8Q==}
+  '@iconify/json@2.2.360':
+    resolution: {integrity: sha512-N1mmTs7dJd6Ym62fP5DxJG1ZpbXSncD32tC/RJoGGjEPNx52/HzBixEjS9hVPps8CWs2VL7uRr4UKmjiFA/n5Q==}
 
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
@@ -2200,8 +2200,8 @@ packages:
     resolution: {integrity: sha512-BGcItUBWSMRgOCe+SVZJ+S7yTRG0eGt9cXAHev72yuGcY23hnLA7Bky5L/xLyPINoSN95geovfBkqoTlNZYa7w==}
     engines: {node: '>=14'}
 
-  antd@5.26.5:
-    resolution: {integrity: sha512-HB7Cr0tPZMMeAyDDH8KZU0aP8/uO51oasmflJhDBzaRRZmLT8Pyjtt8qS22Sc839glm8gpKQcaG0mln66Gt9Fg==}
+  antd@5.26.6:
+    resolution: {integrity: sha512-k8ipeT+UL2tP/x4jHTXElScAxsD94JgrIEeGHj80nNO4dL9hqcmaOUBpHo3ieCf6MFjhS7gLUthysQeP6e7DUg==}
     peerDependencies:
       react: '>=16.9.0'
       react-dom: '>=16.9.0'
@@ -5986,7 +5986,7 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.3': {}
 
-  '@iconify/json@2.2.359':
+  '@iconify/json@2.2.360':
     dependencies:
       '@iconify/types': 2.0.0
       pathe: 1.1.2
@@ -7116,7 +7116,7 @@ snapshots:
 
   ansis@4.1.0: {}
 
-  antd@5.26.5(date-fns@2.30.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  antd@5.26.6(date-fns@2.30.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@ant-design/colors': 7.2.1
       '@ant-design/cssinjs': 1.24.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)

@@ -6,8 +6,9 @@ import { isNormalRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { getSettingsSnapshot, settings } from '$modules/settings'
 import type { RecItemTypeOrSeparator } from '$define'
 import { normalizeCardData } from './normalize'
+import { parseFilterByAuthor, parseFilterByTitle } from './parse'
 
-const debug = baseDebug.extend('VideoCard:filter')
+const debug = baseDebug.extend('modules:filter')
 
 export function getFollowedStatus(recommendReason?: string): boolean {
   return !!recommendReason && ['已关注', '新关注'].includes(recommendReason)
@@ -62,32 +63,8 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
 
   const filter = getSettingsSnapshot().filter
   const { minDuration, minPlayCount, minDanmakuCount, byAuthor, byTitle } = filter
-
-  const blockUpMids = new Set<string>()
-  const blockUpNames = new Set<string>()
-  const regMidWithRemark = /^(?<mid>\d+)\([\S ]+\)$/
-  const regMid = /^\d+$/
-  byAuthor.keywords.forEach((x) => {
-    if (regMidWithRemark.test(x)) {
-      const mid = regMidWithRemark.exec(x)?.groups?.mid
-      if (mid) blockUpMids.add(mid)
-    } else if (regMid.test(x)) {
-      blockUpMids.add(x) // 会有纯数字的用户名么?
-    } else {
-      blockUpNames.add(x)
-    }
-  })
-
-  const titleRegexList: RegExp[] = []
-  const titleKeywordList: string[] = []
-  byTitle.keywords.forEach((keyword) => {
-    if (keyword.startsWith('/') && keyword.endsWith('/')) {
-      const regex = new RegExp(keyword.slice(1, -1), 'i')
-      titleRegexList.push(regex)
-    } else {
-      titleKeywordList.push(keyword)
-    }
-  })
+  const { blockUpMids, blockUpNames } = parseFilterByAuthor(byAuthor.keywords)
+  const { titleKeywordList, titleRegexList } = parseFilterByTitle(byTitle.keywords)
 
   return items.filter((item) => {
     // just keep it

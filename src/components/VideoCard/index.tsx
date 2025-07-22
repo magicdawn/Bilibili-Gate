@@ -36,8 +36,10 @@ import { isWebApiSuccess } from '$request'
 import { isFirefox, isSafari } from '$ua'
 import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import type { CssProp } from '$utility/type'
+import { normalizeCardData } from '../../modules/filter/normalize'
 import { videoCardBorderRadiusValue } from '../css-vars'
 import { useLargePreviewRelated } from '../LargePreview/useLargePreview'
+import type { IVideoCardData } from '../../modules/filter/normalize'
 import { multiSelectedCss, useBlockedCardCss } from './card-border-css'
 import { BlacklistCard, DislikedCard, SkeletonCard } from './child-components/other-type-cards'
 import { SimpleProgressBar } from './child-components/PreviewImage'
@@ -51,7 +53,6 @@ import {
   displayAsListCss,
   isDisplayAsList,
 } from './index.shared'
-import { normalizeCardData } from './process/normalize'
 import { fetchImagePreviewData, isImagePreviewDataValid } from './services'
 import { StatItemDisplay } from './stat-item'
 import { ApiTypeTag, ChargeOnlyTag, isChargeOnlyVideo, LiveBadge, RankNumMark, VolMark } from './top-marks'
@@ -61,7 +62,6 @@ import { getRecItemDimension, useLinkTarget, useOpenRelated } from './use/useOpe
 import { usePreviewRelated } from './use/usePreviewRelated'
 import { useWatchlaterRelated } from './use/useWatchlaterRelated'
 import type { ECardDisplay, SharedEmitter, VideoCardEmitter } from './index.shared'
-import type { IVideoCardData } from './process/normalize'
 import type { ImagePreviewData } from './services'
 import type { ComponentRef, CSSProperties, MouseEventHandler, ReactNode } from 'react'
 

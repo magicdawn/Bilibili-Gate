@@ -1,9 +1,13 @@
-import { InputNumber, Tag } from 'antd'
-import { isNil } from 'es-toolkit'
+import { Button, InputNumber, Tag } from 'antd'
+import { isEqual, isNil } from 'es-toolkit'
+import pmap from 'promise.map'
 import { HelpInfo, TOOLTIP_BLACK_BG_COLOR } from '$components/_base/HelpInfo'
 import { CheckboxSettingItem, SwitchSettingItem } from '$components/ModalSettings/setting-item'
+import { getUserNickname } from '$modules/bilibili/user/nickname'
+import { parseUpRepresent } from '$modules/filter/parse'
 import { IconForInfo } from '$modules/icon'
 import { settings, useSettingsSnapshot } from '$modules/settings'
+import toast from '$utility/toast'
 import { EditableListSettingItem } from '../EditableListSettingItem'
 import { SettingsGroup, sharedClassNames } from './shared'
 import type { ComponentProps } from 'react'
@@ -48,7 +52,7 @@ export function TabPaneFilter() {
           <>
             内容过滤
             <HelpInfo>
-              启用过滤会大幅降低加载速度, 谨慎开启! <br />
+              启用过滤会降低加载速度! <br />
               视频/图文/影视: 仅推荐类 Tab 生效 <br />
               UP/标题: 推荐类 / 热门 等Tab 生效
             </HelpInfo>
@@ -168,11 +172,14 @@ export function TabPaneFilter() {
                 使用 mid 屏蔽时支持备注, 格式: <Tag color='success'>mid(备注)</Tag>
                 {'  '}如 <Tag color='success'>8047632(B站官方)</Tag> <br />
                 作用范围: 推荐 / 热门 <br />
+                <Button size='small' onClick={clear_filterByAuthor_uselessRemarkData} className='mt-4px'>
+                  清理无效备注数据
+                </Button>
                 <div className='mt-4px flex items-start'>
                   <IconForInfo className='mt-3px' />
                   <div className='ml-8px flex-1'>
                     B站官方支持黑名单, 对于不喜欢的 UP 可以直接拉黑 <br />
-                    黑名单无视此页开关, 总是会过滤掉 <br />
+                    此脚本会拉取官方黑名单, 并无视此页开关, 总是会过滤掉 <br />
                     这里是客户端过滤, 与黑名单功能重复, 优先使用黑名单功能 <br />
                   </div>
                 </div>
@@ -191,7 +198,7 @@ export function TabPaneFilter() {
               <span>标题</span>
               <HelpInfo>
                 根据标题关键词过滤视频 <br />
-                支持正则(i), 语法：/abc|\d+/ <br />
+                支持普通关键字和正则(i), 语法：/abc|\d+/ <br />
                 作用范围: 推荐 / 热门
               </HelpInfo>
               <SwitchSettingItem configPath='filter.byTitle.enabled' disabled={!enabled} className='ml-10px' />
@@ -206,4 +213,29 @@ export function TabPaneFilter() {
       </SettingsGroup>
     </div>
   )
+}
+
+async function clear_filterByAuthor_uselessRemarkData() {
+  const list = settings.filter.byAuthor.keywords
+  const newList = await pmap(
+    list,
+    async (item) => {
+      const { mid, remark } = parseUpRepresent(item)
+      if (!mid || !remark) return item
+
+      const nickname = await getUserNickname(mid)
+      if (nickname !== remark) return item
+
+      // cleanup remark, keep mid only
+      return mid
+    },
+    Infinity, // concurrency does not matter, since internal `__fetchSpaceAccInfo` has concurrency limit
+  )
+
+  if (isEqual(newList, list)) {
+    return toast('没有「无效备注」数据!')
+  }
+
+  settings.filter.byAuthor.keywords = newList
+  return toast('已清理「无效备注」数据!')
 }
