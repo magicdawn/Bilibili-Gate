@@ -13,7 +13,7 @@ import { QueueStrategy, type IService } from '../../_base'
 import { defaultRankTab, ERankApiType, getRankTabRequestConfig, type IRankTab } from './rank-tab'
 import { rankStore, updateRankTabs } from './store'
 import type { RankItem } from './types'
-import type { ReactNode } from 'react'
+import type { MouseEvent, ReactNode } from 'react'
 
 export class RankRecService implements IService {
   loaded = false
@@ -111,6 +111,14 @@ function RankUsageInfo() {
     return { normalList, pgcList }
   }, [tabs])
 
+  const handleDropdownButtonClick = useMemoizedFn((e: MouseEvent) => {
+    const offset = e.shiftKey ? -1 : 1
+    const index = normalList.findIndex((x) => x.slug === slug)
+    const nextIndex = (index + offset + normalList.length) % normalList.length
+    rankStore.slug = normalList[nextIndex].slug
+    onRefresh?.()
+  })
+
   const popoverContent = (
     <>
       {renderRankTabList(normalList, '视频')}
@@ -128,7 +136,9 @@ function RankUsageInfo() {
       content={popoverContent}
       styles={{ body: { border: `1px solid ${usePopoverBorderColor()}` } }}
     >
-      <Button css={[popoverOpen && buttonOpenCss]}>{currentTab.name}</Button>
+      <Button css={[popoverOpen && buttonOpenCss]} onClick={handleDropdownButtonClick} className='outline-none!'>
+        {currentTab.name}
+      </Button>
     </Popover>
   )
 
