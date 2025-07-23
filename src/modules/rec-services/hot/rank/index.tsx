@@ -112,10 +112,11 @@ function RankUsageInfo() {
   }, [tabs])
 
   const handleDropdownButtonClick = useMemoizedFn((e: MouseEvent) => {
+    const list = [...normalList, ...pgcList]
     const offset = e.shiftKey ? -1 : 1
-    const index = normalList.findIndex((x) => x.slug === slug)
-    const nextIndex = (index + offset + normalList.length) % normalList.length
-    rankStore.slug = normalList[nextIndex].slug
+    const index = list.findIndex((x) => x.slug === slug)
+    const nextIndex = (index + offset + list.length) % list.length
+    rankStore.slug = list[nextIndex].slug
     onRefresh?.()
   })
 
