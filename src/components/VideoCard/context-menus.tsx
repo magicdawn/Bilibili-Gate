@@ -28,6 +28,7 @@ import { antMessage, antModal, defineAntMenus, type AntMenuItem } from '$modules
 import { UserBlacklistService } from '$modules/bilibili/me/relations/blacklist'
 import { UserfollowService } from '$modules/bilibili/me/relations/follow'
 import { setNicknameCache } from '$modules/bilibili/user/nickname'
+import { getFollowedStatus, isApiRecLike } from '$modules/filter'
 import { openNewTab } from '$modules/gm'
 import {
   IconForBlacklist,
@@ -57,8 +58,7 @@ import { SHOW_SPACE_UPLOAD_ONLY, SpaceUploadQueryKey } from '$modules/rec-servic
 import { settings, updateSettingsInnerArray } from '$modules/settings'
 import toast from '$utility/toast'
 import type { OnRefresh } from '$components/RecGrid/useRefresh'
-import { getFollowedStatus, isApiRecLike } from '../../modules/filter'
-import type { IVideoCardData } from '../../modules/filter/normalize'
+import type { IVideoCardData } from '$modules/filter/normalize'
 import { copyContent } from './index.shared'
 import { watchlaterAdd } from './services'
 import { getLinkTarget } from './use/useOpenRelated'

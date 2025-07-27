@@ -6,10 +6,10 @@ import { antMessage } from '$modules/antd'
 import { IconForLoading, IconForWatchlater } from '$modules/icon'
 import { IconAnimatedChecked } from '$modules/icon/animated-checked'
 import { watchlaterState } from '$modules/rec-services/watchlater'
+import type { IVideoCardData } from '$modules/filter/normalize'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
 import { watchlaterAdd, watchlaterDel } from '../services'
 import type { VideoCardInnerProps } from '..'
-import type { IVideoCardData } from '../../../modules/filter/normalize'
 import type { MouseEvent } from 'react'
 
 /**

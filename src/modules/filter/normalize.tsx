@@ -1,6 +1,7 @@
 import { BvCode } from '@mgdn/bvid'
 import dayjs from 'dayjs'
 import { appWarn } from '$common'
+import { defineStatItems } from '$components/VideoCard/stat-item'
 import {
   isAppRecommend,
   isDynamicFeed,
@@ -34,9 +35,8 @@ import { ELiveStatus } from '$modules/rec-services/live/live-enum'
 import { spaceUploadAvatarCache } from '$modules/rec-services/space-upload'
 import { toHttps } from '$utility/url'
 import { formatDuration, formatTimeStamp, getVideoInvalidReason, parseCount, parseDuration } from '$utility/video'
+import type { StatItemField, StatItemType } from '$components/VideoCard/stat-item'
 import type { FavItemExtend } from '$modules/rec-services/fav/types'
-import { defineStatItems } from '../../components/VideoCard/stat-item'
-import type { StatItemField, StatItemType } from '../../components/VideoCard/stat-item'
 import type { ReactNode } from 'react'
 
 export const DESC_SEPARATOR = ' · '

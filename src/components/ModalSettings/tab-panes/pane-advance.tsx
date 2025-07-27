@@ -21,7 +21,7 @@ import {
 } from '$modules/settings'
 import { exportSettings, importSettings } from '$modules/settings/file-backup'
 import { articleDraft, restoreOmitPaths } from '$modules/settings/index.shared'
-import { set_HAS_RESTORED_SETTINGS } from '../../../modules/settings/restore-flag'
+import { set_HAS_RESTORED_SETTINGS } from '$modules/settings/restore-flag'
 import { toastAndReload } from '../index.shared'
 import { ResetPartialSettingsButton, SettingsGroup, sharedClassNames } from './shared'
 

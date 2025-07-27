@@ -9,6 +9,7 @@ import { settings, useSettingsSnapshot } from '$modules/settings'
 import type { RecItemType } from '$define'
 import type { AntMenuItem } from '$modules/antd'
 import type { VideoPage } from '$modules/bilibili/video/types/page-list'
+import type { IVideoCardData } from '$modules/filter/normalize'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
 import {
   ForceAutoPlay,
@@ -19,7 +20,6 @@ import {
   VideoLinkOpenMode,
   VideoLinkOpenModeKey,
 } from '../index.shared'
-import type { IVideoCardData } from '../../../modules/filter/normalize'
 import { renderInPipWindow } from './_pip-window'
 import type { ComponentProps, MouseEvent, MouseEventHandler, ReactNode } from 'react'
 
