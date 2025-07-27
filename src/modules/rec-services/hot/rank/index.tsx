@@ -113,8 +113,10 @@ function RankUsageInfo() {
 
   const handleDropdownButtonClick = useMemoizedFn((e: MouseEvent) => {
     const list = [...normalList, ...pgcList]
-    const offset = e.shiftKey ? -1 : 1
+    if (!list.length) return
     const index = list.findIndex((x) => x.slug === slug)
+    if (index === -1) return
+    const offset = e.shiftKey ? -1 : 1
     const nextIndex = (index + offset + list.length) % list.length
     rankStore.slug = list[nextIndex].slug
     onRefresh?.()
