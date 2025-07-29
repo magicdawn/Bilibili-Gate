@@ -1,10 +1,9 @@
 import { css } from '@emotion/react'
 import { Button } from 'antd'
+import { useUnoMerge } from 'unocss-merge/react'
 import { APP_CLS_TAB_BAR, baseDebug } from '$common'
-import { zIndexRecHeader } from '$common/css-vars-export.module.scss'
 import { useSizeExpression } from '$common/hooks/useResizeObserverExpression'
 import { useSticky } from '$common/hooks/useSticky'
-import { bgValue } from '$components/css-vars'
 import { ModalSettingsHotkey } from '$components/ModalSettings'
 import { OnRefreshContext } from '$components/RecGrid/useRefresh'
 import { ECardDisplay } from '$components/VideoCard/index.shared'
@@ -44,8 +43,8 @@ export const RecHeader = forwardRef<
     pureRecommend,
     showModalFeedEntry,
     style,
-    __internalShowGridListSwitcher,
     multiSelect: { showIcon: multiSelectShowIcon },
+    __internalShowGridListSwitcher,
   } = useSettingsSnapshot()
   const { cardDisplay, useStickyTabbar } = style.pureRecommend // style sub
 
@@ -99,91 +98,90 @@ export const RecHeader = forwardRef<
     settings.style.pureRecommend.cardDisplay = list[nextIndex]
   })
 
+  const _className = useUnoMerge(
+    pureRecommend && useStickyTabbar && 'sticky z-gate-rec-header b-b-1px b-b-transparent b-b-solid mb-10px ',
+    pureRecommend && useStickyTabbar && sticky && String.raw`b-b-gate-bg-lv1 bg-[var(--bg1\_float)]`,
+    sticky && 'sticky-state-on',
+  )
+
+  // 我判断不好哪个更好...
+  const expandToFull = false
+
   return (
-    <>
-      <OnRefreshContext.Provider value={onRefresh}>
+    <OnRefreshContext.Provider value={onRefresh}>
+      <div
+        ref={stickyRef}
+        data-role='tab-bar-wrapper'
+        className={_className}
+        css={
+          pureRecommend &&
+          useStickyTabbar && [
+            css`
+              top: ${headerHeight - 1}px; // 有缝隙, 故 -1 px
+            `,
+            ...(expandToFull
+              ? sticky
+                ? [
+                    expandToFullWidthCss,
+                    css`
+                      box-shadow: ${boxShadow};
+                    `,
+                  ]
+                : []
+              : []),
+          ]
+        }
+      >
         <div
-          ref={stickyRef}
-          data-role='tab-bar-wrapper'
-          className={clsx({ sticky })}
-          css={
-            pureRecommend &&
-            useStickyTabbar && [
-              css`
-                position: sticky;
-                top: ${headerHeight - 1}px; // 有缝隙, 故 -1 px
-                z-index: ${zIndexRecHeader};
-                margin-bottom: 10px;
-                transition:
-                  background-color 0.3s ease-in-out,
-                  box-shadow 0.3s ease-in-out,
-                  margin-bottom 0.3s ease-in-out;
-              `,
-              sticky && [
-                css`
-                  border-bottom: 1px solid oklch(from ${bgValue} calc(l + ${dark ? 0.15 : -0.15}) c h / 50%);
-                  background-color: var(--bg1_float);
-                  box-shadow: ${boxShadow};
-                `,
-                expandToFullWidthCss,
-              ],
-            ]
-          }
+          data-role='tab-bar'
+          className={clsx(
+            APP_CLS_TAB_BAR,
+            'relative mb-0 h-auto flex flex-row items-center justify-between gap-x-15px px-0 py-8px',
+          )}
         >
-          <div
-            data-role='tab-bar'
-            className={clsx(
-              APP_CLS_TAB_BAR,
-              'relative mb-0 h-auto flex flex-row items-center justify-between gap-x-15px px-0 py-8px',
-            )}
-          >
-            <div
-              data-class-name='left'
-              className='h-full flex flex-shrink-1 flex-wrap items-center gap-x-15px gap-y-8px'
-            >
-              <VideoSourceTab onRefresh={onRefresh} />
-              {leftSlot}
-            </div>
+          <div data-class-name='left' className='h-full flex flex-shrink-1 flex-wrap items-center gap-x-15px gap-y-8px'>
+            <VideoSourceTab onRefresh={onRefresh} />
+            {leftSlot}
+          </div>
 
-            <div data-class-name='right' className='h-full flex flex-shrink-0 items-center gap-x-8px'>
-              {rightSlot}
+          <div data-class-name='right' className='h-full flex flex-shrink-0 items-center gap-x-8px'>
+            {rightSlot}
 
-              {!accessKey && showAccessKeyManage && <AccessKeyManage style={{ marginLeft: 5 }} />}
+            {!accessKey && showAccessKeyManage && <AccessKeyManage style={{ marginLeft: 5 }} />}
 
-              {__internalShowGridListSwitcher && (
-                <AntdTooltip title='切换卡片显示模式' arrow={false}>
-                  <Button className='icon-only-round-button' onClick={toggleCardDisplay}>
-                    {cardDisplay === ECardDisplay.Grid ? (
-                      <IconTablerLayoutGrid className='size-14px cursor-pointer' />
-                    ) : (
-                      <IconTablerListDetails className='size-14px cursor-pointer' />
-                    )}
-                  </Button>
-                </AntdTooltip>
-              )}
-
-              {multiSelectShowIcon && <MultiSelectButton iconOnly addCopyActions />}
-
-              <AntdTooltip title='设置' arrow={false}>
-                <Button onClick={showModalSettings} className='icon-only-round-button'>
-                  <ModalSettingsHotkey />
-                  <IconForConfig className='size-14px' />
+            {__internalShowGridListSwitcher && (
+              <AntdTooltip title='切换卡片显示模式' arrow={false}>
+                <Button className='icon-only-round-button' onClick={toggleCardDisplay}>
+                  {cardDisplay === ECardDisplay.Grid ? (
+                    <IconTablerLayoutGrid className='size-14px cursor-pointer' />
+                  ) : (
+                    <IconTablerListDetails className='size-14px cursor-pointer' />
+                  )}
                 </Button>
               </AntdTooltip>
+            )}
 
-              <RefreshButton refreshing={refreshing} onRefresh={onRefresh} refreshHotkeyEnabled={shortcutEnabled} />
+            {multiSelectShowIcon && <MultiSelectButton iconOnly addCopyActions />}
 
-              {showModalFeedEntry && (
-                <Button onClick={showModalFeed} className='gap-0'>
-                  <span className='relative top-1px'>查看更多</span>
-                  <IconParkOutlineRight />
-                </Button>
-              )}
-            </div>
+            <AntdTooltip title='设置' arrow={false}>
+              <Button onClick={showModalSettings} className='icon-only-round-button'>
+                <ModalSettingsHotkey />
+                <IconForConfig className='size-14px' />
+              </Button>
+            </AntdTooltip>
+
+            <RefreshButton refreshing={refreshing} onRefresh={onRefresh} refreshHotkeyEnabled={shortcutEnabled} />
+
+            {showModalFeedEntry && (
+              <Button onClick={showModalFeed} className='gap-0'>
+                <span className='relative top-1px'>查看更多</span>
+                <IconParkOutlineRight />
+              </Button>
+            )}
           </div>
         </div>
-      </OnRefreshContext.Provider>
-    </>
+      </div>
+    </OnRefreshContext.Provider>
   )
 })
 

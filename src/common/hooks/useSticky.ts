@@ -22,7 +22,7 @@ export function useSticky<T extends HTMLElement>() {
       const stickyOffset = Number.parseInt(getComputedStyle(stickyRef.current).top)
       const stickyActive = refPageOffset <= stickyOffset
       setSticky(stickyActive)
-    }, 150)
+    }, 16)
     observe()
 
     // Bind events
