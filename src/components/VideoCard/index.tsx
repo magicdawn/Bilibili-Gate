@@ -29,7 +29,6 @@ import { antNotification } from '$modules/antd'
 import { useInBlacklist } from '$modules/bilibili/me/relations/blacklist'
 import { normalizeCardData } from '$modules/filter/normalize'
 import { useMultiSelectState } from '$modules/multi-select/store'
-import { UserFavService } from '$modules/rec-services/fav/user-fav-service'
 import { ELiveStatus } from '$modules/rec-services/live/live-enum'
 import { useWatchlaterState } from '$modules/rec-services/watchlater'
 import { settings, useSettingsSnapshot } from '$modules/settings'
@@ -57,6 +56,7 @@ import { fetchImagePreviewData, isImagePreviewDataValid } from './services'
 import { StatItemDisplay } from './stat-item'
 import { ApiTypeTag, ChargeOnlyTag, isChargeOnlyVideo, LiveBadge, RankNumMark, VolMark } from './top-marks'
 import { useDislikeRelated } from './use/useDislikeRelated'
+import { useInitFavContext } from './use/useFavRelated'
 import { useMultiSelectRelated } from './use/useMultiSelect'
 import { getRecItemDimension, useLinkTarget, useOpenRelated } from './use/useOpenRelated'
 import { usePreviewRelated } from './use/usePreviewRelated'
@@ -358,19 +358,7 @@ const VideoCardInner = memo(function VideoCardInner({
   /**
    * 收藏状态
    */
-  const [favFolderNames, setFavFolderNames] = useState<string[] | undefined>(undefined)
-  const [favFolderUrls, setFavFolderUrls] = useState<string[] | undefined>(undefined)
-  const updateFavFolderNames = useMemoizedFn(async () => {
-    // 只在「稍后再看」提供收藏状态
-    if (item.api !== 'watchlater') return
-    if (!avid) return
-    const result = await UserFavService.getVideoFavState(avid)
-    if (result) {
-      const { favFolderNames, favFolderUrls } = result
-      setFavFolderNames(favFolderNames)
-      setFavFolderUrls(favFolderUrls)
-    }
-  })
+  const favContext = useInitFavContext(item, avid)
 
   // 打开视频卡片
   const {
@@ -439,8 +427,7 @@ const VideoCardInner = memo(function VideoCardInner({
     watchlaterAdded,
     hasWatchlaterEntry,
     onToggleWatchlater,
-    favFolderNames,
-    favFolderUrls,
+    favContext,
     onMoveToFirst,
     hasDislikeEntry,
     onTriggerDislike,
@@ -452,7 +439,7 @@ const VideoCardInner = memo(function VideoCardInner({
 
   const onContextMenuOpenChange = useMemoizedFn((open: boolean) => {
     if (!open) return
-    updateFavFolderNames()
+    favContext.updateFavFolderNames()
   })
 
   /**

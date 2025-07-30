@@ -43,7 +43,7 @@ export const DESC_SEPARATOR = ' · '
 
 export interface IVideoCardData {
   // video
-  avid?: string
+  avid?: string // should be a number, but use string for safety
   bvid?: string
   cid?: number
   goto: string

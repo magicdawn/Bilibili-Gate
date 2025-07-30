@@ -64,3 +64,23 @@ export function useRefBox<T>(initialValue: T) {
     [get, set],
   )
 }
+
+export type StateBox<T> = ReturnType<typeof useStateBox<T>>
+export function useStateBox<T>(initialValue: T) {
+  const [state, setState] = useState(initialValue)
+  const get = useMemoizedFn(() => state)
+  const set = setState
+  return useMemo(
+    () => ({
+      get,
+      set,
+      get state() {
+        return get()
+      },
+      set state(newValue: T) {
+        set(newValue)
+      },
+    }),
+    [get, set],
+  )
+}
