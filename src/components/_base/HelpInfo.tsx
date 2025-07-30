@@ -20,7 +20,7 @@ export function HelpInfo({
   useBlackBg?: boolean // 默认使用 colorPrimary, 链接可能看不清
 } & ComponentProps<'svg'>) {
   IconComponent ??= DefaultIconComponent
-  const icon = <IconComponent {...restSvgProps} className={useUnoMerge('cursor-pointer size-16px ml-4px', className)} />
+  const icon = <IconComponent {...restSvgProps} className={useUnoMerge('ml-4px size-16px cursor-pointer', className)} />
   return (
     !!children && (
       <AntdTooltip color={useBlackBg ? TOOLTIP_BLACK_BG_COLOR : undefined} {...tooltipProps} title={children}>

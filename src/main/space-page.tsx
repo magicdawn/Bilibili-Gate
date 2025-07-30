@@ -192,7 +192,7 @@ function ActionButton({
 }: ComponentProps<'a'> & { tooltip?: ReactNode }) {
   const { usingNewSpacePage } = useSnapshot(state)
   const _className = useUnoMerge(
-    'w-150px rounded-6px cursor-pointer flex items-center justify-center h-34px text-14px font-700 color-white transition-property-all transition-duration-300 b-1px b-solid b-white/20% bg-white/14% hover:bg-white/40%',
+    'h-34px w-150px flex cursor-pointer items-center justify-center b-1px b-white/20% rounded-6px b-solid bg-white/14% text-14px color-white font-700 transition-duration-300 transition-property-all hover:bg-white/40%',
     className,
   )
   const btn = usingNewSpacePage ? (

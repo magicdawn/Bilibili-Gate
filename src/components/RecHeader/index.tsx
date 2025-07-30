@@ -99,7 +99,7 @@ export const RecHeader = forwardRef<
   })
 
   const _className = useUnoMerge(
-    pureRecommend && useStickyTabbar && 'sticky z-gate-rec-header b-b-1px b-b-transparent b-b-solid mb-10px ',
+    pureRecommend && useStickyTabbar && 'sticky z-gate-rec-header mb-10px b-b-1px b-b-transparent b-b-solid',
     pureRecommend && useStickyTabbar && sticky && String.raw`b-b-gate-bg-lv1 bg-[var(--bg1\_float)]`,
     sticky && 'sticky-state-on',
   )

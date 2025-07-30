@@ -105,6 +105,6 @@ export function BaseModal({
 }
 
 export const ModalClose = ({ className, ...props }: ComponentProps<'svg'>) => {
-  const _className = useUnoMerge('cursor-pointer size-18px ml-10px', className)
+  const _className = useUnoMerge('ml-10px size-18px cursor-pointer', className)
   return <IconParkOutlineClose {...props} className={_className} />
 }

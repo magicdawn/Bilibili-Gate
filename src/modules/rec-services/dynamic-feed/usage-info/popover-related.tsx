@@ -293,7 +293,7 @@ function PopoverContent({
               <a
                 href={formatFollowGroupUrl(selectedGroup?.tagid || '')}
                 target='_blank'
-                className={`inline-flex items-center text-size-16px mx-4px ${APP_CLS_USE_ANT_LINK_COLOR}`}
+                className={`mx-4px inline-flex items-center text-size-16px ${APP_CLS_USE_ANT_LINK_COLOR}`}
               >
                 <IconForOpenExternalLink className='mr-2px size-18px' />
                 {selectedGroup?.name}

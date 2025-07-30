@@ -65,13 +65,13 @@ export const VideoCardActionButton = memo(
       const _className = useMemo(() => {
         return unoMerge(
           'action-button',
-          'relative size-28px rounded-6px cursor-pointer bg-[rgb(33_33_33_/_0.7)] color-white',
+          'relative size-28px cursor-pointer rounded-6px bg-[rgb(33_33_33_/_0.7)] color-white',
           'b-1px b-solid',
           active ? 'b-gate-primary' : 'b-#444',
           'hover:b-gate-primary',
           useMotion ? 'inline-flex' : visible ? 'inline-flex' : 'hidden',
           'items-center justify-center',
-          '[&_svg]:(select-none pointer-events-none)',
+          '[&_svg]:(pointer-events-none select-none)',
           className,
         )
       }, [active, className, visible, useMotion])
