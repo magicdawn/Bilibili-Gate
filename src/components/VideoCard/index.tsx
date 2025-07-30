@@ -54,7 +54,14 @@ import {
 } from './index.shared'
 import { fetchImagePreviewData, isImagePreviewDataValid } from './services'
 import { StatItemDisplay } from './stat-item'
-import { ApiTypeTag, ChargeOnlyTag, isChargeOnlyVideo, LiveBadge, RankNumMark, VolMark } from './top-marks'
+import {
+  ApiTypeTag,
+  DynamicFeedBadgeDisplay,
+  LiveBadge,
+  RankNumMark,
+  shouldShowDynamicFeedBadge,
+  VolMark,
+} from './top-marks'
 import { useDislikeRelated } from './use/useDislikeRelated'
 import { useInitFavContext } from './use/useFavRelated'
 import { useMultiSelectRelated } from './use/useMultiSelect'
@@ -445,7 +452,7 @@ const VideoCardInner = memo(function VideoCardInner({
   /**
    * top marks
    */
-  const _isChargeOnly = isChargeOnlyVideo(item, recommendReason) // 充电专属
+  const hasDynmaicFeedBadge = shouldShowDynamicFeedBadge(item)
   const _isRank = isRank(item)
   const _isStreaming = // 直播中
     (isLive(item) && item.live_status === ELiveStatus.Streaming) ||
@@ -461,8 +468,8 @@ const VideoCardInner = memo(function VideoCardInner({
       {/* 我不想看 */}
       {dislikeButtonEl}
 
-      {/* 动态: 充电专属 */}
-      {_isChargeOnly && <ChargeOnlyTag />}
+      {/* 动态: 充电专属 | 其他  */}
+      {hasDynmaicFeedBadge && <DynamicFeedBadgeDisplay item={item} />}
 
       {/* 热门: 排行榜 */}
       {_isRank && <RankNumMark item={item} />}

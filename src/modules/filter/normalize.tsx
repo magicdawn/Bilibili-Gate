@@ -28,6 +28,7 @@ import {
 import { EApiType } from '$define/index.shared'
 import { PcRecGoto } from '$define/pc-recommend'
 import { AntdTooltip } from '$modules/antd/custom'
+import { DynamicFeedBadgeText } from '$modules/rec-services/dynamic-feed/store'
 import { isFavFolderPrivate } from '$modules/rec-services/fav/fav-util'
 import { IconForCollection, IconForPrivateFolder, IconForPublicFolder } from '$modules/rec-services/fav/usage-info'
 import { isPgcSeasonRankItem, isPgcWebRankItem } from '$modules/rec-services/hot/rank/rank-tab'
@@ -36,6 +37,7 @@ import { spaceUploadAvatarCache } from '$modules/rec-services/space-upload'
 import { toHttps } from '$utility/url'
 import { formatDuration, formatTimeStamp, getVideoInvalidReason, parseCount, parseDuration } from '$utility/video'
 import type { StatItemField, StatItemType } from '$components/VideoCard/stat-item'
+import type { Badge as DynamicFeedBadge } from '$define/pc-dynamic-feed'
 import type { FavItemExtend } from '$modules/rec-services/fav/types'
 import type { ReactNode } from 'react'
 
@@ -81,10 +83,9 @@ export interface IVideoCardData {
   appBadge?: string
   appBadgeDesc?: string
   rankingDesc?: string
-
-  //
   liveExtraDesc?: string
   liveAreaName?: string
+  dynBadge?: DynamicFeedBadge
 }
 
 type Getter<T> = Record<RecItemType['api'], (item: RecItemType) => T>
@@ -290,6 +291,7 @@ function apiPcAdapter(item: PcRecItemExtend): IVideoCardData {
   }
 }
 
+export type { DynamicFeedBadge }
 function apiDynamicAdapter(item: DynamicFeedItemExtend): IVideoCardData {
   const v = item.modules.module_dynamic.major.archive
   const author = item.modules.module_author
@@ -306,7 +308,10 @@ function apiDynamicAdapter(item: DynamicFeedItemExtend): IVideoCardData {
     pubts: author.pub_ts,
     duration: parseDuration(v.duration_text) || 0,
     durationStr: v.duration_text,
-    recommendReason: v.badge.text,
+
+    // 普通视频显示 recommendReason, 其他显示 badge
+    recommendReason: v.badge.text === DynamicFeedBadgeText.Upload ? v.badge.text : undefined,
+    dynBadge: v.badge,
 
     // stat
     statItems: defineStatItems([

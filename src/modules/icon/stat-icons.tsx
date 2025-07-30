@@ -1,6 +1,6 @@
-import { createSvgComponent } from './util'
+import { defineSvgComponent } from './util'
 
-export const IconForStatPlay = createSvgComponent((props) => {
+export const IconForStatPlay = defineSvgComponent((props) => {
   return (
     <svg viewBox='0 0 24 24' width='24' height='24' fill='#fff' {...props}>
       <path
@@ -15,7 +15,7 @@ export const IconForStatPlay = createSvgComponent((props) => {
   )
 })
 
-export const IconForStatDanmaku = createSvgComponent((props) => {
+export const IconForStatDanmaku = defineSvgComponent((props) => {
   return (
     <svg viewBox='0 0 24 24' width='24' height='24' fill='#ffffff' {...props}>
       <path
@@ -42,7 +42,7 @@ export const IconForStatDanmaku = createSvgComponent((props) => {
   )
 })
 
-export const IconForRoll = createSvgComponent(function (props) {
+export const IconForRoll = defineSvgComponent(function (props) {
   return (
     <svg viewBox='0 0 16 16' width='16' height='16' fill='currentColor' {...props}>
       <path

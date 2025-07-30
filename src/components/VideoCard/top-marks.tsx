@@ -1,39 +1,39 @@
 import { Dropdown } from 'antd'
+import { Picture } from '$components/_base/Picture'
 import { primaryColorValue } from '$components/css-vars'
 import { isDynamicFeed, isFav, isWatchlater, type RankItemExtend, type RecItemType } from '$define'
 import { EApiType } from '$define/index.shared'
 import { openNewTab } from '$modules/gm'
 import { IconForLive } from '$modules/icon'
+import { DynamicFeedBadgeText } from '$modules/rec-services/dynamic-feed/store'
 import { isNormalRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import type { NormalRankItem } from '$modules/rec-services/hot/rank/types'
 import { useTooltip } from './child-components/VideoCardActions'
 import { useLinkNewTab } from './use/useOpenRelated'
 import type { CSSProperties, ReactNode } from 'react'
 
-export const CHARGE_ONLY_TEXT = '充电专属'
-
-export function isChargeOnlyVideo(item: RecItemType, recommendReason?: string) {
+export function shouldShowDynamicFeedBadge(item: RecItemType) {
   if (item.api !== EApiType.DynamicFeed) return false
-  recommendReason ||= item.modules?.module_dynamic?.major?.archive?.badge?.text as string
-  return recommendReason === CHARGE_ONLY_TEXT
+  const badge = item.modules?.module_dynamic?.major?.archive?.badge
+  if (!badge || !badge.text) return false
+  if (badge.text === DynamicFeedBadgeText.Upload) return false
+  return true
 }
 
-export function ChargeOnlyTag() {
+export function DynamicFeedBadgeDisplay({ item }: { item: RecItemType }) {
+  if (!shouldShowDynamicFeedBadge(item)) return null
+  if (item.api !== EApiType.DynamicFeed) return null
+  const badge = item.modules?.module_dynamic?.major?.archive?.badge
+  const hasIcon = !!badge.icon_url
   return (
     <div
       className={clsx(
-        'ml-4px rounded-2px',
-        'flex-center py-1px pl-4px pr-6px',
-        'whitespace-nowrap bg-gate-primary text-center text-size-10px color-white line-height-[17px]',
+        'flex-center whitespace-nowrap rounded-2px bg-gate-primary py-1px text-center text-11px color-white line-height-[17px]',
+        hasIcon ? 'pl-4px pr-6px' : 'px-5px', // 有图标左边更显空旷
       )}
     >
-      <svg width='16' height='17' viewBox='0 0 16 17' fill='none' xmlns='http://www.w3.org/2000/svg'>
-        <path
-          d='M5.00014 14.9839C4.94522 15.1219 5.12392 15.2322 5.22268 15.1212L11.5561 8.00214C11.7084 7.83093 11.5869 7.56014 11.3578 7.56014H9.13662L11.6019 3.57178C11.7112 3.39489 11.584 3.16666 11.376 3.16666H7.4475C7.22576 3.16666 7.02737 3.30444 6.94992 3.51221L4.68362 9.59189C4.61894 9.76539 4.74725 9.95014 4.93241 9.95014H7.00268L5.00014 14.9839Z'
-          fill='white'
-        />
-      </svg>
-      {CHARGE_ONLY_TEXT}
+      {hasIcon && <Picture src={`${badge.icon_url}@!web-dynamic`} className='h-16px w-16px' />}
+      {badge.text}
     </div>
   )
 }

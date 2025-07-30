@@ -1,5 +1,5 @@
 import IconCuidaShuffleOutline from '~icons/cuida/shuffle-outline' // 这个不能自动 import 不知为何
-import { createSvgComponent } from './util'
+import { defineSvgComponent } from './util'
 
 export const IconForDislike = IconPhThumbsDownDuotone
 export const IconForConfig = IconParkOutlineConfig
@@ -50,7 +50,7 @@ export function IconForLive({
   }
 }
 
-export const IconForWatchlater = createSvgComponent((props) => {
+export const IconForWatchlater = defineSvgComponent((props) => {
   return (
     <svg viewBox='0 0 20 20' width='20' height='20' fill='currentColor' {...props}>
       <path
@@ -89,3 +89,14 @@ export function withAscIcon(label: string) {
     </span>
   )
 }
+
+export const IconForChargeOnly = defineSvgComponent((props) => {
+  return (
+    <svg width='16' height='17' viewBox='0 0 16 17' fill='none' {...props}>
+      <path
+        d='M5.00014 14.9839C4.94522 15.1219 5.12392 15.2322 5.22268 15.1212L11.5561 8.00214C11.7084 7.83093 11.5869 7.56014 11.3578 7.56014H9.13662L11.6019 3.57178C11.7112 3.39489 11.584 3.16666 11.376 3.16666H7.4475C7.22576 3.16666 7.02737 3.30444 6.94992 3.51221L4.68362 9.59189C4.61894 9.76539 4.74725 9.95014 4.93241 9.95014H7.00268L5.00014 14.9839Z'
+        fill='white'
+      />
+    </svg>
+  )
+})

@@ -7,7 +7,6 @@ import { APP_CLS_USE_ANT_LINK_COLOR, buttonOpenCss, usePopoverBorderColor } from
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { primaryColorValue } from '$components/css-vars'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
-import { CHARGE_ONLY_TEXT } from '$components/VideoCard/top-marks'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconForOpenExternalLink } from '$modules/icon'
@@ -34,6 +33,7 @@ import {
   DF_SELECTED_KEY_PREFIX_GROUP,
   DF_SELECTED_KEY_PREFIX_UP,
   dfStore,
+  DynamicFeedBadgeText,
   DynamicFeedQueryKey,
   DynamicFeedVideoMinDuration,
   DynamicFeedVideoMinDurationConfig,
@@ -185,7 +185,7 @@ function PopoverContent({
         <div className={classes.sectionTilte}>
           视频类型
           <HelpInfo>
-            「{CHARGE_ONLY_TEXT}」在此程序中归类为「投稿视频」
+            「{DynamicFeedBadgeText.ChargeOnly}」在此程序中归类为「投稿视频」
             <br />
             「动态视频」时长通常较短
           </HelpInfo>
@@ -233,12 +233,12 @@ function PopoverContent({
               <AntdTooltip
                 title={
                   <>
-                    隐藏「{CHARGE_ONLY_TEXT}」视频 <br />
+                    隐藏「{DynamicFeedBadgeText.ChargeOnly}」视频 <br />
                     仅对当前 UP 或 分组生效
                   </>
                 }
               >
-                <span style={{ userSelect: 'none' }}>隐藏「{CHARGE_ONLY_TEXT}」</span>
+                <span style={{ userSelect: 'none' }}>隐藏「{DynamicFeedBadgeText.ChargeOnly}」</span>
               </AntdTooltip>
             </Checkbox>
           </div>

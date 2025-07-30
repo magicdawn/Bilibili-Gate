@@ -2,7 +2,6 @@ import dayjs from 'dayjs'
 import pmap from 'promise.map'
 import { snapshot } from 'valtio'
 import { baseDebug } from '$common'
-import { CHARGE_ONLY_TEXT } from '$components/VideoCard/top-marks'
 import { EApiType } from '$define/index.shared'
 import { getFollowGroupContent } from '$modules/bilibili/me/follow-group'
 import { settings } from '$modules/settings'
@@ -21,6 +20,7 @@ import {
   DF_SELECTED_KEY_PREFIX_GROUP,
   DF_SELECTED_KEY_PREFIX_UP,
   dfStore,
+  DynamicFeedBadgeText,
   DynamicFeedVideoMinDuration,
   DynamicFeedVideoType,
   QUERY_DYNAMIC_MIN_ID,
@@ -371,10 +371,10 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
         // type only
         const currentLabel = x.modules.module_dynamic.major.archive.badge.text as string
         if (this.dynamicFeedVideoType === DynamicFeedVideoType.DynamicOnly) {
-          return currentLabel === '动态视频'
+          return currentLabel === DynamicFeedBadgeText.Dynamic
         }
         if (this.dynamicFeedVideoType === DynamicFeedVideoType.UploadOnly) {
-          return currentLabel === '投稿视频' || currentLabel === CHARGE_ONLY_TEXT
+          return currentLabel === DynamicFeedBadgeText.Upload || currentLabel === DynamicFeedBadgeText.ChargeOnly
         }
         return false
       })
@@ -382,7 +382,8 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
       // by 充电专属
       .filter((x) => {
         if (!this.hideChargeOnlyVideos) return true
-        const chargeOnly = (x.modules?.module_dynamic?.major?.archive?.badge?.text as string) === CHARGE_ONLY_TEXT
+        const chargeOnly =
+          (x.modules?.module_dynamic?.major?.archive?.badge?.text as string) === DynamicFeedBadgeText.ChargeOnly
         return !chargeOnly
       })
 

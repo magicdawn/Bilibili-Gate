@@ -349,13 +349,8 @@ export interface Archive {
 export interface Badge {
   bg_color: Color
   color: TextColorEnum
-  icon_url: null
-  text: BadgeText
-}
-
-export enum BadgeText {
-  动态视频 = '动态视频',
-  投稿视频 = '投稿视频',
+  icon_url: null | string
+  text: string
 }
 
 export interface Stat {
