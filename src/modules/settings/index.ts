@@ -204,6 +204,9 @@ export const initialSettings = {
       // sticky tabbar
       useStickyTabbar: true,
 
+      // expand-to-full-width & box-shadow
+      stickyTabbarShadow: false,
+
       // custom grid | default grid
       useCustomGrid: true,
 

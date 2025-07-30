@@ -16,6 +16,7 @@ import { settings, useSettingsSnapshot } from '$modules/settings'
 import { isMac, isSafari } from '$ua'
 import { getElementOffset, shouldDisableShortcut } from '$utility/dom'
 import type { OnRefresh } from '$components/RecGrid/useRefresh'
+import type { CssProp } from '$utility/type'
 import { AccessKeyManage } from '../AccessKeyManage'
 import { showModalFeed, showModalSettings, toggleModalSettings } from './modals'
 import { RefreshButton } from './RefreshButton'
@@ -46,7 +47,7 @@ export const RecHeader = forwardRef<
     multiSelect: { showIcon: multiSelectShowIcon },
     __internalShowGridListSwitcher,
   } = useSettingsSnapshot()
-  const { cardDisplay, useStickyTabbar } = style.pureRecommend // style sub
+  const { cardDisplay, useStickyTabbar, stickyTabbarShadow } = style.pureRecommend // style sub
 
   useKeyPress(
     ['shift.comma'],
@@ -81,12 +82,16 @@ export const RecHeader = forwardRef<
 
   const usingEvolevdHeader = $usingEvolevdHeader.use()
   const dark = useIsDarkMode()
-  const boxShadow = (() => {
+  const boxShadowCss = (() => {
+    let val: string
     if (usingEvolevdHeader) {
-      return dark ? 'rgba(0, 0, 0, 26%) 0px 2px 10px 1px' : 'rgba(0, 0, 0, 13%) 0 1px 10px 1px;'
+      val = dark ? 'rgba(0, 0, 0, 26%) 0px 2px 10px 1px' : 'rgba(0, 0, 0, 13%) 0 1px 10px 1px;'
     } else {
-      return `0 2px 4px ${dark ? 'rgb(255 255 255 / 5%)' : 'rgb(0 0 0 / 8%)'}`
+      val = `0 2px 4px ${dark ? 'rgb(255 255 255 / 5%)' : 'rgb(0 0 0 / 8%)'}`
     }
+    return css`
+      box-shadow: ${val};
+    `
   })()
 
   const expandToFullWidthCss = useExpandToFullWidthCss()
@@ -103,41 +108,22 @@ export const RecHeader = forwardRef<
     pureRecommend && useStickyTabbar && sticky && String.raw`b-b-gate-bg-lv1 bg-[var(--bg1\_float)]`,
     sticky && 'sticky-state-on',
   )
-
-  // 我判断不好哪个更好...
-  const expandToFull = false
+  const _css: CssProp = useMemo(() => {
+    if (!(pureRecommend && useStickyTabbar)) return
+    const topCss = css`
+      top: ${headerHeight - 1}px; // 有缝隙, 故 -1 px
+    `
+    const styles = [topCss]
+    if (stickyTabbarShadow && sticky) styles.push(boxShadowCss, expandToFullWidthCss)
+    return styles
+  }, [pureRecommend, useStickyTabbar, stickyTabbarShadow, sticky, headerHeight, boxShadowCss, expandToFullWidthCss])
 
   return (
     <OnRefreshContext.Provider value={onRefresh}>
-      <div
-        ref={stickyRef}
-        data-role='tab-bar-wrapper'
-        className={_className}
-        css={
-          pureRecommend &&
-          useStickyTabbar && [
-            css`
-              top: ${headerHeight - 1}px; // 有缝隙, 故 -1 px
-            `,
-            ...(expandToFull
-              ? sticky
-                ? [
-                    expandToFullWidthCss,
-                    css`
-                      box-shadow: ${boxShadow};
-                    `,
-                  ]
-                : []
-              : []),
-          ]
-        }
-      >
+      <div ref={stickyRef} data-role='tab-bar-wrapper' className={_className} css={_css}>
         <div
           data-role='tab-bar'
-          className={clsx(
-            APP_CLS_TAB_BAR,
-            'relative mb-0 h-auto flex flex-row items-center justify-between gap-x-15px px-0 py-8px',
-          )}
+          className={`${APP_CLS_TAB_BAR} relative mb-0 h-auto flex flex-row items-center justify-between gap-x-15px px-0 py-8px`}
         >
           <div data-class-name='left' className='h-full flex flex-shrink-1 flex-wrap items-center gap-x-15px gap-y-8px'>
             <VideoSourceTab onRefresh={onRefresh} />

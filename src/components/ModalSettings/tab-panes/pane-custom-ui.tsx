@@ -82,6 +82,7 @@ export function TabPaneCustomUI() {
               className='ml-10px'
               paths={[
                 'style.pureRecommend.useStickyTabbar',
+                'style.pureRecommend.stickyTabbarShadow',
                 'style.pureRecommend.useCustomGrid',
                 'style.pureRecommend.useWhiteBackground',
                 'style.pureRecommend.hideTopChannel',
@@ -93,8 +94,14 @@ export function TabPaneCustomUI() {
         <div className={itemsContainerClassName}>
           <CheckboxSettingItem
             configPath='style.pureRecommend.useStickyTabbar'
-            label='全屏模式: sticky tab bar'
+            label='全屏模式: 固定 Tab 栏'
             tooltip={explainForFlag('Tab 栏会吸附在顶栏下方', 'Tab 栏会随页面一起滚动')}
+          />
+          <CheckboxSettingItem
+            disabled={!style.pureRecommend.useStickyTabbar}
+            configPath='style.pureRecommend.stickyTabbarShadow'
+            label='全屏模式: 固定 Tab 栏 : 添加边框 & 阴影'
+            tooltip={explainForFlag('Tab 栏在吸附状态下: 加宽, 添加边框 & 阴影', '不改变')}
           />
 
           <CheckboxSettingItem
