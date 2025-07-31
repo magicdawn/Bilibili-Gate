@@ -3,6 +3,7 @@ import { primaryColorValue } from '$components/css-vars'
 import { $evolvedThemeColor } from '$header'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import LX_THEMES from './lx-themes.json'
+import type { ReactNode } from 'react'
 
 // https://github.com/argyleink/gui-challenges/blob/main/color-palettes/oklch-palette.css
 export const primaryPalatte = {
@@ -165,6 +166,19 @@ export const ThemeGroups: {
 ]
 
 const ALL_THEMES = ThemeGroups.map((x) => x.themes).flat()
+
+export const EXTRA_TOOLTIP: Record<string, ReactNode> = {
+  [`${LongwashingGroupName}:马尔斯绿`]: (
+    <>
+      马尔斯绿 MARRS GREEN <br />
+      2017年英国的百年造纸商G.F SMITH和英国城市文化节联合发起了「选出全世界最受欢迎的颜色」的活动， <br />
+      在为期半年由来自100多个约3万名用户的投票后，由来自苏格兰的联合国教科文组织工作人员 <br />
+      安妮•马尔斯（ANNIE MARRS）提交的一种蓝绿色当选。 <br />
+      马尔斯绿也因此由ANNIE MARRS的姓氏和主色调组合而得名。 <br />
+      马尔斯绿的灵感来源于ANNIE家乡苏格兰的泰勒河畔自然景观的一种蓝绿色调。 <br />
+    </>
+  ),
+}
 
 /**
  * use outside React

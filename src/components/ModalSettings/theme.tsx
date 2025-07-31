@@ -14,7 +14,7 @@ import { $evolvedThemeColor } from '$header'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconAnimatedChecked } from '$modules/icon/animated-checked'
 import { updateSettings, useSettingsSnapshot } from '$modules/settings'
-import { DEFAULT_BILI_PINK_THEME, ThemeGroups, useCurrentTheme } from './theme.shared'
+import { DEFAULT_BILI_PINK_THEME, EXTRA_TOOLTIP, ThemeGroups, useCurrentTheme } from './theme.shared'
 import type { Color } from 'antd/es/color-picker'
 
 export function ThemesSelect() {
@@ -113,9 +113,17 @@ export function ThemesSelect() {
                 )
 
                 // wrap tooltip
-                if (t.tooltip) {
+                if (t.tooltip || EXTRA_TOOLTIP[t.id]) {
                   el = (
-                    <AntdTooltip title={t.tooltip} color={t.colorPrimary}>
+                    <AntdTooltip
+                      title={
+                        <>
+                          {t.tooltip}
+                          {EXTRA_TOOLTIP[t.id]}
+                        </>
+                      }
+                      color={t.colorPrimary}
+                    >
                       {el}
                     </AntdTooltip>
                   )

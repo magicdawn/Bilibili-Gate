@@ -1,4 +1,5 @@
 import { Dropdown } from 'antd'
+import { useUnoMerge } from 'unocss-merge/react'
 import { Picture } from '$components/_base/Picture'
 import { primaryColorValue } from '$components/css-vars'
 import { isDynamicFeed, isFav, isWatchlater, type RankItemExtend, type RecItemType } from '$define'
@@ -11,6 +12,13 @@ import type { NormalRankItem } from '$modules/rec-services/hot/rank/types'
 import { useTooltip } from './child-components/VideoCardActions'
 import { useLinkNewTab } from './use/useOpenRelated'
 import type { CSSProperties, ReactNode } from 'react'
+
+export const clsBadgeContainer =
+  'pointer-events-none h-19px flex-center whitespace-nowrap rounded-2px bg-gate-primary px-4px text-center text-12px color-white'
+
+export function SomeBadge({ children, className }: { children?: ReactNode; className?: string }) {
+  return <span className={useUnoMerge(clsBadgeContainer, className)}>{children}</span>
+}
 
 export function shouldShowDynamicFeedBadge(item: RecItemType) {
   if (item.api !== EApiType.DynamicFeed) return false
@@ -26,15 +34,15 @@ export function DynamicFeedBadgeDisplay({ item }: { item: RecItemType }) {
   const badge = item.modules?.module_dynamic?.major?.archive?.badge
   const hasIcon = !!badge.icon_url
   return (
-    <div
+    <SomeBadge
       className={clsx(
-        'flex-center whitespace-nowrap rounded-2px bg-gate-primary py-1px text-center text-11px color-white line-height-[17px]',
-        hasIcon ? 'pl-4px pr-6px' : 'px-5px', // 有图标左边更显空旷
+        'min-w-32px',
+        hasIcon ? 'pl-4px pr-6px' : 'px-4px', // 有图标左边更显空旷
       )}
     >
       {hasIcon && <Picture src={`${badge.icon_url}@!web-dynamic`} className='h-16px w-16px' />}
       {badge.text}
-    </div>
+    </SomeBadge>
   )
 }
 
@@ -112,28 +120,13 @@ export function RankNumMark({ item }: { item: RankItemExtend }) {
   )
 }
 
-export function SomeBadge({ icon, label, className }: { icon?: ReactNode; label?: ReactNode; className?: string }) {
+export function LiveBadge() {
   return (
-    <span
-      className={clsx(
-        'h-16px inline-flex items-center justify-center rounded-8px bg-gate-primary pl-4px pr-6px line-height-16px',
-        className,
-      )}
-    >
-      {icon}
-      {label && typeof label === 'string' ? (
-        <>
-          <span className='relative top-1px font-size-11px color-white font-normal line-height-[1]'>{label}</span>
-        </>
-      ) : (
-        label
-      )}
-    </span>
+    <SomeBadge>
+      <IconForLive active className='size-14px' />
+      直播中
+    </SomeBadge>
   )
-}
-
-export function LiveBadge({ className }: { className?: string }) {
-  return <SomeBadge className={className} icon={<IconForLive active className='size-14px' />} label='直播中' />
 }
 
 export function ApiTypeTag({ item }: { item: RecItemType }) {
@@ -143,11 +136,7 @@ export function ApiTypeTag({ item }: { item: RecItemType }) {
     if (isFav(item)) return item.from === 'fav-folder' ? '收藏夹' : '合集'
     return item.api
   })()
-  return (
-    <div className='ml-4px flex-center whitespace-nowrap rounded-2px bg-gate-primary px-6px py-1px text-center text-size-11px text-white line-height-[17px]'>
-      {text}
-    </div>
-  )
+  return <SomeBadge>{text}</SomeBadge>
 }
 
 export function VolMark({ vol }: { vol: number }) {

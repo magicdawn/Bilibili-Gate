@@ -54,6 +54,12 @@ export default defineConfig({
           },
         },
       },
+      bili: {
+        brand: {
+          pink: 'var(--brand_pink)',
+          blue: 'var(--brand_blue)',
+        },
+      },
     },
     zIndex: {
       'gate-rec-header': 'var(--bilibili-gate--z-rec-header)',
