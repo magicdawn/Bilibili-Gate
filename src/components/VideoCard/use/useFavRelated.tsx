@@ -33,7 +33,7 @@ export function useInitFavContext(item: RecItemType, avid: string | undefined) {
 
   return useMemo(
     () => ({ folderNames, folderUrls, updateFavFolderNames }),
-    [folderNames, folderUrls, updateFavFolderNames],
+    [folderNames.state, folderUrls.state, updateFavFolderNames],
   )
 }
 
