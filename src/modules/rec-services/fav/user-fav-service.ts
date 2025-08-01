@@ -77,8 +77,9 @@ export async function getVideoFavState(avid: string) {
 
   const favFolderNames = favFolders.map((f) => f.title)
   const favFolderUrls = favFolders.map((f) => formatFavFolderUrl(f.id))
+  const favFolderIds = favFolders.map((f) => f.id)
 
-  return { favFolders, favFolderNames, favFolderUrls }
+  return { favFolders, favFolderNames, favFolderUrls, favFolderIds }
 }
 
 // media_ids: 收藏夹 id, 逗号分割

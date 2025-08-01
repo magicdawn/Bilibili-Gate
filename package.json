@@ -2,7 +2,7 @@
   "name": "bilibili-gate",
   "version": "0.33.5",
   "private": true,
-  "packageManager": "pnpm@10.13.1+sha512.37ebf1a5c7a30d5fabe0c5df44ee8da4c965ca0c5af3dbab28c3a1681b70a256218d05c81c9c0dcf767ef6b8551eb5b960042b9ed4300c59242336377e01cfad",
+  "packageManager": "pnpm@10.14.0+sha512.ad27a79641b49c3e481a16a805baa71817a04bbe06a38d17e60e2eaee83f6a146c6a688125f5792e48dd5ba30e7da52a5cda4c3992b9ccf333f9ce223af84748",
   "type": "module",
   "license": "MIT",
   "scripts": {
@@ -105,7 +105,7 @@
     "type-fest": "^4.41.0",
     "typed-query-selector": "^2.12.0",
     "typed-scss-modules": "^8.1.1",
-    "typescript": "5.8.3",
+    "typescript": "5.9.2",
     "unocss": "^66.3.3",
     "unplugin-auto-import": "^19.3.0",
     "unplugin-icons": "^22.2.0",
