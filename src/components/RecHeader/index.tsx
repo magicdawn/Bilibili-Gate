@@ -105,7 +105,7 @@ export const RecHeader = forwardRef<
 
   const _className = useUnoMerge(
     pureRecommend && useStickyTabbar && 'sticky z-gate-rec-header mb-10px b-b-1px b-b-transparent b-b-solid',
-    pureRecommend && useStickyTabbar && sticky && String.raw`b-b-gate-bg-lv1 bg-[var(--bg1\_float)]`,
+    pureRecommend && useStickyTabbar && sticky && 'b-b-gate-bg-lv1 bg-$bg1_float',
     sticky && 'sticky-state-on',
   )
   const _css: CssProp = useMemo(() => {
