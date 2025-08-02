@@ -62,26 +62,27 @@ export function getWatchlaterTabFavMenus(ctx: FavContext, item: RecItemType, avi
       icon: <IconParkOutlineTransferData className='size-13px' />,
       label: '移动到其他收藏夹',
       async onClick() {
-        let resources: string
-        let srcFavFolderId: number
-        let uniqIds: string[]
-        let titles: string[]
-
-        resources = `${avid}:2`
-        srcFavFolderId = folderIds[0]
-        uniqIds = [item.uniqId]
-        titles = [item.title]
+        const resource = `${avid}:2`
+        const srcFavFolderId = folderIds[0]
 
         if (folderIds.length > 1) {
-          // TODO: 收藏在多个收藏夹
+          const otherFolderIds = folderIds.slice(1)
+          const otherFolderNames = folderNames.slice(1)
+          for (const [index, fid] of otherFolderIds.entries()) {
+            const success = await UserFavService.removeFavs(fid, resource)
+            if (!success) {
+              const fname = otherFolderNames[index]
+              antMessage.warning(`从收藏夹「${fname}」移除失败!`)
+            }
+          }
         }
 
         await pickFavFolder(srcFavFolderId, async (targetFolder) => {
-          const success = await UserFavService.moveFavs(resources, srcFavFolderId, targetFolder.id)
+          const success = await UserFavService.moveFavs(resource, srcFavFolderId, targetFolder.id)
           if (!success) return
           clearFavFolderAllItemsCache(srcFavFolderId)
           clearFavFolderAllItemsCache(targetFolder.id)
-          antMessage.success(`已移动 ${uniqIds.length} 个视频到「${targetFolder.title}」收藏夹`)
+          antMessage.success(`已移动到「${targetFolder.title}」收藏夹`)
           return success
         })
       },
@@ -221,7 +222,7 @@ export function getFavTabMenus({
   }
 
   // 合集
-  else if (item.from === 'fav-collection') {
+  if (item.from === 'fav-collection') {
     return defineAntMenus([
       {
         key: 'open-fav-collection',
@@ -240,7 +241,5 @@ export function getFavTabMenus({
   }
 
   // unexpected
-  else {
-    return []
-  }
+  return []
 }
