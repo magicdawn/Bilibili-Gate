@@ -323,7 +323,7 @@ const VideoCardInner = memo(function VideoCardInner({
   const actionButtonVisible = active || isHovering
 
   // 稍候再看
-  const { watchlaterButtonEl, onToggleWatchlater, hasWatchlaterEntry } = useWatchlaterRelated({
+  const { watchlaterButtonEl, context: watchlaterContext } = useWatchlaterRelated({
     item,
     cardData,
     onRemoveCurrent,
@@ -416,7 +416,7 @@ const VideoCardInner = memo(function VideoCardInner({
     hideLargePreview()
     onOpenWithMode()
   })
-  useEmitterOn(emitter, 'toggle-watch-later', () => void onToggleWatchlater())
+  useEmitterOn(emitter, 'toggle-watch-later', () => void watchlaterContext.onToggleWatchlater())
   useEmitterOn(emitter, 'trigger-dislike', () => void onTriggerDislike())
   useEmitterOn(emitter, 'start-preview-animation', onStartPreviewAnimation)
   useEmitterOn(emitter, 'hotkey-preview-animation', onHotkeyPreviewAnimation)
@@ -424,16 +424,13 @@ const VideoCardInner = memo(function VideoCardInner({
   /**
    * context menu
    */
-
   const contextMenus = useContextMenus({
     item,
     cardData,
     tab,
     isNormalVideo,
     onRefresh,
-    watchlaterAdded,
-    hasWatchlaterEntry,
-    onToggleWatchlater,
+    watchlaterContext,
     favContext,
     onMoveToFirst,
     hasDislikeEntry,
@@ -443,7 +440,6 @@ const VideoCardInner = memo(function VideoCardInner({
     conditionalOpenMenus,
     multiSelecting,
   })
-
   const onContextMenuOpenChange = useMemoizedFn((open: boolean) => {
     if (!open) return
     favContext.updateFavFolderNames()

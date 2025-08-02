@@ -12,6 +12,8 @@ import { watchlaterAdd, watchlaterDel } from '../services'
 import type { VideoCardInnerProps } from '..'
 import type { MouseEvent } from 'react'
 
+export type WatchlaterRelatedContext = ReturnType<typeof useWatchlaterRelated>['context']
+
 /**
  * 稍候再看
  */
@@ -136,5 +138,9 @@ export function useWatchlaterRelated({
     />
   )
 
-  return { watchlaterButtonEl, onToggleWatchlater, watchlaterAdded, hasWatchlaterEntry }
+  const context = useMemo(() => {
+    return { watchlaterAdded, hasWatchlaterEntry, onToggleWatchlater }
+  }, [onToggleWatchlater, watchlaterAdded, hasWatchlaterEntry])
+
+  return { context, watchlaterButtonEl }
 }

@@ -45,8 +45,7 @@ import type { IVideoCardData } from '$modules/filter/normalize'
 import { copyContent } from './index.shared'
 import { watchlaterAdd } from './services'
 import { getFavTabMenus, getWatchlaterTabFavMenus, type FavContext } from './use/useFavRelated'
-import type { watchlaterDel } from './services'
-import type { MouseEvent } from 'react'
+import type { WatchlaterRelatedContext } from './use/useWatchlaterRelated'
 
 export function useContextMenus({
   item,
@@ -56,14 +55,10 @@ export function useContextMenus({
   isNormalVideo,
   onRefresh,
 
-  watchlaterAdded,
-  hasWatchlaterEntry,
-  onToggleWatchlater,
-
+  favContext,
+  watchlaterContext,
   hasDislikeEntry,
   onTriggerDislike,
-
-  favContext,
 
   onMoveToFirst,
   onRemoveCurrent,
@@ -80,18 +75,8 @@ export function useContextMenus({
   isNormalVideo: boolean
   onRefresh: OnRefresh | undefined
 
-  watchlaterAdded: boolean
-  hasWatchlaterEntry: boolean
-  onToggleWatchlater: (
-    e?: MouseEvent,
-    usingAction?: typeof watchlaterDel | typeof watchlaterAdd,
-  ) => Promise<{
-    success: boolean
-    targetState?: boolean
-  }>
-
+  watchlaterContext: WatchlaterRelatedContext
   favContext: FavContext
-
   hasDislikeEntry: boolean
   onTriggerDislike: () => unknown
 
@@ -275,8 +260,8 @@ export function useContextMenus({
   )
 
   return useMemo(() => {
+    const { watchlaterAdded, hasWatchlaterEntry, onToggleWatchlater } = watchlaterContext
     const divider: AntMenuItem = { type: 'divider' }
-
     const multiSelectingAppendix = multiSelecting ? ' (多选)' : ''
 
     const copyMenus = defineAntMenus([
@@ -445,19 +430,19 @@ export function useContextMenus({
     item,
     cardData,
     tab,
+    // contexts
+    watchlaterContext,
+    favContext,
     // entries
-    hasWatchlaterEntry,
-    watchlaterAdded,
     hasDislikeEntry,
     hasUnfollowEntry,
     hasBlacklistEntry,
     hasViewUpVideoListEntry,
     hasEntry_addMidTo_dynamicFeedWhenViewAllHideIds,
-    // others
-    favContext,
+    // menus
     consistentOpenMenus,
     conditionalOpenMenus,
-    //
+    // others
     multiSelecting,
   ])
 }

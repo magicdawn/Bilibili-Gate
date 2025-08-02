@@ -147,22 +147,24 @@ export function ModalMoveFav({ show, onHide, srcFavFolderId, okAction }: IProps)
                     data-id={f.id}
                     className={clsx(
                       { active },
-                      'relative flex cursor-pointer items-center b-2px rounded-6px b-solid bg-transparent py-12px',
-                      active ? 'b-gate-primary' : 'b-gate-border',
+                      'relative flex items-center b-2px b-gate-border rounded-6px b-solid bg-transparent py-12px',
+                      !disabled && 'hover:bg-gate-bg-lv1',
+                      disabled ? 'cursor-not-allowed' : 'cursor-pointer',
+                      active && 'b-gate-primary color-white bg-gate-primary!',
                     )}
                     disabled={disabled}
                     onClick={() => {
                       setSelectedFolder({ id: f.id, title: f.title })
                     }}
                   >
-                    <span className='ml-6px size-24px flex-center flex-none rounded-full bg-gate-primary text-center color-white'>
+                    <span className='ml-6px size-24px flex-center flex-none rounded-full bg-gate-bg-lv-2 text-center text-size-12px color-gate-text'>
                       {f.vol}
                     </span>
                     <span className='flex-1 px-4px'>
                       {f.title} ({f.media_count})
                     </span>
                     <span className='mr-6px size-20px flex-none'>
-                      {active && <IconAnimatedChecked className='h-100% w-100% color-gate-primary' useAnimation />}
+                      {active && <IconAnimatedChecked className='h-100% w-100% color-white' useAnimation />}
                     </span>
                   </button>
                 )
