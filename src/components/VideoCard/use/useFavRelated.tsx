@@ -1,4 +1,3 @@
-import { useStateBox } from '$common/hooks/useRefState'
 import { pickFavFolder } from '$components/ModalMoveFav'
 import { currentGridSharedEmitter, getMultiSelectedItems } from '$components/RecGrid/unsafe-window-export'
 import { ETab } from '$components/RecHeader/tab-enum'
@@ -17,9 +16,9 @@ import { getLinkTarget } from './useOpenRelated'
 export type FavContext = ReturnType<typeof useInitFavContext>
 
 export function useInitFavContext(item: RecItemType, avid: string | undefined) {
-  const folderNames = useStateBox<string[] | undefined>(undefined)
-  const folderUrls = useStateBox<string[] | undefined>(undefined)
-  const folderIds = useStateBox<number[] | undefined>(undefined)
+  const [folderNames, setFolderNames] = useState<string[] | undefined>(undefined)
+  const [folderUrls, setFolderUrls] = useState<string[] | undefined>(undefined)
+  const [folderIds, setFolderIds] = useState<number[] | undefined>(undefined)
 
   const updateFavFolderNames = useMemoizedFn(async () => {
     // 只在「稍后再看」提供收藏状态
@@ -27,98 +26,98 @@ export function useInitFavContext(item: RecItemType, avid: string | undefined) {
     if (!avid) return
     const result = await UserFavService.getVideoFavState(avid)
     if (result) {
-      folderNames.set(result.favFolderNames)
-      folderUrls.set(result.favFolderUrls)
-      folderIds.set(result.favFolderIds)
+      setFolderNames(result.favFolderNames)
+      setFolderUrls(result.favFolderUrls)
+      setFolderIds(result.favFolderIds)
     }
   })
 
   return useMemo(
     () => ({ folderNames, folderUrls, folderIds, updateFavFolderNames }),
-    [folderNames.state, folderUrls.state, folderIds.state, updateFavFolderNames],
+    [folderNames, folderUrls, folderIds, updateFavFolderNames],
   )
 }
 
 export function getWatchlaterTabFavMenus(ctx: FavContext, item: RecItemType, avid: string | undefined) {
   if (!isWatchlater(item) || !avid) return []
-  const folderNames = ctx.folderNames.get() ?? []
-  const folderUrls = ctx.folderUrls.get() ?? []
-  const folderIds = ctx.folderIds.get() ?? []
+  const folderNames = ctx.folderNames ?? []
+  const folderUrls = ctx.folderUrls ?? []
+  const folderIds = ctx.folderIds ?? []
+
+  const favedMenus = defineAntMenus([
+    {
+      // 浏览收藏夹
+      key: 'watchlater-faved:browse-fav-folder',
+      icon: <IconForFaved className='size-15px color-gate-primary' />,
+      label: `已收藏在 ${(folderNames || []).map((n) => `「${n}」`).join('')}`,
+      onClick() {
+        folderUrls.forEach((u) => {
+          window.open(u, getLinkTarget())
+        })
+      },
+    },
+    {
+      // 浏览收藏夹
+      key: 'watchlater-faved:move-fav',
+      icon: <IconParkOutlineTransferData className='size-13px' />,
+      label: '移动到其他收藏夹',
+      async onClick() {
+        let resources: string
+        let srcFavFolderId: number
+        let uniqIds: string[]
+        let titles: string[]
+
+        resources = `${avid}:2`
+        srcFavFolderId = folderIds[0]
+        uniqIds = [item.uniqId]
+        titles = [item.title]
+
+        if (folderIds.length > 1) {
+          // TODO: 收藏在多个收藏夹
+        }
+
+        await pickFavFolder(srcFavFolderId, async (targetFolder) => {
+          const success = await UserFavService.moveFavs(resources, srcFavFolderId, targetFolder.id)
+          if (!success) return
+          clearFavFolderAllItemsCache(srcFavFolderId)
+          clearFavFolderAllItemsCache(targetFolder.id)
+          antMessage.success(`已移动 ${uniqIds.length} 个视频到「${targetFolder.title}」收藏夹`)
+          return success
+        })
+      },
+    },
+  ])
+
+  const unfavedMenus = defineAntMenus([
+    {
+      // 快速收藏
+      key: 'watchlater:add-quick-fav',
+      icon: <IconForFav className='size-15px' />,
+      label: '收藏到「默认收藏夹」',
+      async onClick() {
+        const success = await UserFavService.addFav(avid)
+        if (success) {
+          antMessage.success(`已加入收藏夹「${defaultFavFolderTitle}」`)
+        }
+      },
+    },
+    {
+      // 收藏
+      key: 'watchlater:add-fav',
+      icon: <IconForFav className='size-15px' />,
+      label: '收藏到',
+      async onClick() {
+        await pickFavFolder(undefined, async (targetFolder) => {
+          const success = await UserFavService.addFav(avid, targetFolder.id)
+          if (success) antMessage.success(`已加入收藏夹「${targetFolder.title}」`)
+          return success
+        })
+      },
+    },
+  ])
 
   const faved = !!folderNames.length
-  if (faved) {
-    return defineAntMenus([
-      {
-        // 浏览收藏夹
-        key: 'watchlater-faved:browse-fav-folder',
-        icon: <IconForFaved className='size-15px color-gate-primary' />,
-        label: `已收藏在 ${(folderNames || []).map((n) => `「${n}」`).join('')}`,
-        onClick() {
-          folderUrls.forEach((u) => {
-            window.open(u, getLinkTarget())
-          })
-        },
-      },
-      {
-        // 浏览收藏夹
-        key: 'watchlater-faved:move-fav',
-        icon: <IconParkOutlineTransferData className='size-13px' />,
-        label: '移动到其他收藏夹',
-        async onClick() {
-          let resources: string
-          let srcFavFolderId: number
-          let uniqIds: string[]
-          let titles: string[]
-
-          resources = `${avid}:2`
-          srcFavFolderId = folderIds[0]
-          uniqIds = [item.uniqId]
-          titles = [item.title]
-
-          if (folderIds.length > 1) {
-            // TODO: 收藏在多个收藏夹
-          }
-
-          await pickFavFolder(srcFavFolderId, async (targetFolder) => {
-            const success = await UserFavService.moveFavs(resources, srcFavFolderId, targetFolder.id)
-            if (!success) return
-            clearFavFolderAllItemsCache(srcFavFolderId)
-            clearFavFolderAllItemsCache(targetFolder.id)
-            antMessage.success(`已移动 ${uniqIds.length} 个视频到「${targetFolder.title}」收藏夹`)
-            return success
-          })
-        },
-      },
-    ])
-  } else {
-    return defineAntMenus([
-      {
-        // 快速收藏
-        key: 'watchlater:add-quick-fav',
-        icon: <IconForFav className='size-15px' />,
-        label: '收藏到「默认收藏夹」',
-        async onClick() {
-          const success = await UserFavService.addFav(avid)
-          if (success) {
-            antMessage.success(`已加入收藏夹「${defaultFavFolderTitle}」`)
-          }
-        },
-      },
-      {
-        // 收藏
-        key: 'watchlater:add-fav',
-        icon: <IconForFav className='size-15px' />,
-        label: '收藏到',
-        async onClick() {
-          await pickFavFolder(undefined, async (targetFolder) => {
-            const success = await UserFavService.addFav(avid, targetFolder.id)
-            if (success) antMessage.success(`已加入收藏夹「${targetFolder.title}」`)
-            return success
-          })
-        },
-      },
-    ])
-  }
+  return faved ? favedMenus : unfavedMenus
 }
 
 export function getFavTabMenus({
