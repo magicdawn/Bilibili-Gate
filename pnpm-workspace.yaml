@@ -1,8 +1,6 @@
 overrides:
   vite-plugin-importer>babel-plugin-import: ^1.13.8
-  # https://github.com/unocss/unocss/pull/4801
-  # '@unocss/eslint-plugin': file://../unocss/packages-integrations/eslint-plugin/unocss-eslint-plugin-66.3.3.tgz
-  '@unocss/eslint-plugin': npm:@magicdawn/unocss__eslint-plugin@dev
+  typescript: '5.8'
 
 allowedDeprecatedVersions:
   axios-userscript-adapter: '0'
