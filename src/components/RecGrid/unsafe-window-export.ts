@@ -2,24 +2,17 @@
  * export/bind (functions & variables) to unsafeWindow
  */
 
-import dayjs from 'dayjs'
 import { attempt } from 'es-toolkit'
 import { APP_KEY_PREFIX } from '$common'
-import { defaultSharedEmitter, type SharedEmitter } from '$components/VideoCard/index.shared'
 import { EApiType } from '$define/index.shared'
-import { antNotification } from '$modules/antd'
-import { normalizeCardData, type IVideoCardData } from '$modules/filter/normalize'
-import { multiSelectStore } from '$modules/multi-select/store'
-import type { RecItemType, RecItemTypeOrSeparator } from '$define'
-
-/**
- * RecGrid inner state
- */
-export let currentGridItems: RecItemType[] = []
-export let currentGridSharedEmitter: SharedEmitter = defaultSharedEmitter
-export function setCurrentGridSharedEmitter(sharedEmitter: SharedEmitter) {
-  currentGridSharedEmitter = sharedEmitter
-}
+import type { RecItemTypeOrSeparator } from '$define'
+import {
+  copyBvidInfos,
+  copyBvidsSingleLine,
+  currentGridItems,
+  getGenericCardDatas,
+  setCurrentGridItems,
+} from './rec-grid-state'
 
 // 实验:
 // window === globalThis 总是成立
@@ -40,60 +33,8 @@ export const setGlobalValue = (key: string, val: any) => void attempt(() => (win
 export const gridItemsKey = `${APP_KEY_PREFIX}_gridItems`
 export function setGlobalGridItems(itemsWithSep: RecItemTypeOrSeparator[]) {
   const items = itemsWithSep.filter((x) => x.api !== EApiType.Separator)
-  currentGridItems = items
+  setCurrentGridItems(items)
   setGlobalValue(gridItemsKey, currentGridItems)
-}
-
-export function getMultiSelectedItems() {
-  const { multiSelecting, selectedIdSet } = multiSelectStore
-  return multiSelecting ? currentGridItems.filter((item) => selectedIdSet.has(item.uniqId)) : []
-}
-export function getMultiSelectedCardDatas() {
-  return getMultiSelectedItems().map(normalizeCardData)
-}
-
-/**
- * generic means: when multi-selecting, use multi-selected items; or use ALL
- */
-function getGenericCardDatas(): IVideoCardData[] {
-  const { multiSelecting } = multiSelectStore
-  const items = multiSelecting ? getMultiSelectedItems() : currentGridItems
-  const cardDatas = items.map(normalizeCardData)
-  return cardDatas
-}
-
-export function copyBvidsSingleLine() {
-  const bvids = getGenericCardDatas().map((cardData) => cardData.bvid)
-  const content = bvids.join(' ')
-  GM.setClipboard(content)
-  antNotification.success({ message: '已复制', description: content })
-}
-
-export function getBvidInfo(cardData: IVideoCardData) {
-  let { bvid, authorName, pubts, title } = cardData
-  const date = dayjs.unix(pubts ?? 0).format('YYYY-MM-DD')
-  title = title.replaceAll(/\n+/g, ' ')
-  return `${bvid} ;; [${authorName}] ${date} ${title}`
-}
-export function copyBvidInfos() {
-  const lines = getGenericCardDatas().map(getBvidInfo)
-  const content = lines.join('\n')
-  GM.setClipboard(content)
-  antNotification.success({ message: '已复制', description: content })
-}
-
-export function copyVideoLinks() {
-  const lines = getMultiSelectedCardDatas()
-    .map((cardData) => {
-      let href = cardData.href
-      if (!href) return undefined
-      if (href.startsWith('/')) href = new URL(href, location.href).href
-      return href
-    })
-    .filter(Boolean)
-  const content = lines.join('\n')
-  GM.setClipboard(content)
-  antNotification.success({ message: '已复制', description: content })
 }
 
 // bind(export) function to unsafeWindow

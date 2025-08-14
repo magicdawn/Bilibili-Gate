@@ -1,6 +1,7 @@
+import { handleMultiSelectWithShiftKey } from '$components/RecGrid/rec-grid-state'
 import { multiSelectStore } from '$modules/multi-select/store'
 import { clsZMultiSelectBg } from '../index.shared'
-import type { SyntheticEvent } from 'react'
+import type { MouseEvent } from 'react'
 
 export const IconForMultiSelectUnchecked = IconLucideCircle
 export const IconForMultiSelectChecked = IconLucideCircleCheck
@@ -14,13 +15,27 @@ export function useMultiSelectRelated({
   multiSelected: boolean
   uniqId: string
 }) {
-  const toggleMultiSelect = useMemoizedFn((e?: SyntheticEvent) => {
+  const toggleMultiSelect = useMemoizedFn((e?: MouseEvent) => {
+    const { selectedIdSet, multiSelecting } = multiSelectStore
+    if (!multiSelecting) return
+
     e?.preventDefault()
     e?.stopPropagation()
-    if (multiSelected) {
-      multiSelectStore.selectedIdSet.delete(uniqId)
+    const shiftSelecting = !!e?.shiftKey
+
+    // init anchor, set to first click
+    multiSelectStore.shiftMultiSelectAnchorUniqId ??= uniqId
+    // update anchor
+    if (!shiftSelecting) {
+      multiSelectStore.shiftMultiSelectAnchorUniqId = uniqId
+    }
+
+    if (shiftSelecting) {
+      // shift select
+      handleMultiSelectWithShiftKey(multiSelectStore.shiftMultiSelectAnchorUniqId, uniqId)
     } else {
-      multiSelectStore.selectedIdSet.add(uniqId)
+      // toggle current
+      multiSelected ? selectedIdSet.delete(uniqId) : selectedIdSet.add(uniqId)
     }
   })
 

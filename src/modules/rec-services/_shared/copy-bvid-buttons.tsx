@@ -1,5 +1,5 @@
 import { Button } from 'antd'
-import { copyBvidInfos, copyBvidsSingleLine } from '$components/RecGrid/unsafe-window-export'
+import { copyBvidInfos, copyBvidsSingleLine } from '$components/RecGrid/rec-grid-state'
 import { IconForCopy } from '$modules/icon'
 import { MultiSelectButton } from '$modules/multi-select'
 import { useSettingsSnapshot } from '$modules/settings'

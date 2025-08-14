@@ -1,5 +1,5 @@
 import { pickFavFolder } from '$components/ModalMoveFav'
-import { currentGridSharedEmitter, getMultiSelectedItems } from '$components/RecGrid/unsafe-window-export'
+import { currentGridSharedEmitter, getMultiSelectedItems } from '$components/RecGrid/rec-grid-state'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { isFav, isWatchlater, type RecItemType } from '$define'
 import { antMessage, antModal, defineAntMenus } from '$modules/antd'

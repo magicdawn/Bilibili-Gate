@@ -9,7 +9,7 @@ import {
   copyVideoLinks,
   currentGridItems,
   getBvidInfo,
-} from '$components/RecGrid/unsafe-window-export'
+} from '$components/RecGrid/rec-grid-state'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { isDynamicFeed, isLive, isSpaceUpload, type DynamicFeedItemExtend, type RecItemType } from '$define'
 import { EApiType } from '$define/index.shared'

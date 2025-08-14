@@ -3,7 +3,7 @@ import { useSnapshot } from 'valtio'
 import { proxySet } from 'valtio/utils'
 import { usePopoverBorderColor } from '$common/emotion-css'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
-import { currentGridItems } from '$components/RecGrid/unsafe-window-export'
+import { currentGridItems } from '$components/RecGrid/rec-grid-state'
 import { AntdTooltip } from '$modules/antd/custom'
 import { CopyBvidButtons } from '$modules/rec-services/_shared/copy-bvid-buttons'
 import { settings } from '$modules/settings'
@@ -21,7 +21,11 @@ export function MultiSelectButton({
   const popoverBorderColor = usePopoverBorderColor()
 
   const exitCheck = useMemoizedFn(() => {
-    if (!multiSelectStore.multiSelecting && settings.multiSelect.clearWhenExit) {
+    const isExit = !multiSelectStore.multiSelecting
+    if (!isExit) return
+    // reset
+    multiSelectStore.shiftMultiSelectAnchorUniqId = undefined
+    if (settings.multiSelect.clearWhenExit) {
       multiSelectStore.selectedIdSet.clear()
     }
   })

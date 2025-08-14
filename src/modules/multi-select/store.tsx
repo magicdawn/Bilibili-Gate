@@ -5,6 +5,7 @@ import { proxySet } from 'valtio/utils'
 export const multiSelectStore = proxy({
   multiSelecting: false,
   selectedIdSet: proxySet<string>(), // uniqId
+  shiftMultiSelectAnchorUniqId: undefined as string | undefined,
 })
 
 export function useMultiSelecting() {
