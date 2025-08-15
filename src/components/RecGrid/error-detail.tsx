@@ -71,7 +71,6 @@ export class ShowMessageError extends Error {
   constructor(message: string) {
     super(message)
     this.name = 'ShowMessageError'
-    Error.captureStackTrace?.(this, ShowMessageError)
   }
 }
 

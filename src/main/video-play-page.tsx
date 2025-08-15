@@ -135,6 +135,7 @@ async function setupCustomFavPicker() {
     (e) => {
       if (e.key !== 'e') return
       if (shouldDisableShortcut()) return
+      if (isTypingInComments(e.target as HTMLElement)) return
       e.stopImmediatePropagation()
       e.preventDefault()
       addToFav()
@@ -166,4 +167,22 @@ async function addToFav() {
     if (success) antMessage.success(`已加入收藏夹「${targetFolder.title}」`)
     return success
   })
+}
+
+/**
+ * 判断是否在评论输入框输入
+ */
+function isTypingInComments(el: Element) {
+  if (el.tagName.toLowerCase() !== 'bili-comments') return false
+  const activeEditor = shadowRootQuery(el, ['bili-comments-header-renderer', 'bili-comment-box', '#editor.active'])
+  return !!activeEditor
+}
+
+function shadowRootQuery(root: Element, selectors: string[]) {
+  let result: Element | undefined = root
+  for (const selector of selectors) {
+    result = result.shadowRoot?.querySelector(selector) ?? undefined
+    if (!result) return
+  }
+  return result
 }
