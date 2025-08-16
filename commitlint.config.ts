@@ -1,5 +1,6 @@
 import defaultConfig from '@commitlint/config-conventional'
 import { RuleConfigSeverity } from '@commitlint/types'
+import { identity } from 'es-toolkit'
 import type { UserConfig } from '@commitlint/types'
 
 /**
@@ -7,14 +8,11 @@ import type { UserConfig } from '@commitlint/types'
  * 还是加个 Lint 吧
  * see https://github.com/magicdawn/Bilibili-Gate/commit/7439247
  */
-
-const Configuration: UserConfig = {
+export default identity<UserConfig>({
   extends: ['@commitlint/config-conventional'],
   rules: {
     'type-enum': [RuleConfigSeverity.Error, 'always', [...defaultConfig.rules['type-enum'][2], 'deps', 'changelog']],
     'header-max-length': [RuleConfigSeverity.Disabled],
     'subject-case': [RuleConfigSeverity.Disabled],
   },
-}
-
-export default Configuration
+})

@@ -1,7 +1,7 @@
+import { identity } from 'es-toolkit'
 import type { KnipConfig } from 'knip'
-const defineConfig = (config: KnipConfig) => config
 
-export default defineConfig({
+export default identity<KnipConfig>({
   entry: ['src/index.ts', 'scripts/*.ts', '*.config.js', '*.config.ts'],
   project: ['src/**/*.{ts,tsx}', 'scripts/*.ts'],
   ignore: ['**/define/**/*.ts', '**/*.d.ts'],
