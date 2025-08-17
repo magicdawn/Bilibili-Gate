@@ -57,13 +57,19 @@ export const IN_BILIBILI_HOMEPAGE = IN_BILIBILI_MAIN && (pathname === '/' || pat
  * log with namespace
  * e.g console.warn('[%s] videoshot error for %s: %o', APP_NAME, bvid, json)
  */
+
 function logFactory(logFn: typeof console.log) {
   return function appLog(...args: Parameters<typeof console.log>) {
     const [message, ...rest] = args
+    const label = `%c${APP_NAME}%c` // 后面 `%c` 是 style reset
+    const labelFormats = [
+      'padding: 2px 4px; border-radius: 4px; color: #fff; background: #01847f; font-weight: bold;',
+      '',
+    ]
     if (typeof message === 'string') {
-      return logFn(`[${APP_NAME}]: ${message}`, ...rest)
+      return logFn(`${label} ${message}`, ...labelFormats, ...rest)
     } else {
-      return logFn(`[${APP_NAME}]:`, message, ...rest)
+      return logFn(`${label}`, ...labelFormats, message, ...rest)
     }
   }
 }

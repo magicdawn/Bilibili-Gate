@@ -210,6 +210,17 @@ export function useCurrentTheme() {
 /**
  * colorPrimary hex 值, 需传入 antd
  */
+export function getColorPrimaryHex() {
+  const currentTheme = getCurrentTheme()
+  const evolvedThemeColor = $evolvedThemeColor.get()
+
+  let colorPrimary = currentTheme.colorPrimary
+  if (currentTheme.id === BIBIBILI_EVOLVED_SYNC_ID) {
+    colorPrimary = evolvedThemeColor || DEFAULT_BILI_PINK_THEME.colorPrimary
+  }
+
+  return colorPrimary
+}
 export function useColorPrimaryHex() {
   const currentTheme = useCurrentTheme()
   const evolvedThemeColor = $evolvedThemeColor.use()
