@@ -46,6 +46,7 @@ import { copyContent } from './index.shared'
 import { watchlaterAdd } from './services'
 import { getFavTabMenus, getWatchlaterTabFavMenus, type FavContext } from './use/useFavRelated'
 import type { WatchlaterRelatedContext } from './use/useWatchlaterRelated'
+import type { MouseEvent } from 'react'
 
 export function useContextMenus({
   item,
@@ -445,4 +446,15 @@ export function useContextMenus({
     // others
     multiSelecting,
   ])
+}
+
+/**
+ * @returns true: event handled, false: continue your logic
+ */
+export function showNativeContextMenuWhenAltKeyPressed(e: MouseEvent): boolean | undefined {
+  // if alt is pressed, show native context menu
+  if (e.altKey) {
+    e.stopPropagation()
+    return true
+  }
 }

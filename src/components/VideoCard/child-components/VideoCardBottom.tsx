@@ -20,6 +20,7 @@ import { ELiveStatus } from '$modules/rec-services/live/live-enum'
 import { settings } from '$modules/settings'
 import { getAvatarSrc } from '$utility/image'
 import type { IVideoCardData } from '$modules/filter/normalize'
+import { showNativeContextMenuWhenAltKeyPressed } from '../context-menus'
 import { isDisplayAsList, type ECardDisplay } from '../index.shared'
 import { useLinkTarget } from '../use/useOpenRelated'
 import { UnixTsDisplay } from './UnixTsDisplay'
@@ -213,6 +214,7 @@ export const VideoCardBottom = memo(function ({
         >
           <a
             onClick={handleVideoLinkClick}
+            onContextMenu={showNativeContextMenuWhenAltKeyPressed}
             href={href}
             target={target}
             rel='noopener'
@@ -259,6 +261,7 @@ export const VideoCardBottom = memo(function ({
             target={target}
             title={descTitleAttribute}
             css={descOwnerCss}
+            onContextMenu={showNativeContextMenuWhenAltKeyPressed}
           >
             <span className='bili-video-card__info--author'>{authorName}</span>
             {!!date && (
@@ -278,7 +281,13 @@ export const VideoCardBottom = memo(function ({
      */
     if (appBadge || appBadgeDesc) {
       return (
-        <a className='bili-video-card__info--owner' css={descOwnerCss} href={href} target={target}>
+        <a
+          className='bili-video-card__info--owner'
+          css={descOwnerCss}
+          href={href}
+          target={target}
+          onContextMenu={showNativeContextMenuWhenAltKeyPressed}
+        >
           {!!appBadge && <span css={S.appBadge}>{appBadge}</span>}
           {!!appBadgeDesc && <span>{appBadgeDesc}</span>}
         </a>
@@ -306,6 +315,7 @@ export const VideoCardBottom = memo(function ({
             href={authorHref}
             target={target}
             title={(authorName || '') + (liveExtraDesc || '')}
+            onContextMenu={showNativeContextMenuWhenAltKeyPressed}
           >
             {authorName}
             {liveExtraDesc && <span className='ml-4px'>{liveExtraDesc}</span>}

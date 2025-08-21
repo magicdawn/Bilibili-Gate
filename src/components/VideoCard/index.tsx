@@ -44,7 +44,7 @@ import { BlacklistCard, DislikedCard, SkeletonCard } from './child-components/ot
 import { SimpleProgressBar } from './child-components/PreviewImage'
 import { VideoCardActionsClassNames } from './child-components/VideoCardActions'
 import { VideoCardBottom } from './child-components/VideoCardBottom'
-import { useContextMenus } from './context-menus'
+import { showNativeContextMenuWhenAltKeyPressed, useContextMenus } from './context-menus'
 import {
   clsZWatchlaterProgressBar,
   defaultEmitter,
@@ -561,6 +561,9 @@ const VideoCardInner = memo(function VideoCardInner({
       ]}
       onClick={handleVideoLinkClick}
       onContextMenu={(e) => {
+        const handled = showNativeContextMenuWhenAltKeyPressed(e)
+        if (handled) return
+
         // try to solve https://github.com/magicdawn/Bilibili-Gate/issues/92
         // can't reproduce on macOS
         e.preventDefault()

@@ -39,8 +39,8 @@ importers:
         specifier: 3.9.3
         version: 3.9.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       antd:
-        specifier: 5.27.0
-        version: 5.27.0(date-fns@2.30.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: 5.27.1
+        version: 5.27.1(date-fns@2.30.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       axios:
         specifier: ^0.30.0
         version: 0.30.0(debug@4.4.1)
@@ -90,8 +90,8 @@ importers:
         specifier: ^0.0.1
         version: 0.0.1
       quick-lru:
-        specifier: ^7.0.1
-        version: 7.0.1
+        specifier: ^7.1.0
+        version: 7.1.0
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -2201,8 +2201,8 @@ packages:
     resolution: {integrity: sha512-BGcItUBWSMRgOCe+SVZJ+S7yTRG0eGt9cXAHev72yuGcY23hnLA7Bky5L/xLyPINoSN95geovfBkqoTlNZYa7w==}
     engines: {node: '>=14'}
 
-  antd@5.27.0:
-    resolution: {integrity: sha512-o54dmpooLOc08RSGCkeEQBYAGPxUSmnhmYJKCNTHH46vzjOVxdteu+wPTRVkRbAkDTbs2VcNr5VL7Lu67rPIiA==}
+  antd@5.27.1:
+    resolution: {integrity: sha512-jGMSdBN7hAMvPV27B4RhzZfL6n6yu8yDbo7oXrlJasaOqB7bSDPcjdEy1kXy3JPsny/Qazb1ykzRI4EfcByAPQ==}
     peerDependencies:
       react: '>=16.9.0'
       react-dom: '>=16.9.0'
@@ -4017,8 +4017,8 @@ packages:
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
 
-  quick-lru@7.0.1:
-    resolution: {integrity: sha512-kLjThirJMkWKutUKbZ8ViqFc09tDQhlbQo2MNuVeLWbRauqYP96Sm6nzlQ24F0HFjUNZ4i9+AgldJ9H6DZXi7g==}
+  quick-lru@7.1.0:
+    resolution: {integrity: sha512-Pzd/4IFnTb8E+I1P5rbLQoqpUHcXKg48qTYKi4EANg+sTPwGFEMOcYGiiZz6xuQcOMZP7MPsrdAPx+16Q8qahg==}
     engines: {node: '>=18'}
 
   rc-cascader@3.34.0:
@@ -7143,7 +7143,7 @@ snapshots:
 
   ansis@4.1.0: {}
 
-  antd@5.27.0(date-fns@2.30.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  antd@5.27.1(date-fns@2.30.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@ant-design/colors': 7.2.1
       '@ant-design/cssinjs': 1.24.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -9267,7 +9267,7 @@ snapshots:
 
   queue-microtask@1.2.3: {}
 
-  quick-lru@7.0.1: {}
+  quick-lru@7.1.0: {}
 
   rc-cascader@3.34.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
