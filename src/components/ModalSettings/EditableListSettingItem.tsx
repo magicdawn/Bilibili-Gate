@@ -80,13 +80,7 @@ export function EditableListSettingItem({
         ]}
       >
         {list.length ? (
-          <div
-            className={clsx(
-              'flex flex-wrap items-start gap-x-10px gap-y-5px',
-              'py-5px pl-5px pr-10px',
-              'max-h-250px overflow-y-auto',
-            )}
-          >
+          <div className='max-h-250px flex flex-wrap items-start gap-x-10px gap-y-5px overflow-y-auto py-5px pl-5px pr-10px'>
             {list.map((t) => {
               return (
                 <TagItemDisplay

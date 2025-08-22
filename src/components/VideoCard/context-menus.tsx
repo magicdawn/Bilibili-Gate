@@ -135,10 +135,7 @@ export function useContextMenus({
 
     await updateSettingsInnerArray('filter.byAuthor.keywords', { add: [content] })
     if (authorName) setNicknameCache(authorMid, authorName)
-
-    let toastContent = content
-    if (authorName) toastContent += ` 用户名: ${authorName}`
-    antMessage.success(`已加入过滤名单: ${toastContent}, 刷新后生效~`)
+    antMessage.success(`已加入过滤名单: ${authorName || authorMid}`)
   })
 
   /**

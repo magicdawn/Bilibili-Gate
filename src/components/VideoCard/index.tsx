@@ -27,6 +27,7 @@ import { EApiType } from '$define/index.shared'
 import { PcRecGoto } from '$define/pc-recommend'
 import { antNotification } from '$modules/antd'
 import { useInBlacklist } from '$modules/bilibili/me/relations/blacklist'
+import { useInFilterByAuthorList } from '$modules/filter/block-state'
 import { normalizeCardData } from '$modules/filter/normalize'
 import { useMultiSelectState } from '$modules/multi-select/store'
 import { ELiveStatus } from '$modules/rec-services/live/live-enum'
@@ -40,7 +41,7 @@ import type { CssProp } from '$utility/type'
 import { videoCardBorderRadiusValue } from '../css-vars'
 import { useLargePreviewRelated } from '../LargePreview/useLargePreview'
 import { multiSelectedCss, useBlockedCardCss } from './card-border-css'
-import { BlacklistCard, DislikedCard, SkeletonCard } from './child-components/other-type-cards'
+import { BlockedCard, DislikedCard, SkeletonCard } from './child-components/other-type-cards'
 import { SimpleProgressBar } from './child-components/PreviewImage'
 import { VideoCardActionsClassNames } from './child-components/VideoCardActions'
 import { VideoCardBottom } from './child-components/VideoCardBottom'
@@ -110,18 +111,19 @@ export const VideoCard = memo(function VideoCard({
   // `true`   => when item is not provided
   // `false`  => when item provided
   loading = loading ?? !item
-
-  const dislikedReason = useDislikedReason(item?.api === EApiType.AppRecommend ? item.param : undefined)
   const cardData = useMemo(() => item && normalizeCardData(item), [item])
 
   // state
+  const dislikedReason = useDislikedReason(item?.api === EApiType.AppRecommend ? item.param : undefined)
   const blacklisted = useInBlacklist(cardData?.authorMid)
+  const blocked = useInFilterByAuthorList(cardData?.authorMid)
   const watchlaterAdded = useWatchlaterState(cardData?.bvid)
   const multiSelected = useMultiSelectState(item?.uniqId)
 
   const showingDislikeCard = !!dislikedReason
   const showingBlacklistCard = blacklisted
-  const isBlockedCard = showingDislikeCard || showingBlacklistCard
+  const showingBlockedCard = blocked
+  const isBlockedCard = showingDislikeCard || showingBlacklistCard || showingBlockedCard
   const blockedCardCss = useBlockedCardCss(isBlockedCard)
 
   const _className = clsx('bili-video-card', APP_CLS_CARD, { [APP_CLS_CARD_ACTIVE]: active }, 'relative', className)
@@ -147,7 +149,9 @@ export const VideoCard = memo(function VideoCard({
             dislikedReason={dislikedReason!}
           />
         ) : showingBlacklistCard ? (
-          <BlacklistCard item={item} cardData={cardData} />
+          <BlockedCard item={item} cardData={cardData} blockType='blacklist' />
+        ) : showingBlockedCard ? (
+          <BlockedCard item={item} cardData={cardData} blockType='filter' />
         ) : (
           <VideoCardInner
             item={item}

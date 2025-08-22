@@ -3,7 +3,9 @@ import { useEmitterOn } from '$common/hooks/useEmitter'
 import { delDislikeId } from '$components/ModalDislike'
 import { antMessage } from '$modules/antd'
 import { UserBlacklistService } from '$modules/bilibili/me/relations/blacklist'
+import { parseUpRepresent } from '$modules/filter/parse'
 import { IconForBlacklist, IconForReset } from '$modules/icon'
+import { settings, updateSettingsInnerArray } from '$modules/settings'
 import { toastRequestFail } from '$utility/toast'
 import type { DislikeReason } from '$components/ModalDislike'
 import type { AppRecItemExtend, RecItemType } from '$define'
@@ -124,19 +126,31 @@ function __BottomRevertAction({
   )
 }
 
-export const BlacklistCard = memo(function BlacklistCard({
+export const BlockedCard = memo(function BlockedCardInner({
   item,
   cardData,
+  blockType,
 }: {
   item: RecItemType
   cardData: IVideoCardData
+  blockType: 'blacklist' | 'filter'
 }) {
   const { authorMid, authorName } = cardData
+  const label = blockType === 'blacklist' ? '已拉黑' : '已加入过滤列表'
 
-  const onCancel = useMemoizedFn(async () => {
+  const onCancel = useMemoizedFn(() => {
+    return blockType === 'blacklist' ? onCancelBlacklist() : onCancelFilter()
+  })
+  const onCancelBlacklist = useMemoizedFn(async () => {
     if (!authorMid) return
     const success = await UserBlacklistService.remove(authorMid)
     if (success) antMessage.success(`已移出黑名单: ${authorName}`)
+  })
+  const onCancelFilter = useMemoizedFn(() => {
+    if (!authorMid) return
+    const toRemove = settings.filter.byAuthor.keywords.filter((keyword) => parseUpRepresent(keyword).mid === authorMid)
+    updateSettingsInnerArray('filter.byAuthor.keywords', { remove: toRemove })
+    antMessage.success(`已移出过滤列表: ${authorName}`)
   })
 
   return (
@@ -144,7 +158,7 @@ export const BlacklistCard = memo(function BlacklistCard({
       <div className={blockedCardClassNames.cover}>
         <div className={blockedCardClassNames.coverInner}>
           <IconForBlacklist className='mb-5px size-32px' />
-          <div className={blockedCardClassNames.dislikeReason}>已拉黑</div>
+          <div className={blockedCardClassNames.dislikeReason}>{label}</div>
           <div className={blockedCardClassNames.dislikeDesc}>UP: {authorName}</div>
         </div>
       </div>
