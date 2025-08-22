@@ -3,7 +3,7 @@ import { delay } from 'es-toolkit'
 import { isAppRecommend, isPcRecommend, type RecItemType } from '$define'
 import { EApiType } from '$define/index.shared'
 import { antMessage } from '$modules/antd'
-import { IconForLoading, IconForWatchlater } from '$modules/icon'
+import { IconForDelete, IconForLoading, IconForWatchlater } from '$modules/icon'
 import { IconAnimatedChecked } from '$modules/icon/animated-checked'
 import { watchlaterState } from '$modules/rec-services/watchlater'
 import type { IVideoCardData } from '$modules/filter/normalize'
@@ -106,7 +106,7 @@ export function useWatchlaterRelated({
 
     if (item.api === EApiType.Watchlater) {
       return watchlaterAdded ? (
-        <IconMaterialSymbolsDeleteOutlineRounded className='size-16px' />
+        <IconForDelete className='size-16px' />
       ) : (
         <IconAnimatedChecked size={addedSize} useAnimation={watchlaterAddedPrevious === true} />
       )

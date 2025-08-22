@@ -10,6 +10,7 @@ export const IconForOpenExternalLink = IconMaterialSymbolsLightOpenInNew
 export const IconForAsc = IconTablerSortAscending2
 export const IconForDesc = IconTablerSortDescending2
 export const IconForInfo = IconParkOutlineInfo
+export const IconForDelete = IconMaterialSymbolsDeleteOutlineRounded
 
 // orders
 export const IconForDefaultOrder = IconMdiShuffleDisabled

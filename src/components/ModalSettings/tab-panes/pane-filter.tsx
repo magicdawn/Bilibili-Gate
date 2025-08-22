@@ -1,13 +1,20 @@
-import { Button, InputNumber, Tag } from 'antd'
+import { Button, InputNumber, Popover, Tag } from 'antd'
 import { isEqual, isNil } from 'es-toolkit'
 import pmap from 'promise.map'
 import { HelpInfo, TOOLTIP_BLACK_BG_COLOR } from '$components/_base/HelpInfo'
 import { CheckboxSettingItem, SwitchSettingItem } from '$components/ModalSettings/setting-item'
+import { antMessage } from '$modules/antd'
 import { getUserNickname } from '$modules/bilibili/user/nickname'
+import {
+  exportFilterByAuthor,
+  exportFilterByTitle,
+  importFilterByAuthor,
+  importFilterByTitle,
+} from '$modules/filter/import-export'
 import { parseUpRepresent } from '$modules/filter/parse'
-import { IconForInfo } from '$modules/icon'
+import { IconForDelete, IconForInfo } from '$modules/icon'
+import { IconForPopoverTrigger } from '$modules/rec-services/dynamic-feed/shared'
 import { settings, useSettingsSnapshot } from '$modules/settings'
-import toast from '$utility/toast'
 import { EditableListSettingItem } from '../EditableListSettingItem'
 import { SettingsGroup, sharedClassNames } from './shared'
 import type { ComponentProps } from 'react'
@@ -172,9 +179,6 @@ export function TabPaneFilter() {
                 使用 mid 屏蔽时支持备注, 格式: <Tag color='success'>mid(备注)</Tag>
                 {'  '}如 <Tag color='success'>8047632(B站官方)</Tag> <br />
                 作用范围: 推荐 / 热门 <br />
-                <Button size='small' onClick={clear_filterByAuthor_uselessRemarkData} className='mt-4px'>
-                  清理无效备注数据
-                </Button>
                 <div className='mt-4px flex items-start'>
                   <IconForInfo className='mt-3px' />
                   <div className='ml-8px flex-1'>
@@ -185,6 +189,30 @@ export function TabPaneFilter() {
                 </div>
               </HelpInfo>
               <SwitchSettingItem configPath='filter.byAuthor.enabled' disabled={!enabled} className='ml-10px' />
+              <div className='flex-1' />
+              <Popover
+                placement='left'
+                content={
+                  <div className='flex flex-col gap-x-10px gap-y-5px'>
+                    <Button onClick={clear_filterByAuthor_uselessRemarkData}>
+                      <IconForDelete />
+                      清理无效备注数据
+                    </Button>
+                    <Button onClick={exportFilterByAuthor}>
+                      <IconTablerFileExport />
+                      导出
+                    </Button>
+                    <Button onClick={importFilterByAuthor}>
+                      <IconTablerFileImport />
+                      导入
+                    </Button>
+                  </div>
+                }
+              >
+                <Button className='icon-only-round-button size-26px'>
+                  <IconForPopoverTrigger className='size-16px' />
+                </Button>
+              </Popover>
             </div>
             <EditableListSettingItem
               configPath={'filter.byAuthor.keywords'}
@@ -202,6 +230,26 @@ export function TabPaneFilter() {
                 作用范围: 推荐 / 热门
               </HelpInfo>
               <SwitchSettingItem configPath='filter.byTitle.enabled' disabled={!enabled} className='ml-10px' />
+              <div className='flex-1' />
+              <Popover
+                placement='left'
+                content={
+                  <div className='flex flex-col gap-x-10px gap-y-5px'>
+                    <Button onClick={exportFilterByTitle}>
+                      <IconTablerFileExport />
+                      导出
+                    </Button>
+                    <Button onClick={importFilterByTitle}>
+                      <IconTablerFileImport />
+                      导入
+                    </Button>
+                  </div>
+                }
+              >
+                <Button className='icon-only-round-button size-26px'>
+                  <IconForPopoverTrigger className='size-16px' />
+                </Button>
+              </Popover>
             </div>
             <EditableListSettingItem
               configPath={'filter.byTitle.keywords'}
@@ -233,9 +281,9 @@ async function clear_filterByAuthor_uselessRemarkData() {
   )
 
   if (isEqual(newList, list)) {
-    return toast('没有「无效备注」数据!')
+    return antMessage.warning('没有「无效备注」数据!')
   }
 
   settings.filter.byAuthor.keywords = newList
-  return toast('已清理「无效备注」数据!')
+  return antMessage.success('已清理「无效备注」数据!')
 }
