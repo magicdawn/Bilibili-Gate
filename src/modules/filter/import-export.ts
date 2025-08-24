@@ -1,28 +1,16 @@
 import { attempt, attemptAsync, difference } from 'es-toolkit'
 import { APP_NAME } from '$common'
 import { antMessage } from '$modules/antd'
-import {
-  getNewestValueOfSettingsInnerArray,
-  getSettingsSnapshot,
-  updateSettingsInnerArray,
-  type ListSettingsPath,
-} from '$modules/settings'
+import { getNewestValueOfSettingsInnerArray, updateSettingsInnerArray, type ListSettingsPath } from '$modules/settings'
 
 export function exportFilterByAuthor() {
-  const key = getJsonKey('filter.byAuthor.keywords')
-  const val = getSettingsSnapshot().filter.byAuthor.keywords
-  GM.setClipboard(JSON.stringify({ [key]: val }, null, 2))
-  antMessage.success('已复制到剪贴板!')
+  return _exportForPath('filter.byAuthor.keywords')
 }
 export function importFilterByAuthor() {
   return _importForPath('filter.byAuthor.keywords')
 }
-
 export function exportFilterByTitle() {
-  const key = getJsonKey('filter.byTitle.keywords')
-  const val = getSettingsSnapshot().filter.byTitle.keywords
-  GM.setClipboard(JSON.stringify({ [key]: val }, null, 2))
-  antMessage.success('已复制到剪贴板!')
+  return _exportForPath('filter.byTitle.keywords')
 }
 export function importFilterByTitle() {
   return _importForPath('filter.byTitle.keywords')
@@ -33,9 +21,16 @@ function getJsonKey(p: ListSettingsPath) {
   return `__${APP_NAME}:${p}__`
 }
 
+async function _exportForPath(listSettingsPath: ListSettingsPath) {
+  const key = getJsonKey(listSettingsPath)
+  const val = await getNewestValueOfSettingsInnerArray(listSettingsPath)
+  GM.setClipboard(JSON.stringify({ [key]: val }, null, 2))
+  antMessage.success('已复制到剪贴板!')
+}
+
 async function _importForPath(listSettingsPath: ListSettingsPath) {
-  const [err, text] = await attemptAsync(() => navigator.clipboard.readText())
-  if (err) return antMessage.error('读取剪贴板失败!')
+  const [errClip, text] = await attemptAsync(() => navigator.clipboard.readText())
+  if (errClip) return antMessage.error('读取剪贴板失败!')
   if (!text) return antMessage.error('剪贴板内容为空!')
 
   const [errJson, json] = attempt(() => JSON.parse(text))
