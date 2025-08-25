@@ -92,7 +92,7 @@
     "@vitejs/plugin-react-swc": "^4.0.1",
     "@vitest/ui": "3.2.4",
     "concurrently": "^9.2.0",
-    "eslint": "^9.33.0",
+    "eslint": "^9.34.0",
     "husky": "^9.1.7",
     "knip": "^5.63.0",
     "lint-staged": "^16.1.5",
@@ -113,7 +113,7 @@
     "vite-bundle-analyzer": "^1.2.1",
     "vite-plugin-importer": "^0.2.5",
     "vite-plugin-inspect": "^11.3.2",
-    "vite-plugin-monkey": "^7.0.3",
+    "vite-plugin-monkey": "^7.1.2",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4"
   },

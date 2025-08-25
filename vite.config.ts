@@ -272,9 +272,7 @@ export default defineConfig(({ command, mode }) => ({
 
                 // https://github.com/ant-design/ant-design/issues/45262
                 '@ant-design/cssinjs': cdn.npmmirror('antdCssinjs', 'dist/umd/cssinjs.min.js'),
-
-                'antd': cdn.npmmirror('antd', 'dist/antd-with-locales.min.js'),
-                'antd/locale/zh_CN': 'antd.locales.zh_CN',
+                'antd': cdn.npmmirror('antd', 'dist/antd.min.js'),
               }),
         },
       },
