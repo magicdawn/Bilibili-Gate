@@ -12,4 +12,4 @@ onlyBuiltDependencies:
   - oxc-resolver
   - unrs-resolver
 
-minimumReleaseAge: 2880
+minimumReleaseAge: 1440

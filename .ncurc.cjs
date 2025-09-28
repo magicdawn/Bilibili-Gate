@@ -17,5 +17,5 @@ module.exports = defineConfig({
     'optional',
     // 'packageManager'
   ],
-  cooldown: 2, // days
+  cooldown: 1, // days
 })
