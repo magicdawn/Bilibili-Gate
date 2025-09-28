@@ -1,4 +1,6 @@
-module.exports = {
+const { defineConfig } = require('npm-check-updates')
+
+module.exports = defineConfig({
   reject: [
     'axios',
     // react v19
@@ -16,4 +18,4 @@ module.exports = {
     // 'packageManager'
   ],
   cooldown: 2, // days
-}
+})
