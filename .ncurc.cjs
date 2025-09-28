@@ -15,4 +15,5 @@ module.exports = {
     'optional',
     // 'packageManager'
   ],
+  cooldown: 2, // days
 }
