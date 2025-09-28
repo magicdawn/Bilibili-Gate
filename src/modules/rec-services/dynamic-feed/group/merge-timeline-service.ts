@@ -1,4 +1,4 @@
-import { orderBy } from 'es-toolkit'
+import { isEqual, orderBy } from 'es-toolkit'
 import pmap from 'promise.map'
 import { wrapWithIdbCache } from '$utility/idb'
 import type { DynamicFeedItem } from '$define'
@@ -39,6 +39,12 @@ export class FollowGroupUpService {
     this.offset = data.offset
     this.hasMoreForApi = data.has_more
     this.page++
+
+    // special empty case but `has_more = true`
+    if (isEqual(data, { has_more: true, items: [], offset: '', update_baseline: '', update_num: 0 })) {
+      this.hasMoreForApi = false
+    }
+
     return data.items
   }
 

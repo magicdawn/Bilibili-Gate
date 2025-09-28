@@ -246,7 +246,7 @@ export function useContextMenus({
       isSpaceUpload(item) &&
       !!item.page && {
         key: 'space-upload-view-start-from-here',
-        label: `投稿: 从此页开始查看 (${item.page})`,
+        label: `投稿: 从此页开始查看 (当前第${item.page}页)`,
         icon: <IconTablerSortDescending2 className='size-17px' />,
         onClick() {
           const u = new URL(location.href)
