@@ -18,18 +18,18 @@ import { removeMultiSelectedWatchlaterItems } from '.'
 import type { ElementRef, ReactNode } from 'react'
 
 export function WatchlaterUsageInfo({ service }: UsageInfoPropsFor<ETab.Watchlater>) {
-  const { watchlaterAddSeparator, watchlaterItemsOrder } = useSettingsSnapshot()
+  const { watchlaterAddSeparator, watchlaterItemsOrder, watchlaterUseNormalVideoUrl } = useSettingsSnapshot()
   const onRefresh = useOnRefreshContext()
   const { searchText } = useSnapshot(watchlaterStore, { sync: true })
   const multiSelecting = useMultiSelecting()
 
-  // 切换 添加分割线 设置, 即时生效
+  // 修改 watchlater 相关设置, 即时生效
   useUpdateEffect(() => {
     void (async () => {
       await delay(100)
       onRefresh?.()
     })()
-  }, [watchlaterAddSeparator, watchlaterItemsOrder])
+  }, [watchlaterAddSeparator, watchlaterItemsOrder, watchlaterUseNormalVideoUrl])
 
   const { total } = useSnapshot(service.state)
   const title = searchText ? `共 ${total} 条搜索结果` : `共 ${total} 个视频`
