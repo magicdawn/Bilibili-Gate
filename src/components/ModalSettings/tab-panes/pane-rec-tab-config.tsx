@@ -70,6 +70,11 @@ export function TabPaneRecTabsConfig() {
                 label='添加分割线'
                 tooltip='添加「近期」「更早」分割线'
               />
+              <CheckboxSettingItem
+                configPath='watchlaterUseNormalVideoUrl'
+                label='使用普通视频链接'
+                tooltip={explainForFlag('使用普通视频链接', '使用「稍后再看」自动列表链接')}
+              />
             </Space>
           </div>
 

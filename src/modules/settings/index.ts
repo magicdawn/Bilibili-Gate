@@ -113,6 +113,7 @@ export const initialSettings = {
    */
   watchlaterAddSeparator: true, // 添加 "近期" / "更早" 分割线
   watchlaterItemsOrder: WatchlaterItemsOrder.AddTimeDesc, // 顺序
+  watchlaterUseNormalVideoUrl: false, // 稍后再看默认 url 为 https://www.bilibili.com/list/watchlater?bvid=&oid=
 
   /**
    * tab=fav

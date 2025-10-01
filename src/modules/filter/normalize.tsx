@@ -34,6 +34,7 @@ import { IconForCollection, IconForPrivateFolder, IconForPublicFolder } from '$m
 import { isPgcSeasonRankItem, isPgcWebRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { ELiveStatus } from '$modules/rec-services/live/live-enum'
 import { spaceUploadAvatarCache } from '$modules/rec-services/space-upload'
+import { getSettingsSnapshot } from '$modules/settings'
 import { toHttps } from '$utility/url'
 import { formatDuration, formatTimeStamp, getVideoInvalidReason, parseCount, parseDuration } from '$utility/video'
 import type { StatItemField, StatItemType } from '$components/VideoCard/stat-item'
@@ -341,13 +342,17 @@ function apiWatchlaterAdapter(item: WatchlaterItemExtend): IVideoCardData {
     </AntdTooltip>
   ) : undefined
 
+  const href = getSettingsSnapshot().watchlaterUseNormalVideoUrl
+    ? `https://www.bilibili.com/video/${item.bvid}/`
+    : `https://www.bilibili.com/list/watchlater?bvid=${item.bvid}&oid=${item.aid}`
+
   return {
     // video
     avid: String(item.aid),
     bvid: item.bvid,
     cid: item.cid,
     goto: 'av',
-    href: `https://www.bilibili.com/list/watchlater?bvid=${item.bvid}&oid=${item.aid}`,
+    href,
     title,
     titleRender,
     cover: item.pic,
