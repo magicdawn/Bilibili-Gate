@@ -57,11 +57,13 @@ const state = proxy({
   },
 
   get collectionId(): number | undefined {
+    const u = new URL(this.href)
+
     // new: https://space.bilibili.com/<mid>/lists/<collection-id>?type=season
     {
       const reg = /https:\/\/space.bilibili.com\/(?<mid>\d+)\/lists\/(?<collectionId>\d+)(?:\?type=season)?/
       const match = this.href.match(reg)
-      if (match?.groups?.collectionId) {
+      if (match?.groups?.collectionId && (u.searchParams.get('type') === 'season' || !u.searchParams.get('type'))) {
         return Number(match?.groups?.collectionId)
       }
     }
