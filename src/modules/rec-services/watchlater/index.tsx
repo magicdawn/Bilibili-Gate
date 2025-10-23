@@ -27,20 +27,25 @@ export function useWatchlaterState(bvid?: string) {
   return !!bvid && set.has(bvid)
 }
 
-export async function updateWatchlaterState() {
-  if (!getHasLogined() || !getUid()) return
-
-  const { items: allWatchlaterItems = [] } = await fetchWatchlaterItems()
-  if (!allWatchlaterItems.length) return
-
+function replaceWatchlaterStateBvidSet(newSet: string[]) {
   watchlaterState.updatedAt = Date.now()
-  watchlaterState.bvidSet = proxySet<string>(allWatchlaterItems.map((x) => x.bvid))
+  watchlaterState.bvidSet = proxySet<string>(newSet)
+}
+function updateWatchlaterStateBvidSet(action: 'add' | 'del', bvid: string) {
+  if (!watchlaterState.updatedAt) return // not inited
+  action === 'add' ? watchlaterState.bvidSet.add(bvid) : watchlaterState.bvidSet.delete(bvid)
 }
 
+async function initWatchlaterState() {
+  if (!getHasLogined() || !getUid()) return
+  const { items: allWatchlaterItems = [] } = await fetchWatchlaterItems()
+  if (!allWatchlaterItems.length) return
+  replaceWatchlaterStateBvidSet(allWatchlaterItems.map((x) => x.bvid))
+}
 if (IN_BILIBILI_HOMEPAGE) {
   void (async () => {
     await whenIdle()
-    await pRetry(updateWatchlaterState, {
+    await pRetry(initWatchlaterState, {
       retries: 3,
       onFailedAttempt(error) {
         appWarn(`Try updateWatchlaterState ${error.attemptNumber} failed. There are ${error.retriesLeft} retries left`)
@@ -192,6 +197,9 @@ class ShuffleOrderService implements IService {
       showApiRequestError(err)
     }
 
+    // side effects
+    replaceWatchlaterStateBvidSet(rawItems.map((x) => x.bvid).filter(Boolean))
+
     const items: WatchlaterItemExtend[] = rawItems.map(extendItem)
 
     // recent + earlier
@@ -249,9 +257,7 @@ class NormalOrderService implements IService {
   }
 
   firstPageLoaded = false
-  state = proxy<{ total?: number }>({
-    total: undefined,
-  })
+  state = proxy<{ total?: number }>({ total: undefined })
 
   hasMore: boolean = true
   page = 1
@@ -282,6 +288,13 @@ class NormalOrderService implements IService {
     this.state.total = result.total
     this.hasMore = this.page < maxPage
     this.page++
+
+    // side effects: update watchlaterState.bvidSet
+    items.forEach((item) => {
+      if (item.bvid) {
+        updateWatchlaterStateBvidSet('add', item.bvid)
+      }
+    })
 
     const extendedItems: WatchlaterItemExtend[] = items.map(extendItem)
     return this.insertSeparator(extendedItems)
