@@ -10,6 +10,7 @@ import { useLessFrequentFn } from '$common/hooks/useLessFrequentFn'
 import { useRefStateBox } from '$common/hooks/useRefState'
 import { Picture } from '$components/_base/Picture'
 import { useDislikedReason } from '$components/ModalDislike'
+import { getBvidInfo } from '$components/RecGrid/rec-grid-state'
 import { setGlobalValue } from '$components/RecGrid/unsafe-window-export'
 import { ETab } from '$components/RecHeader/tab-enum'
 import {
@@ -29,6 +30,7 @@ import { antNotification } from '$modules/antd'
 import { useInBlacklist } from '$modules/bilibili/me/relations/blacklist'
 import { useInFilterByAuthorList } from '$modules/filter/block-state'
 import { normalizeCardData } from '$modules/filter/normalize'
+import { IconForCopy } from '$modules/icon'
 import { useMultiSelectState } from '$modules/multi-select/store'
 import { ELiveStatus } from '$modules/rec-services/live/live-enum'
 import { useWatchlaterState } from '$modules/rec-services/watchlater'
@@ -43,11 +45,12 @@ import { useLargePreviewRelated } from '../LargePreview/useLargePreview'
 import { multiSelectedCss, useBlockedCardCss } from './card-border-css'
 import { BlockedCard, DislikedCard, SkeletonCard } from './child-components/other-type-cards'
 import { SimpleProgressBar } from './child-components/PreviewImage'
-import { VideoCardActionsClassNames } from './child-components/VideoCardActions'
+import { VideoCardActionButton, VideoCardActionsClassNames } from './child-components/VideoCardActions'
 import { VideoCardBottom } from './child-components/VideoCardBottom'
 import { showNativeContextMenuWhenAltKeyPressed, useContextMenus } from './context-menus'
 import {
   clsZWatchlaterProgressBar,
+  copyContent,
   defaultEmitter,
   defaultSharedEmitter,
   displayAsListCss,
@@ -210,11 +213,9 @@ const VideoCardInner = memo(function VideoCardInner({
     style: {
       videoCard: { useBorder: cardUseBorder, useBorderOnlyOnHover: cardUseBorderOnlyOnHover },
     },
-    videoCard: {
-      actions: videoCardActions,
-      videoPreview: { usePreferredCdn },
-    },
+    videoCard: { actions: videoCardActions },
     spaceUpload: { showVol },
+    __internalEnableCopyBvidInfo,
   } = useSettingsSnapshot()
   const authed = !!accessKey
 
@@ -460,6 +461,20 @@ const VideoCardInner = memo(function VideoCardInner({
   const hasApiTypeTag = tab === ETab.AppRecommend && !isAppRecommend(item) && !isLive(item)
   const hasVolMark = (isSpaceUpload(item) && showVol) || (item.api === EApiType.Fav && !!item.vol && !hasApiTypeTag)
 
+  const copyBvidInfoButtonEl = __internalEnableCopyBvidInfo && (
+    <VideoCardActionButton
+      visible={actionButtonVisible}
+      inlinePosition='right'
+      icon={<IconForCopy className='size-14px' />}
+      tooltip={'复制 BVID 信息'}
+      onClick={(e) => {
+        e.stopPropagation()
+        e.preventDefault()
+        copyContent(getBvidInfo(cardData))
+      }}
+    />
+  )
+
   const topLeftMarksEl = (
     <>
       {/* 多选 */}
@@ -489,6 +504,9 @@ const VideoCardInner = memo(function VideoCardInner({
     <>
       {/* 稍后再看 */}
       {watchlaterButtonEl}
+
+      {/* 复制 bvid */}
+      {copyBvidInfoButtonEl}
 
       {/* 小窗打开 */}
       {openInPopupActionButtonEl}

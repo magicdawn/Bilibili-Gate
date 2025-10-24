@@ -4,8 +4,7 @@
 
 import dayjs from 'dayjs'
 import { fastOrderBy } from 'fast-sort-lens'
-import { defaultSharedEmitter, type SharedEmitter } from '$components/VideoCard/index.shared'
-import { antNotification } from '$modules/antd'
+import { copyContent, defaultSharedEmitter, type SharedEmitter } from '$components/VideoCard/index.shared'
 import { normalizeCardData, type IVideoCardData } from '$modules/filter/normalize'
 import { multiSelectStore } from '$modules/multi-select/store'
 import type { RecItemType } from '$define'
@@ -40,8 +39,7 @@ export function getGenericCardDatas(): IVideoCardData[] {
 export function copyBvidsSingleLine() {
   const bvids = getGenericCardDatas().map((cardData) => cardData.bvid)
   const content = bvids.join(' ')
-  GM.setClipboard(content)
-  antNotification.success({ message: '已复制', description: content })
+  copyContent(content)
 }
 
 export function getBvidInfo(cardData: IVideoCardData) {
@@ -53,8 +51,7 @@ export function getBvidInfo(cardData: IVideoCardData) {
 export function copyBvidInfos() {
   const lines = getGenericCardDatas().map(getBvidInfo)
   const content = lines.join('\n')
-  GM.setClipboard(content)
-  antNotification.success({ message: '已复制', description: content })
+  copyContent(content)
 }
 
 export function copyVideoLinks() {
@@ -67,8 +64,7 @@ export function copyVideoLinks() {
     })
     .filter(Boolean)
   const content = lines.join('\n')
-  GM.setClipboard(content)
-  antNotification.success({ message: '已复制', description: content })
+  copyContent(content)
 }
 
 // 按住 Shift 键扩选
