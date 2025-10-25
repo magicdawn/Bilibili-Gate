@@ -34,6 +34,7 @@ import { IconForCollection, IconForPrivateFolder, IconForPublicFolder } from '$m
 import { isPgcSeasonRankItem, isPgcWebRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { ELiveStatus } from '$modules/rec-services/live/live-enum'
 import { spaceUploadAvatarCache } from '$modules/rec-services/space-upload'
+import { WatchlaterItemsOrder } from '$modules/rec-services/watchlater/watchlater-enum'
 import { getSettingsSnapshot } from '$modules/settings'
 import { toHttps } from '$utility/url'
 import { formatDuration, formatTimeStamp, getVideoInvalidReason, parseCount, parseDuration } from '$utility/video'
@@ -342,9 +343,14 @@ function apiWatchlaterAdapter(item: WatchlaterItemExtend): IVideoCardData {
     </AntdTooltip>
   ) : undefined
 
-  const href = getSettingsSnapshot().watchlaterUseNormalVideoUrl
-    ? `https://www.bilibili.com/video/${item.bvid}/`
-    : `https://www.bilibili.com/list/watchlater?bvid=${item.bvid}&oid=${item.aid}`
+  const { watchlaterUseNormalVideoUrl, watchlaterItemsOrder } = getSettingsSnapshot()
+
+  const href = (() => {
+    if (watchlaterUseNormalVideoUrl) return `https://www.bilibili.com/video/${item.bvid}/`
+    let autoListUrl = `https://www.bilibili.com/list/watchlater?bvid=${item.bvid}&oid=${item.aid}`
+    if (watchlaterItemsOrder === WatchlaterItemsOrder.AddTimeAsc) autoListUrl += '&desc=0'
+    return autoListUrl
+  })()
 
   return {
     // video
