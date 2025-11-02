@@ -91,13 +91,12 @@ export function withAscIcon(label: string) {
   )
 }
 
-export const IconForChargeOnly = defineSvgComponent((props) => {
+// https://s1.hdslb.com/bfs/svg-next/font/2025-07-09/freshspace-gux68tajg0n.ttf
+// https://iconly.io/tools/font-to-icons-converter
+export const IconForSpaceUploadChargeOnly = defineSvgComponent((props) => {
   return (
-    <svg width='16' height='17' viewBox='0 0 16 17' fill='none' {...props}>
-      <path
-        d='M5.00014 14.9839C4.94522 15.1219 5.12392 15.2322 5.22268 15.1212L11.5561 8.00214C11.7084 7.83093 11.5869 7.56014 11.3578 7.56014H9.13662L11.6019 3.57178C11.7112 3.39489 11.584 3.16666 11.376 3.16666H7.4475C7.22576 3.16666 7.02737 3.30444 6.94992 3.51221L4.68362 9.59189C4.61894 9.76539 4.74725 9.95014 4.93241 9.95014H7.00268L5.00014 14.9839Z'
-        fill='white'
-      />
+    <svg viewBox='0 0 1024 1024' width='1em' height='1em' {...props}>
+      <path d='M427 116L263 545q-7 19 4.5 35.5T299 597h115L308 872q-7 18 3 31t26 15.5q16 2.5 29-12.5l386-451q10-12 9-26t-11-24q-10-10-25-10H607l172-249q9-13 6.5-27T773 95q-10-10-26-10H471q-15 0-27 8.5T427 116z' />
     </svg>
   )
 })

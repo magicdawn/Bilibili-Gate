@@ -151,6 +151,7 @@ export const initialSettings = {
    */
   spaceUpload: {
     showVol: false,
+    useSyncFilterTextFromSearchText: false,
   },
 
   /**

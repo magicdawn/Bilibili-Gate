@@ -63,6 +63,7 @@ export interface SpaceUploadItem {
   attribute: number
   is_charging_arc: boolean
   elec_arc_type: number
+  elec_arc_badge?: string
   vt: number
   enable_vt: number
   vt_display: string

@@ -60,7 +60,7 @@ function __FlagSettingItem({
   if (typeof label === 'function') {
     usingLabel = label(checked)
   } else {
-    usingLabel = label || configPath
+    usingLabel = (label ?? configPath) || null // Q: 这是干什么? A: 允许 label 空字符串, 空字符串时转成 null
   }
 
   if (as === 'checkbox') {

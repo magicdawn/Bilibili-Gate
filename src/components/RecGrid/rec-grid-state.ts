@@ -31,7 +31,8 @@ export function getMultiSelectedCardDatas() {
  */
 export function getGenericCardDatas(): IVideoCardData[] {
   const { multiSelecting } = multiSelectStore
-  const items = multiSelecting ? getMultiSelectedItems() : currentGridItems
+  let items = multiSelecting ? getMultiSelectedItems() : currentGridItems
+  if (multiSelecting && !items.length) items = currentGridItems // multi-selecting but no selected, fallback to ALL
   const cardDatas = items.map(normalizeCardData)
   return cardDatas
 }
