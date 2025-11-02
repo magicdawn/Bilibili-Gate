@@ -14,6 +14,7 @@ import {
   type FetcherOptions,
   type ServiceMap,
 } from '$modules/rec-services/service-map'
+import { getSpaceUploadServiceConfig, type SpaceUploadService } from '$modules/rec-services/space-upload'
 import type { RecItemTypeOrSeparator } from '$define'
 import { setGlobalGridItems } from './unsafe-window-export'
 import type { Debugger } from 'debug'
@@ -70,8 +71,7 @@ export function useRefresh({
       /**
        * same tab but conditions changed
        */
-      let s: DynamicFeedRecService | FavRecService | HotRecService | undefined
-
+      let s: DynamicFeedRecService | FavRecService | HotRecService | SpaceUploadService | undefined
       const debugSameTabConditionsChange = () =>
         debug('refresh(): tab=%s [start], current refreshing, sametab but conditions change, abort existing', tab)
 
@@ -86,6 +86,15 @@ export function useRefresh({
       }
       // fav: conditions changed
       else if (tab === ETab.Fav && (s = servicesRegistry.val[ETab.Fav]) && !isEqual(s.config, getFavServiceConfig())) {
+        debugSameTabConditionsChange()
+        refreshAbortController.abort()
+      }
+      // space-upload: conditions changed
+      else if (
+        tab === ETab.SpaceUpload &&
+        (s = servicesRegistry.val[ETab.SpaceUpload]) &&
+        !isEqual(s.config, getSpaceUploadServiceConfig())
+      ) {
         debugSameTabConditionsChange()
         refreshAbortController.abort()
       }

@@ -53,7 +53,7 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
   filterText: string | undefined
   initialPage: number | undefined
 
-  constructor(config: SpaceUploadServiceConfig) {
+  constructor(public config: SpaceUploadServiceConfig) {
     super(SpaceUploadService.PAGE_SIZE)
     Object.assign(this, config)
     this.mids = config.mids
