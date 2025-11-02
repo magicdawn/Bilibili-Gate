@@ -25,8 +25,8 @@ export function CopyBvidButtonsUsageInfo() {
   if (!enabled) return null
   return (
     <>
-      <CopyBvidButtons />
       <MultiSelectButton iconOnly={false} />
+      <CopyBvidButtons />
     </>
   )
 }

@@ -282,33 +282,42 @@ export function TabPaneBasic() {
         titleClassName='justify-between'
         title={
           <>
-            预览
-            <ResetPartialSettingsButton paths={['autoPreviewWhenKeyboardSelect', 'autoPreviewWhenHover']} />
+            快照预览
+            <ResetPartialSettingsButton
+              paths={[
+                'videoCard.imgPreview.autoPreviewWhenKeyboardSelect',
+                'videoCard.imgPreview.autoPreviewWhenHover',
+                'videoCard.imgPreview.disableWhenMultiSelecting',
+              ]}
+            />
           </>
         }
         contentClassName='flex-row flex-wrap items-center gap-x-10px'
       >
         <CheckboxSettingItem
-          configPath='autoPreviewWhenKeyboardSelect'
-          label='键盘选中后自动开始预览'
+          configPath='videoCard.imgPreview.autoPreviewWhenKeyboardSelect'
+          label='键盘选中后自动开始'
           tooltip={
             <>
-              手动预览快捷键: <Tag color='green'>.</Tag> or <Tag color='green'>p</Tag>
-              <br />
+              手动预览快捷键: <Tag color='green'>.</Tag> or <Tag color='green'>p</Tag> <br />
               切换设置快捷键: <Tag color='green'>shift+p</Tag>
             </>
           }
         />
-
         <CheckboxSettingItem
-          configPath='autoPreviewWhenHover'
-          label='鼠标悬浮后自动开始预览'
+          configPath='videoCard.imgPreview.autoPreviewWhenHover'
+          label='鼠标悬浮后自动开始'
           tooltip={
             <>
               鼠标悬浮后自动开始预览, 预览不再跟随鼠标位置 <br />
               切换设置快捷键: <Tag color='green'>shift+m</Tag>
             </>
           }
+        />
+        <CheckboxSettingItem
+          configPath='videoCard.imgPreview.disableWhenMultiSelecting'
+          label='多选时禁用'
+          tooltip={explainForFlag('多选开启时, 禁用快照预览', '不禁用')}
         />
       </SettingsGroup>
 

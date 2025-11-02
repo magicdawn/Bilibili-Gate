@@ -69,13 +69,18 @@ export const initialSettings = {
         searchPage: true,
       },
     },
+
+    imgPreview: {
+      // 自动开始预览: 按键选择
+      autoPreviewWhenKeyboardSelect: false,
+
+      // 自动开始预览: 鼠标悬浮; 不再跟随鼠标位置, 默认: 跟随鼠标
+      autoPreviewWhenHover: true,
+
+      // 多选时禁用
+      disableWhenMultiSelecting: true,
+    },
   },
-
-  // 自动开始预览: 按键选择
-  autoPreviewWhenKeyboardSelect: false,
-
-  // 自动开始预览: 鼠标悬浮; 不再跟随鼠标位置, 默认: 跟随鼠标
-  autoPreviewWhenHover: true,
 
   // 自动预览: 更新间隔
   // 跳跃式(400) 连续式(700)
@@ -401,6 +406,10 @@ export function runSettingsMigration(val: object | undefined) {
     ['style.videoCard.useBoxShadow', 'styleUseCardBoxShadow'],
     // 2025-04-23
     ['pipWindow.defaultLocked', 'pipWindowDefaultLocked'],
+
+    // 2025-11-02
+    ['videoCard.imgPreview.autoPreviewWhenKeyboardSelect', 'autoPreviewWhenKeyboardSelect'],
+    ['videoCard.imgPreview.autoPreviewWhenHover', 'autoPreviewWhenHover'],
   ]
   // 伪代码: savedConfig[newName] = savedConfig[legacyName]
   for (const [configPath, legacyConfigPath] of config) {

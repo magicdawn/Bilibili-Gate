@@ -50,8 +50,8 @@ const modalSettingsStore = proxy({ tab })
 
 // empty component for conditional render
 export function ModalSettingsHotkey() {
-  useHotkeyForConfig(['shift.p'], 'autoPreviewWhenKeyboardSelect', '键盘选中后自动开始预览')
-  useHotkeyForConfig(['shift.m'], 'autoPreviewWhenHover', '鼠标悬浮后自动开始预览')
+  useHotkeyForConfig(['shift.p'], 'videoCard.imgPreview.autoPreviewWhenKeyboardSelect', '键盘选中后自动开始预览')
+  useHotkeyForConfig(['shift.m'], 'videoCard.imgPreview.autoPreviewWhenHover', '鼠标悬浮后自动开始预览')
   useHotkeyForConfig(['shift.c'], 'useNarrowMode', '居中模式')
   useHotkeyForConfigBorder()
   return null

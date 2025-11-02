@@ -73,7 +73,7 @@ export const getVideoshotJson = reusePendingPromise(async (bvid: string): Promis
   }
 
   const videoshotData = videoshotJson.data
-  if (settings.autoPreviewWhenHover) {
+  if (settings.videoCard.imgPreview.autoPreviewWhenHover) {
     // preload first img & without wait rest
     const imgs = videoshotData?.image || []
     await preloadImg(imgs[0])

@@ -208,12 +208,14 @@ const VideoCardInner = memo(function VideoCardInner({
   multiSelected,
 }: VideoCardInnerProps) {
   const {
-    autoPreviewWhenHover,
     accessKey,
     style: {
       videoCard: { useBorder: cardUseBorder, useBorderOnlyOnHover: cardUseBorderOnlyOnHover },
     },
-    videoCard: { actions: videoCardActions },
+    videoCard: {
+      actions: videoCardActions,
+      imgPreview: { autoPreviewWhenHover, disableWhenMultiSelecting },
+    },
     spaceUpload: { showVol },
     __internalEnableCopyBvidInfo,
   } = useSettingsSnapshot()
@@ -310,6 +312,7 @@ const VideoCardInner = memo(function VideoCardInner({
     autoPreviewWhenHover,
     videoPreviewWrapperRef,
   })
+  const showPreviewImageEl = disableWhenMultiSelecting ? !multiSelecting : true
 
   useUpdateEffect(() => {
     if (!active) return
@@ -318,7 +321,7 @@ const VideoCardInner = memo(function VideoCardInner({
     setGlobalValue(`${APP_KEY_PREFIX}_activeItem`, item)
 
     // 自动开始预览
-    if (settings.autoPreviewWhenKeyboardSelect) {
+    if (settings.videoCard.imgPreview.autoPreviewWhenKeyboardSelect) {
       tryFetchImagePreviewData().then(() => {
         onStartPreviewAnimation(false)
       })
@@ -630,7 +633,7 @@ const VideoCardInner = memo(function VideoCardInner({
       </div>
 
       {watchlaterProgressBar}
-      {!multiSelecting && previewImageEl}
+      {showPreviewImageEl && previewImageEl}
       {multiSelectBgEl}
 
       {/* left-marks */}
