@@ -182,7 +182,11 @@ export function TabPaneBasic() {
         title={
           <>
             <span className='flex items-center'>
-              视频卡片操作 <HelpInfo>视频卡片右上角「稍后再看」按钮旁</HelpInfo>
+              视频卡片操作
+              <HelpInfo>
+                视频卡片右上角「稍后再看」按钮旁 <br />
+                「稍后再看」因其通用性不提供关闭选项
+              </HelpInfo>
             </span>
             <ResetPartialSettingsButton
               paths={[
@@ -251,11 +255,12 @@ export function TabPaneBasic() {
               label='浮动预览: 使用视频卡片作为触发器'
               tooltip={
                 <>
-                  使用视频卡片作为触发器 <br />
+                  {explainForFlag('使用「视频卡片」作为触发器', '使用「视频卡片右上角按钮」作为触发器')}
+                  <Divider className='my-1' />
                   <ul className='list-circle pl-25px'>
                     <li>悬浮视频卡片 1 秒后展开「浮动预览」</li>
-                    <li>与视频卡片右上角按钮相比, 更容易触发, 但也容易非预览意图误触发</li>
-                    <li>与视频卡片右上角按钮独立, 关掉视频卡片按钮, 此选项仍然生效</li>
+                    <li>「视频卡片」更容易触发, 但也容易非预览意图误触发</li>
+                    <li>与「视频卡片右上角按钮」独立, 关掉视频卡片按钮, 此选项仍然生效</li>
                   </ul>
                 </>
               }
