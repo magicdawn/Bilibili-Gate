@@ -65,7 +65,7 @@ export function SpaceUploadUsageInfo() {
         allowClear
         value={filterText}
         addonBefore={
-          <AntdTooltip title='同步搜索词'>
+          <AntdTooltip title={<>精准搜索: 自动将搜索词同步到过滤词</>}>
             <CheckboxSettingItem
               className='[&>.ant-checkbox-label]:hidden'
               configPath='spaceUpload.useSyncFilterTextFromSearchText'

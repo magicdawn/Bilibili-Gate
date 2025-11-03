@@ -6,7 +6,7 @@ import { AntdTooltip } from '$modules/antd/custom'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import type { BooleanSettingsPath } from '$modules/settings'
 import type { CheckboxChangeEvent } from 'antd/es/checkbox'
-import type { ComponentProps, ReactNode } from 'react'
+import type { ComponentProps, ElementRef, ReactNode, Ref } from 'react'
 
 function useBooleanSettingsPath(configPath: BooleanSettingsPath, extraAction?: (val: boolean) => void) {
   const snap = useSettingsSnapshot()
@@ -24,18 +24,7 @@ function useBooleanSettingsPath(configPath: BooleanSettingsPath, extraAction?: (
   return { checked, onChange, checkboxOnChange, onToggle }
 }
 
-type FlagSettingItemProps = ComponentProps<typeof __FlagSettingItem>
-
-function __FlagSettingItem({
-  configPath,
-  label,
-  extraAction,
-  tooltip,
-  tooltipProps,
-  as,
-  checkboxProps,
-  switchProps,
-}: {
+type FlagSettingItemProps = {
   configPath: BooleanSettingsPath
   label?: string | ((val: boolean) => ReactNode)
   extraAction?: (val: boolean) => void | Promise<void>
@@ -44,86 +33,96 @@ function __FlagSettingItem({
   as?: 'checkbox' | 'switch'
   checkboxProps?: ComponentProps<typeof Checkbox>
   switchProps?: ComponentProps<typeof Switch>
-}) {
-  const { checked, onChange, checkboxOnChange } = useBooleanSettingsPath(configPath, extraAction)
-
-  const wrapTooltip = (children: ReactNode) => {
-    if (!tooltip) return children
-    return (
-      <AntdTooltip {...tooltipProps} title={tooltip}>
-        {children}
-      </AntdTooltip>
-    )
-  }
-
-  let usingLabel: ReactNode
-  if (typeof label === 'function') {
-    usingLabel = label(checked)
-  } else {
-    usingLabel = (label ?? configPath) || null // Q: 这是干什么? A: 允许 label 空字符串, 空字符串时转成 null
-  }
-
-  if (as === 'checkbox') {
-    let inner: ReactNode = <span style={{ userSelect: 'none' }}>{usingLabel}</span>
-    if (tooltip) inner = wrapTooltip(inner)
-    return (
-      <Checkbox {...checkboxProps} checked={checked} onChange={checkboxOnChange}>
-        {inner}
-      </Checkbox>
-    )
-  }
-
-  if (as === 'switch') {
-    let content: ReactNode = <Switch {...switchProps} checked={checked} onChange={onChange} />
-    if (tooltip) content = wrapTooltip(content)
-    return content
-  }
 }
 
-export function CheckboxSettingItem({
-  configPath,
-  label,
-  extraAction,
-  tooltip,
-  tooltipProps,
-  ...otherProps
-}: {
-  configPath: BooleanSettingsPath
-  label?: FlagSettingItemProps['label']
-  extraAction?: FlagSettingItemProps['extraAction']
-  tooltip?: ReactNode
-  tooltipProps?: FlagSettingItemProps['tooltipProps']
-} & ComponentProps<typeof Checkbox>) {
+const __FlagSettingItem = forwardRef<ElementRef<typeof Checkbox> | ElementRef<typeof Switch>, FlagSettingItemProps>(
+  function ({ configPath, label, extraAction, tooltip, tooltipProps, as, checkboxProps, switchProps }, ref) {
+    const { checked, onChange, checkboxOnChange } = useBooleanSettingsPath(configPath, extraAction)
+
+    const wrapTooltip = (children: ReactNode) => {
+      if (!tooltip) return children
+      return (
+        <AntdTooltip {...tooltipProps} title={tooltip}>
+          {children}
+        </AntdTooltip>
+      )
+    }
+
+    let usingLabel: ReactNode
+    if (typeof label === 'function') {
+      usingLabel = label(checked)
+    } else {
+      usingLabel = (label ?? configPath) || null // Q: 这是干什么? A: 允许 label 空字符串, 空字符串时转成 null
+    }
+
+    if (as === 'checkbox') {
+      let label: ReactNode = <span style={{ userSelect: 'none' }}>{usingLabel}</span>
+      if (tooltip) label = wrapTooltip(label)
+      return (
+        <Checkbox
+          {...checkboxProps}
+          checked={checked}
+          onChange={checkboxOnChange}
+          ref={ref as Ref<ElementRef<typeof Checkbox>>}
+        >
+          {label}
+        </Checkbox>
+      )
+    }
+
+    if (as === 'switch') {
+      let content: ReactNode = (
+        <Switch {...switchProps} checked={checked} onChange={onChange} ref={ref as Ref<ElementRef<typeof Switch>>} />
+      )
+      if (tooltip) content = wrapTooltip(content)
+      return content
+    }
+  },
+)
+
+export const CheckboxSettingItem = forwardRef(function (
+  {
+    configPath,
+    label,
+    extraAction,
+    tooltip,
+    tooltipProps,
+    ...otherProps
+  }: {
+    configPath: BooleanSettingsPath
+    label?: FlagSettingItemProps['label']
+    extraAction?: FlagSettingItemProps['extraAction']
+    tooltip?: ReactNode
+    tooltipProps?: FlagSettingItemProps['tooltipProps']
+  } & ComponentProps<typeof Checkbox>,
+  ref: Ref<ElementRef<typeof Checkbox>>,
+) {
   return (
     <__FlagSettingItem
-      {...{
-        configPath,
-        label,
-        extraAction,
-        tooltip,
-        tooltipProps,
-        as: 'checkbox',
-        checkboxProps: otherProps,
-      }}
+      {...{ ref, configPath, label, extraAction, tooltip, tooltipProps, as: 'checkbox', checkboxProps: otherProps }}
     />
   )
-}
+})
 
-export function SwitchSettingItem({
-  configPath,
-  extraAction,
-  tooltip,
-  tooltipProps,
-  ...otherProps
-}: {
-  configPath: BooleanSettingsPath
-  extraAction?: FlagSettingItemProps['extraAction']
-  tooltip?: ReactNode
-  tooltipProps?: FlagSettingItemProps['tooltipProps']
-} & ComponentProps<typeof Switch>) {
+export const SwitchSettingItem = forwardRef(function SwitchSettingItem(
+  {
+    configPath,
+    extraAction,
+    tooltip,
+    tooltipProps,
+    ...otherProps
+  }: {
+    configPath: BooleanSettingsPath
+    extraAction?: FlagSettingItemProps['extraAction']
+    tooltip?: ReactNode
+    tooltipProps?: FlagSettingItemProps['tooltipProps']
+  } & ComponentProps<typeof Switch>,
+  ref: Ref<ElementRef<typeof Switch>>,
+) {
   return (
     <__FlagSettingItem
       {...{
+        ref,
         configPath,
         extraAction,
         tooltip,
@@ -133,7 +132,7 @@ export function SwitchSettingItem({
       }}
     />
   )
-}
+})
 
 export function ButtonSettingItem({
   configPath,
