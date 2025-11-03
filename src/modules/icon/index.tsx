@@ -1,4 +1,5 @@
 import IconCuidaShuffleOutline from '~icons/cuida/shuffle-outline' // 这个不能自动 import 不知为何
+import { IconFreshSpaceDynamicFeed } from './fresh-space-icons'
 import { defineSvgComponent } from './util'
 
 export const IconForDislike = IconPhThumbsDownDuotone
@@ -21,7 +22,8 @@ export const IconForTimestamp = IconParkOutlineTime
 export const IconForPhone = IconParkOutlineIphone
 export const IconForPc = IconParkOutlineComputer
 export const IconForFollowedOnly = IconParkOutlineConcern
-export const IconForDynamicFeed = IconParkOutlineTumblr
+// export const IconForDynamicFeed = IconParkOutlineTumblr
+export const IconForDynamicFeed = IconFreshSpaceDynamicFeed
 export const IconForFav = IconCarbonStar
 export const IconForFaved = IconCarbonStarFilled // faved variant
 export const IconForHot = IconParkOutlineFire
@@ -53,7 +55,7 @@ export function IconForLive({
 
 export const IconForWatchlater = defineSvgComponent((props) => {
   return (
-    <svg viewBox='0 0 20 20' width='20' height='20' fill='currentColor' {...props}>
+    <svg viewBox='0 0 20 20' fill='currentColor' {...props}>
       <path
         className='circle'
         d='M10 3.1248000000000005C6.20305 3.1248000000000005 3.1250083333333336 6.202841666666667 3.1250083333333336 9.999833333333335C3.1250083333333336 13.796750000000001 6.20305 16.874833333333335 10 16.874833333333335C11.898291666666667 16.874833333333335 13.615833333333333 16.106291666666667 14.860625 14.861916666666666C15.104708333333335 14.617916666666666 15.500416666666668 14.617958333333334 15.7445 14.862041666666668C15.9885 15.106166666666669 15.988416666666668 15.501916666666666 15.744333333333334 15.745958333333334C14.274750000000001 17.215041666666668 12.243041666666667 18.124833333333335 10 18.124833333333335C5.512691666666667 18.124833333333335 1.8750083333333334 14.487125 1.8750083333333334 9.999833333333335C1.8750083333333334 5.512483333333334 5.512691666666667 1.8748000000000002 10 1.8748000000000002C14.487291666666668 1.8748000000000002 18.125 5.512483333333334 18.125 9.999833333333335C18.125 10.304458333333333 18.108208333333334 10.605458333333333 18.075458333333337 10.901791666666668C18.0375 11.244916666666667 17.728625 11.492291666666667 17.385583333333333 11.454333333333334C17.0425 11.416416666666667 16.795083333333334 11.107541666666668 16.833000000000002 10.764458333333334C16.860750000000003 10.513625000000001 16.875 10.2585 16.875 9.999833333333335C16.875 6.202841666666667 13.796958333333333 3.1248000000000005 10 3.1248000000000005z'
@@ -90,13 +92,3 @@ export function withAscIcon(label: string) {
     </span>
   )
 }
-
-// https://s1.hdslb.com/bfs/svg-next/font/2025-07-09/freshspace-gux68tajg0n.ttf
-// https://iconly.io/tools/font-to-icons-converter
-export const IconForSpaceUploadChargeOnly = defineSvgComponent((props) => {
-  return (
-    <svg viewBox='0 0 1024 1024' width='1em' height='1em' {...props}>
-      <path d='M427 116L263 545q-7 19 4.5 35.5T299 597h115L308 872q-7 18 3 31t26 15.5q16 2.5 29-12.5l386-451q10-12 9-26t-11-24q-10-10-25-10H607l172-249q9-13 6.5-27T773 95q-10-10-26-10H471q-15 0-27 8.5T427 116z' />
-    </svg>
-  )
-})

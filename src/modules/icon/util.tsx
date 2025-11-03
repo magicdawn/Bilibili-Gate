@@ -7,6 +7,8 @@ export function defineSvgComponent(
     return render({
       xmlns: 'http://www.w3.org/2000/svg',
       xmlnsXlink: 'http://www.w3.org/1999/xlink',
+      width: '1em',
+      height: '1em',
       ...props,
       ref,
     })

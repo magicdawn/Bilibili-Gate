@@ -122,7 +122,8 @@ function ActionButtons() {
   const { mid, collectionId, followed, isSearching, searchKeyword } = useSnapshot(state)
   if (!mid) return
 
-  const btnClassName = 'w-34px b-white/33% rounded-full hover:(b-gate-primary bg-gate-primary)'
+  const clsBtn = 'w-34px b-white/33% rounded-full hover:(b-gate-primary bg-gate-primary)'
+  const clsIcon = 'size-17px'
 
   // 投稿
   let btnSpaceUpload: ReactNode
@@ -132,13 +133,8 @@ function ActionButtons() {
       href += `&${SpaceUploadQueryKey.SearchText}=${searchKeyword}`
     }
     btnSpaceUpload = (
-      <ActionButton
-        key='btnSpaceUpload'
-        className={btnClassName}
-        href={href}
-        tooltip={`在「${APP_NAME}」中查看 UP 的投稿`}
-      >
-        <IconForSpaceUpload />
+      <ActionButton key='btnSpaceUpload' className={clsBtn} href={href} tooltip={`在「${APP_NAME}」中查看 UP 的投稿`}>
+        <IconForSpaceUpload className={clsIcon} />
       </ActionButton>
     )
   }
@@ -148,13 +144,8 @@ function ActionButtons() {
   if (followed) {
     const href = `https://www.bilibili.com/?${DynamicFeedQueryKey.Mid}=${mid}`
     btnDynamicFeed = (
-      <ActionButton
-        key='btnDynamicFeed'
-        className={btnClassName}
-        href={href}
-        tooltip={`在「${APP_NAME}」中查看 UP 的动态`}
-      >
-        <IconForDynamicFeed />
+      <ActionButton key='btnDynamicFeed' className={clsBtn} href={href} tooltip={`在「${APP_NAME}」中查看 UP 的动态`}>
+        <IconForDynamicFeed className={clsIcon} />
       </ActionButton>
     )
   }
@@ -165,12 +156,12 @@ function ActionButtons() {
     btnViewCollection = (
       <ActionButton
         key='btnViewCollection'
-        className={btnClassName}
+        className={clsBtn}
         href={`https://www.bilibili.com/?${FavQueryKey.CollectionIdFull}=${collectionId}`}
         target='_blank'
         tooltip={`在「${APP_NAME}」中查看合集`}
       >
-        <IconForCollection />
+        <IconForCollection className={clsIcon} />
       </ActionButton>
     )
   }

@@ -45,7 +45,7 @@ export const TabConfig: Record<ETab, TabConfigItem> = {
     desc: '从PC端推荐中筛选出「已关注」,可能比较慢; 关注的UP更新在动态~',
   },
   [ETab.DynamicFeed]: {
-    icon: <IconForDynamicFeed className='size-16px' />,
+    icon: <IconForDynamicFeed className='size-18px' />,
     label: '动态',
     desc: '视频投稿动态',
     swr: true,
