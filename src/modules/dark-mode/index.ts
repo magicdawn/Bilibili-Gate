@@ -6,9 +6,7 @@ import { valtioFactory } from '$utility/valtio'
 
 /**
  * using dark-mode?
- *  - bilibili default: window['__css-map__'].href
- *      - dark  https://s1.hdslb.com/bfs/seed/jinkela/short/bili-theme/dark.css
- *      - light https://s1.hdslb.com/bfs/seed/jinkela/short/bili-theme/light.css
+ *  - bilibili default: `html.bili_dark`
  *  - BILIBILI-Evolved: `body.dark`
  */
 type IConfigItem = {
@@ -26,8 +24,8 @@ export const DarkModeConfig = {
     triggerInner: '.navbar-dark-mode[item="darkMode"]',
   },
   Bili: {
-    getDetectEl: () => document.querySelector<HTMLLinkElement>('#__css-map__'),
-    detect: (el) => (el as HTMLLinkElement).href.includes('dark'),
+    getDetectEl: () => document.documentElement,
+    detect: (el) => el.classList.contains('bili_dark'),
     isTrigger: (el) => {
       const a = el.closest('.avatar-panel-popover a.single-link-item')
       if (!a) return false
