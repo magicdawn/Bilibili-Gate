@@ -180,6 +180,9 @@ _\* 截图均为不带 access_key 匿名获取, 不代表作者喜好_
 - ✅ [Bilibili-Evolved](https://github.com/the1812/Bilibili-Evolved) 深色模式: 已适配
 - 或使用 [Dark Reader](https://chromewebstore.google.com/detail/dark-reader/eimadpbcbfnmbkopoojfekhnkhdbieeh) 扩展: 无适配, 但基本可用.
 
+> [!TIP]
+> 打开B站内测深色模式后启用 Bilibili-Evolved 自定义顶栏, 深色模式冲突时, 需要删除 `theme_style` 这个 cookie. 或修改值 `dark` 为 `light`.
+
 #### 视频过滤
 
 ![image](https://github.com/magicdawn/Bilibili-Gate/assets/4067115/69dc596a-b504-47e1-bd3c-809cba99a708)
