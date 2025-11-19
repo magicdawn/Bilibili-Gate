@@ -9,6 +9,7 @@ import { Avatar } from 'antd'
 import dayjs from 'dayjs'
 import { useSnapshot } from 'valtio'
 import { APP_CLS_CARD_RECOMMEND_REASON } from '$common'
+import { primaryColorValue } from '$components/css-vars'
 import { isLive, isPcRecommend, isRank, type RecItemType } from '$define'
 import { EApiType } from '$define/index.shared'
 import { PcRecGoto } from '$define/pc-recommend'
@@ -18,6 +19,7 @@ import { fetchAppRecommendFollowedPubDate } from '$modules/rec-services/app'
 import { formatSpaceUrl } from '$modules/rec-services/dynamic-feed/shared'
 import { ELiveStatus } from '$modules/rec-services/live/live-enum'
 import { settings } from '$modules/settings'
+import { tweakLightness } from '$utility/css'
 import { getAvatarSrc } from '$utility/image'
 import type { IVideoCardData } from '$modules/filter/normalize'
 import { showNativeContextMenuWhenAltKeyPressed } from '../context-menus'
@@ -30,13 +32,16 @@ const S = {
   recommendReason: css`
     display: inline-block;
     cursor: default;
+
     color: var(--Or5);
     background-color: var(--Or1);
-    border-radius: 4px;
+    /* color: #fff;
+    background-color: ${tweakLightness(primaryColorValue, 0.1)}; */
 
-    font-size: var(--follow-icon-font-size);
-    line-height: var(--follow-icon-line-height);
-    height: var(--follow-icon-line-height);
+    border-radius: 8px;
+    font-size: var(--follow-icon-font-size); // 12px
+    line-height: var(--follow-icon-line-height); // 17px
+    height: var(--follow-icon-line-height); // 17px
 
     width: max-content;
     max-width: calc(100% - 6px);
@@ -44,9 +49,8 @@ const S = {
     text-overflow: ellipsis;
     white-space: nowrap;
 
+    padding-inline: 8px;
     padding-block: 0;
-    padding-inline: 2px;
-    /* margin-left: -4px; */
   `,
 
   recommendReasonInList: css`
