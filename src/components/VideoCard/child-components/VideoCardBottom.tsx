@@ -9,6 +9,7 @@ import { Avatar } from 'antd'
 import dayjs from 'dayjs'
 import { useSnapshot } from 'valtio'
 import { APP_CLS_CARD_RECOMMEND_REASON } from '$common'
+import { appClsDarkSelector } from '$common/css-vars-export.module.scss'
 import { primaryColorValue } from '$components/css-vars'
 import { isLive, isPcRecommend, isRank, type RecItemType } from '$define'
 import { EApiType } from '$define/index.shared'
@@ -19,7 +20,6 @@ import { fetchAppRecommendFollowedPubDate } from '$modules/rec-services/app'
 import { formatSpaceUrl } from '$modules/rec-services/dynamic-feed/shared'
 import { ELiveStatus } from '$modules/rec-services/live/live-enum'
 import { settings } from '$modules/settings'
-import { tweakLightness } from '$utility/css'
 import { getAvatarSrc } from '$utility/image'
 import type { IVideoCardData } from '$modules/filter/normalize'
 import { showNativeContextMenuWhenAltKeyPressed } from '../context-menus'
@@ -33,10 +33,22 @@ const S = {
     display: inline-block;
     cursor: default;
 
+    /* background-color: var(--Or1); */
+    /* color: var(--Or5); */
+
+    /*
+      如果你已经有一个 brand color（OKLCH），要生成一个 不突兀、带品牌调性的 Label 背景色，核心原则其实只有一个：
+      把品牌色往「背景色」方向移动，但保持一点点 hue，不让它灰掉。
+
+      C 不要 >0.02，不然立刻变成「彩色 badge」，太吵。
+      hue 必须保留品牌色方向，否则背景变成无意义的灰。
+      light mode 的目标明度可固定为 0.96–0.98。
+      dark mode 目标明度适合在 0.30–0.40 区间。 */
+    background-color: oklch(from ${primaryColorValue} calc(l * 0.1 + 0.9) calc(c * 0.1) h);
+    ${appClsDarkSelector} & {
+      background-color: oklch(from ${primaryColorValue} calc(l * 0.3 + 0.175) calc(c * 0.08) h);
+    }
     color: var(--Or5);
-    background-color: var(--Or1);
-    /* color: #fff;
-    background-color: ${tweakLightness(primaryColorValue, 0.1)}; */
 
     border-radius: 8px;
     font-size: var(--follow-icon-font-size); // 12px
