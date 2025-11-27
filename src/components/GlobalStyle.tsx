@@ -51,8 +51,12 @@ export function GlobalStyle() {
           styles={[
             css`
               /* hide original main, in case not deleted */
-              #i_cecream .bili-feed4-layout {
-                display: none;
+              /* #app 太通用了, 加上 body > 防止误伤 */
+              #i_cecream,
+              body > #app {
+                .bili-feed4-layout {
+                  display: none;
+                }
               }
 
               /* download tip */
@@ -69,6 +73,7 @@ export function GlobalStyle() {
               css`
                 /* enlarge container width */
                 #i_cecream,
+                body > #app,
                 .bili-feed4 .bili-header,
                 .bili-feed4 .bili-header .bili-header__bar {
                   max-width: unset;
@@ -104,6 +109,7 @@ export function GlobalStyle() {
                   body,
                   .large-header,
                   #i_cecream,
+                  body > #app,
                   .bili-header .bili-header__channel {
                     background-color: var(--bg2);
                   }

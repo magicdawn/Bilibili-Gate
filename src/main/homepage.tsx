@@ -13,7 +13,7 @@ import { poll, tryAction, tryToRemove } from '$utility/dom'
 // in this entry, if no insert point found, render to document body
 const isHashEntry = location.hash.startsWith(`#/${APP_NAMESPACE}/`)
 
-const bewlyEnabledSelector = 'html.bewly-design:not(:has(#i_cecream))'
+const bewlyEnabledSelector = 'html.bewly-design:not(:has(#i_cecream,#app))'
 
 function hasBewlyBewly() {
   return !isHashEntry && !!document.querySelector(bewlyEnabledSelector)
@@ -38,11 +38,9 @@ let root: Root | undefined
 
 export async function initHomepage() {
   tryToRemove('.adblock-tips') // 提示有插件影响
-  tryAction('html.gray', (el) => el.classList.remove('gray')) // 变灰
   tryToRemove('.vip-login-tip') // 登录-大会员券
-
+  tryAction('html.gray', (el) => el.classList.remove('gray')) // 变灰
   registerSettingsGmCommand()
-
   if (hasBewlyBewly()) {
     return appWarn(`quit for using bewly-design`)
   }
@@ -85,13 +83,16 @@ async function initHomepagePureRecommend() {
   // let bilibili default content run
   if (isSafari) await delay(500)
 
-  tryToRemove('#i_cecream .bili-feed4-layout') // main content
+  tryToRemove('#i_cecream .bili-feed4-layout, body > #app .bili-feed4-layout') // main content
   tryToRemove('.bili-feed4 .header-channel')
   tryToRemove('.palette-button-wrap') // 右侧浮动按钮
 
   const biliLayout = document.createElement('div')
   biliLayout.classList.add('bili-feed4-layout', 'pure-recommend')
-  await poll(() => document.querySelector('body #i_cecream'), { interval: 20 }) // biliLayout should come after header+channel
+  await poll(() => document.querySelector('.bili-feed4 .bili-header'), {
+    interval: 20,
+    timeout: 2_000,
+  }) // biliLayout should come after header+channel
   document.body.appendChild(biliLayout)
 
   const container = document.createElement('section')

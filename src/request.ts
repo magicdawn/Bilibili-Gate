@@ -23,9 +23,10 @@ request.interceptors.request.use(async function (config) {
 
 /**
  * check json has {code: 0, message: "0"}
+ * - message = OK, 稍后再看
  */
 export function isWebApiSuccess(json: any) {
-  return json?.code === 0 && (json?.message === '0' || json?.message === 'success')
+  return json?.code === 0 && (json?.message === '0' || json?.message === 'success' || json?.message === 'OK')
 }
 
 // 可以跨域
