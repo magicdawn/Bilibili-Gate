@@ -199,8 +199,8 @@ const RecGridInner = memo(function ({
   })
 
   // 在 refresh & loadMore 都有可能更改的 state, 需要 useRefState
-  const loadMoreLocker = useRef<Record<number, boolean>>({})
   type LockKey = number
+  const loadMoreLocker = useRef<Record<LockKey, boolean>>({})
   const lock = useCallback((lockKey: LockKey) => (loadMoreLocker.current = { [lockKey]: true }), [])
   const unlock = useCallback((lockKey: LockKey) => (loadMoreLocker.current[lockKey] = false), [])
   const isLocked = useMemoizedFn((lockKey: LockKey) => !!loadMoreLocker.current[lockKey])
