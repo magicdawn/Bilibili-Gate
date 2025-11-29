@@ -47,7 +47,7 @@ export function MultiSelectButton({
   const wrapPopoverActions = (btn: ReactNode) => {
     return (
       <Popover
-        styles={{ body: { border: `1px solid ${popoverBorderColor}` } }}
+        styles={{ container: { border: `1px solid ${popoverBorderColor}` } }}
         content={
           <div className='max-w-288px'>
             <div className='flex flex-wrap items-center gap-x-15px gap-y-2px'>

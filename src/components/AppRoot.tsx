@@ -48,7 +48,6 @@ export function AppRoot({
         locale={zhCN}
         button={{ autoInsertSpace: false }}
         theme={{
-          cssVar: true,
           algorithm: dark ? theme.darkAlgorithm : theme.defaultAlgorithm,
           token: {
             colorPrimary,

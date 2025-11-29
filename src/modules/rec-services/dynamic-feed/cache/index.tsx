@@ -21,9 +21,9 @@ export function createUpdateSearchCacheNotifyFns(upMid: UpMidType, upName: strin
     antNotification.info({
       icon: <IconSvgSpinnersBarsRotateFade className='size-16px' />,
       key: notiKey(upMid),
-      message: `搜索缓存更新中...`,
+      title: `搜索缓存更新中...`,
       description: `「${upName}」更新中: Page(${page}) Total(${total})`,
-      duration: null, // do not auto close
+      duration: false, // do not auto close
     })
   }
 
@@ -34,9 +34,9 @@ export function createUpdateSearchCacheNotifyFns(upMid: UpMidType, upName: strin
     onProgress.flush()
     antNotification.success({
       key: notiKey(upMid),
-      message: `缓存更新成功`,
+      title: `缓存更新成功`,
       description: `「${upName}」的搜索缓存更新成功`,
-      duration: null, // do not auto close
+      duration: false, // do not auto close
     })
   }
 

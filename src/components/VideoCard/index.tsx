@@ -274,7 +274,7 @@ const VideoCardInner = memo(function VideoCardInner({
   const warnNoPreview = useLessFrequentFn(
     (json: PvideoJson) => {
       antNotification.warning({
-        message: `${json.message} (code: ${json.code})`,
+        title: `${json.message} (code: ${json.code})`,
         description: `${title} (${bvid})`,
         duration: 2,
       })
@@ -668,7 +668,9 @@ const VideoCardInner = memo(function VideoCardInner({
           if (isSafari) return document.body
           return cardRef.current || document.body
         }}
-        overlayStyle={{ zIndex: Number(zIndexVideoCardContextMenu) }}
+        styles={{
+          root: { zIndex: Number(zIndexVideoCardContextMenu) },
+        }}
         menu={{
           items: contextMenus,
           style: {

@@ -476,7 +476,12 @@ const RecGridInner = memo(function ({
   const renderItem = (item: RecItemTypeOrSeparator) => {
     if (item.api === EApiType.Separator) {
       return (
-        <Divider key={item.uniqId} className={clsx('grid-col-span-full', clsGateVideoGridDivider)} orientation='left'>
+        <Divider
+          key={item.uniqId}
+          className={clsx('grid-col-span-full', clsGateVideoGridDivider)}
+          orientation='horizontal'
+          titlePlacement='left'
+        >
           {item.content}
         </Divider>
       )

@@ -137,7 +137,7 @@ function RankUsageInfo() {
       placement='bottomLeft'
       getPopupContainer={getPopupContainer}
       content={popoverContent}
-      styles={{ body: { border: `1px solid ${usePopoverBorderColor()}` } }}
+      styles={{ container: { border: `1px solid ${usePopoverBorderColor()}` } }}
     >
       <Button css={[popoverOpen && buttonOpenCss]} onClick={handleDropdownButtonClick} className='outline-none!'>
         {currentTab.name}

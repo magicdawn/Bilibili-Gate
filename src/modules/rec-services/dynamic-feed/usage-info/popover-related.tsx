@@ -114,7 +114,7 @@ export function usePopoverRelated({
       placement='bottomLeft'
       getPopupContainer={getPopupContainer}
       content={popoverContent}
-      styles={{ body: { border: `1px solid ${usePopoverBorderColor()}` } }}
+      styles={{ container: { border: `1px solid ${usePopoverBorderColor()}` } }}
     >
       <Badge dot={showPopoverBadge} color={primaryColorValue} offset={[-5, 5]}>
         <Button className='icon-only-round-button' css={popoverOpen && buttonOpenCss}>
