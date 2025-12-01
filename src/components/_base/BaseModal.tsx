@@ -56,10 +56,11 @@ export function BaseModal({
     // click from .modal
     if (wrapperRef.current?.contains(target)) return
 
+    // react onClick 即使点击的是 antd Portal 元素, 也会触发 mask onClick
     // click from antd components
     const selectors = [
-      '.ant-tooltip-inner[role="tooltip"]', // tooltip
-      '.ant-popover-inner[role="tooltip"]', // popover
+      '.ant-tooltip-container[role="tooltip"]', // tooltip
+      '.ant-popover-container[role="tooltip"]', // popover
       '.ant-select-dropdown', // select-dropdown
     ]
     if (target.closest(selectors.join(','))) return
