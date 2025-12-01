@@ -43,8 +43,8 @@ export const QUERY_DYNAMIC_MIN_TS = QUERY_DYNAMIC_MIN_ID // only support using w
 
 export const SHOW_DYNAMIC_FEED_ONLY = IN_BILIBILI_HOMEPAGE && !!QUERY_DYNAMIC_UP_MID
 
-let upMidInitial: UpMidType | undefined = undefined
-let upNameInitial: string | undefined = undefined
+let upMidInitial: UpMidType | undefined
+let upNameInitial: string | undefined
 if (SHOW_DYNAMIC_FEED_ONLY) {
   upMidInitial = QUERY_DYNAMIC_UP_MID
   upNameInitial = searchParams.get('dyn-name') ?? upMidInitial?.toString() ?? undefined

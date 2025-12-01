@@ -142,8 +142,9 @@ export function useContextMenus({
    * unfollow
    */
   const followed =
-    item.api === EApiType.DynamicFeed ||
-    ((item.api === EApiType.AppRecommend || item.api === EApiType.PcRecommend) && getFollowedStatus(recommendReason))
+    cardData.followed ??
+    (item.api === EApiType.DynamicFeed ||
+      ((item.api === EApiType.AppRecommend || item.api === EApiType.PcRecommend) && getFollowedStatus(recommendReason)))
   const hasUnfollowEntry = followed
   const onUnfollowUp = useMemoizedFn(async () => {
     if (!authorMid) return
@@ -247,7 +248,7 @@ export function useContextMenus({
       !!item.page && {
         key: 'space-upload-view-start-from-here',
         label: `投稿: 从此页开始查看 (当前第${item.page}页)`,
-        icon: <IconTablerSortDescending2 className='size-17px' />,
+        icon: <IconTablerSortDescending2 className='size-15px' />,
         onClick() {
           const u = new URL(location.href)
           u.searchParams.set(SpaceUploadQueryKey.InitialPage, item.page!.toString())

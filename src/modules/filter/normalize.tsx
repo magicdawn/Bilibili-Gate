@@ -33,7 +33,7 @@ import { isFavFolderPrivate } from '$modules/rec-services/fav/fav-util'
 import { IconForCollection, IconForPrivateFolder, IconForPublicFolder } from '$modules/rec-services/fav/usage-info'
 import { isPgcSeasonRankItem, isPgcWebRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { ELiveStatus } from '$modules/rec-services/live/live-enum'
-import { spaceUploadAvatarCache } from '$modules/rec-services/space-upload'
+import { spaceUploadAvatarCache, spaceUploadFollowedMidSet } from '$modules/rec-services/space-upload'
 import { WatchlaterItemsOrder } from '$modules/rec-services/watchlater/watchlater-enum'
 import { getSettingsSnapshot } from '$modules/settings'
 import { toHttps } from '$utility/url'
@@ -78,6 +78,7 @@ export interface IVideoCardData {
   authorName?: string
   authorFace?: string
   authorMid?: string
+  followed?: boolean // 是否「已关注」
 
   /**
    * adpater specific
@@ -656,7 +657,8 @@ function apiSpaceUploadAdapter(item: SpaceUploadItemExtend): IVideoCardData {
 
     // author
     authorName: item.author,
-    authorFace: spaceUploadAvatarCache.get(item.mid.toString()),
+    authorFace: spaceUploadAvatarCache.get(item.mid),
     authorMid: item.mid.toString(),
+    followed: spaceUploadFollowedMidSet.has(item.mid),
   }
 }

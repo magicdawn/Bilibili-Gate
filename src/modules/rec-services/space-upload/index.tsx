@@ -2,10 +2,12 @@ import { assert, once, orderBy, uniq } from 'es-toolkit'
 import pmap from 'promise.map'
 import QuickLRU from 'quick-lru'
 import { snapshot } from 'valtio'
+import { proxySet } from 'valtio/utils'
 import { ShowMessageError } from '$components/RecGrid/error-detail'
 import { NEED_LOGIN_MESSAGE, toastNeedLogin } from '$components/RecHeader/tab-config'
 import { EApiType } from '$define/index.shared'
 import { getAllFollowGroups, getFollowGroupContent } from '$modules/bilibili/me/follow-group'
+import { isFollowedFromRelationAttribute, queryFollowStateMemoized } from '$modules/bilibili/me/relations/follow'
 import { getUserNickname } from '$modules/bilibili/user/nickname'
 import { getSpaceAccInfo } from '$modules/bilibili/user/space-acc-info'
 import { checkLoginStatus } from '$utility/cookie'
@@ -19,7 +21,17 @@ import { SpaceUploadUsageInfo } from './usage-info'
 import { isSpaceUploadItemChargeOnly } from './util'
 import type { WritableDeep } from 'type-fest'
 
-export const spaceUploadAvatarCache = new QuickLRU<string, string>({ maxSize: 100 })
+export const spaceUploadAvatarCache = new QuickLRU<number, string>({ maxSize: 100 })
+
+export const spaceUploadFollowedMidSet = proxySet<number>()
+
+async function trySetFollowedMidSet(upMid: number) {
+  if (spaceUploadFollowedMidSet.has(upMid)) return
+  const state = await queryFollowStateMemoized(upMid)
+  if (isFollowedFromRelationAttribute(state)) {
+    spaceUploadFollowedMidSet.add(upMid)
+  }
+}
 
 type SpaceUploadServiceConfig = {
   mids: string[]
@@ -29,7 +41,6 @@ type SpaceUploadServiceConfig = {
   filterText: string | undefined
   initialPage: number | undefined
 }
-
 export function getSpaceUploadServiceConfig(): SpaceUploadServiceConfig {
   const snap = snapshot(spaceUploadStore) as WritableDeep<typeof spaceUploadStore>
   return {
@@ -73,7 +84,7 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
     return this.service.hasMore
   }
 
-  private async fetchAvatars(mids: string[]) {
+  private async fetchAvatars(mids: number[]) {
     await Promise.all(
       mids.map(async (mid) => {
         const info = await getSpaceAccInfo(mid)
@@ -81,6 +92,10 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
         spaceUploadAvatarCache.set(mid, info.face)
       }),
     )
+  }
+
+  private async fetchFollowState(mids: number[]) {
+    await pmap(mids, trySetFollowedMidSet, 3)
   }
 
   /**
@@ -118,7 +133,7 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
   }
 
   singleUpService: SingleUpService | undefined
-  mergeTimelineService: MergeTimeService | undefined
+  mergeTimelineService: MergeTimelineService | undefined
   private async setupServices(): Promise<void> {
     if (this.singleUpService || this.mergeTimelineService) return
 
@@ -128,13 +143,14 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
     }
 
     if (this.mids.length) {
-      this.mergeTimelineService = new MergeTimeService(this.mids, this.order, this.searchText)
+      this.mergeTimelineService = new MergeTimelineService(this.mids, this.order, this.searchText)
       return
     }
 
     if (this.groupId) {
       const mids = await getFollowGroupContent(this.groupId!)
-      this.mergeTimelineService = new MergeTimeService(
+      mids.forEach((x) => spaceUploadFollowedMidSet.add(x)) // mark followed
+      this.mergeTimelineService = new MergeTimelineService(
         mids.map((x) => x.toString()),
         this.order,
         this.searchText,
@@ -191,16 +207,20 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
       })
     }
 
+    /* #region side effects */
     {
-      const mids = uniq(list.filter((item) => item.author.trim() !== '账号已注销').map((item) => item.mid.toString()))
-      await this.fetchAvatars(mids)
+      const mids = uniq(list.filter((item) => item.author.trim() !== '账号已注销'))
+        .map((item) => item.mid)
+        .filter(Boolean)
+      await Promise.all([this.fetchAvatars(mids), this.fetchFollowState(mids)])
     }
+    /* #endregion */
 
     return list
   }
 }
 
-class MergeTimeService implements IService<SpaceUploadItem> {
+class MergeTimelineService implements IService<SpaceUploadItem> {
   singleUpServices: SingleUpService[]
   constructor(
     public mids: string[],
