@@ -20,21 +20,27 @@ export function SpaceUploadUsageInfo() {
 
   const onSyncStoreToUrl = useMemoizedFn(() => {
     syncFilterTextFromSearchText()
-    const u = new URL(location.href)
     const { searchText, filterText } = spaceUploadStore
+    const currentUrl = location.href
+    const u = new URL(currentUrl)
     searchText
       ? u.searchParams.set(SpaceUploadQueryKey.SearchText, searchText)
       : u.searchParams.delete(SpaceUploadQueryKey.SearchText)
     filterText
       ? u.searchParams.set(SpaceUploadQueryKey.FilterText, filterText)
       : u.searchParams.delete(SpaceUploadQueryKey.FilterText)
-    history.replaceState({}, '', u.href)
+    if (u.href !== currentUrl) {
+      history.replaceState({}, '', u.href)
+    }
   })
 
   const syncFilterTextFromSearchText = useMemoizedFn(() => {
     if (!settings.spaceUpload.useSyncFilterTextFromSearchText) return
     spaceUploadStore.filterText = spaceUploadStore.searchText
   })
+
+  // initial sync
+  useMount(onSyncStoreToUrl)
 
   return (
     <div className='flex items-center gap-x-10px'>
