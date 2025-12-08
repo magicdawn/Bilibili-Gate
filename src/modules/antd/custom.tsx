@@ -1,7 +1,12 @@
 import { Tooltip } from 'antd'
+import type { AnyFunction } from '$utility/type'
 import type { ComponentProps, ReactNode } from 'react'
 
-export function AntdTooltip(props: ComponentProps<typeof Tooltip>) {
+export type ObjectOnlyStyles<T> = T extends AnyFunction ? never : T
+
+export function AntdTooltip(
+  props: ComponentProps<typeof Tooltip> & { styles?: ObjectOnlyStyles<ComponentProps<typeof Tooltip>['styles']> },
+) {
   return (
     <Tooltip
       {...props}
