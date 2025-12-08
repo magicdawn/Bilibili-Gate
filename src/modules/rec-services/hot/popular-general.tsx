@@ -26,7 +26,7 @@ export class PopularGeneralRecService implements IService {
     })
     const json = res.data as PopularGeneralJson
     if (!isWebApiSuccess(json)) {
-      return toast(json.message || REQUEST_FAIL_MSG), undefined
+      return (toast(json.message || REQUEST_FAIL_MSG), undefined)
     }
 
     this.page++
