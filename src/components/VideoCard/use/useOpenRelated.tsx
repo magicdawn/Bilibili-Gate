@@ -228,7 +228,7 @@ export function getRecItemDimension({
   return { width, height, aspectRatio }
 }
 
-export const hasDocumentPictureInPicture = !!globalThis.documentPictureInPicture?.requestWindow
+export const hasDocumentPictureInPicture = !!window.documentPictureInPicture?.requestWindow
 
 export async function openInPipOrPopup(newHref: string, bvid?: string, videoWidth?: number, videoHeight?: number) {
   let popupWidth = 1000
@@ -259,7 +259,7 @@ export async function openInPipOrPopup(newHref: string, bvid?: string, videoWidt
   if (hasDocumentPictureInPicture) {
     try {
       // https://developer.chrome.com/docs/web-platform/document-picture-in-picture
-      pipWindow = await globalThis.documentPictureInPicture?.requestWindow({
+      pipWindow = await window.documentPictureInPicture?.requestWindow({
         width: popupWidth,
         height: popupHeight,
         disallowReturnToOpener: true,

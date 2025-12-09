@@ -42,7 +42,6 @@ function d() {
   let e
   const i =
     // @ts-ignore
-    // eslint-disable-next-line unicorn/prefer-global-this
     (null === (t = window.reportObserver) || void 0 === t || null === (e = t.cache) || void 0 === e
       ? void 0
       : e.fpriskMsg) || {}

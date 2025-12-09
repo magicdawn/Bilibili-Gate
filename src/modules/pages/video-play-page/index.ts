@@ -20,7 +20,7 @@ const handlers: Array<[prefix: string, handler: () => string | undefined]> = [
   [
     '/bangumi/play/',
     () => {
-      return
+      return undefined
     },
   ],
 ]
