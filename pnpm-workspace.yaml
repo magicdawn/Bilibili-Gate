@@ -4,6 +4,9 @@ overrides:
 allowedDeprecatedVersions:
   axios-userscript-adapter: '0'
 
+minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+  - '@magicdawn/*'
 onlyBuiltDependencies:
   - '@biomejs/biome'
   - '@parcel/watcher'
@@ -11,5 +14,3 @@ onlyBuiltDependencies:
   - esbuild
   - oxc-resolver
   - unrs-resolver
-
-minimumReleaseAge: 1440

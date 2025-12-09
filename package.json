@@ -1,9 +1,9 @@
 {
   "name": "bilibili-gate",
+  "type": "module",
   "version": "0.33.11",
   "private": true,
   "packageManager": "pnpm@10.25.0+sha512.5e82639027af37cf832061bcc6d639c219634488e0f2baebe785028a793de7b525ffcd3f7ff574f5e9860654e098fe852ba8ac5dd5cefe1767d23a020a92f501",
-  "type": "module",
   "license": "MIT",
   "scripts": {
     "prepare": "husky",
@@ -71,7 +71,7 @@
     "@commitlint/types": "^20.2.0",
     "@emotion/babel-plugin": "^11.13.5",
     "@iconify/json": "^2.2.416",
-    "@magicdawn/eslint-config": "^1.5.13",
+    "@magicdawn/eslint-config": "^1.5.14",
     "@magicdawn/prettier-config": "^0.1.0",
     "@prettier/plugin-oxc": "^0.1.3",
     "@styled/typescript-styled-plugin": "^1.0.1",
@@ -111,7 +111,7 @@
     "unplugin-auto-import": "^20.3.0",
     "unplugin-icons": "^22.5.0",
     "vite": "^7.2.7",
-    "vite-bundle-analyzer": "^1.3.0",
+    "vite-bundle-analyzer": "^1.3.1",
     "vite-plugin-importer": "^0.2.5",
     "vite-plugin-inspect": "^11.3.3",
     "vite-plugin-monkey": "^7.1.5",
