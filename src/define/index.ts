@@ -14,13 +14,13 @@ import type { PopularWeeklyItem } from './popular-weekly'
 import type { PvideoJson } from './pvideo'
 
 export type { FavItem, FavItemExtend } from '$modules/rec-services/fav/types'
+export type { SpaceUploadItem, SpaceUploadJson } from '$modules/rec-services/space-upload/types/space-upload'
 export type { WatchlaterItem, WatchlaterJson } from '../modules/rec-services/watchlater/types'
 export type { DynamicFeedItem, DynamicFeedJson } from './pc-dynamic-feed'
-export type { PcRecItem, PcRecommendJson } from './pc-recommend'
 export type { DmJson, PvideoJson }
 export type PvideoData = PvideoJson['data']
 export type DmData = DmJson['data']
-export type { SpaceUploadItem, SpaceUploadJson } from '$modules/rec-services/space-upload/types/space-upload'
+export type { PcRecItem, PcRecommendJson } from './pc-recommend'
 
 /**
  * app
