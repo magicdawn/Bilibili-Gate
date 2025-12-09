@@ -59,7 +59,7 @@ export function copyVideoLinks() {
   const lines = getMultiSelectedCardDatas()
     .map((cardData) => {
       let href = cardData.href
-      if (!href) return undefined
+      if (!href) return
       if (href.startsWith('/')) href = new URL(href, location.href).href
       return href
     })

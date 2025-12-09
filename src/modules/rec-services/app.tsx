@@ -201,7 +201,7 @@ class AppRecInnerService implements IService {
 
       // 充电专属
       // 特征: 没有 player_args
-      if (item.goto === 'av' && typeof item.player_args === 'undefined') return false
+      if (item.goto === 'av' && item.player_args === undefined) return false
 
       return true
     })

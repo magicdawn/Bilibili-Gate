@@ -8,10 +8,7 @@ export function parseDuration(d?: string) {
   if (!d) return 0
 
   const units = [1, 60, 360]
-  const splited = d
-    .split(':')
-    .map((s) => Number(s))
-    .reverse()
+  const splited = d.split(':').map(Number).reverse()
 
   const total = splited.reduce((total, cur, index) => {
     return total + cur * units[index]
@@ -57,7 +54,7 @@ export function formatCount(count?: number) {
 }
 
 export function parseCount(str: string) {
-  if (!str) return undefined
+  if (!str) return
   if (str === '-') return 0 // -弹幕, 即 0弹幕
   if (/^\d+$/.test(str)) return Number(str)
   if (/^\d+(?:\.\d+)?万$/.test(str)) return Number(str.slice(0, -1)) * 1_0000
@@ -104,7 +101,7 @@ export function isRecentTimeStamp(ts: number) {
 }
 
 export function formatRecentTimeStamp(ts: number, zhDate: boolean) {
-  if (!ts) return undefined
+  if (!ts) return
   const t = dayjs.unix(ts)
 
   const isToday = t.format(DayjsFormat.HyphenDate) === dayjs().format(DayjsFormat.HyphenDate)
@@ -163,7 +160,7 @@ export const VideoStateMap: Record<string, string> = {
 // string: invalid reason
 // undefined: it's valid
 export function getVideoInvalidReason(state: number | undefined): string | undefined {
-  if (typeof state === 'undefined') return // unkown
+  if (state === undefined) return // unkown
   if (state >= 0) return // valid
   return VideoStateMap[state]
 }

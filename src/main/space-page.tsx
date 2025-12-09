@@ -87,7 +87,7 @@ const state = proxy({
 
   get searchKeyword() {
     const reg = /https:\/\/space.bilibili.com\/\d+\/search/
-    if (!reg.test(this.href)) return undefined
+    if (!reg.test(this.href)) return
     const searchParams = new URLSearchParams(location.search)
     const keyword = searchParams.get('keyword')
     return keyword ?? undefined
@@ -111,7 +111,7 @@ const getFollowedStatus = reusePendingPromise(async () => {
   state.followed = !!followed
 })
 
-if (typeof window.navigation !== 'undefined') {
+if (window.navigation !== undefined) {
   window.navigation.addEventListener?.('navigatesuccess', () => {
     state.href = location.href
     getFollowedStatus()
@@ -215,7 +215,7 @@ function parseMid(href = location.href) {
   const mid = url.pathname
     .split('/')
     .map((x) => x.trim())
-    .find((x) => x)
+    .find(Boolean)
   if (!mid || !/^\d+$/.test(mid)) return
   return mid
 }

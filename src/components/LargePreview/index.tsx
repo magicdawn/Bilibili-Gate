@@ -238,8 +238,8 @@ export const LargePreview = forwardRef<ComponentRef<'div'>, LargePreviewProps>(
     const calculatePostionThrottled = useMemo(() => throttle(calculatePostion, 100), [calculatePostion])
 
     useMount(calculatePostionThrottled)
-    useEventListener('resize', calculatePostionThrottled, { target: window })
-    useEventListener('scroll', calculatePostionThrottled, { target: window })
+    useEventListener('resize', calculatePostionThrottled, { target: globalThis })
+    useEventListener('scroll', calculatePostionThrottled, { target: globalThis })
 
     const { useScale } = useSettingsSnapshot().videoCard.videoPreview
 

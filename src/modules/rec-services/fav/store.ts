@@ -71,10 +71,10 @@ export const favStore = proxy({
   get selectedKey(): 'all' | `${Exclude<FavSelectedKeyPrefix, 'all'>}:${number}` {
     let prefix: FavSelectedKeyPrefix
     let id: number | undefined
-    if (typeof this.selectedFavFolderId !== 'undefined') {
+    if (this.selectedFavFolderId !== undefined) {
       prefix = 'fav-folder'
       id = this.selectedFavFolderId
-    } else if (typeof this.selectedFavCollectionId !== 'undefined') {
+    } else if (this.selectedFavCollectionId !== undefined) {
       prefix = 'fav-collection'
       id = this.selectedFavCollectionId
     } else {

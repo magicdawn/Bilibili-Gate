@@ -28,11 +28,11 @@ export function useSticky<T extends HTMLElement>() {
     // Bind events
     document.addEventListener('scroll', observe)
     window.addEventListener('resize', observe)
-    window.addEventListener('orientationchange', observe)
+    globalThis.addEventListener('orientationchange', observe)
     return () => {
       document.removeEventListener('scroll', observe)
       window.removeEventListener('resize', observe)
-      window.removeEventListener('orientationchange', observe)
+      globalThis.removeEventListener('orientationchange', observe)
     }
   }, [sticky])
 

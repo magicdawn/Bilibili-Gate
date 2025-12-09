@@ -177,7 +177,7 @@ export function usePreviewRelated({
     animationController.stop(true) // clear existing
 
     setAutoPreviewing(true)
-    setPreviewProgress((val) => (typeof val === 'undefined' ? 0 : val)) // get rid of undefined
+    setPreviewProgress((val) => (val === undefined ? 0 : val)) // get rid of undefined
     setPreviewT(undefined)
 
     const RUN_DURATION = 8000 // total ms

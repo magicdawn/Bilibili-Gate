@@ -40,7 +40,7 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
 
   const { modalSettingsVisible } = useHeaderState()
   const shortcutEnabled = [show, !modalSettingsVisible, !useModalDislikeVisible(), !useModalMoveFavVisible()].every(
-    (x) => x,
+    Boolean,
   )
 
   const [headerState, setHeaderState] = useState<HeaderState>(initHeaderState)
@@ -67,7 +67,7 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
     )
   }
 
-  const clsModalMask = clsx({ ['bg-black/90%']: useNarrowMode })
+  const clsModalMask = clsx({ 'bg-black/90%': useNarrowMode })
 
   // pr-0 滚动条右移
   const clsBase = 'h-[calc(100vh-30px)] max-h-unset w-[calc(100vw-30px)] pr-0'

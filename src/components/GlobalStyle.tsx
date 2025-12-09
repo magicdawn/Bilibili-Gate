@@ -102,7 +102,8 @@ export function GlobalStyle() {
               ? css`
                   body {
                     /* same as #i_cecream */
-                    background-color: var(--bg1);
+                    // #app 版本 body 上有 inline style 'var(--bg3)', 而且屏幕特别宽的时候有 bug (边上是灰的)
+                    background-color: var(--bg1) !important;
                   }
                 `
               : css`

@@ -149,7 +149,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
     if (this.config.showLiveInDynamicFeed) {
       const filterEmpty =
         !this.upMid &&
-        typeof this.groupId === 'undefined' &&
+        this.groupId === undefined &&
         !this.searchText &&
         this.dynamicFeedVideoType === DynamicFeedVideoType.All &&
         this.filterMinDuration === DynamicFeedVideoMinDuration.All

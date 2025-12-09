@@ -51,7 +51,7 @@ export function defineAntMenus(arr: ItemInput[]): AntMenuItem[] {
   return arr
     .filter(Boolean)
     .filter((x) => {
-      if (typeof x.test === 'undefined') return true
+      if (x.test === undefined) return true
       if (typeof x.test === 'boolean') return x.test
       return x.test()
     })

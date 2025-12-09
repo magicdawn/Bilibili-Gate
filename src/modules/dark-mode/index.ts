@@ -55,9 +55,7 @@ export function useIsDarkMode() {
 }
 
 const onDarkModeChange = () => {
-  $darkMode.get()
-    ? document.documentElement.classList.add(appClsDark)
-    : document.documentElement.classList.remove(appClsDark)
+  document.documentElement.classList.toggle(appClsDark, $darkMode.get())
 }
 onDarkModeChange()
 subscribe($darkMode.state, onDarkModeChange)

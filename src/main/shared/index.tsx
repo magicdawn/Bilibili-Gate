@@ -19,7 +19,7 @@ export function setupAppRootForNoneHomepage() {
 
 export function isInIframe() {
   try {
-    return window.self !== window.top
+    return globalThis.self !== window.top
   } catch {
     // 跨域访问被阻止，默认认为在 iframe 中
     return true

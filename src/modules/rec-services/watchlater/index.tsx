@@ -110,7 +110,7 @@ export class WatchlaterRecService extends BaseTabService<WatchlaterItemExtend | 
 
   // for remove watchlater card
   decreaseTotal() {
-    if (typeof this.innerService.state.total === 'undefined') return
+    if (this.innerService.state.total === undefined) return
     this.innerService.state.total--
   }
 
@@ -193,7 +193,7 @@ class ShuffleOrderService implements IService {
       searchText: undefined,
       abortSignal,
     })
-    if (typeof err !== 'undefined') {
+    if (err !== undefined) {
       showApiRequestError(err)
     }
 
@@ -275,7 +275,7 @@ class NormalOrderService implements IService {
       },
     })
     // error
-    if (typeof result.err !== 'undefined') {
+    if (result.err !== undefined) {
       this.hasMore = false
       showApiRequestError(result.err)
       return

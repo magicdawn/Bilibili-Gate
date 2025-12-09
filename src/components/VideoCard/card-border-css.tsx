@@ -60,7 +60,7 @@ export const multiSelectedCss = css`
 export function useBlockedCardCss(isBlockedCard: boolean): CssProp {
   const sepIdentifier = `--${APP_NAMESPACE}-separator-color`
   return useMemo(() => {
-    if (!isBlockedCard) return undefined
+    if (!isBlockedCard) return
     return _css`
       ${Styles.rounded}
       ${Styles.normalBorder}

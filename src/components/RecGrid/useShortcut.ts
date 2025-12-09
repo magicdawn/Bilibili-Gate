@@ -273,7 +273,7 @@ export function getColumnCount(container?: HTMLElement | null, mayHaveNarrowMode
   container ||= document.querySelector<HTMLElement>(`.${videoGrid}`)
   if (!container) return 0
 
-  const style = window.getComputedStyle(container)
+  const style = globalThis.getComputedStyle(container)
   if (style.display !== 'grid') return 0
   const count = style.gridTemplateColumns.split(' ').length
 

@@ -105,7 +105,7 @@ describe('object-paths', () => {
         undef: undefined,
         nested: {
           symbol: Symbol('test'),
-          bigint: BigInt(9007199254740991),
+          bigint: 9007199254740991n,
         },
       }
       const paths = getLeafPaths(obj)

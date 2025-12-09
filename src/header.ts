@@ -10,7 +10,7 @@ const defaultHeader = () => document.querySelector('.bili-header__bar')
 
 function isUsingCustomHeader() {
   const el = defaultHeader()
-  return Boolean(el && window.getComputedStyle(el).display === 'none')
+  return Boolean(el && globalThis.getComputedStyle(el).display === 'none')
 }
 export const $usingEvolevdHeader = valtioFactory(isUsingCustomHeader)
 
@@ -71,7 +71,7 @@ export function useBackToTopRight(): number | undefined {
 }
 
 export const $evolvedThemeColor = valtioFactory(function calcEvolvedThemeColor() {
-  return window.getComputedStyle(document.documentElement).getPropertyValue('--theme-color')
+  return globalThis.getComputedStyle(document.documentElement).getPropertyValue('--theme-color')
 })
 
 function action() {
