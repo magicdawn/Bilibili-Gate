@@ -1,6 +1,8 @@
+import { attemptAsync } from 'es-toolkit'
 import ms from 'ms'
 import QuickLRU from 'quick-lru'
 import { baseDebug, HOST_APP, OPERATION_FAIL_MSG } from '$common'
+import { antNotification } from '$modules/antd'
 import { getVideoPlayUrl } from '$modules/bilibili/video/play-url'
 import { getVideoPageList } from '$modules/bilibili/video/video-detail'
 import { gmrequest, isWebApiSuccess, request } from '$request'
@@ -156,24 +158,27 @@ export const fetchVideoPreviewData = reusePendingPromise(
     const cached = videoPreviewCache.get(cacheKey)
     if (cached) return cached
 
-    let playUrls: string[] = []
     let dimension: VideoPreviewData['dimension'] | undefined
-    if (typeof cid === 'undefined' || typeof aspectRatioFromItem === 'undefined') {
+    if (cid === undefined || aspectRatioFromItem === undefined) {
       const pages = await getVideoPageList(bvid)
       cid = pages[0]?.cid
       dimension = pages[0]?.dimension
-      if (typeof cid === 'undefined') {
+      if (cid === undefined) {
         throw new TypeError(`can not get cid by bvid=${bvid}`)
       }
     }
 
-    playUrls = await getVideoPlayUrl(bvid, cid, useMp4, usePreferredCdn)
+    const [err, playUrls] = await attemptAsync(() => getVideoPlayUrl(bvid, cid, useMp4, usePreferredCdn))
     debug('playUrl: bvid=%s cid=%s %s', bvid, cid, playUrls)
-    if (playUrls) {
+    if (err) {
+      antNotification.error({ title: '获取视频播放地址失败', description: (err as any).message || err })
+      throw err
+    }
+    if (playUrls?.length) {
       videoPreviewCache.set(cacheKey, { playUrls, dimension })
     }
 
-    return { playUrls, dimension }
+    return { playUrls: playUrls ?? undefined, dimension }
   },
 )
 

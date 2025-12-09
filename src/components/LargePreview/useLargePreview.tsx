@@ -19,7 +19,7 @@ import type { ComponentRef, MutableRefObject } from 'react'
 type Timer = ReturnType<typeof setTimeout>
 type TimerRef = MutableRefObject<Timer | undefined>
 function clearTimerRef(timerRef: TimerRef) {
-  if (typeof timerRef.current === 'undefined') return
+  if (timerRef.current === undefined) return
   clearTimeout(timerRef.current)
   timerRef.current = undefined
 }
