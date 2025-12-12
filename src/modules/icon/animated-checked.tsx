@@ -31,13 +31,11 @@ export function IconAnimatedChecked({
         strokeLinejoin='round'
         strokeWidth='2'
         d='M5 11L11 17L21 7'
-        {...(useAnimation
-          ? {
-              initial: { pathLength: 0 },
-              animate: { pathLength: 1 },
-              transition: { duration: 0.2, ease: 'easeInOut' },
-            }
-          : undefined)}
+        {...(useAnimation && {
+          initial: { pathLength: 0 },
+          animate: { pathLength: 1 },
+          transition: { duration: 0.2, ease: 'easeInOut' },
+        })}
       />
     </svg>
   )

@@ -93,7 +93,7 @@ export async function tryToRemove(
 
 export function shouldDisableShortcut() {
   // if activeElement is input, disable shortcut
-  const activeTagName = (document.activeElement?.tagName || '').toLowerCase()
+  const activeTagName = document.activeElement?.tagName?.toLowerCase() ?? ''
   if (['input', 'textarea'].includes(activeTagName)) {
     return true
   }

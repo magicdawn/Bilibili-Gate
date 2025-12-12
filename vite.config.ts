@@ -98,17 +98,12 @@ export default defineConfig(({ command, mode }) => ({
     },
 
     preprocessorOptions: {
+      // `sass-embedded` for vite, `sass` for typed-scss-modules
       scss: {
-        // api: modern-compiler will cause no exit after build, waiting fix
-        api: 'modern',
         // https://sass-lang.com/documentation/breaking-changes/mixed-decls/
         silenceDeprecations: ['mixed-decls'],
       },
     },
-  },
-
-  resolve: {
-    alias: {},
   },
 
   // Vite ignores the target value in the tsconfig.json, following the same behavior as esbuild.
