@@ -99,10 +99,8 @@ export default defineConfig(({ command, mode }) => ({
 
     preprocessorOptions: {
       // `sass-embedded` for vite, `sass` for typed-scss-modules
-      scss: {
-        // https://sass-lang.com/documentation/breaking-changes/mixed-decls/
-        silenceDeprecations: ['mixed-decls'],
-      },
+      // https://sass-lang.com/documentation/breaking-changes/mixed-decls/
+      scss: {},
     },
   },
 
