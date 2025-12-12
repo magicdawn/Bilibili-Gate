@@ -66,7 +66,7 @@ export function PipWindowContent({ newHref, pipWindow }: { pipWindow: Window; ne
         ]}
       />
 
-      <iframe src={newHref} className='h-100vh w-full border-none' />
+      <iframe src={newHref} className='block h-100vh w-full border-none' />
 
       <LockOverlay locked={locked} />
 
@@ -83,12 +83,12 @@ export function PipWindowContent({ newHref, pipWindow }: { pipWindow: Window; ne
   )
 }
 
-const actionButtonExtraClassName = '[&_svg]:size-14px'
+const actionButtonExtraClassName = 'size-30px [&_svg]:size-16px'
 
 function LockOverlay({ locked }: { locked: boolean }) {
   const { message } = App.useApp()
   const onOverlayClick = useLessFrequentFn(() => {
-    message.info('请先点击右上角 🔓解锁按钮 解锁')
+    message.info('请先点击右上角「🔓解锁按钮」解锁')
   }, 3)
 
   return (
@@ -142,11 +142,12 @@ function LockButton({
   locked: boolean
   setLocked: React.Dispatch<React.SetStateAction<boolean>>
 }) {
+  const [currentState, targetState] = locked ? ['锁定', '解锁'] : ['解锁', '锁定']
   return (
     <VideoCardActionButton
       inlinePosition={'right'}
       icon={locked ? <IconRadixIconsLockClosed /> : <IconRadixIconsLockOpen1 />}
-      tooltip={locked ? '已锁定, 点击解锁' : '已解锁, 点击锁定'}
+      tooltip={`已${currentState}, 点击${targetState}`}
       className={actionButtonExtraClassName}
       onClick={() => setLocked((x) => !x)}
     />
