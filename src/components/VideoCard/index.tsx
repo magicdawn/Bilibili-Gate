@@ -10,6 +10,7 @@ import { useLessFrequentFn } from '$common/hooks/useLessFrequentFn'
 import { useRefStateBox } from '$common/hooks/useRefState'
 import { Picture } from '$components/_base/Picture'
 import { useDislikedReason } from '$components/ModalDislike'
+import { isDisplayAsList, type EGridDisplayMode } from '$components/RecGrid/display-mode'
 import { getBvidInfo } from '$components/RecGrid/rec-grid-state'
 import { setGlobalValue } from '$components/RecGrid/unsafe-window-export'
 import { ETab } from '$components/RecHeader/tab-enum'
@@ -54,7 +55,6 @@ import {
   defaultEmitter,
   defaultSharedEmitter,
   displayAsListCss,
-  isDisplayAsList,
 } from './index.shared'
 import { fetchImagePreviewData, isImagePreviewDataValid } from './services'
 import { StatItemDisplay } from './stat-item'
@@ -72,7 +72,7 @@ import { useMultiSelectRelated } from './use/useMultiSelect'
 import { getRecItemDimension, useLinkTarget, useOpenRelated } from './use/useOpenRelated'
 import { usePreviewRelated } from './use/usePreviewRelated'
 import { useWatchlaterRelated } from './use/useWatchlaterRelated'
-import type { ECardDisplay, SharedEmitter, VideoCardEmitter } from './index.shared'
+import type { SharedEmitter, VideoCardEmitter } from './index.shared'
 import type { ImagePreviewData } from './services'
 import type { ComponentRef, CSSProperties, MouseEventHandler, ReactNode } from 'react'
 
@@ -89,7 +89,7 @@ export type VideoCardProps = {
   sharedEmitter?: SharedEmitter
   tab: ETab
   baseCss?: CssProp
-  cardDisplay?: ECardDisplay
+  gridDisplayMode?: EGridDisplayMode
   multiSelecting?: boolean
 } & ComponentProps<'div'>
 
@@ -106,7 +106,7 @@ export const VideoCard = memo(function VideoCard({
   sharedEmitter,
   tab,
   baseCss,
-  cardDisplay,
+  gridDisplayMode,
   multiSelecting,
   ...restProps
 }: VideoCardProps) {
@@ -133,7 +133,7 @@ export const VideoCard = memo(function VideoCard({
   const _css = [
     baseCss,
     blockedCardCss,
-    isDisplayAsList(cardDisplay) && displayAsListCss.card,
+    isDisplayAsList(gridDisplayMode) && displayAsListCss.card,
     multiSelecting && multiSelected && multiSelectedCss,
   ]
 
@@ -167,7 +167,7 @@ export const VideoCard = memo(function VideoCard({
             onMoveToFirst={onMoveToFirst}
             onRefresh={onRefresh}
             watchlaterAdded={watchlaterAdded}
-            cardDisplay={cardDisplay}
+            gridDisplayMode={gridDisplayMode}
             multiSelecting={multiSelecting}
             multiSelected={multiSelected}
           />
@@ -188,7 +188,7 @@ export type VideoCardInnerProps = {
   sharedEmitter?: SharedEmitter
   watchlaterAdded: boolean
   tab: ETab
-  cardDisplay?: ECardDisplay
+  gridDisplayMode?: EGridDisplayMode
   multiSelecting?: boolean
   multiSelected: boolean
 }
@@ -203,10 +203,11 @@ const VideoCardInner = memo(function VideoCardInner({
   emitter = defaultEmitter,
   sharedEmitter = defaultSharedEmitter,
   watchlaterAdded,
-  cardDisplay,
+  gridDisplayMode,
   multiSelecting = false,
   multiSelected,
 }: VideoCardInnerProps) {
+  // snapshot
   const {
     accessKey,
     style: {
@@ -219,8 +220,6 @@ const VideoCardInner = memo(function VideoCardInner({
     spaceUpload: { showVol },
     __internalEnableCopyBvidInfo,
   } = useSettingsSnapshot()
-  const authed = !!accessKey
-
   const {
     // video
     avid,
@@ -242,14 +241,17 @@ const VideoCardInner = memo(function VideoCardInner({
     authorMid,
   } = cardData
 
+  // snapshot computed
+  const authed = !!accessKey
+  const showPreviewImageEl = !(disableWhenMultiSelecting && multiSelecting)
+
   const isNormalVideo = goto === 'av'
   const allowed = ['av', 'bangumi', 'picture', 'live']
   if (!allowed.includes(goto)) {
     appWarn(`none (${allowed.join(',')}) goto type %s`, goto, item)
   }
 
-  const displayingAsList = isDisplayAsList(cardDisplay)
-
+  const displayingAsList = isDisplayAsList(gridDisplayMode)
   const aspectRatioFromItem = useMemo(() => getRecItemDimension({ item })?.aspectRatio, [item])
 
   const imagePreviewDataBox = useRefStateBox<ImagePreviewData | undefined>(undefined)
@@ -257,11 +259,11 @@ const VideoCardInner = memo(function VideoCardInner({
     if (!bvid) return false // no bvid
     if (!bvid.startsWith('BV')) return false // bvid invalid
     if (goto !== 'av') return false // scrrenshot only for video
+    if (!showPreviewImageEl) return false // disabled when `multi-selecting` | future-more-case
     return true
-  }, [bvid, goto])
+  }, [bvid, goto, showPreviewImageEl])
   const tryFetchImagePreviewData = useLockFn(async () => {
     if (!shouldFetchPreviewData) return
-    if (multiSelecting) return
     if (isImagePreviewDataValid(imagePreviewDataBox.val)) return // already fetched
     const data = await fetchImagePreviewData(bvid!)
     imagePreviewDataBox.set(data)
@@ -312,7 +314,6 @@ const VideoCardInner = memo(function VideoCardInner({
     autoPreviewWhenHover,
     videoPreviewWrapperRef,
   })
-  const showPreviewImageEl = disableWhenMultiSelecting ? !multiSelecting : true
 
   useUpdateEffect(() => {
     if (!active) return
@@ -653,7 +654,7 @@ const VideoCardInner = memo(function VideoCardInner({
     <VideoCardBottom
       item={item}
       cardData={cardData}
-      cardDisplay={cardDisplay}
+      gridDisplayMode={gridDisplayMode}
       handleVideoLinkClick={multiSelecting ? toggleMultiSelect : handleVideoLinkClick}
     />
   )

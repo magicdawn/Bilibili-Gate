@@ -4,6 +4,7 @@ import { useModalDislikeVisible } from '$components/ModalDislike'
 import { useModalMoveFavVisible } from '$components/ModalMoveFav'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { initHeaderState, RecGrid } from '$components/RecGrid'
+import { EGridDisplayMode, gridDisplayModeChecker } from '$components/RecGrid/display-mode'
 import { OnRefreshContext } from '$components/RecGrid/useRefresh'
 import { useHeaderState } from '$components/RecHeader/index.shared'
 import { RefreshButton } from '$components/RecHeader/RefreshButton'
@@ -21,11 +22,14 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
   const scrollerRef = useRef<HTMLDivElement>(null)
   const {
     // 双列模式
-    useNarrowMode,
+    grid: { gridDisplayMode },
     // 全屏模式
     modalFeedFullScreen,
   } = useSettingsSnapshot()
-  const useFullScreen = !useNarrowMode && modalFeedFullScreen
+
+  const { usingTwoColumnMode } = gridDisplayModeChecker(gridDisplayMode)
+
+  const useFullScreen = usingTwoColumnMode && modalFeedFullScreen
 
   const modalBorderCls = useMemo(() => {
     const borderWidth = useFullScreen ? 'b-5px' : 'b-1px'
@@ -54,7 +58,7 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
             {extraInfo}
           </div>
           <div className='right flex flex-shrink-0 items-center gap-x-8px'>
-            {useNarrowMode ? null : (
+            {gridDisplayMode === EGridDisplayMode.TwoColumnGrid ? null : (
               <CollapseBtn initialOpen>
                 <ModalFeedConfigChecks />
               </CollapseBtn>
@@ -67,13 +71,13 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
     )
   }
 
-  const clsModalMask = clsx({ 'bg-black/90%': useNarrowMode })
+  const clsModalMask = clsx({ 'bg-black/90%': usingTwoColumnMode })
 
   // pr-0 滚动条右移
   const clsBase = 'h-[calc(100vh-30px)] max-h-unset w-[calc(100vw-30px)] pr-0'
-  const clsNarrow = 'h-[calc(100vh-10px)] w-[calc(325*2+40px)]'
+  const clsTwoColumn = 'h-[calc(100vh-10px)] w-[calc(325*2+40px)]'
   const clsFullScreen = 'h-full w-full'
-  const clsModal = clsx(clsBase, { [clsNarrow]: useNarrowMode, [clsFullScreen]: useFullScreen }, modalBorderCls)
+  const clsModal = clsx(clsBase, { [clsTwoColumn]: usingTwoColumnMode, [clsFullScreen]: useFullScreen }, modalBorderCls)
 
   return (
     <BaseModal show={show} onHide={onHide} clsModalMask={clsModalMask} clsModal={clsModal}>

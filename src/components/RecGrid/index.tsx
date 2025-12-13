@@ -28,11 +28,12 @@ import { filterRecItems } from '$modules/filter'
 import { multiSelectStore } from '$modules/multi-select/store'
 import { concatThenUniq, getGridRefreshCount, refreshForGrid } from '$modules/rec-services'
 import { getServiceFromRegistry, type ServiceMap } from '$modules/rec-services/service-map.ts'
-import { settings, useSettingsSnapshot } from '$modules/settings'
+import { settings } from '$modules/settings'
 import { isSafari } from '$ua'
 import type { RecItemType, RecItemTypeOrSeparator } from '$define'
 import type { IVideoCardData } from '$modules/filter/normalize'
 import * as classNames from '../video-grid.module.scss'
+import { EGridDisplayMode } from './display-mode'
 import { ErrorDetail } from './error-detail'
 import { setCurrentGridSharedEmitter } from './rec-grid-state'
 import { useRefresh } from './useRefresh'
@@ -107,7 +108,7 @@ const RecGridInner = memo(function ({
   servicesRegistry: RefStateBox<Partial<ServiceMap>>
 }) {
   const unmountedRef = useUnmountedRef()
-  const { cardDisplay } = useSnapshot(settings.style.pureRecommend)
+  const { useCustomGrid, gridDisplayMode } = useSnapshot(settings.grid)
   const { multiSelecting } = useSnapshot(multiSelectStore)
 
   // 已加载完成的 load call count, 类似 page
@@ -418,12 +419,18 @@ const RecGridInner = memo(function ({
     </div>
   )
 
-  const { useNarrowMode, style } = useSettingsSnapshot()
   const gridClassName = clsx(
+    // base
     APP_CLS_GRID, // for customize css
     classNames.videoGrid,
-    style.pureRecommend.useCustomGrid ? classNames.videoGridCustom : classNames.videoGridBiliFeed4,
-    useNarrowMode && classNames.narrowMode, // 居中
+    // variants
+    useCustomGrid ? classNames.videoGridCustom : classNames.videoGridBiliFeed4,
+    gridDisplayMode === EGridDisplayMode.TwoColumnGrid
+      ? classNames.narrowMode // 双列
+      : gridDisplayMode === EGridDisplayMode.CenterEmptyGrid
+        ? classNames.videoGridCenterEmpty // 中空
+        : undefined,
+    // from props
     className,
   )
 
@@ -501,7 +508,7 @@ const RecGridInner = memo(function ({
           onRefresh={refresh}
           emitter={videoCardEmitters[index]}
           sharedEmitter={sharedEmitter}
-          cardDisplay={cardDisplay}
+          gridDisplayMode={gridDisplayMode}
           multiSelecting={multiSelecting}
         />
       )
@@ -530,7 +537,11 @@ const RecGridInner = memo(function ({
 
   // plain dom
   return render({
-    gridChildren: usingItems.map((item) => renderItem(item)),
-    gridSiblings: footer,
+    gridChildren: (
+      <>
+        {usingItems.map((item) => renderItem(item))}
+        {footer}
+      </>
+    ),
   })
 })

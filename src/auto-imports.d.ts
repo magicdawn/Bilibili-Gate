@@ -25,6 +25,9 @@ declare global {
   const IconLucideFolder: typeof import('~icons/lucide/folder.jsx').default
   const IconLucideFolderLock: typeof import('~icons/lucide/folder-lock.jsx').default
   const IconLucideList: typeof import('~icons/lucide/list.jsx').default
+  const IconMaterialSymbolsAlignHorizontalCenter: typeof import('~icons/material-symbols/align-horizontal-center.jsx').default
+  const IconMaterialSymbolsAlignHorizontalLeft: typeof import('~icons/material-symbols/align-horizontal-left.jsx').default
+  const IconMaterialSymbolsAlignHorizontalRight: typeof import('~icons/material-symbols/align-horizontal-right.jsx').default
   const IconMaterialSymbolsBarChart: typeof import('~icons/material-symbols/bar-chart.jsx').default
   const IconMaterialSymbolsDeleteOutlineRounded: typeof import('~icons/material-symbols/delete-outline-rounded.jsx').default
   const IconMaterialSymbolsLightOpenInNew: typeof import('~icons/material-symbols-light/open-in-new.jsx').default

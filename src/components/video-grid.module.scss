@@ -9,6 +9,21 @@
   #{$app-video-card-border-radius-id}: 15px;
 }
 
+//
+// 中间留空
+//
+// 4: 2 3
+// 5: 3 3
+// 6: 3 4
+.video-grid-center-empty {
+  &::before {
+    content: '';
+    grid-column: 3 / -3;
+    grid-row: 1 / span 9999;
+    grid-auto-flow: dense;
+  }
+}
+
 /**
  * bili-feed4
  * 取自 .battle-feed-area .battle-feed-body
@@ -16,7 +31,6 @@
 .video-grid-bili-feed4 {
   // grid-gap: 60px 20px; // original
   grid-gap: 20px 20px;
-
   :global {
     .ant-divider-horizontal.ant-divider-with-text {
       margin-bottom: -15px;
@@ -51,7 +65,6 @@
  */
 .video-grid-container {
   container-type: inline-size;
-
   &.virtual-grid-enabled {
     :global {
       .virtuoso-grid-item {
@@ -82,9 +95,8 @@ $row-gap: clamp(20px, 1.4vw, 40px);
     }
 
     .ant-divider-horizontal.ant-divider-with-text {
-      margin-bottom: 5px;
-      // margin-top: -20px;
       margin-top: calc(10px - var(--row-gap));
+      margin-bottom: 5px;
       &:first-of-type {
         margin-top: 0;
       }
@@ -105,8 +117,8 @@ $row-gap: clamp(20px, 1.4vw, 40px);
 }
 
 $card-base-width: 300px;
-@for $i from 6 through 10 {
-  @container (inline-size >= #{($card-base-width + $i * 5px) * $i + $col-gap * ($i - 1)}) {
+@for $i from 6 through 7 {
+  @container (width >= #{($card-base-width + $i * 5px) * $i + $col-gap * ($i - 1)}) {
     .video-grid.video-grid-custom {
       --col: #{$i};
     }

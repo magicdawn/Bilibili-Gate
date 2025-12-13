@@ -3,6 +3,7 @@ import { settings } from '$modules/settings'
 import { shouldDisableShortcut } from '$utility/dom'
 import type { VideoCardEmitter } from '$components/VideoCard/index.shared'
 import { videoGrid } from '../video-grid.module.scss'
+import { EGridDisplayMode } from './display-mode'
 import type { KeyFilter, KeyType } from 'ahooks/lib/useKeyPress'
 
 interface IOptions {
@@ -262,9 +263,9 @@ const countCache2 = new Map<number, number>()
 // SectionRecommend 没有 narrow-mode
 // RecGrid 有 narrow mode
 export function getColumnCount(container?: HTMLElement | null, mayHaveNarrowMode = true) {
-  if (mayHaveNarrowMode && settings.useNarrowMode) return 2
+  if (mayHaveNarrowMode && settings.grid.gridDisplayMode === EGridDisplayMode.TwoColumnGrid) return 2
 
-  const countCache = settings.style.pureRecommend.useCustomGrid ? countCache1 : countCache2
+  const countCache = settings.grid.useCustomGrid ? countCache1 : countCache2
   {
     const count = countCache.get(Math.trunc(window.innerWidth))
     if (count) return count

@@ -2,8 +2,10 @@ import { cloneDeep, isNil } from 'es-toolkit'
 import { get, set } from 'es-toolkit/compat'
 import { proxy, snapshot, subscribe, useSnapshot } from 'valtio'
 import { baseDebug, IN_BILIBILI_HOMEPAGE } from '$common'
+import { EGridDisplayMode } from '$components/RecGrid/display-mode'
+import { TwoColumnModeAlign } from '$components/RecGrid/display-mode/two-column-mode'
 import { ETab } from '$components/RecHeader/tab-enum'
-import { ECardDisplay, VideoLinkOpenMode } from '$components/VideoCard/index.shared'
+import { VideoLinkOpenMode } from '$components/VideoCard/index.shared'
 import { reciveGmValueUpdatesFromOtherTab } from '$modules/gm'
 import { WatchlaterItemsOrder } from '$modules/rec-services/watchlater/watchlater-enum'
 import { getLeafPaths, type BooleanPaths, type LeafPaths, type ListPaths } from '$utility/object-paths'
@@ -16,13 +18,9 @@ const debug = baseDebug.extend('settings')
 /**
  * 命名: 模块/tab + 场景 + 功能
  */
-
 export const initialSettings = {
   accessKey: '',
   accessKeyExpireAt: 0,
-
-  // 窄屏模式
-  useNarrowMode: false,
 
   // 全屏模式
   // @history
@@ -48,6 +46,20 @@ export const initialSettings = {
 
   // ModalFeed.全屏
   modalFeedFullScreen: false,
+
+  /**
+   * Video Grid
+   */
+  grid: {
+    // custom grid | default grid
+    useCustomGrid: true,
+
+    // mode, why repeat `grid`, for deconstruct
+    gridDisplayMode: EGridDisplayMode.NormalGrid,
+
+    // extra
+    twoColumnModeAlign: TwoColumnModeAlign.Center,
+  },
 
   /**
    * Video Card
@@ -214,17 +226,11 @@ export const initialSettings = {
       // expand-to-full-width & box-shadow
       stickyTabbarShadow: false,
 
-      // custom grid | default grid
-      useCustomGrid: true,
-
       // bg1
       useWhiteBackground: true,
 
       // 隐藏顶部分区
       hideTopChannel: false,
-
-      // grid | list
-      cardDisplay: ECardDisplay.Grid,
     },
 
     videoCard: {
@@ -278,7 +284,6 @@ export const initialSettings = {
   __internalEnableCopyBvidInfo: false, // ContextMenu | Button
   __internalAddCopyBvidButton: false,
   __internalHotSubUseDropdown: false,
-  __internalShowGridListSwitcher: false,
   __internalRecTabRenderAsSegments: false,
 }
 
@@ -399,7 +404,7 @@ export function runSettingsMigration(val: object | undefined) {
 
     // ['style.general.videoSourceTabStandardHeight', 'styleUseStandardVideoSourceTab'],
     ['style.pureRecommend.useStickyTabbar', 'styleUseStickyTabbarInPureRecommend'],
-    ['style.pureRecommend.useCustomGrid', 'styleUseCustomGrid'],
+    // ['style.pureRecommend.useCustomGrid', 'styleUseCustomGrid'],
     ['style.pureRecommend.useWhiteBackground', 'styleUseWhiteBackground'],
     ['style.pureRecommend.hideTopChannel', 'styleHideTopChannel'],
     ['style.videoCard.useBorder', 'styleUseCardBorder'],
@@ -411,6 +416,9 @@ export function runSettingsMigration(val: object | undefined) {
     // 2025-11-02
     ['videoCard.imgPreview.autoPreviewWhenKeyboardSelect', 'autoPreviewWhenKeyboardSelect'],
     ['videoCard.imgPreview.autoPreviewWhenHover', 'autoPreviewWhenHover'],
+
+    // 2025-12-13
+    ['grid.useCustomGrid', 'style.pureRecommend.useCustomGrid'],
   ]
   // 伪代码: savedConfig[newName] = savedConfig[legacyName]
   for (const [configPath, legacyConfigPath] of config) {

@@ -11,6 +11,7 @@ import { useSnapshot } from 'valtio'
 import { APP_CLS_CARD_RECOMMEND_REASON } from '$common'
 import { appClsDarkSelector } from '$common/css-vars-export.module.scss'
 import { primaryColorValue } from '$components/css-vars'
+import { isDisplayAsList, type EGridDisplayMode } from '$components/RecGrid/display-mode'
 import { isLive, isPcRecommend, isRank, type RecItemType } from '$define'
 import { EApiType } from '$define/index.shared'
 import { PcRecGoto } from '$define/pc-recommend'
@@ -23,7 +24,6 @@ import { settings } from '$modules/settings'
 import { getAvatarSrc } from '$utility/image'
 import type { IVideoCardData } from '$modules/filter/normalize'
 import { showNativeContextMenuWhenAltKeyPressed } from '../context-menus'
-import { isDisplayAsList, type ECardDisplay } from '../index.shared'
 import { useLinkTarget } from '../use/useOpenRelated'
 import { UnixTsDisplay } from './UnixTsDisplay'
 import type { MouseEventHandler, ReactNode } from 'react'
@@ -110,17 +110,17 @@ export const VideoCardBottom = memo(function ({
   cardData,
   handleVideoLinkClick,
   className,
-  cardDisplay,
+  gridDisplayMode,
 }: {
   item: RecItemType
   cardData: IVideoCardData
   handleVideoLinkClick?: MouseEventHandler
   className?: string
-  cardDisplay?: ECardDisplay
+  gridDisplayMode?: EGridDisplayMode
 }) {
   const { useBorder } = useSnapshot(settings.style.videoCard)
   const target = useLinkTarget()
-  const displayingAsList = isDisplayAsList(cardDisplay)
+  const displayingAsList = isDisplayAsList(gridDisplayMode)
 
   const {
     // video

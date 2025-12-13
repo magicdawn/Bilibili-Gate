@@ -3,7 +3,6 @@ import Emittery from 'emittery'
 import { APP_SHORT_PREFIX } from '$common'
 import { antMessage } from '$modules/antd'
 import { IconForOpenExternalLink, IconForPlayer } from '$modules/icon'
-import { useSettingsSnapshot } from '$modules/settings'
 import { isMac } from '$ua'
 import type { ReactNode } from 'react'
 
@@ -134,11 +133,6 @@ export function createSharedEmitter() {
 export const defaultEmitter = createVideoCardEmitter()
 export const defaultSharedEmitter = createSharedEmitter()
 
-export enum ECardDisplay {
-  Grid = 'grid',
-  List = 'list',
-}
-
 export const displayAsListCss = {
   card: css`
     grid-column: 1 / -1;
@@ -151,15 +145,6 @@ export const displayAsListCss = {
     width: clamp(250px, 20%, 400px);
     flex-shrink: 0;
   `,
-}
-
-export function isDisplayAsList(cardDisplay: ECardDisplay | undefined) {
-  return cardDisplay === ECardDisplay.List
-}
-
-export function useIsDisplayAsList() {
-  const v = useSettingsSnapshot().style.pureRecommend.cardDisplay
-  return isDisplayAsList(v)
 }
 
 // video-card 内部 z-index

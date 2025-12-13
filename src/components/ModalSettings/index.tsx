@@ -52,7 +52,6 @@ const modalSettingsStore = proxy({ tab })
 export function ModalSettingsHotkey() {
   useHotkeyForConfig(['shift.p'], 'videoCard.imgPreview.autoPreviewWhenKeyboardSelect', '键盘选中后自动开始预览')
   useHotkeyForConfig(['shift.m'], 'videoCard.imgPreview.autoPreviewWhenHover', '鼠标悬浮后自动开始预览')
-  useHotkeyForConfig(['shift.c'], 'useNarrowMode', '居中模式')
   useHotkeyForConfigBorder()
   return null
 }

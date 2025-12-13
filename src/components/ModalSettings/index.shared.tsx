@@ -11,8 +11,8 @@ export async function toastAndReload(msg = '即将刷新网页!') {
 export function explainForFlag(checked: ReactNode, unchecked: ReactNode) {
   return (
     <>
-      ✅: {checked} <br />
-      ❎: {unchecked} <br />
+      <div className='flex items-center'>✅: {checked}</div>
+      <div className='flex items-center'>❎: {unchecked}</div>
     </>
   )
 }

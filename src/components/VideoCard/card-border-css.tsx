@@ -11,12 +11,12 @@ import { css as _css, css } from '@emotion/react'
 import { useSnapshot } from 'valtio'
 import { APP_NAMESPACE } from '$common'
 import { bgLv1Value, bgLv2Value, borderColorValue, primaryColorValue } from '$components/css-vars'
+import { useIsDisplayAsList } from '$components/RecGrid/display-mode'
 import { multiSelectStore } from '$modules/multi-select/store'
 import { useSettingsSnapshot } from '$modules/settings'
 import { tweakLightness } from '$utility/css'
 import type { CssProp } from '$utility/type'
 import { bgValue, videoCardBorderRadiusValue } from '../css-vars'
-import { isDisplayAsList } from './index.shared'
 
 const c = tweakLightness(primaryColorValue, 0.1)
 
@@ -86,10 +86,10 @@ export function useCardBorderCss(): CssProp {
     useDelayForHover,
     style: {
       videoCard: { useBorder, useBorderOnlyOnHover, useBoxShadow },
-      pureRecommend: { cardDisplay },
     },
   } = useSettingsSnapshot()
   const { multiSelecting } = useSnapshot(multiSelectStore)
+  const displayingAsList = useIsDisplayAsList()
 
   return useMemo(() => {
     return [
@@ -100,7 +100,7 @@ export function useCardBorderCss(): CssProp {
         transition-timing-function: ease-in-out;
       `,
 
-      (multiSelecting || (useBorder && !isDisplayAsList(cardDisplay))) && [
+      (multiSelecting || (useBorder && !displayingAsList)) && [
         css`
           cursor: pointer;
           ${Styles.rounded}
@@ -116,7 +116,7 @@ export function useCardBorderCss(): CssProp {
         (multiSelecting || !useBorderOnlyOnHover) && Styles.normalBorder,
       ],
     ]
-  }, [useBorder, useBorderOnlyOnHover, useBoxShadow, useDelayForHover, cardDisplay, multiSelecting])
+  }, [useBorder, useBorderOnlyOnHover, useBoxShadow, useDelayForHover, displayingAsList, multiSelecting])
 }
 
 export function getActiveCardBorderCss(active: boolean): CssProp {

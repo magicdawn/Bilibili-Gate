@@ -47,9 +47,7 @@ export function useBackToTopRight(): number | undefined {
   const width = $headerWidth.use()
   const {
     pureRecommend,
-    style: {
-      pureRecommend: { useCustomGrid },
-    },
+    grid: { useCustomGrid },
   } = useSettingsSnapshot()
 
   if (!pureRecommend || !useCustomGrid) return

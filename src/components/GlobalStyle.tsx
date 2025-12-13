@@ -10,7 +10,7 @@ import { useColorPrimaryHex } from './ModalSettings/theme.shared'
 
 export function GlobalStyle() {
   const colorPrimary = useColorPrimaryHex()
-  const { pureRecommend, style } = useSettingsSnapshot()
+  const { grid, pureRecommend, style } = useSettingsSnapshot()
   const dark = useIsDarkMode()
   const backToTopRight = useBackToTopRight()
   const usingEvolevdHeader = $usingEvolevdHeader.use()
@@ -69,7 +69,7 @@ export function GlobalStyle() {
               }
             `,
 
-            style.pureRecommend.useCustomGrid &&
+            grid.useCustomGrid &&
               css`
                 /* enlarge container width */
                 #i_cecream,
@@ -87,7 +87,7 @@ export function GlobalStyle() {
                 }
               `,
 
-            style.pureRecommend.useCustomGrid &&
+            grid.useCustomGrid &&
               typeof backToTopRight === 'number' &&
               css`
                 .${APP_CLS_ROOT} {

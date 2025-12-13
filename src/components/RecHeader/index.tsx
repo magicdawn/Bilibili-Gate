@@ -6,13 +6,12 @@ import { useSizeExpression } from '$common/hooks/useResizeObserverExpression'
 import { useSticky } from '$common/hooks/useSticky'
 import { ModalSettingsHotkey } from '$components/ModalSettings'
 import { OnRefreshContext } from '$components/RecGrid/useRefresh'
-import { ECardDisplay } from '$components/VideoCard/index.shared'
 import { $headerHeight, $usingEvolevdHeader } from '$header'
 import { AntdTooltip } from '$modules/antd/custom'
 import { useIsDarkMode } from '$modules/dark-mode'
 import { IconForConfig } from '$modules/icon'
 import { MultiSelectButton } from '$modules/multi-select'
-import { settings, useSettingsSnapshot } from '$modules/settings'
+import { useSettingsSnapshot } from '$modules/settings'
 import { isMac, isSafari } from '$ua'
 import { getElementOffset, shouldDisableShortcut } from '$utility/dom'
 import type { OnRefresh } from '$components/RecGrid/useRefresh'
@@ -43,11 +42,12 @@ export const RecHeader = forwardRef<
     accessKey,
     pureRecommend,
     showModalFeedEntry,
-    style,
+    grid: { gridDisplayMode },
     multiSelect: { showIcon: multiSelectShowIcon },
-    __internalShowGridListSwitcher,
+    style: {
+      pureRecommend: { useStickyTabbar, stickyTabbarShadow },
+    },
   } = useSettingsSnapshot()
-  const { cardDisplay, useStickyTabbar, stickyTabbarShadow } = style.pureRecommend // style sub
 
   useKeyPress(
     ['shift.comma'],
@@ -96,13 +96,6 @@ export const RecHeader = forwardRef<
 
   const expandToFullWidthCss = useExpandToFullWidthCss()
 
-  const toggleCardDisplay = useMemoizedFn(() => {
-    const list = [ECardDisplay.Grid, ECardDisplay.List]
-    const index = list.indexOf(settings.style.pureRecommend.cardDisplay)
-    const nextIndex = (index + 1) % list.length
-    settings.style.pureRecommend.cardDisplay = list[nextIndex]
-  })
-
   const _className = useUnoMerge(
     pureRecommend && useStickyTabbar && 'sticky z-gate-rec-header mb-10px b-b-1px b-b-transparent b-b-solid',
     pureRecommend && useStickyTabbar && sticky && 'b-b-gate-bg-lv1 bg-$bg1_float',
@@ -134,18 +127,6 @@ export const RecHeader = forwardRef<
             {rightSlot}
 
             {!accessKey && showAccessKeyManage && <AccessKeyManage style={{ marginLeft: 5 }} />}
-
-            {__internalShowGridListSwitcher && (
-              <AntdTooltip title='切换卡片显示模式' arrow={false}>
-                <Button className='icon-only-round-button' onClick={toggleCardDisplay}>
-                  {cardDisplay === ECardDisplay.Grid ? (
-                    <IconTablerLayoutGrid className='size-14px cursor-pointer' />
-                  ) : (
-                    <IconTablerListDetails className='size-14px cursor-pointer' />
-                  )}
-                </Button>
-              </AntdTooltip>
-            )}
 
             {multiSelectShowIcon && <MultiSelectButton iconOnly addCopyActions />}
 
