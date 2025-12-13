@@ -1,10 +1,11 @@
 import createEmotion from '@emotion/css/create-instance'
 import { css, Global } from '@emotion/react'
 import { useHover } from 'ahooks'
-import { App } from 'antd'
+import { App, ConfigProvider, Dropdown } from 'antd'
 import { APP_CLS_ROOT, APP_NAMESPACE } from '$common'
 import { useLessFrequentFn } from '$common/hooks/useLessFrequentFn'
 import { AppRoot } from '$components/AppRoot'
+import { defineAntMenus } from '$modules/antd'
 import { openNewTab } from '$modules/gm'
 import { settings } from '$modules/settings'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
@@ -17,10 +18,10 @@ export function renderInPipWindow(newHref: string, pipWindow: Window) {
     container: cssInsertContainer,
   })
 
-  // copy related stylesheets: 主要是 uno.css
+  // copy related stylesheets: 主要是 uno.css & antd
   Array.from(document.querySelectorAll('style'))
     .filter((s) => {
-      return s.textContent?.includes(APP_NAMESPACE)
+      return [APP_NAMESPACE, 'ant', 'rc'].some((x) => s.textContent.includes(x))
     })
     .forEach((s) => {
       const style = pipWindow.document.createElement('style')
@@ -36,9 +37,11 @@ export function renderInPipWindow(newHref: string, pipWindow: Window) {
   const root = createRoot(container)
   root.render(
     <AppRoot emotionCache={cache} styleProviderProps={{ container: cssInsertContainer }} injectGlobalStyle>
-      <App message={{ getContainer: () => pipWindow.document.body }}>
-        <PipWindowContent newHref={newHref} pipWindow={pipWindow} />
-      </App>
+      <ConfigProvider getPopupContainer={() => pipWindow.document.body} getTargetContainer={() => pipWindow}>
+        <App message={{ getContainer: () => pipWindow.document.body }}>
+          <PipWindowContent newHref={newHref} pipWindow={pipWindow} />
+        </App>
+      </ConfigProvider>
     </AppRoot>,
   )
 }
@@ -68,7 +71,7 @@ export function PipWindowContent({ newHref, pipWindow }: { pipWindow: Window; ne
 
       <iframe src={newHref} className='block h-100vh w-full border-none' />
 
-      <LockOverlay locked={locked} />
+      <LockOverlay locked={locked} setLocked={setLocked} pipWindow={pipWindow} />
 
       <div
         className={clsx(
@@ -85,11 +88,44 @@ export function PipWindowContent({ newHref, pipWindow }: { pipWindow: Window; ne
 
 const actionButtonExtraClassName = 'size-30px [&_svg]:size-16px'
 
-function LockOverlay({ locked }: { locked: boolean }) {
+function LockOverlay({
+  locked,
+  setLocked,
+  pipWindow,
+}: {
+  locked: boolean
+  setLocked: React.Dispatch<React.SetStateAction<boolean>>
+  pipWindow: Window
+}) {
   const { message } = App.useApp()
   const onOverlayClick = useLessFrequentFn(() => {
     message.info('请先点击右上角「🔓解锁按钮」解锁')
   }, 3)
+
+  const contextMenus = useMemo(() => {
+    return defineAntMenus([
+      {
+        key: 'unlock',
+        label: '解锁',
+        icon: <IconRadixIconsLockOpen1 />,
+        onClick() {
+          setLocked(false)
+        },
+      },
+    ])
+  }, [])
+
+  // TODO: figure out why Dropdown not working in PipWindow
+  const wrapDropdown = (c: ReactNode) => (
+    <Dropdown
+      getPopupContainer={() => pipWindow.document.body}
+      trigger={['contextMenu']}
+      menu={{ items: contextMenus }}
+      classNames={{ root: 'z-10000' }}
+    >
+      {c}
+    </Dropdown>
+  )
 
   return (
     locked && (

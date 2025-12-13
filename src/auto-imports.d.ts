@@ -64,6 +64,7 @@ declare global {
   const IconParkOutlineVideoTwo: typeof import('~icons/icon-park-outline/video-two.jsx').default
   const IconPhCrownFill: typeof import('~icons/ph/crown-fill.jsx').default
   const IconPhThumbsDownDuotone: typeof import('~icons/ph/thumbs-down-duotone.jsx').default
+  const IconRadixIconsClose: typeof import('~icons/radix-icons/close.jsx').default
   const IconRadixIconsCross2: typeof import('~icons/radix-icons/cross2.jsx').default
   const IconRadixIconsLockClosed: typeof import('~icons/radix-icons/lock-closed.jsx').default
   const IconRadixIconsLockOpen1: typeof import('~icons/radix-icons/lock-open1.jsx').default

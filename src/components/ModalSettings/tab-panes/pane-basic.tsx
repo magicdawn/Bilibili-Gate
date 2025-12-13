@@ -1,17 +1,16 @@
-import { Button, Divider, Radio, Select, Space, Tag } from 'antd'
+import { Button, Divider, Select, Space, Tag } from 'antd'
 import { APP_NAME } from '$common'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { AccessKeyManage } from '$components/AccessKeyManage'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
-import { EGridDisplayMode, gridDisplayModeChecker } from '$components/RecGrid/display-mode'
-import { TwoColumnModeAlignSwitcher } from '$components/RecGrid/display-mode/two-column-mode'
+import { GridDisplayModeSwitcher } from '$components/RecGrid/display-mode'
 import { TabIcon } from '$components/RecHeader/tab-config'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { VideoLinkOpenMode, VideoLinkOpenModeConfig } from '$components/VideoCard/index.shared'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconForCopy } from '$modules/icon'
-import { settings, updateSettings, useSettingsSnapshot } from '$modules/settings'
+import { updateSettings, useSettingsSnapshot } from '$modules/settings'
 import { explainForFlag, toastAndReload } from '../index.shared'
 import { ResetPartialSettingsButton, SettingsGroup, sharedClassNames } from './shared'
 
@@ -23,8 +22,6 @@ export function TabPaneBasic() {
     },
     videoLinkOpenMode,
   } = useSettingsSnapshot()
-
-  const { usingTwoColumnMode, usingCenterEmptyMode, usingListMode } = gridDisplayModeChecker(gridDisplayMode)
 
   const openModeOptions = useMemo(() => {
     return Object.values(VideoLinkOpenMode)
@@ -128,77 +125,29 @@ export function TabPaneBasic() {
         title={
           <>
             布局
-            <HelpInfo className='ml-5px mt-6px size-18px' IconComponent={IconParkOutlineHelp}>
+            <HelpInfo className='ml-5px size-18px' IconComponent={IconParkOutlineHelp}>
               网格布局
             </HelpInfo>
           </>
         }
       >
-        <div className='flex flex-col gap-y-6px'>
-          <CheckboxSettingItem
-            configPath='grid.useCustomGrid'
-            label='全屏模式: 使用自定义网格配置'
-            tooltip={
-              <>
-                网格配置指: 网格宽度, 间距, 列数等. <br />
-                自定义网格配置: 宽度为90%; 可跟随 Bilibili-Evolved 自定义顶栏配置; 列数: 4 - 10列; 由 {
-                  APP_NAME
-                } 自定义; <br />
-                默认网格配置: bili-feed4 版本B站首页默认的网格配置; 在 Safari 中使用建议取消勾选此项.
-              </>
-            }
-          />
+        <CheckboxSettingItem
+          configPath='grid.useCustomGrid'
+          label='全屏模式: 使用自定义网格配置'
+          tooltip={
+            <>
+              网格配置指: 网格宽度, 间距, 列数等. <br />
+              自定义网格配置: 宽度为90%; 可跟随 Bilibili-Evolved 自定义顶栏配置; 列数: 4 - 10列; 由 {
+                APP_NAME
+              } 自定义; <br />
+              默认网格配置: bili-feed4 版本B站首页默认的网格配置; 在 Safari 中使用建议取消勾选此项.
+            </>
+          }
+        />
 
-          <div className='flex items-center'>
-            网格显示模式
-            <Radio.Group
-              size='large'
-              className='ml-30px flex items-center gap-x-15px [&_.ant-radio-label]:(inline-flex items-center) [&_.ant-radio-wrapper]:(inline-flex items-center) ![&_.ant-radio-label]:pl-4px'
-              value={gridDisplayMode}
-              onChange={(e) => {
-                settings.grid.gridDisplayMode = e.target.value
-              }}
-              options={[
-                {
-                  value: EGridDisplayMode.NormalGrid,
-                  label: (
-                    <AntdTooltip title='这个是默认的网格模式'>
-                      <span className='inline-flex-center'>
-                        <IconTablerLayoutGrid className='mx-4px size-16px cursor-pointer' />
-                        网格
-                      </span>
-                    </AntdTooltip>
-                  ),
-                },
-                {
-                  value: EGridDisplayMode.List,
-                  label: (
-                    <>
-                      <IconTablerListDetails className='mx-4px size-16px cursor-pointer' />
-                      列表
-                    </>
-                  ),
-                },
-                {
-                  value: EGridDisplayMode.TwoColumnGrid,
-                  label: (
-                    <>
-                      双列模式
-                      <TwoColumnModeAlignSwitcher className='ml-5px' />
-                    </>
-                  ),
-                },
-                {
-                  value: EGridDisplayMode.CenterEmptyGrid,
-                  label: (
-                    <>
-                      <AntdTooltip title='网格中间不显示卡片'>中空模式</AntdTooltip>
-                    </>
-                  ),
-                },
-              ]}
-            />
-          </div>
+        <div className='flex items-center'>
+          网格显示模式
+          <GridDisplayModeSwitcher className='ml-30px' />
         </div>
       </SettingsGroup>
 
