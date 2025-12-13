@@ -130,19 +130,43 @@ export function LiveBadge() {
 }
 
 export function ApiTypeTag({ item }: { item: RecItemType }) {
-  const text = (() => {
+  const text = useMemo(() => {
     if (isDynamicFeed(item)) return '动态'
     if (isWatchlater(item)) return '稍后再看'
     if (isFav(item)) return item.from === 'fav-folder' ? '收藏夹' : '合集'
     return item.api
-  })()
-  return <SomeBadge>{text}</SomeBadge>
+  }, [item])
+
+  const tooltip = useMemo(() => {
+    if (isFav(item) && item.from === 'fav-collection') return item.volTooltip
+  }, [item])
+
+  const { triggerRef, tooltipEl } = useTooltip({
+    inlinePosition: 'left',
+    tooltip,
+  })
+
+  return (
+    <span ref={triggerRef} className={useUnoMerge(clsBadgeContainer, 'pointer-events-auto')}>
+      {text}
+      {tooltipEl}
+    </span>
+  )
 }
 
-export function VolMark({ vol }: { vol: number }) {
+export function VolMark({ vol, volTooltip }: { vol: number; volTooltip?: ReactNode }) {
+  const { triggerRef, tooltipEl } = useTooltip({
+    inlinePosition: 'left',
+    tooltip: volTooltip,
+    tooltipClassName: 'left--2px',
+  })
   return (
-    <div className='relative h-24px min-w-24px flex-center whitespace-nowrap rounded-8px bg-gate-primary px-6px color-white'>
+    <div
+      ref={triggerRef}
+      className='relative h-24px min-w-24px flex-center whitespace-nowrap rounded-8px bg-gate-primary px-6px color-white'
+    >
       {vol}
+      {tooltipEl}
     </div>
   )
 }

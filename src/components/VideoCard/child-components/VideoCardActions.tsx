@@ -26,7 +26,7 @@ const C = {
   tooltip: (inlinePosition: InlinePosition) =>
     clsx(
       'pointer-events-none absolute bottom--6px translate-y-100% select-none whitespace-nowrap rounded-4px bg-gate-primary px-8px py-4px text-12px text-white line-height-18px',
-      inlinePosition === 'left' ? 'left--5px' : 'right--5px',
+      inlinePosition === 'left' ? 'left-0' : 'right-0',
     ),
 }
 
@@ -115,13 +115,7 @@ export function useTooltip({
 }) {
   const triggerRef = useRef<ComponentRef<'div'> | null>(null)
   const hovering = useHover(triggerRef)
-  const tooltipEl = (
-    <span
-      style={{ display: hovering ? 'block' : 'none' }}
-      className={useUnoMerge(C.tooltip(inlinePosition), tooltipClassName)}
-    >
-      {tooltip}
-    </span>
-  )
+  const _className = useUnoMerge(C.tooltip(inlinePosition), tooltipClassName, hovering ? 'block' : 'hidden')
+  const tooltipEl = tooltip ? <span className={_className}>{tooltip}</span> : undefined
   return { triggerRef, tooltipEl }
 }

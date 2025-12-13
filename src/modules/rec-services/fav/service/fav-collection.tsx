@@ -74,13 +74,22 @@ export class FavCollectionService implements IFavInnerService {
           from: 'fav-collection' as const,
         }
       })
-      // sort
-      items = handleItemsOrder(items, this.itemsOrder)
-      // add vol attr
-      items.forEach((item, index, arr) => {
-        item.vol = arr.length - index
-      })
 
+      // sort by PubTimeDesc, then add vol.
+      // (Vol only has meaning in a specific order, and PubTimeDesc is the default for fav-collection)
+      const shouldAddVol = [FavItemsOrder.PubTimeDesc, FavItemsOrder.PubTimeAsc, FavItemsOrder.Shuffle].includes(
+        this.itemsOrder,
+      )
+      if (shouldAddVol) {
+        items = handleItemsOrder(items, FavItemsOrder.PubTimeDesc)
+        items.forEach((item, index, arr) => {
+          item.vol = arr.length - index
+          item.volTooltip = <>按投稿时间 Vol.{item.vol}</>
+        })
+      }
+
+      // sort in current config order
+      items = handleItemsOrder(items, this.itemsOrder)
       this.bufferQueue = items
       this.loaded = true
 

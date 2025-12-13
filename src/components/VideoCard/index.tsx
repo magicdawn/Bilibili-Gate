@@ -16,6 +16,7 @@ import { setGlobalValue } from '$components/RecGrid/unsafe-window-export'
 import { ETab } from '$components/RecHeader/tab-enum'
 import {
   isAppRecommend,
+  isFav,
   isLive,
   isPcRecommend,
   isRank,
@@ -463,7 +464,7 @@ const VideoCardInner = memo(function VideoCardInner({
     (isLive(item) && item.live_status === ELiveStatus.Streaming) ||
     (isPcRecommend(item) && item.goto === PcRecGoto.Live)
   const hasApiTypeTag = tab === ETab.AppRecommend && !isAppRecommend(item) && !isLive(item)
-  const hasVolMark = (isSpaceUpload(item) && showVol) || (item.api === EApiType.Fav && !!item.vol && !hasApiTypeTag)
+  const hasVolMark = (isSpaceUpload(item) && showVol) || (isFav(item) && !!item.vol && !hasApiTypeTag)
 
   const copyBvidInfoButtonEl = __internalEnableCopyBvidInfo && (
     <VideoCardActionButton
@@ -500,7 +501,7 @@ const VideoCardInner = memo(function VideoCardInner({
       {hasApiTypeTag && <ApiTypeTag item={item} />}
 
       {/* 显示序号, Tab: 投稿 | 收藏 */}
-      {hasVolMark && !!item.vol && <VolMark vol={item.vol} />}
+      {hasVolMark && !!item.vol && <VolMark vol={item.vol} volTooltip={isFav(item) ? item.volTooltip : undefined} />}
     </>
   )
 
