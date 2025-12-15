@@ -188,5 +188,5 @@ export function RankSidebarInfo() {
     return [groupNormal, groupPgc]
   }, [normalList, pgcList])
 
-  return <Menu items={menuItems} selectedKeys={[slug]} mode='inline' />
+  return <Menu items={menuItems} selectedKeys={[slug]} mode='inline' inlineIndent={10} />
 }

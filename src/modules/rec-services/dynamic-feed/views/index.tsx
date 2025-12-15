@@ -44,7 +44,7 @@ const clearPayload: Partial<DynamicFeedStore> = {
 }
 
 // who's dynamic-feed
-function useScopeMenus() {
+function useScopeMenus(form: 'dropdown' | 'sidebar') {
   const { upList, groups, selectedKey } = useSnapshot(dfStore)
   const onRefresh = useOnRefreshContext()
   const {
@@ -75,20 +75,21 @@ function useScopeMenus() {
         return {
           key: `group:${group.tagid}` satisfies DynamicFeedStoreSelectedKey,
           label: `${group.name} (${group.count})`,
-          icon: <Avatar size='small'>组</Avatar>,
-          onClick() {
-            onSelect({ ...clearPayload, selectedGroupId: group.tagid })
-          },
+          icon: <Avatar size='small'>{group.name[0] || '组'}</Avatar>,
+          onClick: () => onSelect({ ...clearPayload, selectedGroupId: group.tagid }),
         }
       })
     }
 
-    const upListSorted = fastSortWithOrders(upList, [
-      { prop: (item) => (item.has_update ? 1 : 0), order: 'desc' },
-      { prop: (item) => mapNameForSort(item.uname), order: localeComparer },
-    ])
+    let usingUpList = upList
+    if (form === 'dropdown') {
+      usingUpList = fastSortWithOrders(upList, [
+        { prop: (item) => (item.has_update ? 1 : 0), order: 'desc' },
+        { prop: (item) => mapNameForSort(item.uname), order: localeComparer },
+      ])
+    }
 
-    const items: AntMenuItem[] = upListSorted.map((up) => {
+    const items: AntMenuItem[] = usingUpList.map((up) => {
       let avatar: ReactNode = <Avatar size='small' src={getAvatarSrc(up.face)} />
       if (up.has_update) {
         avatar = <Badge dot>{avatar}</Badge>
@@ -110,7 +111,7 @@ function useScopeMenus() {
     })
 
     return [itemAll, ...groupItems, ...items]
-  }, [upList, followGroupEnabled, groups])
+  }, [upList, followGroupEnabled, groups, form])
 
   return {
     menuItems,
@@ -131,7 +132,7 @@ export function DynamicFeedTabbarView() {
   const { viewingSomeUp, upName, upFace, selectedGroup } = useSnapshot(dfStore)
   const onRefresh = useOnRefreshContext()
   const { ref, getPopupContainer } = usePopupContainer()
-  const { menuItems, selectedKey, onClear } = useScopeMenus()
+  const { menuItems, selectedKey, onClear } = useScopeMenus('dropdown')
 
   // try update on mount
   useMount(() => {
@@ -200,6 +201,14 @@ export function DynamicFeedTabbarView() {
 }
 
 export function DynamicFeedSidebarInfo() {
-  const { menuItems, selectedKey } = useScopeMenus()
-  return <Menu items={menuItems} selectedKeys={[selectedKey]} mode='inline' />
+  const { menuItems, selectedKey } = useScopeMenus('sidebar')
+  return (
+    <Menu
+      //
+      items={menuItems}
+      selectedKeys={[selectedKey]}
+      mode='inline'
+      inlineIndent={10}
+    />
+  )
 }

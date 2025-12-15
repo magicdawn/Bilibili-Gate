@@ -4,7 +4,7 @@
 
 import { css } from '@emotion/react'
 import { useEventListener, useLatest, usePrevious, useUnmountedRef } from 'ahooks'
-import { Divider } from 'antd'
+import { ConfigProvider, Divider } from 'antd'
 import Emittery from 'emittery'
 import { delay, isEqual, noop } from 'es-toolkit'
 import ms from 'ms'
@@ -444,13 +444,14 @@ const RecGridInner = memo(function ({
     }
   }, [footer, containerRef, gridClassName])
 
+  const _headerHeight = $headerHeight.use()
   const tabSupportsSidebar = useMemo(() => [ETab.DynamicFeed, ETab.Fav, ETab.Hot].includes(tab), [tab])
   const sidebar: ReactNode = enableSidebar && tabSupportsSidebar && sidebarView && (
     <div
       css={css`
         position: sticky;
-        top: 105px;
-        max-height: calc(95vh - 105px);
+        top: ${_headerHeight + 55}px;
+        max-height: calc(95vh - ${_headerHeight + 55}px);
         border: 1px solid ${borderColorValue};
         border-radius: 15px;
         overflow-y: auto;
@@ -460,7 +461,17 @@ const RecGridInner = memo(function ({
         width: 250px;
       `}
     >
-      {sidebarView}
+      <ConfigProvider
+        theme={{
+          components: {
+            Menu: {
+              itemHeight: 30,
+            },
+          },
+        }}
+      >
+        {sidebarView}
+      </ConfigProvider>
     </div>
   )
 

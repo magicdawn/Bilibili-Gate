@@ -55,6 +55,7 @@ export function AppRoot({
             zIndexPopupBase: Number(zIndexAntdPopupBase),
             fontFamily: appUsingFont,
           },
+
           components: {
             Notification: {
               zIndexPopup: Number(zIndexAntdPopupBase),
