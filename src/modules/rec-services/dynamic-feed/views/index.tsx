@@ -17,6 +17,7 @@ import {
   dfStore,
   DynamicFeedVideoMinDuration,
   DynamicFeedVideoType,
+  QUERY_DYNAMIC_UP_MID,
   updateFilterData,
   type DynamicFeedStore,
   type DynamicFeedStoreSelectedKey,
@@ -122,6 +123,12 @@ function useScopeMenus(form: 'dropdown' | 'sidebar') {
   }
 }
 
+export function useDynamicFeedScopeSelectDisplayForm(): 'sidebar' | 'dropdown' {
+  const { enableSidebar } = useSettingsSnapshot()
+  if (enableSidebar && !QUERY_DYNAMIC_UP_MID) return 'sidebar'
+  return 'dropdown'
+}
+
 export function DynamicFeedTabbarView() {
   const {
     dynamicFeed: {
@@ -132,6 +139,7 @@ export function DynamicFeedTabbarView() {
   const { viewingSomeUp, upName, upFace, selectedGroup } = useSnapshot(dfStore)
   const onRefresh = useOnRefreshContext()
   const { ref, getPopupContainer } = usePopupContainer()
+  const scopeSelectForm = useDynamicFeedScopeSelectDisplayForm()
   const { menuItems, selectedKey, onClear } = useScopeMenus('dropdown')
 
   // try update on mount
@@ -182,10 +190,17 @@ export function DynamicFeedTabbarView() {
 
   return (
     <div ref={ref} className='inline-flex items-center gap-x-8px'>
-      {!enableSidebar && scopeDropdownMenu}
+      {scopeSelectForm === 'dropdown' && scopeDropdownMenu}
 
-      {(viewingSomeUp || selectedGroup) && (
-        <Button onClick={onClear} className='gap-0'>
+      {scopeSelectForm === 'dropdown' ? (
+        (viewingSomeUp || selectedGroup) && (
+          <Button onClick={onClear} className='gap-0'>
+            <IconForReset className='mr-5px size-14px' />
+            <span>清除</span>
+          </Button>
+        )
+      ) : (
+        <Button onClick={onClear} className='gap-0' disabled={!(viewingSomeUp || selectedGroup)}>
           <IconForReset className='mr-5px size-14px' />
           <span>清除</span>
         </Button>
@@ -202,6 +217,8 @@ export function DynamicFeedTabbarView() {
 
 export function DynamicFeedSidebarInfo() {
   const { menuItems, selectedKey } = useScopeMenus('sidebar')
+  const form = useDynamicFeedScopeSelectDisplayForm()
+  if (form !== 'sidebar') return undefined
   return (
     <Menu
       //

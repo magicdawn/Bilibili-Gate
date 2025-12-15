@@ -2,9 +2,8 @@
  * 推荐内容, 无限滚动
  */
 
-import { css } from '@emotion/react'
 import { useEventListener, useLatest, usePrevious, useUnmountedRef } from 'ahooks'
-import { ConfigProvider, Divider } from 'antd'
+import { Divider } from 'antd'
 import Emittery from 'emittery'
 import { delay, isEqual, noop } from 'es-toolkit'
 import ms from 'ms'
@@ -15,7 +14,6 @@ import { APP_CLS_GRID, baseDebug } from '$common'
 import { useEmitterOn } from '$common/hooks/useEmitter'
 import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
 import { clsGateVideoGridDivider } from '$common/shared.module.scss'
-import { borderColorValue } from '$components/css-vars'
 import { useCurrentUsingTab, useSortedTabKeys } from '$components/RecHeader/tab'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { VideoCard } from '$components/VideoCard'
@@ -36,6 +34,7 @@ import * as classNames from '../video-grid.module.scss'
 import { EGridDisplayMode } from './display-mode'
 import { ErrorDetail } from './error-detail'
 import { useRecGridState } from './rec-grid-state'
+import { useSidebarRelated } from './sidebar'
 import { useRefresh } from './useRefresh'
 import { useShortcut } from './useShortcut'
 import { ENABLE_VIRTUAL_GRID, gridComponents } from './virtuoso.config'
@@ -444,42 +443,13 @@ const RecGridInner = memo(function ({
     }
   }, [footer, containerRef, gridClassName])
 
-  const _headerHeight = $headerHeight.use()
-  const tabSupportsSidebar = useMemo(() => [ETab.DynamicFeed, ETab.Fav, ETab.Hot].includes(tab), [tab])
-  const sidebar: ReactNode = enableSidebar && tabSupportsSidebar && sidebarView && (
-    <div
-      css={css`
-        position: sticky;
-        top: ${_headerHeight + 55}px;
-        max-height: calc(95vh - ${_headerHeight + 55}px);
-        border: 1px solid ${borderColorValue};
-        border-radius: 15px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: thin;
-        scrollbar-gutter: stable;
-        width: 250px;
-      `}
-    >
-      <ConfigProvider
-        theme={{
-          components: {
-            Menu: {
-              itemHeight: 30,
-            },
-          },
-        }}
-      >
-        {sidebarView}
-      </ConfigProvider>
-    </div>
-  )
+  const { sidebarEl } = useSidebarRelated({ tab, sidebarView })
 
   // 总是 render grid, getColumnCount 依赖 grid columns
   const render = ({ gridChildren, gridSiblings }: { gridChildren?: ReactNode; gridSiblings?: ReactNode } = {}) => {
     return (
       <div className='flex gap-x-25px'>
-        {sidebar}
+        {sidebarEl}
         <div ref={containerRef} className={clsx('min-h-100vh flex-1', classNames.videoGridContainer)} data-tab={tab}>
           <div className={gridClassName} data-tab={tab}>
             {gridChildren}
