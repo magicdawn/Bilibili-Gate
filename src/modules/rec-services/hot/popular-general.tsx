@@ -12,6 +12,8 @@ import type { IService } from '../_base'
 export class PopularGeneralRecService implements IService {
   hasMore = true
   page = 1
+  usageInfo = (<PopularGeneralUsageInfo />)
+
   constructor(private anonymous: boolean) {}
 
   async loadMore() {
@@ -40,10 +42,6 @@ export class PopularGeneralRecService implements IService {
       } satisfies PopularGeneralItemExtend
     })
     return items
-  }
-
-  get usageInfo() {
-    return <PopularGeneralUsageInfo />
   }
 }
 

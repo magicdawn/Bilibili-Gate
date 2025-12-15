@@ -1,4 +1,4 @@
-import { Button, Dropdown, Popover, Tag, Transfer } from 'antd'
+import { Button, Dropdown, Menu, Popover, Tag, Transfer } from 'antd'
 import { delay, groupBy } from 'es-toolkit'
 import { useSnapshot } from 'valtio'
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
@@ -23,27 +23,11 @@ export const IconForPrivateFolder = IconLucideFolderLock
 export const IconForPublicFolder = IconLucideFolder
 export const IconForCollection = IconIonLayersOutline
 
-export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
-  const { fav } = useSettingsSnapshot()
-  const { folders, selectedFavFolder, collections, selectedFavCollection, selectedLabel, selectedKey } =
-    useSnapshot(favStore)
+function useScopeMenus(extraOnMenuItemClick?: () => void) {
+  const { folders, collections, selectedKey } = useSnapshot(favStore)
   const onRefresh = useOnRefreshContext()
-  const { ref, getPopupContainer } = usePopupContainer()
 
-  useMount(() => {
-    updateFavList()
-  })
-
-  // 分割线设置切换, 即时生效
-  useUpdateEffect(() => {
-    void (async () => {
-      await delay(100)
-      onRefresh?.()
-    })()
-  }, [fav.addSeparator])
-
-  // !#region scope selection dropdown
-  const scopeSelectionDropdownMenus: AntMenuItem[] = useMemo(() => {
+  const menuItems: AntMenuItem[] = useMemo(() => {
     const collectionSubMenus: AntMenuItem[] = []
     const collectionGrouped = groupBy(collections, (x) => x.upper.name)
     let entries = Object.entries(collectionGrouped).map(([upName, collections]) => ({
@@ -80,7 +64,7 @@ export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
                 async onClick() {
                   favStore.selectedFavFolderId = undefined
                   favStore.selectedFavCollectionId = f.id
-                  setScopeDropdownOpen(false)
+                  extraOnMenuItemClick?.()
                   await delay(100)
                   onRefresh?.()
                 },
@@ -99,7 +83,7 @@ export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
         async onClick() {
           favStore.selectedFavFolderId = undefined
           favStore.selectedFavCollectionId = undefined
-          setScopeDropdownOpen(false)
+          extraOnMenuItemClick?.()
           await delay(100)
           onRefresh?.()
         },
@@ -120,7 +104,7 @@ export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
             async onClick() {
               favStore.selectedFavFolderId = f.id
               favStore.selectedFavCollectionId = undefined
-              setScopeDropdownOpen(false)
+              extraOnMenuItemClick?.()
               await delay(100)
               onRefresh?.()
             },
@@ -134,7 +118,33 @@ export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
       },
     ])
   }, [folders, collections])
+
+  return { menuItems, selectedKey }
+}
+
+export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
+  const { fav, enableSidebar } = useSettingsSnapshot()
+  const { selectedFavFolder, selectedFavCollection, selectedLabel, selectedKey } = useSnapshot(favStore)
+  const onRefresh = useOnRefreshContext()
+  const { ref, getPopupContainer } = usePopupContainer()
+
+  useMount(() => {
+    updateFavList()
+  })
+
+  // 分割线设置切换, 即时生效
+  useUpdateEffect(() => {
+    void (async () => {
+      await delay(100)
+      onRefresh?.()
+    })()
+  }, [fav.addSeparator])
+
+  // !#region scope selection dropdown
   const [scopeDropdownOpen, setScopeDropdownOpen] = useState(false)
+  const { menuItems } = useScopeMenus(() => {
+    setScopeDropdownOpen(false)
+  })
 
   const dropdownButtonClassName = 'relative top-[-0.5px] size-15px'
   const dropdownButtonIcon = selectedFavFolder ? (
@@ -156,7 +166,7 @@ export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
       placement='bottomLeft'
       getPopupContainer={getPopupContainer}
       menu={{
-        items: scopeSelectionDropdownMenus,
+        items: menuItems,
         style: { ...dropdownMenuStyle, border: `1px solid ${usePopoverBorderColor()}` },
         selectedKeys: [selectedKey],
       }}
@@ -174,7 +184,7 @@ export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
   return (
     <div ref={ref} className='flex items-center gap-x-10px'>
       {/* scope selction */}
-      {scopeSelectionDropdown}
+      {!enableSidebar && scopeSelectionDropdown}
 
       {/* extra */}
       {extraContent}
@@ -248,4 +258,9 @@ export function ViewingAllExcludeFolderConfig({
       </Tag>
     </Popover>
   )
+}
+
+export function FavSidebarInfo() {
+  const { menuItems, selectedKey } = useScopeMenus()
+  return <Menu items={menuItems} selectedKeys={[selectedKey]} mode='inline' />
 }

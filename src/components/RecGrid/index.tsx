@@ -444,7 +444,7 @@ const RecGridInner = memo(function ({
     }
   }, [footer, containerRef, gridClassName])
 
-  const tabSupportsSidebar = useMemo(() => [ETab.DynamicFeed].includes(tab), [tab])
+  const tabSupportsSidebar = useMemo(() => [ETab.DynamicFeed, ETab.Fav, ETab.Hot].includes(tab), [tab])
   const sidebar: ReactNode = enableSidebar && tabSupportsSidebar && sidebarInfo && (
     <div
       css={css`

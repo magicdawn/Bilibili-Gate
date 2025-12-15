@@ -1,4 +1,4 @@
-import { Button, Popover } from 'antd'
+import { Button, Menu, Popover } from 'antd'
 import { snapshot, useSnapshot } from 'valtio'
 import { REQUEST_FAIL_MSG } from '$common'
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
@@ -6,9 +6,11 @@ import { HelpInfo } from '$components/_base/HelpInfo'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
 import { EApiType } from '$define/index.shared'
 import { usePopupContainer } from '$modules/rec-services/_base'
+import { useSettingsSnapshot } from '$modules/settings'
 import { isWebApiSuccess, request } from '$request'
 import toast from '$utility/toast'
 import type { RankItemExtend } from '$define'
+import type { AntMenuItem } from '$modules/antd'
 import { QueueStrategy, type IService } from '../../_base'
 import { defaultRankTab, ERankApiType, getRankTabRequestConfig, type IRankTab } from './rank-tab'
 import { rankStore, updateRankTabs } from './store'
@@ -18,6 +20,9 @@ import type { MouseEvent, ReactNode } from 'react'
 export class RankRecService implements IService {
   loaded = false
   qs = new QueueStrategy<RankItemExtend>(20)
+  usageInfo = (<RankUsageInfo />)
+  sidebarInfo = (<RankSidebarInfo />)
+
   constructor(private slug: string) {}
 
   get hasMore() {
@@ -63,16 +68,25 @@ export class RankRecService implements IService {
 
     return this.qs.sliceFromQueue()
   }
+}
 
-  get usageInfo() {
-    return <RankUsageInfo />
-  }
+function useMenuItems() {
+  const { tabs } = useSnapshot(rankStore)
+  const { normalList, pgcList } = useMemo(() => {
+    const listWithApiType = tabs.map((x) => ({ ...x, apiType: getRankTabRequestConfig(x).apiType }))
+    const pgcList = listWithApiType.filter((x) => [ERankApiType.PgcSeason, ERankApiType.PgcWeb].includes(x.apiType))
+    const normalList = listWithApiType.filter((x) => x.apiType === ERankApiType.Normal)
+    return { normalList, pgcList }
+  }, [tabs])
+  return { normalList, pgcList }
 }
 
 function RankUsageInfo() {
+  const { enableSidebar } = useSettingsSnapshot()
   const { ref, getPopupContainer } = usePopupContainer()
   const onRefresh = useOnRefreshContext()
-  const { slug, currentTab, tabs } = useSnapshot(rankStore)
+  const { slug, currentTab } = useSnapshot(rankStore)
+  const { normalList, pgcList } = useMenuItems()
 
   const renderRankTabList = (list: IRankTab[], label: ReactNode, helpInfoContent?: ReactNode) => {
     if (!list.length) return null
@@ -103,13 +117,6 @@ function RankUsageInfo() {
       </div>
     )
   }
-
-  const { normalList, pgcList } = useMemo(() => {
-    const listWithApiType = tabs.map((x) => ({ ...x, apiType: getRankTabRequestConfig(x).apiType }))
-    const pgcList = listWithApiType.filter((x) => [ERankApiType.PgcSeason, ERankApiType.PgcWeb].includes(x.apiType))
-    const normalList = listWithApiType.filter((x) => x.apiType === ERankApiType.Normal)
-    return { normalList, pgcList }
-  }, [tabs])
 
   const handleDropdownButtonClick = useMemoizedFn((e: MouseEvent) => {
     const list = [...normalList, ...pgcList]
@@ -145,5 +152,41 @@ function RankUsageInfo() {
     </Popover>
   )
 
+  if (enableSidebar) return undefined
   return <div ref={ref}>{popover}</div>
+}
+
+export function RankSidebarInfo() {
+  const { slug } = useSnapshot(rankStore)
+  const { normalList, pgcList } = useMenuItems()
+  const onRefresh = useOnRefreshContext()
+
+  const onSelect = useMemoizedFn((slug: string) => {
+    rankStore.slug = slug
+    onRefresh?.()
+  })
+
+  const menuItems = useMemo(() => {
+    const groupNormal: AntMenuItem = {
+      type: 'group',
+      label: '视频',
+      children: normalList.map((x) => ({
+        key: x.slug,
+        label: x.name,
+        onClick: () => onSelect(x.slug),
+      })),
+    }
+    const groupPgc: AntMenuItem = {
+      type: 'group',
+      label: 'PGC内容',
+      children: pgcList.map((x) => ({
+        key: x.slug,
+        label: x.name,
+        onClick: () => onSelect(x.slug),
+      })),
+    }
+    return [groupNormal, groupPgc]
+  }, [normalList, pgcList])
+
+  return <Menu items={menuItems} selectedKeys={[slug]} mode='inline' />
 }
