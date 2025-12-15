@@ -13,7 +13,7 @@ import toast from '$utility/toast'
 import type { ItemsSeparator, WatchlaterItemExtend } from '$define'
 import { BaseTabService, type IService } from '../_base'
 import { batchRemoveWatchlater, fetchWatchlaterItems } from './api'
-import { WatchlaterTabbarView } from './usage-info'
+import { WatchlaterTabbarView } from './views'
 import { WatchlaterItemsOrder } from './watchlater-enum'
 import type { WatchlaterItem } from './types'
 

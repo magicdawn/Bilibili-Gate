@@ -17,8 +17,8 @@ import type { SpaceUploadItem, SpaceUploadItemExtend } from '$define'
 import { BaseTabService, type IService } from '../_base'
 import { SpaceUploadOrder, tryGetSpaceUpload } from './api'
 import { QUERY_SPACE_UPLOAD_INITIAL_PAGE, spaceUploadStore } from './store'
-import { SpaceUploadTabbarView } from './usage-info'
 import { isSpaceUploadItemChargeOnly } from './util'
+import { SpaceUploadTabbarView } from './views'
 import type { WritableDeep } from 'type-fest'
 
 export const spaceUploadAvatarCache = new QuickLRU<number, string>({ maxSize: 100 })
