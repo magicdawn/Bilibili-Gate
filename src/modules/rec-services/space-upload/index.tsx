@@ -64,6 +64,8 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
   filterText: string | undefined
   initialPage: number | undefined
 
+  override sidebarInfo = undefined
+
   constructor(public config: SpaceUploadServiceConfig) {
     super(SpaceUploadService.PAGE_SIZE)
     Object.assign(this, config)

@@ -7,17 +7,15 @@ import { IconForRemove, IconForShuffle, IconForTimestamp, withAscIcon, withDescI
 import { useMultiSelecting } from '$modules/multi-select/store'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import toast from '$utility/toast'
-import type { ETab } from '$components/RecHeader/tab-enum'
 import { usePopupContainer } from '../_base'
 import { CopyBvidButtonsUsageInfo } from '../_shared/copy-bvid-buttons'
 import { GenericOrderSwitcher } from '../_shared/generic-order-switcher'
-import type { UsageInfoPropsFor } from '../UsageInfo'
 import { watchlaterStore } from './store'
 import { WatchlaterItemsOrder } from './watchlater-enum'
-import { removeMultiSelectedWatchlaterItems } from '.'
+import { removeMultiSelectedWatchlaterItems, type WatchlaterRecService } from '.'
 import type { ElementRef, ReactNode } from 'react'
 
-export function WatchlaterUsageInfo({ service }: UsageInfoPropsFor<ETab.Watchlater>) {
+export function WatchlaterUsageInfo({ service }: { service: WatchlaterRecService }) {
   const { watchlaterAddSeparator, watchlaterItemsOrder, watchlaterUseNormalVideoUrl } = useSettingsSnapshot()
   const onRefresh = useOnRefreshContext()
   const { searchText } = useSnapshot(watchlaterStore, { sync: true })

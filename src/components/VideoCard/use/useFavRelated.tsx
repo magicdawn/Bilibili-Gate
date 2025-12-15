@@ -1,5 +1,5 @@
 import { pickFavFolder } from '$components/ModalMoveFav'
-import { currentGridSharedEmitter, getMultiSelectedItems } from '$components/RecGrid/rec-grid-state'
+import { getCurrentGridEmitter, getMultiSelectedItems } from '$components/RecGrid/rec-grid-state'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { isFav, isWatchlater, type RecItemType } from '$define'
 import { antMessage, antModal, defineAntMenus } from '$modules/antd'
@@ -186,7 +186,7 @@ export function getFavTabMenus({
             if (!success) return
             clearFavFolderAllItemsCache(item.folder.id)
             clearFavFolderAllItemsCache(targetFolder.id)
-            currentGridSharedEmitter.emit('remove-cards', [uniqIds, titles, true])
+            getCurrentGridEmitter()?.emit('remove-cards', [uniqIds, titles, true])
             antMessage.success(`已移动 ${uniqIds.length} 个视频到「${targetFolder.title}」收藏夹`)
             return success
           })

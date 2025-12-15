@@ -5,8 +5,8 @@ import { useUnoMerge } from 'unocss-merge/react'
 import { APP_NAMESPACE } from '$common'
 import { AppRoot } from '$components/AppRoot'
 import { useLargePreviewRelated } from '$components/LargePreview/useLargePreview'
+import { gridDefaultEmitter } from '$components/RecGrid/grid.shared'
 import { VideoCardActionsClassNames } from '$components/VideoCard/child-components/VideoCardActions'
-import { defaultSharedEmitter } from '$components/VideoCard/index.shared'
 import { settings } from '$modules/settings'
 import { isInIframe, setupForNoneHomepage } from './shared'
 
@@ -77,7 +77,7 @@ function LargePreviewSetup({ el }: { el: HTMLDivElement }) {
     bvid,
     cid: undefined,
     uniqId: bvid,
-    sharedEmitter: defaultSharedEmitter,
+    gridEmitter: gridDefaultEmitter,
     // optional
     cover,
     videoCardAsTriggerRef,

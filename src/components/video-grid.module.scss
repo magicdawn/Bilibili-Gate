@@ -110,15 +110,16 @@ $row-gap: clamp(20px, 1.4vw, 40px);
 // 也可以使用 :where 降低默认 .video-grid-custom 权重
 
 // bili-feed4: <1440px 4列, 1440px 4列
-@container (width >= #{1440px * 0.9 - 20px}) {
-  .video-grid.video-grid-custom {
-    --col: 5;
-  }
-}
+// 1440px * 0.9 - 20px = 1276px
+// @container (width >= 1550px) {
+//   .video-grid.video-grid-custom {
+//     --col: 5;
+//   }
+// }
 
-$card-base-width: 300px;
-@for $i from 6 through 7 {
-  @container (width >= #{($card-base-width + $i * 5px) * $i + $col-gap * ($i - 1)}) {
+$card-base-width: 330px;
+@for $i from 5 through 7 {
+  @container (width >= #{$card-base-width * $i + $col-gap * ($i - 1)}) {
     .video-grid.video-grid-custom {
       --col: #{$i};
     }

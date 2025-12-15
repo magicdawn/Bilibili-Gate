@@ -5,7 +5,6 @@ import { APP_CLS_TAB_BAR, baseDebug } from '$common'
 import { useSizeExpression } from '$common/hooks/useResizeObserverExpression'
 import { useSticky } from '$common/hooks/useSticky'
 import { ModalSettingsHotkey } from '$components/ModalSettings'
-import { OnRefreshContext } from '$components/RecGrid/useRefresh'
 import { $headerHeight, $usingEvolevdHeader } from '$header'
 import { AntdTooltip } from '$modules/antd/custom'
 import { useIsDarkMode } from '$modules/dark-mode'
@@ -42,7 +41,6 @@ export const RecHeader = forwardRef<
     accessKey,
     pureRecommend,
     showModalFeedEntry,
-    grid: { gridDisplayMode },
     multiSelect: { showIcon: multiSelectShowIcon },
     style: {
       pureRecommend: { useStickyTabbar, stickyTabbarShadow },
@@ -112,43 +110,41 @@ export const RecHeader = forwardRef<
   }, [pureRecommend, useStickyTabbar, stickyTabbarShadow, sticky, headerHeight, boxShadowCss, expandToFullWidthCss])
 
   return (
-    <OnRefreshContext.Provider value={onRefresh}>
-      <div ref={stickyRef} data-role='tab-bar-wrapper' className={_className} css={_css}>
-        <div
-          data-role='tab-bar'
-          className={`${APP_CLS_TAB_BAR} relative mb-0 h-auto flex flex-row items-center justify-between gap-x-15px px-0 py-8px`}
-        >
-          <div data-class-name='left' className='h-full flex flex-shrink-1 flex-wrap items-center gap-x-15px gap-y-8px'>
-            <VideoSourceTab onRefresh={onRefresh} />
-            {leftSlot}
-          </div>
+    <div ref={stickyRef} data-role='tab-bar-wrapper' className={_className} css={_css}>
+      <div
+        data-role='tab-bar'
+        className={`${APP_CLS_TAB_BAR} relative mb-0 h-auto flex flex-row items-center justify-between gap-x-15px px-0 py-8px`}
+      >
+        <div data-class-name='left' className='h-full flex flex-shrink-1 flex-wrap items-center gap-x-15px gap-y-8px'>
+          <VideoSourceTab onRefresh={onRefresh} />
+          {leftSlot}
+        </div>
 
-          <div data-class-name='right' className='h-full flex flex-shrink-0 items-center gap-x-8px'>
-            {rightSlot}
+        <div data-class-name='right' className='h-full flex flex-shrink-0 items-center gap-x-8px'>
+          {rightSlot}
 
-            {!accessKey && showAccessKeyManage && <AccessKeyManage style={{ marginLeft: 5 }} />}
+          {!accessKey && showAccessKeyManage && <AccessKeyManage style={{ marginLeft: 5 }} />}
 
-            {multiSelectShowIcon && <MultiSelectButton iconOnly addCopyActions />}
+          {multiSelectShowIcon && <MultiSelectButton iconOnly addCopyActions />}
 
-            <AntdTooltip title='设置' arrow={false}>
-              <Button onClick={showModalSettings} className='icon-only-round-button'>
-                <ModalSettingsHotkey />
-                <IconForConfig className='size-14px' />
-              </Button>
-            </AntdTooltip>
+          <AntdTooltip title='设置' arrow={false}>
+            <Button onClick={showModalSettings} className='icon-only-round-button'>
+              <ModalSettingsHotkey />
+              <IconForConfig className='size-14px' />
+            </Button>
+          </AntdTooltip>
 
-            <RefreshButton refreshing={refreshing} onRefresh={onRefresh} refreshHotkeyEnabled={shortcutEnabled} />
+          <RefreshButton refreshing={refreshing} onRefresh={onRefresh} refreshHotkeyEnabled={shortcutEnabled} />
 
-            {showModalFeedEntry && (
-              <Button onClick={showModalFeed} className='gap-0'>
-                <span className='relative top-1px'>查看更多</span>
-                <IconParkOutlineRight />
-              </Button>
-            )}
-          </div>
+          {showModalFeedEntry && (
+            <Button onClick={showModalFeed} className='gap-0'>
+              <span className='relative top-1px'>查看更多</span>
+              <IconParkOutlineRight />
+            </Button>
+          )}
         </div>
       </div>
-    </OnRefreshContext.Provider>
+    </div>
   )
 })
 

@@ -6,13 +6,7 @@ import { attempt } from 'es-toolkit'
 import { APP_KEY_PREFIX } from '$common'
 import { EApiType } from '$define/index.shared'
 import type { RecItemTypeOrSeparator } from '$define'
-import {
-  copyBvidInfos,
-  copyBvidsSingleLine,
-  currentGridItems,
-  getGenericCardDatas,
-  setCurrentGridItems,
-} from './rec-grid-state'
+import { copyBvidInfos, copyBvidsSingleLine, getGenericCardDatas, setCurrentGridItems } from './rec-grid-state'
 
 // 实验:
 // window === globalThis 总是成立
@@ -34,7 +28,7 @@ export const gridItemsKey = `${APP_KEY_PREFIX}_gridItems`
 export function setGlobalGridItems(itemsWithSep: RecItemTypeOrSeparator[]) {
   const items = itemsWithSep.filter((x) => x.api !== EApiType.Separator)
   setCurrentGridItems(items)
-  setGlobalValue(gridItemsKey, currentGridItems)
+  setGlobalValue(gridItemsKey, items)
 }
 
 // bind(export) function to unsafeWindow

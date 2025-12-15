@@ -4,23 +4,45 @@
 
 import dayjs from 'dayjs'
 import { fastOrderBy } from 'fast-sort-lens'
-import { copyContent, defaultSharedEmitter, type SharedEmitter } from '$components/VideoCard/index.shared'
+import { copyContent } from '$components/VideoCard/index.shared'
 import { normalizeCardData, type IVideoCardData } from '$modules/filter/normalize'
 import { multiSelectStore } from '$modules/multi-select/store'
 import type { RecItemType } from '$define'
+import { createGridEmitter, type GridEmitter } from './grid.shared'
 
-export let currentGridItems: RecItemType[] = []
-export let currentGridSharedEmitter: SharedEmitter = defaultSharedEmitter
-export function setCurrentGridItems(items: RecItemType[]) {
-  currentGridItems = items
+/**
+ * RecGrid 层叠
+ * 可能得结构: [PureRecommend.RecGrid, ModalFeed.RecGrid]
+ */
+type RecGridState = { items: RecItemType[]; gridEmitter: GridEmitter }
+const recGridStateStack: RecGridState[] = []
+
+export function getCurrentGridItems() {
+  return recGridStateStack.at(-1)?.items ?? []
 }
-export function setCurrentGridSharedEmitter(sharedEmitter: SharedEmitter) {
-  currentGridSharedEmitter = sharedEmitter
+export function getCurrentGridEmitter() {
+  return recGridStateStack.at(-1)?.gridEmitter
+}
+export function setCurrentGridItems(items: RecItemType[]) {
+  const state = recGridStateStack.at(-1)
+  if (!state) return
+  state.items = items
+}
+
+export function useRecGridState() {
+  const gridEmitter = useMemo(() => createGridEmitter(), [])
+  useMount(() => {
+    recGridStateStack.push({ items: [], gridEmitter })
+    return () => {
+      recGridStateStack.pop()
+    }
+  })
+  return { gridEmitter }
 }
 
 export function getMultiSelectedItems() {
   const { multiSelecting, selectedIdSet } = multiSelectStore
-  return multiSelecting ? currentGridItems.filter((item) => selectedIdSet.has(item.uniqId)) : []
+  return multiSelecting ? getCurrentGridItems().filter((item) => selectedIdSet.has(item.uniqId)) : []
 }
 export function getMultiSelectedCardDatas() {
   return getMultiSelectedItems().map(normalizeCardData)
@@ -31,8 +53,8 @@ export function getMultiSelectedCardDatas() {
  */
 export function getGenericCardDatas(): IVideoCardData[] {
   const { multiSelecting } = multiSelectStore
-  let items = multiSelecting ? getMultiSelectedItems() : currentGridItems
-  if (multiSelecting && !items.length) items = currentGridItems // multi-selecting but no selected, fallback to ALL
+  let items = multiSelecting ? getMultiSelectedItems() : getCurrentGridItems()
+  if (multiSelecting && !items.length) items = getCurrentGridItems() // multi-selecting but no selected, fallback to ALL
   const cardDatas = items.map(normalizeCardData)
   return cardDatas
 }
@@ -74,7 +96,7 @@ export function handleMultiSelectWithShiftKey(anchorUniqId: string, toUniqId: st
   if (!multiSelecting) return
   if (!anchorUniqId || !toUniqId || anchorUniqId === toUniqId) return
 
-  const list = currentGridItems
+  const list = getCurrentGridItems()
   const anchorIndex = list.findIndex((item) => item.uniqId === anchorUniqId)
   const toIndex = list.findIndex((item) => item.uniqId === toUniqId)
   const isIndexValid = (index: number) => index >= 0 && index <= list.length - 1
@@ -84,6 +106,7 @@ export function handleMultiSelectWithShiftKey(anchorUniqId: string, toUniqId: st
   const [start, end] = fastOrderBy(range, [(x) => x], ['asc'])
   const selected = selectedIdSet.has(anchorUniqId)
   for (let i = start; i <= end; i++) {
-    selected ? selectedIdSet.add(currentGridItems[i].uniqId) : selectedIdSet.delete(currentGridItems[i].uniqId)
+    const uniqId = getCurrentGridItems()[i].uniqId
+    selected ? selectedIdSet.add(uniqId) : selectedIdSet.delete(uniqId)
   }
 }

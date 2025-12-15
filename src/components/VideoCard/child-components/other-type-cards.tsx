@@ -11,7 +11,7 @@ import type { DislikeReason } from '$components/ModalDislike'
 import type { AppRecItemExtend, RecItemType } from '$define'
 import type { IVideoCardData } from '$modules/filter/normalize'
 import { videoCardBorderRadiusValue } from '../../css-vars'
-import { defaultEmitter } from '../index.shared'
+import { videoCardDefaultEmitter } from '../index.shared'
 import { cancelDislike } from '../services'
 import type { VideoCardEmitter } from '../index.shared'
 import { skeletonActive as clsSkeletonActive } from './skeleton.module.scss'
@@ -56,7 +56,7 @@ export const DislikedCard = memo(function DislikedCard({
   item,
   cardData,
   dislikedReason,
-  emitter = defaultEmitter,
+  emitter = videoCardDefaultEmitter,
 }: {
   item: AppRecItemExtend
   cardData: IVideoCardData

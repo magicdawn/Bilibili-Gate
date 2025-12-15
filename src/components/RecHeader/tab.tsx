@@ -114,6 +114,7 @@ export function useCurrentUsingTab(): ETab {
 const radioBtnCss = css`
   height: 32px;
   line-height: unset;
+  --ant-border-radius: 16px;
 
   &:has(:focus-visible) {
     outline: none;

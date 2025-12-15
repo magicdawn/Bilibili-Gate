@@ -2,6 +2,7 @@
  * 推荐内容, 无限滚动
  */
 
+import { css } from '@emotion/react'
 import { useEventListener, useLatest, usePrevious, useUnmountedRef } from 'ahooks'
 import { Divider } from 'antd'
 import Emittery from 'emittery'
@@ -14,13 +15,11 @@ import { APP_CLS_GRID, baseDebug } from '$common'
 import { useEmitterOn } from '$common/hooks/useEmitter'
 import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
 import { clsGateVideoGridDivider } from '$common/shared.module.scss'
-import { useModalDislikeVisible } from '$components/ModalDislike'
-import { useModalMoveFavVisible } from '$components/ModalMoveFav'
+import { borderColorValue } from '$components/css-vars'
 import { useCurrentUsingTab, useSortedTabKeys } from '$components/RecHeader/tab'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { VideoCard } from '$components/VideoCard'
 import { getActiveCardBorderCss, useCardBorderCss } from '$components/VideoCard/card-border-css'
-import { createSharedEmitter, type VideoCardEmitter, type VideoCardEvents } from '$components/VideoCard/index.shared'
 import { EApiType } from '$define/index.shared'
 import { $headerHeight } from '$header'
 import { antMessage } from '$modules/antd'
@@ -28,14 +27,15 @@ import { filterRecItems } from '$modules/filter'
 import { multiSelectStore } from '$modules/multi-select/store'
 import { concatThenUniq, getGridRefreshCount, refreshForGrid } from '$modules/rec-services'
 import { getServiceFromRegistry, type ServiceMap } from '$modules/rec-services/service-map.ts'
-import { settings } from '$modules/settings'
+import { settings, useSettingsSnapshot } from '$modules/settings'
 import { isSafari } from '$ua'
+import type { VideoCardEmitter, VideoCardEvents } from '$components/VideoCard/index.shared'
 import type { RecItemType, RecItemTypeOrSeparator } from '$define'
 import type { IVideoCardData } from '$modules/filter/normalize'
 import * as classNames from '../video-grid.module.scss'
 import { EGridDisplayMode } from './display-mode'
 import { ErrorDetail } from './error-detail'
-import { setCurrentGridSharedEmitter } from './rec-grid-state'
+import { useRecGridState } from './rec-grid-state'
 import { useRefresh } from './useRefresh'
 import { useShortcut } from './useShortcut'
 import { ENABLE_VIRTUAL_GRID, gridComponents } from './virtuoso.config'
@@ -45,16 +45,21 @@ import type { ForwardedRef, ReactNode } from 'react'
 
 const debug = baseDebug.extend('components:RecGrid')
 
-export type HeaderState = {
+/**
+ * Grid 需要修改并向外传播的状态
+ */
+export type GridExternalState = {
+  /** state modified by refresh */
   refreshing: boolean
+  usageInfo: ReactNode
+  /** implementation provided by RecGrid */
   onRefresh: OnRefresh
-  extraInfo: ReactNode
 }
 
-export const initHeaderState = (): HeaderState => ({
+export const initGridExternalState = (): GridExternalState => ({
   refreshing: false,
   onRefresh: noop,
-  extraInfo: null,
+  usageInfo: null,
 })
 
 export type RecGridRef = { refresh: OnRefresh }
@@ -65,8 +70,10 @@ export type RecGridProps = {
   infiniteScrollUseWindow: boolean
   onScrollToTop?: () => void
   scrollerRef?: RefObject<HTMLElement | null>
-  onSyncHeaderState?: (options: HeaderState) => void
+  onSyncExternalState?: (state: GridExternalState) => void
 }
+
+const clsGridColSpanFull = 'grid-col-span-full'
 
 export const RecGrid = forwardRef<RecGridRef, RecGridProps>(function (props, ref) {
   const servicesRegistry = useRefStateBox<Partial<ServiceMap>>(() => ({}))
@@ -100,7 +107,7 @@ const RecGridInner = memo(function ({
   infiniteScrollUseWindow,
   onScrollToTop,
   scrollerRef,
-  onSyncHeaderState,
+  onSyncExternalState,
 }: RecGridProps & {
   tab: ETab
   direction?: 'left' | 'right' // how to get to current tab, moved left or right
@@ -108,25 +115,28 @@ const RecGridInner = memo(function ({
   servicesRegistry: RefStateBox<Partial<ServiceMap>>
 }) {
   const unmountedRef = useUnmountedRef()
+  const { enableSidebar } = useSettingsSnapshot()
   const { useCustomGrid, gridDisplayMode } = useSnapshot(settings.grid)
   const { multiSelecting } = useSnapshot(multiSelectStore)
 
   // 已加载完成的 load call count, 类似 page
   const loadCompleteCountBox = useRefStateBox(0)
 
-  const [extraInfo, setExtraInfo] = useState<ReactNode>(undefined)
-  const updateExtraInfo = useMemoizedFn(() => {
-    setExtraInfo(servicesRegistry.val[tab]?.usageInfo)
+  const [usageInfo, setUsageInfo] = useState<ReactNode>(undefined)
+  const [sidebarInfo, setSidebarInfo] = useState<ReactNode>(undefined)
+  const updateViewFromService = useMemoizedFn(() => {
+    setUsageInfo(servicesRegistry.val[tab]?.usageInfo)
+    setSidebarInfo(servicesRegistry.val[tab]?.sidebarInfo)
   })
 
   const preAction = useMemoizedFn(() => {
     clearActiveIndex()
-    updateExtraInfo()
+    updateViewFromService()
     onScrollToTop?.()
   })
   const postAction = useMemoizedFn(() => {
     clearActiveIndex()
-    updateExtraInfo()
+    updateViewFromService()
     loadCompleteCountBox.set(1)
     setTimeout(checkShouldLoadMore)
   })
@@ -149,7 +159,7 @@ const RecGridInner = memo(function ({
     // actions
     preAction,
     postAction,
-    updateExtraInfo,
+    updateViewFromService,
   })
 
   useImperativeHandle(handlersRef, () => ({ refresh }), [refresh])
@@ -160,12 +170,8 @@ const RecGridInner = memo(function ({
   // sync to parent component
   useEffect(() => {
     if (unmountedRef.current) return
-    onSyncHeaderState?.({
-      refreshing,
-      onRefresh: refresh,
-      extraInfo,
-    })
-  }, [refreshing, refresh, extraInfo, onSyncHeaderState])
+    onSyncExternalState?.({ refreshing, onRefresh: refresh, usageInfo })
+  }, [refreshing, refresh, usageInfo, onSyncExternalState])
 
   const goOutAt = useRef<number | undefined>()
   useEventListener(
@@ -256,8 +262,9 @@ const RecGridInner = memo(function ({
     checkShouldLoadMore()
   })
 
-  // 渲染使用的 items
-  const usingItems = itemsBox.state
+  // fullList = videoList + separators
+  const fullList = itemsBox.state
+  const videoList = useMemo(() => fullList.filter((x) => x.api !== EApiType.Separator), [fullList])
 
   // .video-grid
   const containerRef = useRef<HTMLDivElement | null>(null)
@@ -274,18 +281,10 @@ const RecGridInner = memo(function ({
     }
   })
 
-  // 不喜欢弹窗
-  const modalDislikeVisible = useModalDislikeVisible()
-  const modalMoveFavVisible = useModalMoveFavVisible()
-
-  const usingVideoItems = useMemo(() => {
-    return usingItems.filter((x) => x.api !== EApiType.Separator)
-  }, [usingItems])
-
   // emitters
   const emitterCache = useMemo(() => new Map<string, VideoCardEmitter>(), [refreshTsBox.state])
   const videoCardEmitters = useMemo(() => {
-    return usingVideoItems.map(({ uniqId }) => {
+    return videoList.map(({ uniqId }) => {
       const cacheKey = uniqId
       return (
         emitterCache.get(cacheKey) ||
@@ -296,23 +295,22 @@ const RecGridInner = memo(function ({
         })()
       )
     })
-  }, [usingVideoItems])
+  }, [videoList])
 
-  const sharedEmitter = useMemo(() => createSharedEmitter(), [])
-  useEffect(() => setCurrentGridSharedEmitter(sharedEmitter), [sharedEmitter])
+  const { gridEmitter } = useRecGridState()
 
   const [activeLargePreviewUniqId, setActiveLargePreviewUniqId] = useState<string | undefined>(undefined)
-  useEmitterOn(sharedEmitter, 'show-large-preview', setActiveLargePreviewUniqId)
+  useEmitterOn(gridEmitter, 'show-large-preview', setActiveLargePreviewUniqId)
   const activeLargePreviewItemIndex = useMemo(() => {
     if (!activeLargePreviewUniqId) return
-    return usingVideoItems.findIndex((item) => item.uniqId === activeLargePreviewUniqId)
-  }, [usingItems, activeLargePreviewUniqId])
+    return videoList.findIndex((item) => item.uniqId === activeLargePreviewUniqId)
+  }, [fullList, activeLargePreviewUniqId])
 
   // 快捷键
   const { activeIndex, clearActiveIndex } = useShortcut({
     enabled: shortcutEnabled,
     refresh,
-    maxIndex: usingVideoItems.length - 1,
+    maxIndex: videoList.length - 1,
     containerRef,
     getScrollerRect,
     videoCardEmitters,
@@ -335,9 +333,7 @@ const RecGridInner = memo(function ({
   /**
    * card state change
    */
-
   const setItems = itemsBox.set
-
   const handleRemoveCards = useMemoizedFn((uniqIds: string[], titles?: string[], silent?: boolean) => {
     setItems((items) => {
       const newItems = items.slice()
@@ -386,7 +382,7 @@ const RecGridInner = memo(function ({
       return newItems
     })
   })
-  useEmitterOn(sharedEmitter, 'remove-cards', ([uniqIds, titles, silent]) => handleRemoveCards(uniqIds, titles, silent))
+  useEmitterOn(gridEmitter, 'remove-cards', ([uniqIds, titles, silent]) => handleRemoveCards(uniqIds, titles, silent))
 
   /**
    * footer for infinite scroll
@@ -403,7 +399,10 @@ const RecGridInner = memo(function ({
   })
   const footerInViewRef = useLatest(__footerInView)
   const footer = (
-    <div ref={footerRef} className='grid-col-span-full flex items-center justify-center py-30px text-size-120%'>
+    <div
+      ref={footerRef}
+      className={clsx(clsGridColSpanFull, 'flex items-center justify-center py-30px text-size-120%')}
+    >
       {!refreshing && (
         <>
           {hasMore ? (
@@ -445,14 +444,37 @@ const RecGridInner = memo(function ({
     }
   }, [footer, containerRef, gridClassName])
 
+  const tabSupportsSidebar = useMemo(() => [ETab.DynamicFeed].includes(tab), [tab])
+  const sidebar: ReactNode = enableSidebar && tabSupportsSidebar && sidebarInfo && (
+    <div
+      css={css`
+        position: sticky;
+        top: 105px;
+        max-height: calc(95vh - 105px);
+        border: 1px solid ${borderColorValue};
+        border-radius: 15px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: thin;
+        scrollbar-gutter: stable;
+        width: 250px;
+      `}
+    >
+      {sidebarInfo}
+    </div>
+  )
+
   // 总是 render grid, getColumnCount 依赖 grid columns
   const render = ({ gridChildren, gridSiblings }: { gridChildren?: ReactNode; gridSiblings?: ReactNode } = {}) => {
     return (
-      <div ref={containerRef} className={clsx('min-h-100vh', classNames.videoGridContainer)} data-tab={tab}>
-        <div className={gridClassName} data-tab={tab}>
-          {gridChildren}
+      <div className='flex gap-x-25px'>
+        {sidebar}
+        <div ref={containerRef} className={clsx('min-h-100vh flex-1', classNames.videoGridContainer)} data-tab={tab}>
+          <div className={gridClassName} data-tab={tab}>
+            {gridChildren}
+          </div>
+          {gridSiblings}
         </div>
-        {gridSiblings}
       </div>
     )
   }
@@ -485,7 +507,7 @@ const RecGridInner = memo(function ({
       return (
         <Divider
           key={item.uniqId}
-          className={clsx('grid-col-span-full', clsGateVideoGridDivider)}
+          className={clsx(clsGridColSpanFull, clsGateVideoGridDivider)}
           orientation='horizontal'
           titlePlacement='left'
         >
@@ -493,7 +515,7 @@ const RecGridInner = memo(function ({
         </Divider>
       )
     } else {
-      const index = usingVideoItems.findIndex((x) => x.uniqId === item.uniqId)
+      const index = videoList.findIndex((x) => x.uniqId === item.uniqId)
       const active = index === activeIndex
 
       return (
@@ -507,7 +529,7 @@ const RecGridInner = memo(function ({
           onMoveToFirst={handleMoveCardToFirst}
           onRefresh={refresh}
           emitter={videoCardEmitters[index]}
-          sharedEmitter={sharedEmitter}
+          gridEmitter={gridEmitter}
           gridDisplayMode={gridDisplayMode}
           multiSelecting={multiSelecting}
         />
@@ -521,7 +543,7 @@ const RecGridInner = memo(function ({
       <div className={clsx(classNames.videoGridContainer, classNames.virtualGridEnabled)}>
         <VirtuosoGrid
           useWindowScroll
-          data={usingItems}
+          data={fullList}
           overscan={{ main: 20, reverse: 20 }}
           listClassName={gridClassName}
           computeItemKey={(index, item) => item.uniqId}
@@ -539,7 +561,7 @@ const RecGridInner = memo(function ({
   return render({
     gridChildren: (
       <>
-        {usingItems.map((item) => renderItem(item))}
+        {fullList.map((item) => renderItem(item))}
         {footer}
       </>
     ),

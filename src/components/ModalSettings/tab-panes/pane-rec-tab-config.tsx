@@ -24,7 +24,7 @@ import {
   DF_SELECTED_KEY_PREFIX_UP,
   dfStore,
 } from '$modules/rec-services/dynamic-feed/store'
-import { FollowGroupMechanismNote } from '$modules/rec-services/dynamic-feed/usage-info/popover-related'
+import { FollowGroupMechanismNote } from '$modules/rec-services/dynamic-feed/views/popover-related'
 import { settings, updateSettings, updateSettingsInnerArray, useSettingsSnapshot } from '$modules/settings'
 import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 import { TagItemDisplay } from '../EditableListSettingItem'
@@ -58,6 +58,18 @@ export function TabPaneRecTabsConfig() {
         </SettingsGroup>
 
         <SettingsGroup title='更多设置' contentClassName='gap-y-15px'>
+          {/* generral */}
+          <div className='order--10'>
+            <div className='flex items-center text-size-1.3em'>通用</div>
+            <div className='flex flex-wrap items-center gap-x-10px'>
+              <CheckboxSettingItem
+                configPath='enableSidebar'
+                label='使用侧边栏'
+                tooltip={explainForFlag('使用侧边栏(如动态 分组/UP 选择)', '使用下拉面板')}
+              />
+            </div>
+          </div>
+
           {/* watchlater */}
           <div style={getCssOrderStyle(ETab.Watchlater)}>
             <div className='flex items-center text-size-1.3em'>

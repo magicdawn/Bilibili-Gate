@@ -3,7 +3,7 @@ import { CollapseBtn } from '$components/_base/CollapseBtn'
 import { useModalDislikeVisible } from '$components/ModalDislike'
 import { useModalMoveFavVisible } from '$components/ModalMoveFav'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
-import { initHeaderState, RecGrid } from '$components/RecGrid'
+import { initGridExternalState, RecGrid } from '$components/RecGrid'
 import { EGridDisplayMode, gridDisplayModeChecker } from '$components/RecGrid/display-mode'
 import { OnRefreshContext } from '$components/RecGrid/useRefresh'
 import { useHeaderState } from '$components/RecHeader/index.shared'
@@ -11,7 +11,7 @@ import { RefreshButton } from '$components/RecHeader/RefreshButton'
 import { VideoSourceTab } from '$components/RecHeader/tab'
 import { antMessage } from '$modules/antd'
 import { useSettingsSnapshot } from '$modules/settings'
-import type { HeaderState } from '$components/RecGrid'
+import type { GridExternalState } from '$components/RecGrid'
 
 interface IProps {
   show: boolean
@@ -47,27 +47,24 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
     Boolean,
   )
 
-  const [headerState, setHeaderState] = useState<HeaderState>(initHeaderState)
+  const [{ refreshing, onRefresh, usageInfo }, setHeaderState] = useState<GridExternalState>(initGridExternalState)
   const renderHeader = () => {
-    const { refreshing, onRefresh, extraInfo } = headerState
     return (
-      <OnRefreshContext.Provider value={onRefresh}>
-        <div className={clsx(BaseModalClassNames.modalHeader, 'gap-x-15px pr-15px')}>
-          <div className='left flex flex-shrink-1 flex-wrap items-center gap-x-15px gap-y-4px'>
-            <VideoSourceTab onRefresh={onRefresh} />
-            {extraInfo}
-          </div>
-          <div className='right flex flex-shrink-0 items-center gap-x-8px'>
-            {gridDisplayMode === EGridDisplayMode.TwoColumnGrid ? null : (
-              <CollapseBtn initialOpen>
-                <ModalFeedConfigChecks />
-              </CollapseBtn>
-            )}
-            <RefreshButton refreshing={refreshing} onRefresh={onRefresh} refreshHotkeyEnabled={shortcutEnabled} />
-            <ModalClose onClick={onHide} className='ml-5px' />
-          </div>
+      <div className={clsx(BaseModalClassNames.modalHeader, 'gap-x-15px pr-15px')}>
+        <div className='left flex flex-shrink-1 flex-wrap items-center gap-x-15px gap-y-4px'>
+          <VideoSourceTab onRefresh={onRefresh} />
+          {usageInfo}
         </div>
-      </OnRefreshContext.Provider>
+        <div className='right flex flex-shrink-0 items-center gap-x-8px'>
+          {gridDisplayMode === EGridDisplayMode.TwoColumnGrid ? null : (
+            <CollapseBtn initialOpen>
+              <ModalFeedConfigChecks />
+            </CollapseBtn>
+          )}
+          <RefreshButton refreshing={refreshing} onRefresh={onRefresh} refreshHotkeyEnabled={shortcutEnabled} />
+          <ModalClose onClick={onHide} className='ml-5px' />
+        </div>
+      </div>
     )
   }
 
@@ -81,16 +78,18 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
 
   return (
     <BaseModal show={show} onHide={onHide} clsModalMask={clsModalMask} clsModal={clsModal}>
-      {renderHeader()}
-      <div className={clsx(BaseModalClassNames.modalBody, 'pr-15px')} ref={scrollerRef}>
-        <RecGrid
-          shortcutEnabled={shortcutEnabled}
-          onScrollToTop={onScrollToTop}
-          infiniteScrollUseWindow={false}
-          scrollerRef={scrollerRef}
-          onSyncHeaderState={setHeaderState}
-        />
-      </div>
+      <OnRefreshContext.Provider value={onRefresh}>
+        {renderHeader()}
+        <div className={clsx(BaseModalClassNames.modalBody, 'pr-15px')} ref={scrollerRef}>
+          <RecGrid
+            shortcutEnabled={shortcutEnabled}
+            onScrollToTop={onScrollToTop}
+            infiniteScrollUseWindow={false}
+            scrollerRef={scrollerRef}
+            onSyncExternalState={setHeaderState}
+          />
+        </div>
+      </OnRefreshContext.Provider>
     </BaseModal>
   )
 })

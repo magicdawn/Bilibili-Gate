@@ -10,6 +10,7 @@ import { favStore, updateFavFolderMediaCount } from './store'
 import { FavUsageInfo } from './usage-info'
 import { getSavedOrder } from './usage-info/fav-items-order'
 import type { FavItemsOrder } from './fav-enum'
+import type { ReactNode } from 'react'
 
 export type FavServiceConfig = ReturnType<typeof getFavServiceConfig>
 
@@ -90,6 +91,9 @@ export class FavRecService extends BaseTabService<FavItemExtend | ItemsSeparator
     if (usageInfo) return usageInfo
     return <FavUsageInfo extraContent={extraUsageInfo} />
   }
+
+  override sidebarInfo?: ReactNode = undefined
+
   override get hasMoreExceptQueue() {
     return this.innerService.hasMore
   }

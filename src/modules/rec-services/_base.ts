@@ -9,11 +9,13 @@ export type IService<T = RecItemTypeOrSeparator> = {
 
 export type ITabService = IService & {
   restore: () => void
-  usageInfo: ReactNode
+  usageInfo: ReactNode // required, empty can be represented by `undefined`
+  sidebarInfo?: ReactNode // optional
 }
 
 export abstract class BaseTabService<T extends RecItemTypeOrSeparator = RecItemTypeOrSeparator> implements ITabService {
   abstract usageInfo: ReactNode
+  abstract sidebarInfo?: ReactNode
   abstract hasMoreExceptQueue: boolean
   abstract fetchMore(abortSignal: AbortSignal): Promise<T[] | undefined>
 

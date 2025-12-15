@@ -7,8 +7,8 @@ import {
   copyBvidInfos,
   copyBvidsSingleLine,
   copyVideoLinks,
-  currentGridItems,
   getBvidInfo,
+  getCurrentGridItems,
 } from '$components/RecGrid/rec-grid-state'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { isDynamicFeed, isLive, isSpaceUpload, type DynamicFeedItemExtend, type RecItemType } from '$define'
@@ -213,11 +213,11 @@ export function useContextMenus({
         onClick() {
           const u = new URL('/', location.href)
           u.searchParams.set(DynamicFeedQueryKey.Mid, authorMid)
-          const currentIndexInGrid = currentGridItems.findIndex(
+          const currentIndexInGrid = getCurrentGridItems().findIndex(
             (x) => x.api === EApiType.DynamicFeed && x.id_str === item.id_str,
           )
           const prevIdStr =
-            (currentGridItems[currentIndexInGrid - 1] as DynamicFeedItemExtend | undefined)?.id_str || item.id_str // 上一项的 id_str
+            (getCurrentGridItems()[currentIndexInGrid - 1] as DynamicFeedItemExtend | undefined)?.id_str || item.id_str // 上一项的 id_str
           u.searchParams.set(DynamicFeedQueryKey.Offset, prevIdStr)
           openNewTab(u.href)
         },

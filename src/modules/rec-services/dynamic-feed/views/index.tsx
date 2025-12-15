@@ -1,4 +1,4 @@
-import { Avatar, Badge, Button, Dropdown } from 'antd'
+import { Avatar, Badge, Button, Dropdown, Menu } from 'antd'
 import { delay } from 'es-toolkit'
 import { fastSortWithOrders } from 'fast-sort-lens'
 import { useSnapshot } from 'valtio'
@@ -43,29 +43,13 @@ const clearPayload: Partial<DynamicFeedStore> = {
   filterMinDuration: DynamicFeedVideoMinDuration.All,
 }
 
-export function DynamicFeedUsageInfo() {
-  const { ref, getPopupContainer } = usePopupContainer()
+// who's dynamic-feed
+function useScopeMenus() {
+  const { upList, groups, selectedKey } = useSnapshot(dfStore)
   const onRefresh = useOnRefreshContext()
-
-  const dfSettings = useSettingsSnapshot().dynamicFeed
-  const { externalSearchInput } = dfSettings.__internal
-
   const {
-    viewingSomeUp,
-    upName,
-    upFace,
-    upList,
-
-    groups,
-    selectedGroup,
-
-    selectedKey,
-  } = useSnapshot(dfStore)
-
-  // try update on mount
-  useMount(() => {
-    updateFilterData()
-  })
+    followGroup: { enabled: followGroupEnabled },
+  } = useSettingsSnapshot().dynamicFeed
 
   const onSelect = useMemoizedFn(async (payload: Partial<typeof dfStore>) => {
     dynamicFeedFilterSelectUp(payload)
@@ -77,22 +61,21 @@ export function DynamicFeedUsageInfo() {
     onSelect({ ...clearPayload })
   })
 
-  // #region scope dropdown menus
   const menuItems = useMemo((): AntMenuItem[] => {
     const itemAll: AntMenuItem = {
       key: 'all' satisfies DynamicFeedStoreSelectedKey,
-      icon: <Avatar size={'small'}>全</Avatar>,
+      icon: <Avatar size='small'>全</Avatar>,
       label: '全部',
       onClick: onClear,
     }
 
     let groupItems: AntMenuItem[] = []
-    if (dfSettings.followGroup.enabled) {
+    if (followGroupEnabled) {
       groupItems = groups.map((group) => {
         return {
           key: `group:${group.tagid}` satisfies DynamicFeedStoreSelectedKey,
           label: `${group.name} (${group.count})`,
-          icon: <Avatar size={'small'}>组</Avatar>,
+          icon: <Avatar size='small'>组</Avatar>,
           onClick() {
             onSelect({ ...clearPayload, selectedGroupId: group.tagid })
           },
@@ -106,7 +89,7 @@ export function DynamicFeedUsageInfo() {
     ])
 
     const items: AntMenuItem[] = upListSorted.map((up) => {
-      let avatar: ReactNode = <Avatar size={'small'} src={getAvatarSrc(up.face)} />
+      let avatar: ReactNode = <Avatar size='small' src={getAvatarSrc(up.face)} />
       if (up.has_update) {
         avatar = <Badge dot>{avatar}</Badge>
       }
@@ -127,8 +110,35 @@ export function DynamicFeedUsageInfo() {
     })
 
     return [itemAll, ...groupItems, ...items]
-  }, [upList, dfSettings.followGroup.enabled, groups])
+  }, [upList, followGroupEnabled, groups])
 
+  return {
+    menuItems,
+    selectedKey,
+    // helper
+    onClear,
+    onSelect,
+  }
+}
+
+export function DynamicFeedUsageInfo() {
+  const {
+    dynamicFeed: {
+      __internal: { externalSearchInput },
+    },
+    enableSidebar,
+  } = useSettingsSnapshot()
+  const { viewingSomeUp, upName, upFace, selectedGroup } = useSnapshot(dfStore)
+  const onRefresh = useOnRefreshContext()
+  const { ref, getPopupContainer } = usePopupContainer()
+  const { menuItems, selectedKey, onClear } = useScopeMenus()
+
+  // try update on mount
+  useMount(() => {
+    updateFilterData()
+  })
+
+  // #region scope dropdown
   const followGroupMidsCount = selectedGroup?.count
   const upIcon = <IconForUp className='mt--2px size-14px' />
   const upAvtar = upFace ? <Avatar size={20} src={getAvatarSrc(upFace)} /> : undefined
@@ -170,23 +180,26 @@ export function DynamicFeedUsageInfo() {
   })
 
   return (
-    <>
-      <div ref={ref} className='inline-flex items-center gap-x-8px'>
-        {scopeDropdownMenu}
+    <div ref={ref} className='inline-flex items-center gap-x-8px'>
+      {!enableSidebar && scopeDropdownMenu}
 
-        {(viewingSomeUp || selectedGroup) && (
-          <Button onClick={onClear} className='gap-0'>
-            <IconForReset className='mr-5px size-14px' />
-            <span>清除</span>
-          </Button>
-        )}
+      {(viewingSomeUp || selectedGroup) && (
+        <Button onClick={onClear} className='gap-0'>
+          <IconForReset className='mr-5px size-14px' />
+          <span>清除</span>
+        </Button>
+      )}
 
-        {popoverTrigger}
+      {popoverTrigger}
 
-        {externalSearchInput && searchInput}
+      {externalSearchInput && searchInput}
 
-        <CopyBvidButtonsUsageInfo />
-      </div>
-    </>
+      <CopyBvidButtonsUsageInfo />
+    </div>
   )
+}
+
+export function DynamicFeedSidebarInfo() {
+  const { menuItems, selectedKey } = useScopeMenus()
+  return <Menu items={menuItems} selectedKeys={[selectedKey]} mode='inline' />
 }

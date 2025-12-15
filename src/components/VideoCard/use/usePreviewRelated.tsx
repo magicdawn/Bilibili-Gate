@@ -5,8 +5,8 @@ import { useEmitterOn } from '$common/hooks/useEmitter'
 import { useRefBox, useRefStateBox, type RefBox, type RefStateBox } from '$common/hooks/useRefState'
 import { settings } from '$modules/settings'
 import { minmax } from '$utility/num'
+import type { GridEmitter } from '$components/RecGrid/grid.shared'
 import { PreviewImage, type PreviewImageRef } from '../child-components/PreviewImage'
-import type { SharedEmitter } from '../index.shared'
 import type { ImagePreviewData } from '../services'
 import type { ComponentProps, MouseEvent, ReactNode } from 'react'
 
@@ -24,7 +24,7 @@ function debugAnimation(...args: Parameters<typeof appLog>) {
  */
 export function usePreviewRelated({
   uniqId,
-  sharedEmitter,
+  gridEmitter,
   title,
   active,
   videoDuration,
@@ -34,7 +34,7 @@ export function usePreviewRelated({
   videoPreviewWrapperRef,
 }: {
   uniqId: string
-  sharedEmitter: SharedEmitter
+  gridEmitter: GridEmitter
   title: string
   active: boolean
   videoDuration?: number
@@ -74,7 +74,7 @@ export function usePreviewRelated({
   useEventListener(
     'mouseenter',
     async (e) => {
-      sharedEmitter.emit('mouseenter', uniqId)
+      gridEmitter.emit('mouseenter', uniqId)
 
       isHoveringBox.set(true)
       updateMouseProgress(e)
@@ -114,7 +114,7 @@ export function usePreviewRelated({
     isHoveringAfterDelayBox.set(false)
   })
   useEventListener('mouseleave', _mouseleaveAction, { target: videoPreviewWrapperRef })
-  useEmitterOn(sharedEmitter, 'mouseenter', (srcUniqId) => {
+  useEmitterOn(gridEmitter, 'mouseenter', (srcUniqId) => {
     if (srcUniqId === uniqId) return
     _mouseleaveAction()
   })

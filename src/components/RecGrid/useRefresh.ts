@@ -1,5 +1,5 @@
 import { useUnmount } from 'ahooks'
-import { attempt, attemptAsync, isEqual } from 'es-toolkit'
+import { attempt, attemptAsync, isEqual, noop } from 'es-toolkit'
 import { createContext } from 'react'
 import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
 import { TabConfig } from '$components/RecHeader/tab-config'
@@ -16,14 +16,21 @@ import {
 } from '$modules/rec-services/service-map'
 import { getSpaceUploadServiceConfig, type SpaceUploadService } from '$modules/rec-services/space-upload'
 import type { RecItemTypeOrSeparator } from '$define'
+import { getCurrentGridEmitter } from './rec-grid-state'
 import { setGlobalGridItems } from './unsafe-window-export'
 import type { Debugger } from 'debug'
 
 export type OnRefresh = (reuse?: boolean) => void | Promise<void>
 
 export const OnRefreshContext = createContext<OnRefresh | undefined>(undefined)
+
 export function useOnRefreshContext() {
-  return useContext(OnRefreshContext)
+  // dev react context 经常为空, 没有深究...
+  const fromContext = useContext(OnRefreshContext)
+  const viaEmitter: OnRefresh = useMemoizedFn((arg) => {
+    return getCurrentGridEmitter()?.emit('refresh', arg)
+  })
+  return fromContext !== noop ? fromContext : viaEmitter
 }
 
 export function useRefresh({
@@ -33,7 +40,7 @@ export function useRefresh({
   fetcher,
   preAction,
   postAction,
-  updateExtraInfo,
+  updateViewFromService,
 }: {
   tab: ETab
   servicesRegistry: RefStateBox<Partial<ServiceMap>>
@@ -41,7 +48,7 @@ export function useRefresh({
   fetcher: (opts: FetcherOptions) => Promise<RecItemTypeOrSeparator[]>
   preAction?: () => void | Promise<void>
   postAction?: () => void | Promise<void>
-  updateExtraInfo?: () => void
+  updateViewFromService?: () => void
 }) {
   const hasMoreBox = useRefStateBox(true)
   const itemsBox = useRefStateBox<RecItemTypeOrSeparator[]>([])
@@ -181,7 +188,7 @@ export function useRefresh({
       if (err) return onError(err)
 
       servicesRegistry.set({ ...servicesRegistry.val, [tab]: service })
-      updateExtraInfo?.()
+      updateViewFromService?.()
 
       const success = await doFetch()
       if (!success) return

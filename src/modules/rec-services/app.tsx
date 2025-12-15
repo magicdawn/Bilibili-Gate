@@ -56,6 +56,7 @@ export class AppRecService extends BaseTabService<RecItemType> {
   static readonly PAGE_SIZE = 20
 
   override usageInfo = (<AppRecUsageInfo />)
+  override sidebarInfo?: ReactNode
 
   innerService: AppRecInnerService
   allServices: IService[] = []

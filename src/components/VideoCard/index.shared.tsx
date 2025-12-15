@@ -102,6 +102,9 @@ export const VideoLinkOpenModeConfig: Record<VideoLinkOpenMode, VideoLinkOpenMod
   },
 }
 
+/**
+ * VideoCard owned
+ */
 export type VideoCardEvents = {
   // for cancel card
   'cancel-dislike': undefined
@@ -119,19 +122,7 @@ export type VideoCardEmitter = Emittery<VideoCardEvents>
 export function createVideoCardEmitter() {
   return new Emittery<VideoCardEvents>()
 }
-
-export type SharedEmitterEvents = {
-  'mouseenter': string
-  'show-large-preview': string
-  'remove-cards': [uniqIds: string[], titles?: string[], silent?: boolean]
-}
-export type SharedEmitter = Emittery<SharedEmitterEvents>
-export function createSharedEmitter() {
-  return new Emittery<SharedEmitterEvents>()
-}
-
-export const defaultEmitter = createVideoCardEmitter()
-export const defaultSharedEmitter = createSharedEmitter()
+export const videoCardDefaultEmitter = createVideoCardEmitter()
 
 export const displayAsListCss = {
   card: css`

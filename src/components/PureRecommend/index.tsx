@@ -1,6 +1,7 @@
-import { initHeaderState, RecGrid, type HeaderState } from '$components/RecGrid'
+import { initGridExternalState, RecGrid, type GridExternalState } from '$components/RecGrid'
 import { useGridDisplayModeChecker } from '$components/RecGrid/display-mode'
 import { clsTwoColumn, clsTwoColumnForAlign } from '$components/RecGrid/display-mode/two-column-mode'
+import { OnRefreshContext } from '$components/RecGrid/useRefresh'
 import { RecHeader, type RecHeaderRef } from '$components/RecHeader'
 import { usePlainShortcutEnabled } from '$components/RecHeader/index.shared'
 import { useSettingsSnapshot } from '$modules/settings'
@@ -11,7 +12,7 @@ export function PureRecommend() {
     grid: { twoColumnModeAlign },
   } = useSettingsSnapshot()
   const shortcutEnabled = usePlainShortcutEnabled()
-  const [headerState, setHeaderState] = useState<HeaderState>(initHeaderState)
+  const [gridExternalState, setGridExternalState] = useState<GridExternalState>(initGridExternalState)
 
   const recHeaderRef = useRef<RecHeaderRef>(null)
   const onScrollToTop = useMemoizedFn(() => {
@@ -19,12 +20,12 @@ export function PureRecommend() {
   })
 
   return (
-    <>
+    <OnRefreshContext.Provider value={gridExternalState.onRefresh}>
       <RecHeader
         ref={recHeaderRef}
-        refreshing={headerState.refreshing}
-        onRefresh={headerState.onRefresh}
-        leftSlot={headerState.extraInfo}
+        refreshing={gridExternalState.refreshing}
+        onRefresh={gridExternalState.onRefresh}
+        leftSlot={gridExternalState.usageInfo}
         shortcutEnabled={shortcutEnabled}
       />
       <RecGrid
@@ -32,8 +33,8 @@ export function PureRecommend() {
         shortcutEnabled={shortcutEnabled}
         infiniteScrollUseWindow={true}
         onScrollToTop={onScrollToTop}
-        onSyncHeaderState={setHeaderState}
+        onSyncExternalState={setGridExternalState}
       />
-    </>
+    </OnRefreshContext.Provider>
   )
 }

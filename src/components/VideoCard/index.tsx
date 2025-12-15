@@ -11,6 +11,7 @@ import { useRefStateBox } from '$common/hooks/useRefState'
 import { Picture } from '$components/_base/Picture'
 import { useDislikedReason } from '$components/ModalDislike'
 import { isDisplayAsList, type EGridDisplayMode } from '$components/RecGrid/display-mode'
+import { gridDefaultEmitter, type GridEmitter } from '$components/RecGrid/grid.shared'
 import { getBvidInfo } from '$components/RecGrid/rec-grid-state'
 import { setGlobalValue } from '$components/RecGrid/unsafe-window-export'
 import { ETab } from '$components/RecHeader/tab-enum'
@@ -50,13 +51,7 @@ import { SimpleProgressBar } from './child-components/PreviewImage'
 import { VideoCardActionButton, VideoCardActionsClassNames } from './child-components/VideoCardActions'
 import { VideoCardBottom } from './child-components/VideoCardBottom'
 import { showNativeContextMenuWhenAltKeyPressed, useContextMenus } from './context-menus'
-import {
-  clsZWatchlaterProgressBar,
-  copyContent,
-  defaultEmitter,
-  defaultSharedEmitter,
-  displayAsListCss,
-} from './index.shared'
+import { clsZWatchlaterProgressBar, copyContent, displayAsListCss, videoCardDefaultEmitter } from './index.shared'
 import { fetchImagePreviewData, isImagePreviewDataValid } from './services'
 import { StatItemDisplay } from './stat-item'
 import {
@@ -73,7 +68,7 @@ import { useMultiSelectRelated } from './use/useMultiSelect'
 import { getRecItemDimension, useLinkTarget, useOpenRelated } from './use/useOpenRelated'
 import { usePreviewRelated } from './use/usePreviewRelated'
 import { useWatchlaterRelated } from './use/useWatchlaterRelated'
-import type { SharedEmitter, VideoCardEmitter } from './index.shared'
+import type { VideoCardEmitter } from './index.shared'
 import type { ImagePreviewData } from './services'
 import type { ComponentRef, CSSProperties, MouseEventHandler, ReactNode } from 'react'
 
@@ -87,7 +82,7 @@ export type VideoCardProps = {
   onMoveToFirst?: (item: RecItemType, data: IVideoCardData) => void | Promise<void>
   onRefresh?: OnRefresh
   emitter?: VideoCardEmitter
-  sharedEmitter?: SharedEmitter
+  gridEmitter?: GridEmitter
   tab: ETab
   baseCss?: CssProp
   gridDisplayMode?: EGridDisplayMode
@@ -104,7 +99,7 @@ export const VideoCard = memo(function VideoCard({
   onMoveToFirst,
   onRefresh,
   emitter,
-  sharedEmitter,
+  gridEmitter,
   tab,
   baseCss,
   gridDisplayMode,
@@ -162,7 +157,7 @@ export const VideoCard = memo(function VideoCard({
             cardData={cardData}
             active={active}
             emitter={emitter}
-            sharedEmitter={sharedEmitter}
+            gridEmitter={gridEmitter}
             tab={tab}
             onRemoveCurrent={onRemoveCurrent}
             onMoveToFirst={onMoveToFirst}
@@ -186,7 +181,7 @@ export type VideoCardInnerProps = {
   onMoveToFirst?: (item: RecItemType, data: IVideoCardData) => void | Promise<void>
   onRefresh?: OnRefresh
   emitter?: VideoCardEmitter
-  sharedEmitter?: SharedEmitter
+  gridEmitter?: GridEmitter
   watchlaterAdded: boolean
   tab: ETab
   gridDisplayMode?: EGridDisplayMode
@@ -201,8 +196,8 @@ const VideoCardInner = memo(function VideoCardInner({
   onRemoveCurrent,
   onMoveToFirst,
   onRefresh,
-  emitter = defaultEmitter,
-  sharedEmitter = defaultSharedEmitter,
+  emitter = videoCardDefaultEmitter,
+  gridEmitter = gridDefaultEmitter,
   watchlaterAdded,
   gridDisplayMode,
   multiSelecting = false,
@@ -306,7 +301,7 @@ const VideoCardInner = memo(function VideoCardInner({
     previewImageEl,
   } = usePreviewRelated({
     uniqId: item.uniqId,
-    sharedEmitter,
+    gridEmitter,
     title,
     active,
     videoDuration: duration,
@@ -364,7 +359,7 @@ const VideoCardInner = memo(function VideoCardInner({
     bvid: bvid!,
     cid,
     uniqId: item.uniqId,
-    sharedEmitter,
+    gridEmitter,
     // optional
     aspectRatioFromItem,
     cover,

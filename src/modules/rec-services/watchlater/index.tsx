@@ -4,7 +4,7 @@ import pRetry from 'p-retry'
 import { proxy, useSnapshot } from 'valtio'
 import { proxySet } from 'valtio/utils'
 import { appWarn, IN_BILIBILI_HOMEPAGE } from '$common'
-import { currentGridSharedEmitter, getMultiSelectedItems } from '$components/RecGrid/rec-grid-state'
+import { getCurrentGridEmitter, getMultiSelectedItems } from '$components/RecGrid/rec-grid-state'
 import { EApiType } from '$define/index.shared'
 import { normalizeCardData } from '$modules/filter/normalize'
 import { getHasLogined, getUid } from '$utility/cookie'
@@ -72,11 +72,13 @@ export async function removeMultiSelectedWatchlaterItems() {
 
   const success = await batchRemoveWatchlater(avids)
   if (!success) return
-  currentGridSharedEmitter.emit('remove-cards', [uniqIds, titles])
+  getCurrentGridEmitter()?.emit('remove-cards', [uniqIds, titles])
 }
 
 export class WatchlaterRecService extends BaseTabService<WatchlaterItemExtend | ItemsSeparator> {
   static PAGE_SIZE = 10
+
+  override sidebarInfo = undefined
 
   private innerService: NormalOrderService | ShuffleOrderService
   constructor(

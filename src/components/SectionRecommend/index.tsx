@@ -1,7 +1,7 @@
 import { range } from 'es-toolkit'
 import { baseDebug } from '$common'
 import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
-import { useRefresh } from '$components/RecGrid/useRefresh'
+import { OnRefreshContext, useRefresh } from '$components/RecGrid/useRefresh'
 import { usePlainShortcutEnabled } from '$components/RecHeader/index.shared'
 import { useCurrentUsingTab } from '$components/RecHeader/tab'
 import { limitTwoLines, videoGrid, videoGridBiliFeed4 } from '$components/video-grid.module.scss'
@@ -51,17 +51,19 @@ const TabContent = memo(function TabContent({
   const shortcutEnabled = usePlainShortcutEnabled()
 
   return (
-    <section data-area='推荐'>
-      <RecHeader refreshing={refreshing} onRefresh={refresh} shortcutEnabled={shortcutEnabled} />
-      <div className={clsx(videoGrid, limitTwoLines, videoGridBiliFeed4)} style={{ marginBottom: 30 }}>
-        {displaySkeleton
-          ? skeletonPlaceholders.map((id) => <VideoCard key={id} tab={tab} />)
-          : items.map((item) => {
-              return item.api === EApiType.Separator ? null : (
-                <VideoCard key={item.uniqId} item={item} tab={tab} baseCss={cardBorderCss} />
-              )
-            })}
-      </div>
-    </section>
+    <OnRefreshContext.Provider value={refresh}>
+      <section data-area='推荐'>
+        <RecHeader refreshing={refreshing} onRefresh={refresh} shortcutEnabled={shortcutEnabled} />
+        <div className={clsx(videoGrid, limitTwoLines, videoGridBiliFeed4)} style={{ marginBottom: 30 }}>
+          {displaySkeleton
+            ? skeletonPlaceholders.map((id) => <VideoCard key={id} tab={tab} />)
+            : items.map((item) => {
+                return item.api === EApiType.Separator ? null : (
+                  <VideoCard key={item.uniqId} item={item} tab={tab} baseCss={cardBorderCss} />
+                )
+              })}
+        </div>
+      </section>
+    </OnRefreshContext.Provider>
   )
 })

@@ -101,6 +101,9 @@ export const initialSettings = {
   // hover 延时
   useDelayForHover: false,
 
+  // 启用侧边栏
+  enableSidebar: true,
+
   /**
    * tab=dynamic-feed
    */

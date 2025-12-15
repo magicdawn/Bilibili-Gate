@@ -76,6 +76,8 @@ export class HotRecService extends BaseTabService<RecItemTypeOrSeparator> {
   override fetchMore(abortSignal: AbortSignal) {
     return this.service.loadMore(abortSignal)
   }
+
+  override sidebarInfo = undefined
 }
 
 export const hotStore = await proxyWithGmStorage({ subtab: EHotSubTab.PopularGeneral }, 'hot-store')
