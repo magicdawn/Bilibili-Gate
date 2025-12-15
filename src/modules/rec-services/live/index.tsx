@@ -28,8 +28,8 @@ export class LiveRecService extends BaseTabService<LiveItemExtend | ItemsSeparat
     super(LiveRecService.PAGE_SIZE)
   }
 
-  override usageInfo = undefined
-  override sidebarInfo = undefined
+  override tabbarView = undefined
+  override sidebarView = undefined
   override hasMoreExceptQueue = true
 
   private separatorAdded = false

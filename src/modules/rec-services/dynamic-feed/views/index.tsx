@@ -5,7 +5,7 @@ import { useSnapshot } from 'valtio'
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
 import { IconForReset } from '$modules/icon'
-import { CopyBvidButtonsUsageInfo } from '$modules/rec-services/_shared/copy-bvid-buttons'
+import { CopyBvidButtonsTabbarView } from '$modules/rec-services/_shared/copy-bvid-buttons'
 import { useSettingsSnapshot } from '$modules/settings'
 import { getAvatarSrc } from '$utility/image'
 import { localeComparer, mapNameForSort } from '$utility/sort'
@@ -121,7 +121,7 @@ function useScopeMenus() {
   }
 }
 
-export function DynamicFeedUsageInfo() {
+export function DynamicFeedTabbarView() {
   const {
     dynamicFeed: {
       __internal: { externalSearchInput },
@@ -194,7 +194,7 @@ export function DynamicFeedUsageInfo() {
 
       {externalSearchInput && searchInput}
 
-      <CopyBvidButtonsUsageInfo />
+      <CopyBvidButtonsTabbarView />
     </div>
   )
 }

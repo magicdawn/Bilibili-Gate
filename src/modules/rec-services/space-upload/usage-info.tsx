@@ -4,13 +4,13 @@ import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
 import { AntdTooltip } from '$modules/antd/custom'
 import { settings, useSettingsSnapshot } from '$modules/settings'
-import { CopyBvidButtonsUsageInfo } from '../_shared/copy-bvid-buttons'
+import { CopyBvidButtonsTabbarView } from '../_shared/copy-bvid-buttons'
 import { GenericOrderSwitcher } from '../_shared/generic-order-switcher'
 import { SpaceUploadOrderConfig } from './api'
 import { SpaceUploadQueryKey, spaceUploadStore } from './store'
 import type { SpaceUploadOrder } from './api'
 
-export function SpaceUploadUsageInfo() {
+export function SpaceUploadTabbarView() {
   const { searchText, filterText } = useSnapshot(spaceUploadStore, { sync: true })
   const { allowedOrders, usingOrder } = useSnapshot(spaceUploadStore)
   const {
@@ -95,7 +95,7 @@ export function SpaceUploadUsageInfo() {
 
       <CheckboxSettingItem configPath='spaceUpload.showVol' label={'显示序号'} className='flex-none' />
 
-      <CopyBvidButtonsUsageInfo />
+      <CopyBvidButtonsTabbarView />
     </div>
   )
 }

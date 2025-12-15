@@ -4,18 +4,18 @@ import type { RecItemTypeOrSeparator } from '$define'
 export type IService<T = RecItemTypeOrSeparator> = {
   hasMore: boolean
   loadMore: (abortSignal: AbortSignal) => Promise<T[] | undefined>
-  usageInfo?: ReactNode
-  sidebarInfo?: ReactNode // optional
+  tabbarView?: ReactNode
+  sidebarView?: ReactNode // optional
 }
 
 export type ITabService = IService & {
   restore: () => void
-  usageInfo: ReactNode // required, empty can be represented by `undefined`
+  tabbarView: ReactNode // required, empty can be represented by `undefined`
 }
 
 export abstract class BaseTabService<T extends RecItemTypeOrSeparator = RecItemTypeOrSeparator> implements ITabService {
-  abstract usageInfo: ReactNode
-  abstract sidebarInfo?: ReactNode
+  abstract tabbarView: ReactNode
+  abstract sidebarView?: ReactNode
   abstract hasMoreExceptQueue: boolean
   abstract fetchMore(abortSignal: AbortSignal): Promise<T[] | undefined>
 

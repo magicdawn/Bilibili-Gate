@@ -47,7 +47,7 @@ export const appRecShowContentFromOtherTabEl = (onRefresh?: OnRefresh) => (
   />
 )
 
-function AppRecUsageInfo() {
+function AppRecTabbarView() {
   const onRefresh = useOnRefreshContext()
   return <>{appRecShowContentFromOtherTabEl(onRefresh)}</>
 }
@@ -55,8 +55,8 @@ function AppRecUsageInfo() {
 export class AppRecService extends BaseTabService<RecItemType> {
   static readonly PAGE_SIZE = 20
 
-  override usageInfo = (<AppRecUsageInfo />)
-  override sidebarInfo?: ReactNode
+  override tabbarView = (<AppRecTabbarView />)
+  override sidebarView = undefined
 
   innerService: AppRecInnerService
   allServices: IService[] = []

@@ -25,7 +25,7 @@ export function PureRecommend() {
         ref={recHeaderRef}
         refreshing={gridExternalState.refreshing}
         onRefresh={gridExternalState.onRefresh}
-        leftSlot={gridExternalState.usageInfo}
+        leftSlot={gridExternalState.tabbarView}
         shortcutEnabled={shortcutEnabled}
       />
       <RecGrid

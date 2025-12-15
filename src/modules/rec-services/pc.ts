@@ -31,8 +31,8 @@ const genUniqId = () => Date.now() + _id++
 
 export class PcRecService extends BaseTabService<PcRecItemExtend> {
   static PAGE_SIZE = 14
-  override usageInfo = undefined
-  override sidebarInfo = undefined
+  override tabbarView = undefined
+  override sidebarView = undefined
 
   constructor(public isKeepFollowOnly: boolean) {
     super(PcRecService.PAGE_SIZE)

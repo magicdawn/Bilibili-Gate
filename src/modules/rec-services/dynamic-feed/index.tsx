@@ -29,7 +29,7 @@ import {
   QUERY_DYNAMIC_UP_MID,
   type DynamicFeedStore,
 } from './store'
-import { DynamicFeedSidebarInfo, DynamicFeedUsageInfo } from './views'
+import { DynamicFeedSidebarInfo, DynamicFeedTabbarView } from './views'
 import type { ReactNode } from 'react'
 
 export type DynamicFeedServiceConfig = ReturnType<typeof getDynamicFeedServiceConfig>
@@ -100,8 +100,8 @@ type AllowedItemType = DynamicFeedItemExtend | LiveItemExtend | ItemsSeparator
 export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
   static PAGE_SIZE = 15
 
-  override usageInfo = (<DynamicFeedUsageInfo />)
-  override sidebarInfo = (<DynamicFeedSidebarInfo />)
+  override tabbarView = (<DynamicFeedTabbarView />)
+  override sidebarView = (<DynamicFeedSidebarInfo />)
   override hasMoreExceptQueue = true
   override get hasMore() {
     if (this.qs.bufferQueue.length) return true

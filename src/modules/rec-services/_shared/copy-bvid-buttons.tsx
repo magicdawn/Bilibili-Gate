@@ -20,7 +20,7 @@ export function CopyBvidButtons() {
   )
 }
 
-export function CopyBvidButtonsUsageInfo() {
+export function CopyBvidButtonsTabbarView() {
   const { __internalAddCopyBvidButton: enabled } = useSettingsSnapshot()
   if (!enabled) return null
   return (

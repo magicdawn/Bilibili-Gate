@@ -8,14 +8,14 @@ import { useMultiSelecting } from '$modules/multi-select/store'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import toast from '$utility/toast'
 import { usePopupContainer } from '../_base'
-import { CopyBvidButtonsUsageInfo } from '../_shared/copy-bvid-buttons'
+import { CopyBvidButtonsTabbarView } from '../_shared/copy-bvid-buttons'
 import { GenericOrderSwitcher } from '../_shared/generic-order-switcher'
 import { watchlaterStore } from './store'
 import { WatchlaterItemsOrder } from './watchlater-enum'
 import { removeMultiSelectedWatchlaterItems, type WatchlaterRecService } from '.'
 import type { ElementRef, ReactNode } from 'react'
 
-export function WatchlaterUsageInfo({ service }: { service: WatchlaterRecService }) {
+export function WatchlaterTabbarView({ service }: { service: WatchlaterRecService }) {
   const { watchlaterAddSeparator, watchlaterItemsOrder, watchlaterUseNormalVideoUrl } = useSettingsSnapshot()
   const onRefresh = useOnRefreshContext()
   const { searchText } = useSnapshot(watchlaterStore, { sync: true })
@@ -74,7 +74,7 @@ export function WatchlaterUsageInfo({ service }: { service: WatchlaterRecService
         </AntdTooltip>
       )}
 
-      <CopyBvidButtonsUsageInfo />
+      <CopyBvidButtonsTabbarView />
     </div>
   )
 }

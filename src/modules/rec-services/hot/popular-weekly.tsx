@@ -117,8 +117,8 @@ export class PopularWeeklyRecService implements IService {
     return this.qs.sliceFromQueue()
   }
 
-  get usageInfo() {
-    return <PopularWeeklyUsageInfo />
+  get tabbarView() {
+    return <PopularWeeklyTabbarView />
   }
 }
 
@@ -148,7 +148,7 @@ async function fetchWeeklyItems(episodeNum: number) {
   return items
 }
 
-function PopularWeeklyUsageInfo() {
+function PopularWeeklyTabbarView() {
   const onRefresh = useOnRefreshContext()
   return (
     <>

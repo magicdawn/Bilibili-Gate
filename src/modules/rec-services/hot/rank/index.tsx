@@ -20,8 +20,8 @@ import type { MouseEvent, ReactNode } from 'react'
 export class RankRecService implements IService {
   loaded = false
   qs = new QueueStrategy<RankItemExtend>(20)
-  usageInfo = (<RankUsageInfo />)
-  sidebarInfo = (<RankSidebarInfo />)
+  tabbarView = (<RankTabbarView />)
+  sidebarView = (<RankSidebarInfo />)
 
   constructor(private slug: string) {}
 
@@ -81,7 +81,7 @@ function useMenuItems() {
   return { normalList, pgcList }
 }
 
-function RankUsageInfo() {
+function RankTabbarView() {
   const { enableSidebar } = useSettingsSnapshot()
   const { ref, getPopupContainer } = usePopupContainer()
   const onRefresh = useOnRefreshContext()

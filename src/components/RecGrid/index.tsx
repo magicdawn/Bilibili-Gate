@@ -51,7 +51,7 @@ const debug = baseDebug.extend('components:RecGrid')
 export type GridExternalState = {
   /** state modified by refresh */
   refreshing: boolean
-  usageInfo: ReactNode
+  tabbarView: ReactNode
   /** implementation provided by RecGrid */
   onRefresh: OnRefresh
 }
@@ -59,7 +59,7 @@ export type GridExternalState = {
 export const initGridExternalState = (): GridExternalState => ({
   refreshing: false,
   onRefresh: noop,
-  usageInfo: null,
+  tabbarView: null,
 })
 
 export type RecGridRef = { refresh: OnRefresh }
@@ -122,11 +122,11 @@ const RecGridInner = memo(function ({
   // 已加载完成的 load call count, 类似 page
   const loadCompleteCountBox = useRefStateBox(0)
 
-  const [usageInfo, setUsageInfo] = useState<ReactNode>(undefined)
-  const [sidebarInfo, setSidebarInfo] = useState<ReactNode>(undefined)
+  const [tabbarView, setTabbarView] = useState<ReactNode>(undefined)
+  const [sidebarView, setSidebarInfo] = useState<ReactNode>(undefined)
   const updateViewFromService = useMemoizedFn(() => {
-    setUsageInfo(servicesRegistry.val[tab]?.usageInfo)
-    setSidebarInfo(servicesRegistry.val[tab]?.sidebarInfo)
+    setTabbarView(servicesRegistry.val[tab]?.tabbarView)
+    setSidebarInfo(servicesRegistry.val[tab]?.sidebarView)
   })
 
   const preAction = useMemoizedFn(() => {
@@ -170,8 +170,8 @@ const RecGridInner = memo(function ({
   // sync to parent component
   useEffect(() => {
     if (unmountedRef.current) return
-    onSyncExternalState?.({ refreshing, onRefresh: refresh, usageInfo })
-  }, [refreshing, refresh, usageInfo, onSyncExternalState])
+    onSyncExternalState?.({ refreshing, onRefresh: refresh, tabbarView })
+  }, [refreshing, refresh, tabbarView, onSyncExternalState])
 
   const goOutAt = useRef<number | undefined>()
   useEventListener(
@@ -445,7 +445,7 @@ const RecGridInner = memo(function ({
   }, [footer, containerRef, gridClassName])
 
   const tabSupportsSidebar = useMemo(() => [ETab.DynamicFeed, ETab.Fav, ETab.Hot].includes(tab), [tab])
-  const sidebar: ReactNode = enableSidebar && tabSupportsSidebar && sidebarInfo && (
+  const sidebar: ReactNode = enableSidebar && tabSupportsSidebar && sidebarView && (
     <div
       css={css`
         position: sticky;
@@ -460,7 +460,7 @@ const RecGridInner = memo(function ({
         width: 250px;
       `}
     >
-      {sidebarInfo}
+      {sidebarView}
     </div>
   )
 

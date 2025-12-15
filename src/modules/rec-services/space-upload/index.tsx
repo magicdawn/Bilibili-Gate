@@ -17,7 +17,7 @@ import type { SpaceUploadItem, SpaceUploadItemExtend } from '$define'
 import { BaseTabService, type IService } from '../_base'
 import { SpaceUploadOrder, tryGetSpaceUpload } from './api'
 import { QUERY_SPACE_UPLOAD_INITIAL_PAGE, spaceUploadStore } from './store'
-import { SpaceUploadUsageInfo } from './usage-info'
+import { SpaceUploadTabbarView } from './usage-info'
 import { isSpaceUploadItemChargeOnly } from './util'
 import type { WritableDeep } from 'type-fest'
 
@@ -64,7 +64,7 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
   filterText: string | undefined
   initialPage: number | undefined
 
-  override sidebarInfo = undefined
+  override sidebarView = undefined
 
   constructor(public config: SpaceUploadServiceConfig) {
     super(SpaceUploadService.PAGE_SIZE)
@@ -78,7 +78,7 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
     }
   }
 
-  override usageInfo: ReactNode = (<SpaceUploadUsageInfo />)
+  override tabbarView: ReactNode = (<SpaceUploadTabbarView />)
 
   override get hasMoreExceptQueue(): boolean {
     if (this.isAnonymous) return false

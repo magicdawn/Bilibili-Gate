@@ -42,7 +42,7 @@ export class FavAllService implements IFavInnerService {
     }
   }
 
-  get extraUsageInfo() {
+  get extraTabbarView() {
     return (
       <>
         <FavItemsOrderSwitcher />

@@ -7,7 +7,7 @@ import { FavAllService } from './service/fav-all'
 import { FavCollectionService } from './service/fav-collection'
 import { FavFolderService } from './service/fav-folder'
 import { favStore, updateFavFolderMediaCount } from './store'
-import { FavSidebarInfo, FavUsageInfo } from './views'
+import { FavSidebarInfo, FavTabbarView } from './views'
 import { getSavedOrder } from './views/fav-items-order'
 import type { FavItemsOrder } from './fav-enum'
 import type { ReactNode } from 'react'
@@ -49,8 +49,8 @@ function getFavServiceConfigExtra(config: FavServiceConfig) {
 export interface IFavInnerService {
   hasMore: boolean
   loadMore: (abortSignal: AbortSignal) => Promise<(FavItemExtend | ItemsSeparator)[] | undefined>
-  usageInfo?: ReactNode
-  extraUsageInfo?: ReactNode
+  tabbarView?: ReactNode
+  extraTabbarView?: ReactNode
 }
 
 export class FavRecService extends BaseTabService<FavItemExtend | ItemsSeparator> {
@@ -86,13 +86,13 @@ export class FavRecService extends BaseTabService<FavItemExtend | ItemsSeparator
     }
   }
 
-  override get usageInfo(): ReactNode {
-    const { usageInfo, extraUsageInfo } = this.innerService
-    if (usageInfo) return usageInfo
-    return <FavUsageInfo extraContent={extraUsageInfo} />
+  override get tabbarView(): ReactNode {
+    const { tabbarView, extraTabbarView } = this.innerService
+    if (tabbarView) return tabbarView
+    return <FavTabbarView extraContent={extraTabbarView} />
   }
 
-  override sidebarInfo = (<FavSidebarInfo />)
+  override sidebarView = (<FavSidebarInfo />)
 
   override get hasMoreExceptQueue() {
     return this.innerService.hasMore

@@ -182,7 +182,7 @@ export class FavFolderService implements IFavInnerService {
     }
   }
 
-  get extraUsageInfo() {
+  get extraTabbarView() {
     return <FavItemsOrderSwitcher />
   }
 }

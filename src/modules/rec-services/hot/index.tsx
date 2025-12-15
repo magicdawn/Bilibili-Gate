@@ -67,12 +67,12 @@ export class HotRecService extends BaseTabService<RecItemTypeOrSeparator> {
     this.service = subtabServiceCreators[hotStore.subtab]()
   }
 
-  override get usageInfo() {
-    return <HotUsageInfo>{this.service.usageInfo}</HotUsageInfo>
+  override get tabbarView() {
+    return <HotTabbarView>{this.service.tabbarView}</HotTabbarView>
   }
 
-  override get sidebarInfo() {
-    return this.service.sidebarInfo
+  override get sidebarView() {
+    return this.service.sidebarView
   }
 
   override get hasMoreExceptQueue() {
@@ -90,7 +90,7 @@ if (!Object.values(EHotSubTab).includes(hotStore.subtab)) {
   hotStore.subtab = EHotSubTab.PopularGeneral
 }
 
-function HotUsageInfo({ children }: { children?: ReactNode }) {
+function HotTabbarView({ children }: { children?: ReactNode }) {
   const { subtab: activeSubtab } = useSnapshot(hotStore)
   const { icon, label } = HotSubTabConfig[activeSubtab]
   const onRefresh = useOnRefreshContext()

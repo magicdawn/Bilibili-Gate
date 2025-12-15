@@ -47,13 +47,13 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
     Boolean,
   )
 
-  const [{ refreshing, onRefresh, usageInfo }, setHeaderState] = useState<GridExternalState>(initGridExternalState)
+  const [{ refreshing, onRefresh, tabbarView }, setHeaderState] = useState<GridExternalState>(initGridExternalState)
   const renderHeader = () => {
     return (
       <div className={clsx(BaseModalClassNames.modalHeader, 'gap-x-15px pr-15px')}>
         <div className='left flex flex-shrink-1 flex-wrap items-center gap-x-15px gap-y-4px'>
           <VideoSourceTab onRefresh={onRefresh} />
-          {usageInfo}
+          {tabbarView}
         </div>
         <div className='right flex flex-shrink-0 items-center gap-x-8px'>
           {gridDisplayMode === EGridDisplayMode.TwoColumnGrid ? null : (

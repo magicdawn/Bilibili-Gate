@@ -5,7 +5,7 @@ import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
 import { defineAntMenus, type AntMenuItem } from '$modules/antd'
 import { IconForOpenExternalLink } from '$modules/icon'
-import { CopyBvidButtonsUsageInfo } from '$modules/rec-services/_shared/copy-bvid-buttons'
+import { CopyBvidButtonsTabbarView } from '$modules/rec-services/_shared/copy-bvid-buttons'
 import { formatSpaceUrl } from '$modules/rec-services/dynamic-feed/shared'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { sortListByName } from '$utility/sort'
@@ -122,7 +122,7 @@ function useScopeMenus(extraOnMenuItemClick?: () => void) {
   return { menuItems, selectedKey }
 }
 
-export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
+export function FavTabbarView({ extraContent }: { extraContent?: ReactNode }) {
   const { fav, enableSidebar } = useSettingsSnapshot()
   const { selectedFavFolder, selectedFavCollection, selectedLabel, selectedKey } = useSnapshot(favStore)
   const onRefresh = useOnRefreshContext()
@@ -189,7 +189,7 @@ export function FavUsageInfo({ extraContent }: { extraContent?: ReactNode }) {
       {/* extra */}
       {extraContent}
 
-      <CopyBvidButtonsUsageInfo />
+      <CopyBvidButtonsTabbarView />
     </div>
   )
 }

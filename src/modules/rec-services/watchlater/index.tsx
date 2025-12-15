@@ -13,7 +13,7 @@ import toast from '$utility/toast'
 import type { ItemsSeparator, WatchlaterItemExtend } from '$define'
 import { BaseTabService, type IService } from '../_base'
 import { batchRemoveWatchlater, fetchWatchlaterItems } from './api'
-import { WatchlaterUsageInfo } from './usage-info'
+import { WatchlaterTabbarView } from './usage-info'
 import { WatchlaterItemsOrder } from './watchlater-enum'
 import type { WatchlaterItem } from './types'
 
@@ -78,7 +78,7 @@ export async function removeMultiSelectedWatchlaterItems() {
 export class WatchlaterRecService extends BaseTabService<WatchlaterItemExtend | ItemsSeparator> {
   static PAGE_SIZE = 10
 
-  override sidebarInfo = undefined
+  override sidebarView = undefined
 
   private innerService: NormalOrderService | ShuffleOrderService
   constructor(
@@ -102,8 +102,8 @@ export class WatchlaterRecService extends BaseTabService<WatchlaterItemExtend | 
     return this.innerService.loadMore(abortSignal)
   }
 
-  override get usageInfo() {
-    return <WatchlaterUsageInfo service={this} />
+  override get tabbarView() {
+    return <WatchlaterTabbarView service={this} />
   }
 
   get state() {

@@ -12,7 +12,7 @@ import type { IService } from '../_base'
 export class PopularGeneralRecService implements IService {
   hasMore = true
   page = 1
-  usageInfo = (<PopularGeneralUsageInfo />)
+  tabbarView = (<PopularGeneralTabbarView />)
 
   constructor(private anonymous: boolean) {}
 
@@ -45,7 +45,7 @@ export class PopularGeneralRecService implements IService {
   }
 }
 
-function PopularGeneralUsageInfo() {
+function PopularGeneralTabbarView() {
   const onRefresh = useOnRefreshContext()
 
   const tooltip = <>✅ 匿名访问: 使用游客身份访问</>
