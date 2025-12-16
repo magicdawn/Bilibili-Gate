@@ -71,7 +71,7 @@ export function RankNumMark({ item }: { item: RankItemExtend }) {
     tooltipClassName: 'left--2px',
   })
 
-  const roundButtonClassName = 'relative size-28px flex-center whitespace-nowrap rounded-full color-white'
+  const roundButtonClassName = 'relative size-28px flex-center whitespace-nowrap rounded-full text-14px color-white'
   const roundButtonStyle: CSSProperties = useMemo(
     () => ({ backgroundColor: getColor(item.rankingNo) }),
     [item.rankingNo],
@@ -163,7 +163,7 @@ export function VolMark({ vol, volTooltip }: { vol: number; volTooltip?: ReactNo
   return (
     <div
       ref={triggerRef}
-      className='relative h-24px min-w-24px flex-center whitespace-nowrap rounded-8px bg-gate-primary px-6px text-center text-12px color-white'
+      className='relative h-24px min-w-24px flex-center whitespace-nowrap rounded-8px bg-gate-primary px-6px text-center text-14px color-white'
     >
       {vol}
       {tooltipEl}
