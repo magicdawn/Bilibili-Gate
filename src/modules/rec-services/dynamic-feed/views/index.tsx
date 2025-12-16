@@ -212,7 +212,7 @@ export function DynamicFeedTabbarView() {
 export function DynamicFeedSidebarView() {
   const sidebarVisible = useSidebarVisible(ETab.DynamicFeed)
   const { menuItems, selectedKey } = useScopeMenus('sidebar')
-  const { menuRef } = useRevealMenuSelectedKey(selectedKey)
+  const { menuRef } = useRevealMenuSelectedKey(menuItems, selectedKey)
   if (!sidebarVisible) return undefined
   return <Menu ref={menuRef} items={menuItems} selectedKeys={[selectedKey]} mode='inline' inlineIndent={10} />
 }

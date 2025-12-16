@@ -6,6 +6,7 @@ import { EHotSubTab, ETab } from '$components/RecHeader/tab-enum'
 import { QUERY_DYNAMIC_UP_MID } from '$modules/rec-services/dynamic-feed/store'
 import { hotStore } from '$modules/rec-services/hot'
 import { useSettingsSnapshot } from '$modules/settings'
+import type { AntMenuItem } from '$modules/antd'
 import { useGridDisplayModeChecker } from './display-mode'
 import { GridConfigContext } from '.'
 import type { CSSProperties, ElementRef, ReactNode } from 'react'
@@ -92,16 +93,27 @@ export function GridSidebar({
   )
 }
 
-export function useRevealMenuSelectedKey(selectedKey: string) {
+export function useRevealMenuSelectedKey(menuItems: AntMenuItem[], selectedKey: string) {
   const menuRef = useRef<ElementRef<typeof Menu>>(null)
-  useMount(() => {
+
+  const scrollCalled = useRef(false)
+  const checkAndScroll = useMemoizedFn(() => {
+    if (scrollCalled.current) return
+
     const el = menuRef.current?.menu?.findItem({ key: selectedKey })
     if (!el) return
+
+    scrollCalled.current = true
     if ((el as any).scrollIntoViewIfNeeded) {
       ;(el as any).scrollIntoViewIfNeeded()
     } else {
       el.scrollIntoView()
     }
   })
+
+  // on mount or data loaded
+  useMount(() => checkAndScroll())
+  useUpdateEffect(() => checkAndScroll(), [menuItems])
+
   return { menuRef }
 }

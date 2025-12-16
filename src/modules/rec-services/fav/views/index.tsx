@@ -263,6 +263,6 @@ export function ViewingAllExcludeFolderConfig({
 
 export function FavSidebarView() {
   const { menuItems, selectedKey } = useScopeMenus()
-  const { menuRef } = useRevealMenuSelectedKey(selectedKey)
+  const { menuRef } = useRevealMenuSelectedKey(menuItems, selectedKey)
   return <Menu ref={menuRef} items={menuItems} selectedKeys={[selectedKey]} mode='inline' inlineIndent={10} />
 }
