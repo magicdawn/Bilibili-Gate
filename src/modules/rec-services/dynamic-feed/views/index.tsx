@@ -3,7 +3,7 @@ import { delay } from 'es-toolkit'
 import { fastSortWithOrders } from 'fast-sort-lens'
 import { useSnapshot } from 'valtio'
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
-import { useSidebarVisible } from '$components/RecGrid/sidebar'
+import { useRevealMenuSelectedKey, useSidebarVisible } from '$components/RecGrid/sidebar'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { IconForReset } from '$modules/icon'
@@ -212,6 +212,7 @@ export function DynamicFeedTabbarView() {
 export function DynamicFeedSidebarView() {
   const sidebarVisible = useSidebarVisible(ETab.DynamicFeed)
   const { menuItems, selectedKey } = useScopeMenus('sidebar')
+  const { menuRef } = useRevealMenuSelectedKey(selectedKey)
   if (!sidebarVisible) return undefined
-  return <Menu items={menuItems} selectedKeys={[selectedKey]} mode='inline' inlineIndent={10} />
+  return <Menu ref={menuRef} items={menuItems} selectedKeys={[selectedKey]} mode='inline' inlineIndent={10} />
 }

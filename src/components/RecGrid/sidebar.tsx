@@ -1,5 +1,5 @@
 import { css } from '@emotion/react'
-import { ConfigProvider } from 'antd'
+import { ConfigProvider, type Menu } from 'antd'
 import { useUnoMerge } from 'unocss-merge/react'
 import { useSnapshot } from 'valtio'
 import { EHotSubTab, ETab } from '$components/RecHeader/tab-enum'
@@ -8,7 +8,7 @@ import { hotStore } from '$modules/rec-services/hot'
 import { useSettingsSnapshot } from '$modules/settings'
 import { useGridDisplayModeChecker } from './display-mode'
 import { GridConfigContext } from '.'
-import type { CSSProperties, ReactNode } from 'react'
+import type { CSSProperties, ElementRef, ReactNode } from 'react'
 
 const sidebarViewWrapperCss = css`
   scrollbar-width: thin;
@@ -90,4 +90,18 @@ export function GridSidebar({
       </div>
     )
   )
+}
+
+export function useRevealMenuSelectedKey(selectedKey: string) {
+  const menuRef = useRef<ElementRef<typeof Menu>>(null)
+  useMount(() => {
+    const el = menuRef.current?.menu?.findItem({ key: selectedKey })
+    if (!el) return
+    if ((el as any).scrollIntoViewIfNeeded) {
+      ;(el as any).scrollIntoViewIfNeeded()
+    } else {
+      el.scrollIntoView()
+    }
+  })
+  return { menuRef }
 }
