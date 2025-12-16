@@ -163,7 +163,7 @@ export function VolMark({ vol, volTooltip }: { vol: number; volTooltip?: ReactNo
   return (
     <div
       ref={triggerRef}
-      className='relative h-24px min-w-24px flex-center whitespace-nowrap rounded-8px bg-gate-primary px-6px color-white'
+      className='relative h-24px min-w-24px flex-center whitespace-nowrap rounded-8px bg-gate-primary px-6px text-center text-12px color-white'
     >
       {vol}
       {tooltipEl}
