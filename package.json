@@ -115,7 +115,7 @@
     "vite-plugin-importer": "^0.2.5",
     "vite-plugin-inspect": "^11.3.3",
     "vite-plugin-monkey": "^7.1.8",
-    "vite-tsconfig-paths": "^6.0.1",
+    "vite-tsconfig-paths": "5",
     "vitest": "^4.0.15"
   },
   "lint-staged": {
