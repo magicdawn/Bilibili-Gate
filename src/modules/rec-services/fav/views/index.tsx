@@ -44,7 +44,7 @@ function useScopeMenus(extraOnMenuItemClick?: () => void) {
             type: 'group',
             label: (
               <span className='flex items-center gap-x-2px'>
-                <IconForOpenExternalLink className='mt-2px size-15px' />
+                <IconForOpenExternalLink className='mt-2px size-15px flex-none' />
                 <a target='_blank' href={upSpaceUrl}>
                   @{upName}
                 </a>
@@ -54,7 +54,7 @@ function useScopeMenus(extraOnMenuItemClick?: () => void) {
               const key: FavStore['selectedKey'] = `fav-collection:${f.id}`
               const label = (
                 <span className='ml-8px flex items-center gap-x-2px'>
-                  <IconForCollection className='size-15px' />
+                  <IconForCollection className='size-15px flex-none' />
                   {f.title} ({f.media_count})
                 </span>
               )
@@ -260,7 +260,7 @@ export function ViewingAllExcludeFolderConfig({
   )
 }
 
-export function FavSidebarInfo() {
+export function FavSidebarView() {
   const { menuItems, selectedKey } = useScopeMenus()
   return <Menu items={menuItems} selectedKeys={[selectedKey]} mode='inline' inlineIndent={10} />
 }

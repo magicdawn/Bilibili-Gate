@@ -1,63 +1,93 @@
 import { css } from '@emotion/react'
 import { ConfigProvider } from 'antd'
-import { borderColorValue } from '$components/css-vars'
-import { ETab } from '$components/RecHeader/tab-enum'
-import { $headerHeight } from '$header'
-import { useDynamicFeedScopeSelectDisplayForm } from '$modules/rec-services/dynamic-feed/views'
+import { useUnoMerge } from 'unocss-merge/react'
+import { useSnapshot } from 'valtio'
+import { EHotSubTab, ETab } from '$components/RecHeader/tab-enum'
+import { QUERY_DYNAMIC_UP_MID } from '$modules/rec-services/dynamic-feed/store'
+import { hotStore } from '$modules/rec-services/hot'
 import { useSettingsSnapshot } from '$modules/settings'
+import { useGridDisplayModeChecker } from './display-mode'
+import { GridConfigContext } from '.'
+import type { CSSProperties, ReactNode } from 'react'
 
-function useShowSidebarViewWrapper(tab: ETab) {
+const sidebarViewWrapperCss = css`
+  scrollbar-width: thin;
+  /* scrollbar-gutter: stable; */
+
+  .ant-menu-item-group-title {
+    padding: 4px 8px;
+  }
+  .ant-menu-item {
+    margin-block: 1px;
+  }
+
+  /* required for bilibili.com default style impact */
+  ul.ant-menu-item-group-list {
+    font-size: inherit;
+  }
+`
+
+export function useSidebarVisible(tab: ETab | undefined): boolean {
   const { enableSidebar } = useSettingsSnapshot()
-
-  // tab specific logic
-  const dynamicFeedScopeSelectForm = useDynamicFeedScopeSelectDisplayForm()
+  const { usingTwoColumnMode } = useGridDisplayModeChecker()
+  const hotSubTab = useSnapshot(hotStore).subtab
+  const { insideModal } = useContext(GridConfigContext)
 
   return useMemo(() => {
-    // main switch
-    if (!enableSidebar) return false
-
-    // Tab may have sidebarView
-    if (![ETab.DynamicFeed, ETab.Fav, ETab.Hot].includes(tab)) return false
-
+    if (!enableSidebar) return false // main switch
+    if (insideModal && usingTwoColumnMode) return false // disable sidebar in Modal+TwoColumnMode
     // tab specific
-    if (tab === ETab.DynamicFeed) return dynamicFeedScopeSelectForm === 'sidebar'
-    // TODO: fav 同理
-
-    return true
-  }, [enableSidebar, tab, dynamicFeedScopeSelectForm])
+    if (tab === ETab.DynamicFeed) {
+      if (QUERY_DYNAMIC_UP_MID) return false
+      return true
+    }
+    if (tab === ETab.Hot) return hotSubTab === EHotSubTab.Rank
+    if (tab === ETab.Fav) return true
+    return false
+  }, [tab, enableSidebar, hotSubTab, insideModal, usingTwoColumnMode])
 }
 
-export function useSidebarRelated({ tab, sidebarView }: { sidebarView: ReactNode; tab: ETab }) {
-  const enabled = useShowSidebarViewWrapper(tab)
-  const headerHeight = $headerHeight.use()
-  const sidebarEl: ReactNode = enabled && sidebarView && (
-    <div
-      css={css`
-        position: sticky;
-        top: ${headerHeight + 55}px;
-        max-height: calc(95vh - ${headerHeight + 55}px);
-        border: 1px solid ${borderColorValue};
-        border-radius: 15px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: thin;
-        scrollbar-gutter: stable;
-        width: 250px;
-      `}
-    >
-      <ConfigProvider
-        theme={{
-          components: {
-            Menu: {
-              itemHeight: 30,
-            },
-          },
-        }}
-      >
-        {sidebarView}
-      </ConfigProvider>
-    </div>
+function useTabExtraClassName(tab: ETab | undefined): string | undefined {
+  const hotSubTab = useSnapshot(hotStore).subtab
+  if (tab === ETab.Fav) return 'w-300px'
+  if (tab === ETab.Hot && hotSubTab === EHotSubTab.Rank) return 'w-200px'
+}
+
+export function GridSidebar({
+  className: propClassName,
+  style: propStyle,
+  sidebarView,
+  viewTab,
+}: {
+  className?: string
+  style?: CSSProperties
+  sidebarView: ReactNode
+  viewTab: ETab | undefined
+}) {
+  const visible = useSidebarVisible(viewTab)
+
+  const usingClassName = useUnoMerge(
+    'h-fit w-250px flex-none overflow-x-hidden overflow-y-auto b-1px b-gate-bg-lv2 rounded-15px b-solid',
+    useTabExtraClassName(viewTab),
+    propClassName,
   )
 
-  return { sidebarEl }
+  return (
+    visible &&
+    sidebarView && (
+      <div className={usingClassName} css={sidebarViewWrapperCss} style={propStyle}>
+        <ConfigProvider
+          theme={{
+            components: {
+              Menu: {
+                itemHeight: 30,
+              },
+            },
+          }}
+        >
+          {sidebarView}
+        </ConfigProvider>
+      </div>
+    )
+  )
 }

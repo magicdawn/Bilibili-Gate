@@ -30,11 +30,10 @@ import { isSafari } from '$ua'
 import type { VideoCardEmitter, VideoCardEvents } from '$components/VideoCard/index.shared'
 import type { RecItemType, RecItemTypeOrSeparator } from '$define'
 import type { IVideoCardData } from '$modules/filter/normalize'
-import * as classNames from '../video-grid.module.scss'
+import * as scssClassNames from '../video-grid.module.scss'
 import { EGridDisplayMode } from './display-mode'
 import { ErrorDetail } from './error-detail'
 import { useRecGridState } from './rec-grid-state'
-import { useSidebarRelated } from './sidebar'
 import { useRefresh } from './useRefresh'
 import { useShortcut } from './useShortcut'
 import { ENABLE_VIRTUAL_GRID, gridComponents } from './virtuoso.config'
@@ -50,20 +49,28 @@ const debug = baseDebug.extend('components:RecGrid')
 export type GridExternalState = {
   /** state modified by refresh */
   refreshing: boolean
+  /** view for which tab */
+  viewTab: ETab | undefined
   tabbarView: ReactNode
+  sidebarView: ReactNode
   /** implementation provided by RecGrid */
   onRefresh: OnRefresh
 }
 
 export const initGridExternalState = (): GridExternalState => ({
   refreshing: false,
+  viewTab: undefined,
+  tabbarView: undefined,
+  sidebarView: undefined,
   onRefresh: noop,
-  tabbarView: null,
 })
+
+export const GridConfigContext = createContext<{ insideModal?: boolean }>({})
 
 export type RecGridRef = { refresh: OnRefresh }
 
 export type RecGridProps = {
+  containerClassName?: string
   className?: string
   shortcutEnabled: boolean
   infiniteScrollUseWindow: boolean
@@ -98,8 +105,9 @@ export const RecGrid = forwardRef<RecGridRef, RecGridProps>(function (props, ref
 })
 
 const RecGridInner = memo(function ({
+  className: propClassName,
+  containerClassName: propContainerClassName,
   shortcutEnabled,
-  className,
   tab,
   handlersRef,
   servicesRegistry,
@@ -121,11 +129,11 @@ const RecGridInner = memo(function ({
   // 已加载完成的 load call count, 类似 page
   const loadCompleteCountBox = useRefStateBox(0)
 
-  const [tabbarView, setTabbarView] = useState<ReactNode>(undefined)
-  const [sidebarView, setSidebarInfo] = useState<ReactNode>(undefined)
+  const [tabbarView, setTabbarView] = useState<ReactNode>(() => servicesRegistry.val[tab]?.tabbarView)
+  const [sidebarView, setSidebarView] = useState<ReactNode>(() => servicesRegistry.val[tab]?.sidebarView)
   const updateViewFromService = useMemoizedFn(() => {
     setTabbarView(servicesRegistry.val[tab]?.tabbarView)
-    setSidebarInfo(servicesRegistry.val[tab]?.sidebarView)
+    setSidebarView(servicesRegistry.val[tab]?.sidebarView)
   })
 
   const preAction = useMemoizedFn(() => {
@@ -169,8 +177,8 @@ const RecGridInner = memo(function ({
   // sync to parent component
   useEffect(() => {
     if (unmountedRef.current) return
-    onSyncExternalState?.({ refreshing, onRefresh: refresh, tabbarView })
-  }, [refreshing, refresh, tabbarView, onSyncExternalState])
+    onSyncExternalState?.({ refreshing, onRefresh: refresh, tabbarView, sidebarView, viewTab: tab })
+  }, [onSyncExternalState, refreshing, refresh, tabbarView, sidebarView])
 
   const goOutAt = useRef<number | undefined>()
   useEventListener(
@@ -417,19 +425,21 @@ const RecGridInner = memo(function ({
     </div>
   )
 
+  const containerClassName = clsx('min-h-100vh', scssClassNames.videoGridContainer, propContainerClassName)
+
   const gridClassName = clsx(
     // base
     APP_CLS_GRID, // for customize css
-    classNames.videoGrid,
+    scssClassNames.videoGrid,
     // variants
-    useCustomGrid ? classNames.videoGridCustom : classNames.videoGridBiliFeed4,
+    useCustomGrid ? scssClassNames.videoGridCustom : scssClassNames.videoGridBiliFeed4,
     gridDisplayMode === EGridDisplayMode.TwoColumnGrid
-      ? classNames.narrowMode // 双列
+      ? scssClassNames.narrowMode // 双列
       : gridDisplayMode === EGridDisplayMode.CenterEmptyGrid
-        ? classNames.videoGridCenterEmpty // 中空
+        ? scssClassNames.videoGridCenterEmpty // 中空
         : undefined,
     // from props
-    className,
+    propClassName,
   )
 
   const cardBorderCss = useCardBorderCss()
@@ -443,19 +453,14 @@ const RecGridInner = memo(function ({
     }
   }, [footer, containerRef, gridClassName])
 
-  const { sidebarEl } = useSidebarRelated({ tab, sidebarView })
-
   // 总是 render grid, getColumnCount 依赖 grid columns
   const render = ({ gridChildren, gridSiblings }: { gridChildren?: ReactNode; gridSiblings?: ReactNode } = {}) => {
     return (
-      <div className='flex gap-x-25px'>
-        {sidebarEl}
-        <div ref={containerRef} className={clsx('min-h-100vh flex-1', classNames.videoGridContainer)} data-tab={tab}>
-          <div className={gridClassName} data-tab={tab}>
-            {gridChildren}
-          </div>
-          {gridSiblings}
+      <div ref={containerRef} className={containerClassName} data-tab={tab}>
+        <div className={gridClassName} data-tab={tab}>
+          {gridChildren}
         </div>
+        {gridSiblings}
       </div>
     )
   }
@@ -521,7 +526,7 @@ const RecGridInner = memo(function ({
   // virtual grid
   if (ENABLE_VIRTUAL_GRID) {
     return (
-      <div className={clsx(classNames.videoGridContainer, classNames.virtualGridEnabled)}>
+      <div className={clsx(scssClassNames.videoGridContainer, scssClassNames.virtualGridEnabled)}>
         <VirtuosoGrid
           useWindowScroll
           data={fullList}

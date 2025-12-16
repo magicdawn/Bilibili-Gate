@@ -1,10 +1,13 @@
+import { useCreation } from 'ahooks'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { CollapseBtn } from '$components/_base/CollapseBtn'
 import { useModalDislikeVisible } from '$components/ModalDislike'
 import { useModalMoveFavVisible } from '$components/ModalMoveFav'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
-import { initGridExternalState, RecGrid } from '$components/RecGrid'
+import { GridConfigContext, initGridExternalState, RecGrid } from '$components/RecGrid'
 import { EGridDisplayMode, gridDisplayModeChecker } from '$components/RecGrid/display-mode'
+import { clsTwoColumnModeWidth } from '$components/RecGrid/display-mode/two-column-mode'
+import { GridSidebar } from '$components/RecGrid/sidebar'
 import { OnRefreshContext } from '$components/RecGrid/useRefresh'
 import { useHeaderState } from '$components/RecHeader/index.shared'
 import { RefreshButton } from '$components/RecHeader/RefreshButton'
@@ -18,18 +21,18 @@ interface IProps {
   onHide: () => void
 }
 
+/**
+ * 懒得维护了, 太复杂的旧不弄了
+ * two-column-mode: 基础支持, align 不管了, sidebar 不管了
+ */
 export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
   const scrollerRef = useRef<HTMLDivElement>(null)
   const {
-    // 双列模式
     grid: { gridDisplayMode },
-    // 全屏模式
     modalFeedFullScreen,
   } = useSettingsSnapshot()
-
   const { usingTwoColumnMode } = gridDisplayModeChecker(gridDisplayMode)
-
-  const useFullScreen = usingTwoColumnMode && modalFeedFullScreen
+  const useFullScreen = !usingTwoColumnMode && modalFeedFullScreen
 
   const modalBorderCls = useMemo(() => {
     const borderWidth = useFullScreen ? 'b-5px' : 'b-1px'
@@ -47,7 +50,8 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
     Boolean,
   )
 
-  const [{ refreshing, onRefresh, tabbarView }, setHeaderState] = useState<GridExternalState>(initGridExternalState)
+  const [{ refreshing, onRefresh, viewTab, tabbarView, sidebarView }, setHeaderState] =
+    useState<GridExternalState>(initGridExternalState)
   const renderHeader = () => {
     return (
       <div className={clsx(BaseModalClassNames.modalHeader, 'gap-x-15px pr-15px')}>
@@ -68,29 +72,38 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
     )
   }
 
-  const clsModalMask = clsx({ 'bg-black/90%': usingTwoColumnMode })
-
-  // pr-0 滚动条右移
-  const clsBase = 'h-[calc(100vh-30px)] max-h-unset w-[calc(100vw-30px)] pr-0'
-  const clsTwoColumn = 'h-[calc(100vh-10px)] w-[calc(325*2+40px)]'
+  const clsModalMask = clsx(usingTwoColumnMode && 'bg-black/90%') // why? I don't remember this
+  const clsBase = 'h-[calc(100vh-30px)] max-h-unset w-[calc(100vw-30px)] pr-0' // pr-0 滚动条右移
   const clsFullScreen = 'h-full w-full'
-  const clsModal = clsx(clsBase, { [clsTwoColumn]: usingTwoColumnMode, [clsFullScreen]: useFullScreen }, modalBorderCls)
+  const clsModal = clsx(
+    clsBase,
+    useFullScreen && clsFullScreen,
+    usingTwoColumnMode && clsTwoColumnModeWidth,
+    modalBorderCls,
+  )
+
+  const gridConfig = useCreation(() => ({ insideModal: true }), [])
 
   return (
-    <BaseModal show={show} onHide={onHide} clsModalMask={clsModalMask} clsModal={clsModal}>
+    <GridConfigContext.Provider value={gridConfig}>
       <OnRefreshContext.Provider value={onRefresh}>
-        {renderHeader()}
-        <div className={clsx(BaseModalClassNames.modalBody, 'pr-15px')} ref={scrollerRef}>
-          <RecGrid
-            shortcutEnabled={shortcutEnabled}
-            onScrollToTop={onScrollToTop}
-            infiniteScrollUseWindow={false}
-            scrollerRef={scrollerRef}
-            onSyncExternalState={setHeaderState}
-          />
-        </div>
+        <BaseModal show={show} onHide={onHide} clsModalMask={clsModalMask} clsModal={clsModal}>
+          {renderHeader()}
+          <div data-role='modal-body' className='flex flex-1 gap-x-25px overflow-hidden'>
+            <GridSidebar sidebarView={sidebarView} viewTab={viewTab} className='max-h-full' />
+            <div className='h-full flex-1 overflow-y-scroll pr-15px' ref={scrollerRef}>
+              <RecGrid
+                shortcutEnabled={shortcutEnabled}
+                onScrollToTop={onScrollToTop}
+                infiniteScrollUseWindow={false}
+                scrollerRef={scrollerRef}
+                onSyncExternalState={setHeaderState}
+              />
+            </div>
+          </div>
+        </BaseModal>
       </OnRefreshContext.Provider>
-    </BaseModal>
+    </GridConfigContext.Provider>
   )
 })
 

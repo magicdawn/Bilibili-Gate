@@ -13,17 +13,17 @@ export enum TwoColumnModeAlign {
 }
 
 // Q: why w-740px
-// A: card=360 col-gap=16
-export const clsTwoColumn = 'my-0 w-740px'
+// A: card=350 col-gap=20
+export const clsTwoColumnModeWidth = 'w-720px'
 
-export const clsTwoColumnForAlign = (pos: TwoColumnModeAlign) => {
+export const clsForTwoColumnModeAlign = (pos: TwoColumnModeAlign, mode: 'flex' | 'margin') => {
   switch (pos) {
     case TwoColumnModeAlign.Left:
-      return 'ml-0 mr-auto'
+      return mode === 'flex' ? 'justify-left' : 'ml-0 mr-auto'
     case TwoColumnModeAlign.Right:
-      return 'ml-auto mr-0'
+      return mode === 'flex' ? 'justify-right' : 'ml-auto mr-0'
     default:
-      return 'mx-auto'
+      return mode === 'flex' ? 'justify-center' : 'mx-auto'
   }
 }
 

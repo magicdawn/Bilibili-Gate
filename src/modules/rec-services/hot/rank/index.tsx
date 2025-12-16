@@ -21,7 +21,7 @@ export class RankRecService implements IService {
   loaded = false
   qs = new QueueStrategy<RankItemExtend>(20)
   tabbarView = (<RankTabbarView />)
-  sidebarView = (<RankSidebarInfo />)
+  sidebarView = (<RankSidebarView />)
 
   constructor(private slug: string) {}
 
@@ -156,7 +156,7 @@ function RankTabbarView() {
   return <div ref={ref}>{popover}</div>
 }
 
-export function RankSidebarInfo() {
+export function RankSidebarView() {
   const { slug } = useSnapshot(rankStore)
   const { normalList, pgcList } = useMenuItems()
   const onRefresh = useOnRefreshContext()

@@ -3,7 +3,9 @@ import { delay } from 'es-toolkit'
 import { fastSortWithOrders } from 'fast-sort-lens'
 import { useSnapshot } from 'valtio'
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
+import { useSidebarVisible } from '$components/RecGrid/sidebar'
 import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
+import { ETab } from '$components/RecHeader/tab-enum'
 import { IconForReset } from '$modules/icon'
 import { CopyBvidButtonsTabbarView } from '$modules/rec-services/_shared/copy-bvid-buttons'
 import { useSettingsSnapshot } from '$modules/settings'
@@ -17,7 +19,6 @@ import {
   dfStore,
   DynamicFeedVideoMinDuration,
   DynamicFeedVideoType,
-  QUERY_DYNAMIC_UP_MID,
   updateFilterData,
   type DynamicFeedStore,
   type DynamicFeedStoreSelectedKey,
@@ -123,23 +124,16 @@ function useScopeMenus(form: 'dropdown' | 'sidebar') {
   }
 }
 
-export function useDynamicFeedScopeSelectDisplayForm(): 'sidebar' | 'dropdown' {
-  const { enableSidebar } = useSettingsSnapshot()
-  if (enableSidebar && !QUERY_DYNAMIC_UP_MID) return 'sidebar'
-  return 'dropdown'
-}
-
 export function DynamicFeedTabbarView() {
   const {
     dynamicFeed: {
       __internal: { externalSearchInput },
     },
-    enableSidebar,
   } = useSettingsSnapshot()
   const { viewingSomeUp, upName, upFace, selectedGroup } = useSnapshot(dfStore)
   const onRefresh = useOnRefreshContext()
   const { ref, getPopupContainer } = usePopupContainer()
-  const scopeSelectForm = useDynamicFeedScopeSelectDisplayForm()
+  const sidebarVisible = useSidebarVisible(ETab.DynamicFeed)
   const { menuItems, selectedKey, onClear } = useScopeMenus('dropdown')
 
   // try update on mount
@@ -190,20 +184,20 @@ export function DynamicFeedTabbarView() {
 
   return (
     <div ref={ref} className='inline-flex items-center gap-x-8px'>
-      {scopeSelectForm === 'dropdown' && scopeDropdownMenu}
+      {!sidebarVisible && scopeDropdownMenu}
 
-      {scopeSelectForm === 'dropdown' ? (
+      {sidebarVisible ? (
+        <Button onClick={onClear} className='gap-0' disabled={!(viewingSomeUp || selectedGroup)}>
+          <IconForReset className='mr-5px size-14px' />
+          <span>清除</span>
+        </Button>
+      ) : (
         (viewingSomeUp || selectedGroup) && (
           <Button onClick={onClear} className='gap-0'>
             <IconForReset className='mr-5px size-14px' />
             <span>清除</span>
           </Button>
         )
-      ) : (
-        <Button onClick={onClear} className='gap-0' disabled={!(viewingSomeUp || selectedGroup)}>
-          <IconForReset className='mr-5px size-14px' />
-          <span>清除</span>
-        </Button>
       )}
 
       {popoverTrigger}
@@ -215,17 +209,9 @@ export function DynamicFeedTabbarView() {
   )
 }
 
-export function DynamicFeedSidebarInfo() {
+export function DynamicFeedSidebarView() {
+  const sidebarVisible = useSidebarVisible(ETab.DynamicFeed)
   const { menuItems, selectedKey } = useScopeMenus('sidebar')
-  const form = useDynamicFeedScopeSelectDisplayForm()
-  if (form !== 'sidebar') return undefined
-  return (
-    <Menu
-      //
-      items={menuItems}
-      selectedKeys={[selectedKey]}
-      mode='inline'
-      inlineIndent={10}
-    />
-  )
+  if (!sidebarVisible) return undefined
+  return <Menu items={menuItems} selectedKeys={[selectedKey]} mode='inline' inlineIndent={10} />
 }

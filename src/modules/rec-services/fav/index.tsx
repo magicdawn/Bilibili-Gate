@@ -7,7 +7,7 @@ import { FavAllService } from './service/fav-all'
 import { FavCollectionService } from './service/fav-collection'
 import { FavFolderService } from './service/fav-folder'
 import { favStore, updateFavFolderMediaCount } from './store'
-import { FavSidebarInfo, FavTabbarView } from './views'
+import { FavSidebarView, FavTabbarView } from './views'
 import { getSavedOrder } from './views/fav-items-order'
 import type { FavItemsOrder } from './fav-enum'
 import type { ReactNode } from 'react'
@@ -92,7 +92,7 @@ export class FavRecService extends BaseTabService<FavItemExtend | ItemsSeparator
     return <FavTabbarView extraContent={extraTabbarView} />
   }
 
-  override sidebarView = (<FavSidebarInfo />)
+  override sidebarView = (<FavSidebarView />)
 
   override get hasMoreExceptQueue() {
     return this.innerService.hasMore
