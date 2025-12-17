@@ -49,8 +49,8 @@ const blockedCardClassNames = {
   action: 'relative flex-1',
   actionInner:
     'absolute left-0 top-0 h-full w-full flex items-center justify-center b-t-1px b-t-[var(--bilibili-gate-separator-color)] b-t-solid transition-duration-300 transition-property-[border-color]',
-  actionButton: 'flex items-center p-15px text-16px color-inherit',
-}
+  actionButton: 'flex cursor-pointer items-center rounded-lg bg-transparent p-15px text-16px color-inherit',
+} as const
 
 export const DislikedCard = memo(function DislikedCard({
   item,

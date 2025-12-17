@@ -151,7 +151,7 @@ export function ModalDislike({ show, reasons, onHide, okAction }: typeof default
                   className={clsx(
                     'reason',
                     { active },
-                    'relative flex items-center b-2px rounded-6px b-solid py-12px',
+                    'relative flex cursor-pointer items-center b-2px rounded-6px b-solid bg-transparent px-6px py-12px',
                     active ? 'b-gate-primary' : 'b-gate-border',
                   )}
                   disabled={okActionLoading}
@@ -161,12 +161,12 @@ export function ModalDislike({ show, reasons, onHide, okAction }: typeof default
                 >
                   <span
                     data-cls='reason-no'
-                    className='ml-6px size-20px flex flex-none items-center justify-center rounded-full bg-gate-primary color-white'
+                    className='size-20px flex flex-none items-center justify-center rounded-full bg-gate-primary text-13px color-white'
                   >
                     {index + 1}
                   </span>
-                  <span className='flex-1 px-4px'>{reason.name}</span>
-                  <span className='mr-6px size-20px flex-none'>
+                  <span className='flex-1 px-4px text-14px'>{reason.name}</span>
+                  <span className='size-20px flex-none'>
                     {active && <IconAnimatedChecked className='h-100% w-100% color-gate-primary' useAnimation />}
                   </span>
                 </button>

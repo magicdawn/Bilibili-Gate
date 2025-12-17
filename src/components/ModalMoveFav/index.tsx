@@ -98,7 +98,7 @@ export function ModalMoveFav({ show, onHide, srcFavFolderId, okAction }: IProps)
       onHide={onHide}
       hideWhenMaskOnClick={true}
       hideWhenEsc={true}
-      width={900}
+      width={920}
       clsModal='rounded-15px'
     >
       <div className={BaseModalClassNames.modalHeader}>
@@ -147,7 +147,7 @@ export function ModalMoveFav({ show, onHide, srcFavFolderId, okAction }: IProps)
                     data-id={f.id}
                     className={clsx(
                       { active },
-                      'relative flex items-center b-2px b-gate-border rounded-6px b-solid bg-transparent py-12px',
+                      'relative flex items-center b-2px b-gate-border rounded-6px b-solid bg-transparent px-4px py-12px',
                       !disabled && 'hover:bg-gate-bg-lv1',
                       disabled ? 'cursor-not-allowed' : 'cursor-pointer',
                       active && 'b-gate-primary color-white bg-gate-primary!',
@@ -157,13 +157,14 @@ export function ModalMoveFav({ show, onHide, srcFavFolderId, okAction }: IProps)
                       setSelectedFolder({ id: f.id, title: f.title })
                     }}
                   >
-                    <span className='ml-6px size-24px flex-center flex-none rounded-full bg-gate-bg-lv-2 text-center text-size-12px color-gate-text'>
+                    <span className='size-24px flex-center flex-none rounded-full bg-gate-bg-lv-2 text-center text-13px color-gate-text'>
                       {f.vol}
                     </span>
-                    <span className='flex-1 px-4px'>
+                    {/* text-12px for limited space */}
+                    <span className='flex-1 px-4px text-12px'>
                       {f.title} ({f.media_count})
                     </span>
-                    <span className='mr-6px size-20px flex-none'>
+                    <span className='size-20px flex-none'>
                       {active && <IconAnimatedChecked className='h-100% w-100% color-white' useAnimation />}
                     </span>
                   </button>
