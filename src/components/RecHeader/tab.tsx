@@ -1,4 +1,5 @@
 import { css } from '@emotion/react'
+import { usePrevious } from 'ahooks'
 import { Radio, Segmented } from 'antd'
 import { useSnapshot } from 'valtio'
 import { HelpInfo } from '$components/_base/HelpInfo'
@@ -8,7 +9,6 @@ import { SHOW_FAV_TAB_ONLY } from '$modules/rec-services/fav/store'
 import { SHOW_SPACE_UPLOAD_ONLY } from '$modules/rec-services/space-upload/store'
 import { useSettingsSnapshot } from '$modules/settings'
 import { checkLoginStatus, useHasLogined } from '$utility/cookie'
-
 import { proxyWithGmStorage } from '$utility/valtio'
 import { TabConfig, TabIcon, toastNeedLogin } from './tab-config'
 import { ALL_TAB_KEYS, CONFIGURABLE_TAB_KEYS, ETab } from './tab-enum'
@@ -110,6 +110,20 @@ export function useCurrentUsingTab(): ETab {
   }
 
   return tab
+}
+
+export function useDeferredTab() {
+  const tab = useDeferredValue(useCurrentUsingTab())
+  const prevTab = usePrevious(tab)
+  const tabOrders = useSortedTabKeys()
+  const direction = useMemo(() => {
+    return prevTab
+      ? tabOrders.indexOf(tab) > tabOrders.indexOf(prevTab)
+        ? ('right' as const)
+        : ('left' as const)
+      : undefined
+  }, [tabOrders, tab]) // only SYNC with `tab`
+  return { tab, prevTab, direction }
 }
 
 const radioBtnCss = css`

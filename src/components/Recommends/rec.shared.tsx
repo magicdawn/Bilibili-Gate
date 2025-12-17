@@ -1,7 +1,6 @@
-import { useCreation, useLockFn, usePrevious } from 'ahooks'
+import { useCreation, useLockFn } from 'ahooks'
 import Emittery from 'emittery'
 import { proxy, useSnapshot } from 'valtio'
-import { useCurrentUsingTab, useSortedTabKeys } from '$components/RecHeader/tab'
 import type { ServiceMap } from '$modules/rec-services/service-map'
 
 /* #region RecSharedEmitter */
@@ -59,18 +58,4 @@ export type RefreshFn = (reuse?: boolean) => void | Promise<void>
 export function useOnRefresh() {
   const { recSharedEmitter } = useRecContext()
   return useLockFn((reuse?: boolean) => recSharedEmitter.emit('refresh', reuse))
-}
-
-export function useTabRelated() {
-  const tab = useDeferredValue(useCurrentUsingTab())
-  const prevTab = usePrevious(tab)
-  const tabOrders = useSortedTabKeys()
-  const direction = useMemo(() => {
-    return prevTab
-      ? tabOrders.indexOf(tab) > tabOrders.indexOf(prevTab)
-        ? ('right' as const)
-        : ('left' as const)
-      : undefined
-  }, [tabOrders, tab]) // only SYNC with `tab`
-  return { tab, prevTab, direction }
 }

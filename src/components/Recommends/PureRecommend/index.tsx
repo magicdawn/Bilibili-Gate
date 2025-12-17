@@ -6,9 +6,10 @@ import { clsForTwoColumnModeAlign, clsTwoColumnModeWidth } from '$components/Rec
 import { GridSidebar } from '$components/RecGrid/sidebar'
 import { RecHeader, type RecHeaderRef } from '$components/RecHeader'
 import { usePlainShortcutEnabled } from '$components/RecHeader/index.shared'
+import { useDeferredTab } from '$components/RecHeader/tab'
 import { $headerHeight } from '$header'
 import { useSettingsSnapshot } from '$modules/settings'
-import { RecContext, useInitRecContextValue, useTabRelated } from '../rec.shared'
+import { RecContext, useInitRecContextValue } from '../rec.shared'
 
 // two-column mode align 是否影响 sidebar
 const TWO_COLUMN_MODE_ALIGN_APPLY_TO_SIDEBAR = false
@@ -22,7 +23,7 @@ export function PureRecommend() {
 
   const recContext = useInitRecContextValue()
   const { tabbarView, sidebarView } = useSnapshot(recContext.recStore)
-  const { tab, direction } = useTabRelated()
+  const { tab, direction } = useDeferredTab()
 
   const recHeaderRef = useRef<RecHeaderRef>(null)
   const onScrollToTop = useMemoizedFn(() => recHeaderRef.current?.scrollToTop())

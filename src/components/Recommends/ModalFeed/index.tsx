@@ -10,10 +10,10 @@ import { clsTwoColumnModeWidth } from '$components/RecGrid/display-mode/two-colu
 import { GridSidebar } from '$components/RecGrid/sidebar'
 import { useHeaderState } from '$components/RecHeader/index.shared'
 import { RefreshButton } from '$components/RecHeader/RefreshButton'
-import { VideoSourceTab } from '$components/RecHeader/tab'
+import { useDeferredTab, VideoSourceTab } from '$components/RecHeader/tab'
 import { antMessage } from '$modules/antd'
 import { useSettingsSnapshot } from '$modules/settings'
-import { RecContext, useInitRecContextValue, useTabRelated } from '../rec.shared'
+import { RecContext, useInitRecContextValue } from '../rec.shared'
 
 interface IProps {
   show: boolean
@@ -51,7 +51,7 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
 
   const recContext = useInitRecContextValue(true)
   const { tabbarView, sidebarView } = useSnapshot(recContext.recStore)
-  const { tab, direction } = useTabRelated()
+  const { tab, direction } = useDeferredTab()
 
   const renderHeader = () => {
     return (

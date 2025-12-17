@@ -4,6 +4,7 @@ import { baseDebug } from '$common'
 import { useRefresh } from '$components/RecGrid/useRefresh'
 import { RecHeader } from '$components/RecHeader'
 import { usePlainShortcutEnabled } from '$components/RecHeader/index.shared'
+import { useDeferredTab } from '$components/RecHeader/tab'
 import { limitTwoLines, videoGrid, videoGridBiliFeed4 } from '$components/video-grid.module.scss'
 import { VideoCard } from '$components/VideoCard'
 import { useCardBorderCss } from '$components/VideoCard/card-border-css'
@@ -11,13 +12,13 @@ import { EApiType } from '$define/index.shared'
 import { refreshForHome } from '$modules/rec-services'
 import type { ETab } from '$components/RecHeader/tab-enum'
 import type { ServiceMap } from '$modules/rec-services/service-map'
-import { RecContext, useInitRecContextValue, useRecContext, useTabRelated } from '../rec.shared'
+import { RecContext, useInitRecContextValue, useRecContext } from '../rec.shared'
 
 const debug = baseDebug.extend('components:SectionRecommend')
 
 export function SectionRecommend() {
   const recContext = useInitRecContextValue()
-  const { tab } = useTabRelated()
+  const { tab } = useDeferredTab()
   return (
     <RecContext.Provider value={recContext}>
       <TabContent key={tab} tab={tab} servicesRegistry={recContext.servicesRegistry} />
