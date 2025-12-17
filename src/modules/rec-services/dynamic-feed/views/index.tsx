@@ -72,6 +72,7 @@ function useScopeMenus(form: 'dropdown' | 'sidebar') {
       key: 'all' satisfies DynamicFeedStoreSelectedKey,
       icon: <Avatar size='small'>全</Avatar>,
       label: '全部',
+      title: '全部',
       onClick: onClear,
     }
 
@@ -80,8 +81,9 @@ function useScopeMenus(form: 'dropdown' | 'sidebar') {
       groupItems = groups.map((group) => {
         return {
           key: `group:${group.tagid}` satisfies DynamicFeedStoreSelectedKey,
-          label: `${group.name} (${group.count})`,
           icon: <Avatar size='small'>{group.name[0] || '组'}</Avatar>,
+          label: `${group.name} (${group.count})`,
+          title: `${group.name} (${group.count})`,
           onClick: () => onSelect({ ...clearPayload, selectedGroupId: group.tagid }),
         }
       })
@@ -104,12 +106,12 @@ function useScopeMenus(form: 'dropdown' | 'sidebar') {
       return {
         key: `up:${up.mid}` satisfies DynamicFeedStoreSelectedKey,
         icon: avatar,
-        // label: up.uname,
         label: (
           <span title={up.uname} className='block max-w-130px overflow-hidden text-ellipsis whitespace-nowrap'>
             {up.uname}
           </span>
         ),
+        title: up.uname,
         onClick() {
           onSelect({ ...clearPayload, upMid: up.mid.toString(), upName: up.uname, upFace: up.face })
         },

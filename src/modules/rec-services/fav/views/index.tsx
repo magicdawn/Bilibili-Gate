@@ -63,6 +63,7 @@ function useScopeMenus(extraOnMenuItemClick?: () => void) {
               return {
                 key,
                 label,
+                title: `${f.title} (${f.media_count})`,
                 async onClick() {
                   favStore.selectedFavFolderId = undefined
                   favStore.selectedFavCollectionId = f.id

@@ -131,9 +131,8 @@ function WatchlaterOrderSwitcher() {
     <GenericOrderSwitcher<WatchlaterItemsOrder>
       disabled={disabled}
       value={disabled ? WatchlaterItemsOrder.AddTimeDesc : watchlaterItemsOrder}
-      onChange={async (next) => {
+      onChange={(next) => {
         settings.watchlaterItemsOrder = next
-        await delay(100)
         onRefresh()
       }}
       list={list}

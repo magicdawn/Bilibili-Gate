@@ -61,17 +61,20 @@ export const GenericOrderSwitcher = function <T extends string | number>({
       }),
     )
   }, [list, listDisplayConfig, onChange])
-  const dropdownStyle: CSSProperties = {
-    // width: 'max-content',
-    overscrollBehavior: 'contain',
-    border: `1px solid ${usePopoverBorderColor()}`,
-  }
+
+  const popoverBorderColor = usePopoverBorderColor()
+  const dropdownStyle: CSSProperties = useMemo(
+    () => ({
+      overscrollBehavior: 'contain',
+      border: `1px solid ${popoverBorderColor}`,
+    }),
+    [],
+  )
 
   const [open, setOpen] = useState(false)
   return (
     <span className='inline-flex items-center' ref={$ref}>
       <Dropdown
-        // open
         open={open}
         onOpenChange={setOpen}
         disabled={disabled}
