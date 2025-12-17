@@ -11,10 +11,10 @@ import { useRefStateBox } from '$common/hooks/useRefState'
 import { Picture } from '$components/_base/Picture'
 import { useDislikedReason } from '$components/ModalDislike'
 import { isDisplayAsList, type EGridDisplayMode } from '$components/RecGrid/display-mode'
-import { gridDefaultEmitter, type GridEmitter } from '$components/RecGrid/grid.shared'
 import { getBvidInfo } from '$components/RecGrid/rec-grid-state'
 import { setGlobalValue } from '$components/RecGrid/unsafe-window-export'
 import { ETab } from '$components/RecHeader/tab-enum'
+import { defaultRecSharedEmitter, type RecSharedEmitter, type RefreshFn } from '$components/Recommends/rec.shared'
 import {
   isAppRecommend,
   isFav,
@@ -39,8 +39,8 @@ import { ELiveStatus } from '$modules/rec-services/live/live-enum'
 import { useWatchlaterState } from '$modules/rec-services/watchlater'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { isWebApiSuccess } from '$request'
+
 import { isFirefox, isSafari } from '$ua'
-import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import type { IVideoCardData } from '$modules/filter/normalize'
 import type { CssProp } from '$utility/type'
 import { videoCardBorderRadiusValue } from '../css-vars'
@@ -51,7 +51,7 @@ import { SimpleProgressBar } from './child-components/PreviewImage'
 import { VideoCardActionButton, VideoCardActionsClassNames } from './child-components/VideoCardActions'
 import { VideoCardBottom } from './child-components/VideoCardBottom'
 import { showNativeContextMenuWhenAltKeyPressed, useContextMenus } from './context-menus'
-import { clsZWatchlaterProgressBar, copyContent, displayAsListCss, videoCardDefaultEmitter } from './index.shared'
+import { clsZWatchlaterProgressBar, copyContent, defaultVideoCardEmitter, displayAsListCss } from './index.shared'
 import { fetchImagePreviewData, isImagePreviewDataValid } from './services'
 import { StatItemDisplay } from './stat-item'
 import {
@@ -80,9 +80,9 @@ export type VideoCardProps = {
   item?: RecItemType
   onRemoveCurrent?: (item: RecItemType, data: IVideoCardData, silent?: boolean) => void | Promise<void>
   onMoveToFirst?: (item: RecItemType, data: IVideoCardData) => void | Promise<void>
-  onRefresh?: OnRefresh
+  refresh?: RefreshFn
   emitter?: VideoCardEmitter
-  gridEmitter?: GridEmitter
+  recSharedEmitter?: RecSharedEmitter
   tab: ETab
   baseCss?: CssProp
   gridDisplayMode?: EGridDisplayMode
@@ -97,9 +97,9 @@ export const VideoCard = memo(function VideoCard({
   active,
   onRemoveCurrent,
   onMoveToFirst,
-  onRefresh,
+  refresh,
   emitter,
-  gridEmitter,
+  recSharedEmitter,
   tab,
   baseCss,
   gridDisplayMode,
@@ -157,11 +157,11 @@ export const VideoCard = memo(function VideoCard({
             cardData={cardData}
             active={active}
             emitter={emitter}
-            gridEmitter={gridEmitter}
+            recSharedEmitter={recSharedEmitter}
             tab={tab}
             onRemoveCurrent={onRemoveCurrent}
             onMoveToFirst={onMoveToFirst}
-            onRefresh={onRefresh}
+            refresh={refresh}
             watchlaterAdded={watchlaterAdded}
             gridDisplayMode={gridDisplayMode}
             multiSelecting={multiSelecting}
@@ -179,9 +179,9 @@ export type VideoCardInnerProps = {
   active?: boolean
   onRemoveCurrent?: (item: RecItemType, data: IVideoCardData, silent?: boolean) => void | Promise<void>
   onMoveToFirst?: (item: RecItemType, data: IVideoCardData) => void | Promise<void>
-  onRefresh?: OnRefresh
+  refresh?: RefreshFn
   emitter?: VideoCardEmitter
-  gridEmitter?: GridEmitter
+  recSharedEmitter?: RecSharedEmitter
   watchlaterAdded: boolean
   tab: ETab
   gridDisplayMode?: EGridDisplayMode
@@ -195,9 +195,9 @@ const VideoCardInner = memo(function VideoCardInner({
   active = false,
   onRemoveCurrent,
   onMoveToFirst,
-  onRefresh,
-  emitter = videoCardDefaultEmitter,
-  gridEmitter = gridDefaultEmitter,
+  refresh,
+  emitter = defaultVideoCardEmitter,
+  recSharedEmitter = defaultRecSharedEmitter,
   watchlaterAdded,
   gridDisplayMode,
   multiSelecting = false,
@@ -301,7 +301,7 @@ const VideoCardInner = memo(function VideoCardInner({
     previewImageEl,
   } = usePreviewRelated({
     uniqId: item.uniqId,
-    gridEmitter,
+    recSharedEmitter,
     title,
     active,
     videoDuration: duration,
@@ -359,7 +359,7 @@ const VideoCardInner = memo(function VideoCardInner({
     bvid: bvid!,
     cid,
     uniqId: item.uniqId,
-    gridEmitter,
+    recSharedEmitter,
     // optional
     aspectRatioFromItem,
     cover,
@@ -434,7 +434,7 @@ const VideoCardInner = memo(function VideoCardInner({
     cardData,
     tab,
     isNormalVideo,
-    onRefresh,
+    refresh,
     watchlaterContext,
     favContext,
     onMoveToFirst,

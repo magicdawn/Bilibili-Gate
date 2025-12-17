@@ -7,7 +7,7 @@ import { openNewTab } from '$modules/gm'
 import { IconForLoading } from '$modules/icon'
 import { settings } from '$modules/settings'
 import { shouldDisableShortcut } from '$utility/dom'
-import type { GridEmitter } from '$components/RecGrid/grid.shared'
+import type { RecSharedEmitter } from '$components/Recommends/rec.shared'
 import type { CssProp } from '$utility/type'
 import { VideoCardActionButton } from '../VideoCard/child-components/VideoCardActions'
 import { fetchVideoPreviewData, isVideoPreviewDataValid, type VideoPreviewData } from '../VideoCard/services'
@@ -38,7 +38,7 @@ type UseLargePreviewOptions = {
   bvid: string
   cid?: number
   uniqId: string
-  gridEmitter: GridEmitter
+  recSharedEmitter: RecSharedEmitter
   // optional
   aspectRatioFromItem?: number
   cover?: string
@@ -58,7 +58,7 @@ export function useLargePreviewRelated({
   bvid,
   cid,
   uniqId,
-  gridEmitter,
+  recSharedEmitter,
   // optional
   aspectRatioFromItem,
   cover,
@@ -119,7 +119,7 @@ export function useLargePreviewRelated({
     setVisible(true)
     triggerAction.set(action)
     triggerElement.set(el)
-    gridEmitter.emit('show-large-preview', uniqId)
+    recSharedEmitter.emit('show-large-preview', uniqId)
     hideAt.set(undefined)
   })
   const hide = useMemoizedFn(() => {
@@ -129,7 +129,7 @@ export function useLargePreviewRelated({
     triggerElement.set(undefined)
     hideAt.set(Date.now())
   })
-  useEmitterOn(gridEmitter, 'show-large-preview', (srcUniqId) => {
+  useEmitterOn(recSharedEmitter, 'show-large-preview', (srcUniqId) => {
     if (srcUniqId === uniqId) return
     clearTimers()
     hide()

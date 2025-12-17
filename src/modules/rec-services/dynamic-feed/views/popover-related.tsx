@@ -19,7 +19,8 @@ import {
   type Settings,
 } from '$modules/settings'
 import { advancedSearchHelpInfo } from '$utility/search'
-import type { OnRefresh } from '$components/RecGrid/useRefresh'
+
+import type { RefreshFn } from '$components/Recommends/rec.shared'
 import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 import {
   createUpdateSearchCacheNotifyFns,
@@ -53,7 +54,7 @@ export function usePopoverRelated({
   getPopupContainer,
 }: {
   externalSearchInput: boolean
-  onRefresh: OnRefresh | undefined
+  onRefresh: RefreshFn
   getPopupContainer: (() => HTMLElement) | undefined
 }) {
   const { upMid, dynamicFeedVideoType, filterMinDuration, searchText, hideChargeOnlyVideos } = useSnapshot(dfStore)
@@ -79,13 +80,13 @@ export function usePopoverRelated({
       onSearch={async (val) => {
         dfStore.searchText = val || undefined
         await delay(100)
-        onRefresh?.()
+        onRefresh()
       }}
     />
   )
 
   const popoverContent = (
-    <PopoverContent externalSearchInput={externalSearchInput} searchInput={searchInput} onRefresh={onRefresh} />
+    <PopoverContent externalSearchInput={externalSearchInput} searchInput={searchInput} refresh={onRefresh} />
   )
 
   const [popoverOpen, setPopoverOpen] = useState(
@@ -137,11 +138,11 @@ const classes = {
 function PopoverContent({
   externalSearchInput,
   searchInput,
-  onRefresh,
+  refresh,
 }: {
   externalSearchInput: boolean
   searchInput: ReactNode
-  onRefresh: OnRefresh | undefined
+  refresh: RefreshFn | undefined
 }) {
   const {
     viewingSomeUp,
@@ -197,7 +198,7 @@ function PopoverContent({
             onChange={async (v) => {
               dfStore.dynamicFeedVideoType = v.target.value
               await delay(100)
-              onRefresh?.()
+              refresh?.()
             }}
           >
             {Object.values(DynamicFeedVideoType).map((v) => {
@@ -227,7 +228,7 @@ function PopoverContent({
                 }
 
                 await delay(100)
-                onRefresh?.()
+                refresh?.()
               }}
             >
               <AntdTooltip
@@ -254,7 +255,7 @@ function PopoverContent({
             onChange={async (v) => {
               dfStore.filterMinDuration = v.target.value
               await delay(100)
-              onRefresh?.()
+              refresh?.()
             }}
           >
             {Object.values(DynamicFeedVideoMinDuration).map((k) => {
@@ -308,16 +309,14 @@ function PopoverContent({
             onChange={async (v) => {
               dfStore.addSeparatorsMap.set('global', v.target.checked)
               await delay(100)
-              onRefresh?.()
+              refresh?.()
             }}
           >
             <AntdTooltip title='添加今日/更早分割线'>添加分割线</AntdTooltip>
           </Checkbox>
 
           {/* actions for up|group */}
-          {viewingSomeGroup && !!selectedGroup && (
-            <FollowGroupActions followGroup={selectedGroup} onRefresh={onRefresh} />
-          )}
+          {viewingSomeGroup && !!selectedGroup && <FollowGroupActions followGroup={selectedGroup} refresh={refresh} />}
         </div>
       </div>
     </div>
@@ -393,7 +392,7 @@ const tryInstantSearchWithCache = throttle(async function ({
 }: {
   searchText: string
   upMid?: UpMidType | undefined
-  onRefresh?: () => void
+  onRefresh: RefreshFn
 }) {
   if (!upMid) return
   if (!(searchText || (!searchText && dfStore.searchText))) return
@@ -409,7 +408,7 @@ const tryInstantSearchWithCache = throttle(async function ({
   // instant search
   dfStore.searchText = searchText
   await delay(0)
-  onRefresh?.()
+  onRefresh()
 }, 100)
 
 export function FollowGroupMechanismNote() {
@@ -443,7 +442,7 @@ export function FollowGroupMechanismNote() {
   )
 }
 
-function FollowGroupActions({ followGroup, onRefresh }: { followGroup: FollowGroup; onRefresh?: () => void }) {
+function FollowGroupActions({ followGroup, refresh }: { followGroup: FollowGroup; refresh?: () => void }) {
   const { whenViewAll } = useSnapshot(settings.dynamicFeed)
   const midCount = followGroup.count
 
@@ -460,7 +459,7 @@ function FollowGroupActions({ followGroup, onRefresh }: { followGroup: FollowGro
         checked={checked}
         onChange={(e) => {
           onChange(e)
-          onRefresh?.()
+          refresh?.()
         }}
         disabled={disabled}
       >

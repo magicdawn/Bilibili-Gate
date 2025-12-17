@@ -3,12 +3,12 @@ import { ConfigProvider, type Menu } from 'antd'
 import { useUnoMerge } from 'unocss-merge/react'
 import { useSnapshot } from 'valtio'
 import { EHotSubTab, ETab } from '$components/RecHeader/tab-enum'
+import { useRecommendContext } from '$components/Recommends/rec.shared'
 import { QUERY_DYNAMIC_UP_MID } from '$modules/rec-services/dynamic-feed/store'
 import { hotStore } from '$modules/rec-services/hot'
 import { useSettingsSnapshot } from '$modules/settings'
 import type { AntMenuItem } from '$modules/antd'
 import { useGridDisplayModeChecker } from './display-mode'
-import { GridConfigContext } from '.'
 import type { CSSProperties, ElementRef, ReactNode } from 'react'
 
 const sidebarViewWrapperCss = css`
@@ -32,7 +32,7 @@ export function useSidebarVisible(tab: ETab | undefined): boolean {
   const { enableSidebar } = useSettingsSnapshot()
   const { usingTwoColumnMode } = useGridDisplayModeChecker()
   const hotSubTab = useSnapshot(hotStore).subtab
-  const { insideModal } = useContext(GridConfigContext)
+  const { insideModal } = useRecommendContext()
 
   return useMemo(() => {
     if (!enableSidebar) return false // main switch
@@ -68,7 +68,7 @@ export function GridSidebar({
   const visible = useSidebarVisible(viewTab)
 
   const usingClassName = useUnoMerge(
-    'h-fit w-250px flex-none overflow-x-hidden overflow-y-auto b-1px b-gate-bg-lv2 rounded-15px b-solid',
+    'h-fit w-250px flex-none overflow-x-hidden overflow-y-auto b-1px b-gate-border rounded-15px b-solid',
     useTabExtraClassName(viewTab),
     propClassName,
   )
@@ -96,24 +96,26 @@ export function GridSidebar({
 export function useRevealMenuSelectedKey(menuItems: AntMenuItem[], selectedKey: string) {
   const menuRef = useRef<ElementRef<typeof Menu>>(null)
 
+  const revealSelected = useMemoizedFn(() => {
+    const el = menuRef.current?.menu?.findItem({ key: selectedKey })
+    if (!el) return
+    el.scrollIntoViewIfNeeded ? el.scrollIntoViewIfNeeded() : el.scrollIntoView()
+    return true // scroll called
+  })
+
+  /**
+   * Auto reveal on load
+   */
   const scrollCalled = useRef(false)
   const checkAndScroll = useMemoizedFn(() => {
     if (scrollCalled.current) return
-
-    const el = menuRef.current?.menu?.findItem({ key: selectedKey })
-    if (!el) return
-
-    scrollCalled.current = true
-    if ((el as any).scrollIntoViewIfNeeded) {
-      ;(el as any).scrollIntoViewIfNeeded()
-    } else {
-      el.scrollIntoView()
+    const called = revealSelected()
+    if (called) {
+      scrollCalled.current = true
     }
   })
-
-  // on mount or data loaded
   useMount(() => checkAndScroll())
   useUpdateEffect(() => checkAndScroll(), [menuItems])
 
-  return { menuRef }
+  return { menuRef, revealSelected }
 }

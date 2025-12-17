@@ -12,6 +12,11 @@ interface Window {
   }
 }
 
+interface Element {
+  // Non-standard: This feature is not standardized; major browser except Firefox
+  scrollIntoViewIfNeeded?: (centerIfNeeded?: boolean) => void
+}
+
 interface VMScriptGMTabOptions {
   /** tampermonkey only, https://www.tampermonkey.net/documentation.php?locale=en#api:GM_openInTab */
   setParent?: boolean

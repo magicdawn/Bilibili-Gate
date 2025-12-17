@@ -4,12 +4,13 @@ import pRetry from 'p-retry'
 import { proxy, useSnapshot } from 'valtio'
 import { proxySet } from 'valtio/utils'
 import { appWarn, IN_BILIBILI_HOMEPAGE } from '$common'
-import { getCurrentGridEmitter, getMultiSelectedItems } from '$components/RecGrid/rec-grid-state'
+import { getMultiSelectedItems } from '$components/RecGrid/rec-grid-state'
 import { EApiType } from '$define/index.shared'
 import { normalizeCardData } from '$modules/filter/normalize'
 import { getHasLogined, getUid } from '$utility/cookie'
 import { whenIdle } from '$utility/dom'
 import toast from '$utility/toast'
+import type { RecSharedEmitter } from '$components/Recommends/rec.shared'
 import type { ItemsSeparator, WatchlaterItemExtend } from '$define'
 import { BaseTabService, type IService } from '../_base'
 import { batchRemoveWatchlater, fetchWatchlaterItems } from './api'
@@ -57,7 +58,7 @@ if (IN_BILIBILI_HOMEPAGE) {
 /**
  * 批量移除稍后再看
  */
-export async function removeMultiSelectedWatchlaterItems() {
+export async function removeMultiSelectedWatchlaterItems(recSharedEmitter: RecSharedEmitter) {
   const selected = getMultiSelectedItems()
     .map((item) => ({ item, cardData: normalizeCardData(item) }))
     .filter((x) => x.cardData.avid)
@@ -72,7 +73,7 @@ export async function removeMultiSelectedWatchlaterItems() {
 
   const success = await batchRemoveWatchlater(avids)
   if (!success) return
-  getCurrentGridEmitter()?.emit('remove-cards', [uniqIds, titles])
+  recSharedEmitter.emit('remove-cards', [uniqIds, titles])
 }
 
 export class WatchlaterRecService extends BaseTabService<WatchlaterItemExtend | ItemsSeparator> {

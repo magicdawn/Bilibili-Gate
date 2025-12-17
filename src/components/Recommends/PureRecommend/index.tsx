@@ -3,11 +3,11 @@ import { initGridExternalState, RecGrid, type GridExternalState } from '$compone
 import { useGridDisplayModeChecker } from '$components/RecGrid/display-mode'
 import { clsForTwoColumnModeAlign, clsTwoColumnModeWidth } from '$components/RecGrid/display-mode/two-column-mode'
 import { GridSidebar } from '$components/RecGrid/sidebar'
-import { OnRefreshContext } from '$components/RecGrid/useRefresh'
 import { RecHeader, type RecHeaderRef } from '$components/RecHeader'
 import { usePlainShortcutEnabled } from '$components/RecHeader/index.shared'
 import { $headerHeight } from '$header'
 import { useSettingsSnapshot } from '$modules/settings'
+import { RecommendContext, useInitRecommendContext } from '../rec.shared'
 
 // two-column mode align 是否影响 sidebar
 const TWO_COLUMN_MODE_ALIGN_APPLY_TO_SIDEBAR = false
@@ -18,6 +18,8 @@ export function PureRecommend() {
   } = useSettingsSnapshot()
   const { usingTwoColumnMode } = useGridDisplayModeChecker()
   const shortcutEnabled = usePlainShortcutEnabled()
+
+  const recContext = useInitRecommendContext()
 
   const [gridExternalState, setGridExternalState] = useState<GridExternalState>(initGridExternalState)
 
@@ -52,14 +54,8 @@ export function PureRecommend() {
   }
 
   return (
-    <OnRefreshContext.Provider value={gridExternalState.onRefresh}>
-      <RecHeader
-        ref={recHeaderRef}
-        refreshing={gridExternalState.refreshing}
-        onRefresh={gridExternalState.onRefresh}
-        leftSlot={gridExternalState.tabbarView}
-        shortcutEnabled={shortcutEnabled}
-      />
+    <RecommendContext.Provider value={recContext}>
+      <RecHeader ref={recHeaderRef} leftSlot={gridExternalState.tabbarView} shortcutEnabled={shortcutEnabled} />
       <div className={clsFlexContainer}>
         <GridSidebar sidebarView={gridExternalState.sidebarView} viewTab={gridExternalState.viewTab} css={sidebarCss} />
         <RecGrid
@@ -71,6 +67,6 @@ export function PureRecommend() {
           onSyncExternalState={setGridExternalState}
         />
       </div>
-    </OnRefreshContext.Provider>
+    </RecommendContext.Provider>
   )
 }

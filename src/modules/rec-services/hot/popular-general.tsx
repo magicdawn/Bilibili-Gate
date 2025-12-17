@@ -1,7 +1,8 @@
 import { delay } from 'es-toolkit'
 import { REQUEST_FAIL_MSG } from '$common'
 import { CheckboxSettingItem, SwitchSettingItem } from '$components/ModalSettings/setting-item'
-import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
+
+import { useOnRefresh } from '$components/Recommends/rec.shared'
 import { EApiType } from '$define/index.shared'
 import { isWebApiSuccess, request } from '$request'
 import toast from '$utility/toast'
@@ -46,12 +47,12 @@ export class PopularGeneralRecService implements IService {
 }
 
 function PopularGeneralTabbarView() {
-  const onRefresh = useOnRefreshContext()
+  const onRefresh = useOnRefresh()
 
   const tooltip = <>✅ 匿名访问: 使用游客身份访问</>
   const extraAction = async () => {
     await delay(100)
-    onRefresh?.()
+    onRefresh()
   }
 
   const _switch = (

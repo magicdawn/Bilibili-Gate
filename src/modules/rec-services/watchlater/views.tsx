@@ -1,7 +1,8 @@
 import { Button, Input, Tag } from 'antd'
 import { delay } from 'es-toolkit'
 import { useSnapshot } from 'valtio'
-import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
+
+import { useOnRefresh, useRecommendContext } from '$components/Recommends/rec.shared'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconForRemove, IconForShuffle, IconForTimestamp, withAscIcon, withDescIcon } from '$modules/icon'
 import { useMultiSelecting } from '$modules/multi-select/store'
@@ -17,15 +18,16 @@ import type { ElementRef, ReactNode } from 'react'
 
 export function WatchlaterTabbarView({ service }: { service: WatchlaterRecService }) {
   const { watchlaterAddSeparator, watchlaterItemsOrder, watchlaterUseNormalVideoUrl } = useSettingsSnapshot()
-  const onRefresh = useOnRefreshContext()
+  const onRefresh = useOnRefresh()
   const { searchText } = useSnapshot(watchlaterStore, { sync: true })
   const multiSelecting = useMultiSelecting()
+  const { recSharedEmitter } = useRecommendContext()
 
   // 修改 watchlater 相关设置, 即时生效
   useUpdateEffect(() => {
     void (async () => {
       await delay(100)
-      onRefresh?.()
+      onRefresh()
     })()
   }, [watchlaterAddSeparator, watchlaterItemsOrder, watchlaterUseNormalVideoUrl])
 
@@ -60,7 +62,7 @@ export function WatchlaterTabbarView({ service }: { service: WatchlaterRecServic
         onChange={(e) => (watchlaterStore.searchText = e.target.value)}
         onSearch={(val) => {
           watchlaterStore.searchText = val
-          onRefresh?.()
+          onRefresh()
         }}
       />
 
@@ -68,7 +70,10 @@ export function WatchlaterTabbarView({ service }: { service: WatchlaterRecServic
 
       {multiSelecting && (
         <AntdTooltip arrow={false} title='移除稍后再看 (多选)'>
-          <Button className='icon-only-round-button' onClick={removeMultiSelectedWatchlaterItems}>
+          <Button
+            className='icon-only-round-button'
+            onClick={() => removeMultiSelectedWatchlaterItems(recSharedEmitter)}
+          >
             <IconForRemove />
           </Button>
         </AntdTooltip>
@@ -116,7 +121,7 @@ const extraHelpInfo = (
 )
 
 function WatchlaterOrderSwitcher() {
-  const onRefresh = useOnRefreshContext()
+  const onRefresh = useOnRefresh()
   const { ref, getPopupContainer } = usePopupContainer<ElementRef<'span'>>()
   const { watchlaterItemsOrder } = useSettingsSnapshot()
   const { searchText } = useSnapshot(watchlaterStore)
@@ -129,7 +134,7 @@ function WatchlaterOrderSwitcher() {
       onChange={async (next) => {
         settings.watchlaterItemsOrder = next
         await delay(100)
-        onRefresh?.()
+        onRefresh()
       }}
       list={list}
       listDisplayConfig={WatchlaterItemsOrderConfig}

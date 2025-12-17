@@ -13,7 +13,6 @@ import { MultiSelectButton } from '$modules/multi-select'
 import { useSettingsSnapshot } from '$modules/settings'
 import { isMac, isSafari } from '$ua'
 import { getElementOffset, shouldDisableShortcut } from '$utility/dom'
-import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import type { CssProp } from '$utility/type'
 import { AccessKeyManage } from '../AccessKeyManage'
 import { showModalFeed, showModalSettings, toggleModalSettings } from './modals'
@@ -30,13 +29,11 @@ export type RecHeaderRef = {
 export const RecHeader = forwardRef<
   RecHeaderRef,
   {
-    refreshing: boolean
-    onRefresh: OnRefresh
     shortcutEnabled: boolean
     leftSlot?: ReactNode
     rightSlot?: ReactNode
   }
->(function RecHeader({ onRefresh, refreshing, leftSlot, rightSlot, shortcutEnabled }, ref) {
+>(function RecHeader({ leftSlot, rightSlot, shortcutEnabled }, ref) {
   const {
     accessKey,
     pureRecommend,
@@ -116,7 +113,7 @@ export const RecHeader = forwardRef<
         className={`${APP_CLS_TAB_BAR} relative mb-0 h-auto flex flex-row items-center justify-between gap-x-15px px-0 py-8px`}
       >
         <div data-class-name='left' className='h-full flex flex-shrink-1 flex-wrap items-center gap-x-15px gap-y-8px'>
-          <VideoSourceTab onRefresh={onRefresh} />
+          <VideoSourceTab />
           {leftSlot}
         </div>
 
@@ -134,7 +131,7 @@ export const RecHeader = forwardRef<
             </Button>
           </AntdTooltip>
 
-          <RefreshButton refreshing={refreshing} onRefresh={onRefresh} refreshHotkeyEnabled={shortcutEnabled} />
+          <RefreshButton refreshHotkeyEnabled={shortcutEnabled} />
 
           {showModalFeedEntry && (
             <Button onClick={showModalFeed} className='gap-0'>

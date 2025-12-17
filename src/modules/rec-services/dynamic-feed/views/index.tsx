@@ -4,8 +4,8 @@ import { fastSortWithOrders } from 'fast-sort-lens'
 import { useSnapshot } from 'valtio'
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { useRevealMenuSelectedKey, useSidebarVisible } from '$components/RecGrid/sidebar'
-import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
 import { ETab } from '$components/RecHeader/tab-enum'
+import { useOnRefresh } from '$components/Recommends/rec.shared'
 import { IconForReset } from '$modules/icon'
 import { CopyBvidButtonsTabbarView } from '$modules/rec-services/_shared/copy-bvid-buttons'
 import { useSettingsSnapshot } from '$modules/settings'
@@ -48,7 +48,7 @@ const clearPayload: Partial<DynamicFeedStore> = {
 // who's dynamic-feed
 function useScopeMenus(form: 'dropdown' | 'sidebar') {
   const { upList, groups, selectedKey } = useSnapshot(dfStore)
-  const onRefresh = useOnRefreshContext()
+  const onRefresh = useOnRefresh()
   const {
     followGroup: { enabled: followGroupEnabled },
   } = useSettingsSnapshot().dynamicFeed
@@ -56,7 +56,7 @@ function useScopeMenus(form: 'dropdown' | 'sidebar') {
   const onSelect = useMemoizedFn(async (payload: Partial<typeof dfStore>) => {
     dynamicFeedFilterSelectUp(payload)
     await delay(100)
-    onRefresh?.()
+    onRefresh()
   })
 
   const onClear = useMemoizedFn(() => {
@@ -131,7 +131,7 @@ export function DynamicFeedTabbarView() {
     },
   } = useSettingsSnapshot()
   const { viewingSomeUp, upName, upFace, selectedGroup } = useSnapshot(dfStore)
-  const onRefresh = useOnRefreshContext()
+  const onRefresh = useOnRefresh()
   const { ref, getPopupContainer } = usePopupContainer()
   const sidebarVisible = useSidebarVisible(ETab.DynamicFeed)
   const { menuItems, selectedKey, onClear } = useScopeMenus('dropdown')

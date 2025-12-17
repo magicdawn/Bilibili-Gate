@@ -11,6 +11,7 @@ import {
   getCurrentGridItems,
 } from '$components/RecGrid/rec-grid-state'
 import { ETab } from '$components/RecHeader/tab-enum'
+import { useRecommendContext, type RefreshFn } from '$components/Recommends/rec.shared'
 import { isDynamicFeed, isLive, isSpaceUpload, type DynamicFeedItemExtend, type RecItemType } from '$define'
 import { EApiType } from '$define/index.shared'
 import { antMessage, antModal, defineAntMenus, type AntMenuItem } from '$modules/antd'
@@ -39,8 +40,8 @@ import {
 } from '$modules/rec-services/dynamic-feed/store'
 import { SHOW_SPACE_UPLOAD_ONLY, SpaceUploadQueryKey } from '$modules/rec-services/space-upload/store'
 import { settings, updateSettingsInnerArray } from '$modules/settings'
+
 import toast from '$utility/toast'
-import type { OnRefresh } from '$components/RecGrid/useRefresh'
 import type { IVideoCardData } from '$modules/filter/normalize'
 import { copyContent } from './index.shared'
 import { watchlaterAdd } from './services'
@@ -56,7 +57,7 @@ export function useContextMenus({
   tab,
 
   isNormalVideo,
-  onRefresh,
+  refresh,
 
   favContext,
   watchlaterContext,
@@ -76,7 +77,7 @@ export function useContextMenus({
   tab: ETab
 
   isNormalVideo: boolean
-  onRefresh: OnRefresh | undefined
+  refresh: RefreshFn | undefined
 
   watchlaterContext: WatchlaterRelatedContext
   favContext: FavContext
@@ -104,6 +105,7 @@ export function useContextMenus({
   } = cardData
 
   const { enableHideSomeContents } = useSnapshot(settings.dynamicFeed.whenViewAll)
+  const { recSharedEmitter } = useRecommendContext()
 
   const onCopyLink = useMemoizedFn(() => {
     let content = href
@@ -413,7 +415,14 @@ export function useContextMenus({
       },
     ])
 
-    const favTabMenus = getFavTabMenus({ item, cardData, tab, multiSelectingAppendix, onRemoveCurrent })
+    const favTabMenus = getFavTabMenus({
+      item,
+      cardData,
+      tab,
+      multiSelectingAppendix,
+      onRemoveCurrent,
+      recSharedEmitter,
+    })
 
     return defineAntMenus([
       ...consistentOpenMenus,

@@ -1,7 +1,8 @@
 import { Input } from 'antd'
 import { useSnapshot } from 'valtio'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
-import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
+
+import { useOnRefresh } from '$components/Recommends/rec.shared'
 import { AntdTooltip } from '$modules/antd/custom'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { CopyBvidButtonsTabbarView } from '../_shared/copy-bvid-buttons'
@@ -16,7 +17,7 @@ export function SpaceUploadTabbarView() {
   const {
     spaceUpload: { useSyncFilterTextFromSearchText },
   } = useSettingsSnapshot()
-  const onRefresh = useOnRefreshContext()
+  const onRefresh = useOnRefresh()
 
   const onSyncStoreToUrl = useMemoizedFn(() => {
     syncFilterTextFromSearchText()
@@ -50,7 +51,7 @@ export function SpaceUploadTabbarView() {
         listDisplayConfig={SpaceUploadOrderConfig}
         onChange={(value) => {
           spaceUploadStore.order = value
-          onRefresh?.()
+          onRefresh()
         }}
       />
       <Input.Search
@@ -62,7 +63,7 @@ export function SpaceUploadTabbarView() {
         onSearch={(value) => {
           spaceUploadStore.searchText = value
           onSyncStoreToUrl()
-          onRefresh?.()
+          onRefresh()
         }}
       />
       <Input.Search
@@ -78,7 +79,7 @@ export function SpaceUploadTabbarView() {
               extraAction={(checked) => {
                 if (checked) {
                   onSyncStoreToUrl()
-                  onRefresh?.()
+                  onRefresh()
                 }
               }}
             />
@@ -89,7 +90,7 @@ export function SpaceUploadTabbarView() {
         onSearch={(value) => {
           spaceUploadStore.filterText = value
           onSyncStoreToUrl()
-          onRefresh?.()
+          onRefresh()
         }}
       />
 

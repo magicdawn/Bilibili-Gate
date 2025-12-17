@@ -122,7 +122,7 @@ export type VideoCardEmitter = Emittery<VideoCardEvents>
 export function createVideoCardEmitter() {
   return new Emittery<VideoCardEvents>()
 }
-export const videoCardDefaultEmitter = createVideoCardEmitter()
+export const defaultVideoCardEmitter = createVideoCardEmitter()
 
 export const displayAsListCss = {
   card: css`

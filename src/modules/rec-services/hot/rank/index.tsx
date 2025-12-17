@@ -3,7 +3,8 @@ import { snapshot, useSnapshot } from 'valtio'
 import { REQUEST_FAIL_MSG } from '$common'
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { HelpInfo } from '$components/_base/HelpInfo'
-import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
+
+import { useOnRefresh } from '$components/Recommends/rec.shared'
 import { EApiType } from '$define/index.shared'
 import { usePopupContainer } from '$modules/rec-services/_base'
 import { useSettingsSnapshot } from '$modules/settings'
@@ -84,7 +85,7 @@ function useMenuItems() {
 function RankTabbarView() {
   const { enableSidebar } = useSettingsSnapshot()
   const { ref, getPopupContainer } = usePopupContainer()
-  const onRefresh = useOnRefreshContext()
+  const onRefresh = useOnRefresh()
   const { slug, currentTab } = useSnapshot(rankStore)
   const { normalList, pgcList } = useMenuItems()
 
@@ -106,7 +107,7 @@ function RankTabbarView() {
                 onClick={(e) => {
                   setPopoverOpen(false)
                   rankStore.slug = c.slug
-                  onRefresh?.()
+                  onRefresh()
                 }}
               >
                 <span>{c.name}</span>
@@ -126,7 +127,7 @@ function RankTabbarView() {
     const offset = e.shiftKey ? -1 : 1
     const nextIndex = (index + offset + list.length) % list.length
     rankStore.slug = list[nextIndex].slug
-    onRefresh?.()
+    onRefresh()
   })
 
   const popoverContent = (
@@ -159,11 +160,11 @@ function RankTabbarView() {
 export function RankSidebarView() {
   const { slug } = useSnapshot(rankStore)
   const { normalList, pgcList } = useMenuItems()
-  const onRefresh = useOnRefreshContext()
+  const onRefresh = useOnRefresh()
 
   const onSelect = useMemoizedFn((slug: string) => {
     rankStore.slug = slug
-    onRefresh?.()
+    onRefresh()
   })
 
   const menuItems = useMemo(() => {

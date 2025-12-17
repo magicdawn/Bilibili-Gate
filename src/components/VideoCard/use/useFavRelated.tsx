@@ -1,5 +1,5 @@
 import { pickFavFolder } from '$components/ModalMoveFav'
-import { getCurrentGridEmitter, getMultiSelectedItems } from '$components/RecGrid/rec-grid-state'
+import { getMultiSelectedItems } from '$components/RecGrid/rec-grid-state'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { isFav, isWatchlater, type RecItemType } from '$define'
 import { antMessage, antModal, defineAntMenus } from '$modules/antd'
@@ -10,6 +10,7 @@ import { clearFavFolderAllItemsCache } from '$modules/rec-services/fav/service/f
 import { FavQueryKey, favStore } from '$modules/rec-services/fav/store'
 import { defaultFavFolderTitle, UserFavService } from '$modules/rec-services/fav/user-fav-service'
 import toast from '$utility/toast'
+import type { RecSharedEmitter } from '$components/Recommends/rec.shared'
 import type { IVideoCardData } from '$modules/filter/normalize'
 import { getLinkTarget } from './useOpenRelated'
 
@@ -127,12 +128,14 @@ export function getFavTabMenus({
   tab,
   multiSelectingAppendix,
   onRemoveCurrent,
+  recSharedEmitter,
 }: {
   item: RecItemType
   cardData: IVideoCardData
   tab: ETab
   multiSelectingAppendix: string
   onRemoveCurrent: ((item: RecItemType, data: IVideoCardData, silent?: boolean) => void | Promise<void>) | undefined
+  recSharedEmitter: RecSharedEmitter
 }) {
   if (!isFav(item)) return []
 
@@ -186,7 +189,7 @@ export function getFavTabMenus({
             if (!success) return
             clearFavFolderAllItemsCache(item.folder.id)
             clearFavFolderAllItemsCache(targetFolder.id)
-            getCurrentGridEmitter()?.emit('remove-cards', [uniqIds, titles, true])
+            recSharedEmitter.emit('remove-cards', [uniqIds, titles, true])
             antMessage.success(`已移动 ${uniqIds.length} 个视频到「${targetFolder.title}」收藏夹`)
             return success
           })

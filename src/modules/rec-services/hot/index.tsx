@@ -1,7 +1,8 @@
 import { Button, Dropdown, Space } from 'antd'
 import { useSnapshot } from 'valtio'
-import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
+
 import { EHotSubTab } from '$components/RecHeader/tab-enum'
+import { useOnRefresh } from '$components/Recommends/rec.shared'
 import { styled } from '$libs'
 import { AntdTooltip } from '$modules/antd/custom'
 import { settings, useSettingsSnapshot } from '$modules/settings'
@@ -93,7 +94,7 @@ if (!Object.values(EHotSubTab).includes(hotStore.subtab)) {
 function HotTabbarView({ children }: { children?: ReactNode }) {
   const { subtab: activeSubtab } = useSnapshot(hotStore)
   const { icon, label } = HotSubTabConfig[activeSubtab]
-  const onRefresh = useOnRefreshContext()
+  const onRefresh = useOnRefresh()
   const { ref, getPopupContainer } = usePopupContainer<HTMLButtonElement>()
   const { __internalHotSubUseDropdown } = useSettingsSnapshot()
 
@@ -112,8 +113,8 @@ function HotTabbarView({ children }: { children?: ReactNode }) {
               onClick() {
                 if (subtab === hotStore.subtab) return
                 hotStore.subtab = subtab
-                // onRefresh?.(true) // 可以但没必要, 有 skeleton 有 Tab切换 的反馈
-                onRefresh?.()
+                // refresh?.(true) // 可以但没必要, 有 skeleton 有 Tab切换 的反馈
+                onRefresh()
               },
             } satisfies AntMenuItem,
           ].filter(Boolean)
@@ -162,8 +163,8 @@ function HotTabbarView({ children }: { children?: ReactNode }) {
                 onClick={() => {
                   if (subtab === hotStore.subtab) return
                   hotStore.subtab = subtab
-                  // onRefresh?.(true) // 可以但没必要, 有 skeleton 有 Tab切换 的反馈
-                  onRefresh?.()
+                  // refresh?.(true) // 可以但没必要, 有 skeleton 有 Tab切换 的反馈
+                  onRefresh()
                 }}
               >
                 {label}

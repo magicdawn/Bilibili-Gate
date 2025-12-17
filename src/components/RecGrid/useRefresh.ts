@@ -1,9 +1,10 @@
 import { useUnmount } from 'ahooks'
-import { attempt, attemptAsync, isEqual, noop } from 'es-toolkit'
-import { createContext } from 'react'
+import { attempt, attemptAsync, isEqual } from 'es-toolkit'
+import { useEmitterOn } from '$common/hooks/useEmitter'
 import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
 import { TabConfig } from '$components/RecHeader/tab-config'
 import { ETab } from '$components/RecHeader/tab-enum'
+import { useRecommendContext, type RefreshFn } from '$components/Recommends/rec.shared'
 import { getGridRefreshCount } from '$modules/rec-services'
 import { getDynamicFeedServiceConfig, type DynamicFeedRecService } from '$modules/rec-services/dynamic-feed'
 import { getFavServiceConfig, type FavRecService } from '$modules/rec-services/fav'
@@ -16,22 +17,8 @@ import {
 } from '$modules/rec-services/service-map'
 import { getSpaceUploadServiceConfig, type SpaceUploadService } from '$modules/rec-services/space-upload'
 import type { RecItemTypeOrSeparator } from '$define'
-import { getCurrentGridEmitter } from './rec-grid-state'
 import { setGlobalGridItems } from './unsafe-window-export'
 import type { Debugger } from 'debug'
-
-export type OnRefresh = (reuse?: boolean) => void | Promise<void>
-
-export const OnRefreshContext = createContext<OnRefresh | undefined>(undefined)
-
-export function useOnRefreshContext() {
-  // dev react context 经常为空, 没有深究...
-  const fromContext = useContext(OnRefreshContext)
-  const viaEmitter: OnRefresh = useMemoizedFn((arg) => {
-    return getCurrentGridEmitter()?.emit('refresh', arg)
-  })
-  return fromContext !== noop ? fromContext : viaEmitter
-}
 
 export function useRefresh({
   tab,
@@ -50,11 +37,11 @@ export function useRefresh({
   postAction?: () => void | Promise<void>
   updateViewFromService?: () => void
 }) {
+  const { recStore } = useRecommendContext()
   const hasMoreBox = useRefStateBox(true)
   const itemsBox = useRefStateBox<RecItemTypeOrSeparator[]>([])
   useEffect(() => setGlobalGridItems(itemsBox.state), [itemsBox.state])
 
-  const refreshingBox = useRefStateBox(false)
   const refreshTsBox = useRefStateBox<number>(() => Date.now())
   const [refreshAbortController, setRefreshAbortController] = useState<AbortController>(() => new AbortController())
   const [showSkeleton, setShowSkeleton] = useState(false)
@@ -70,11 +57,11 @@ export function useRefresh({
     refreshAbortController.abort()
   })
 
-  const refresh: OnRefresh = useMemoizedFn(async (reuse = false) => {
+  const refresh: RefreshFn = useMemoizedFn(async (reuse = false) => {
     const start = performance.now()
 
     // when already in refreshing
-    if (refreshingBox.val) {
+    if (recStore.refreshing) {
       /**
        * same tab but conditions changed
        */
@@ -123,7 +110,7 @@ export function useRefresh({
 
     // refresh-state
     refreshTsBox.set(Date.now())
-    refreshingBox.set(true)
+    recStore.refreshing = true
     // refresh-result
     setError(undefined)
     itemsBox.set([])
@@ -136,7 +123,7 @@ export function useRefresh({
     setRefreshAbortController(_abortController)
 
     function _onAny() {
-      refreshingBox.set(false) // refreshing
+      recStore.refreshing = false // refreshing
       setShowSkeleton(false)
     }
     function onError(err: any) {
@@ -200,12 +187,15 @@ export function useRefresh({
     debug('refresh(): tab=%s [success] cost %s ms', tab, cost.toFixed(0))
   })
 
+  // listen for `refresh` event
+  const { recSharedEmitter } = useRecommendContext()
+  useEmitterOn(recSharedEmitter, 'refresh', refresh)
+
   return {
     itemsBox,
     error,
     refresh,
     hasMoreBox,
-    refreshingBox,
     refreshTsBox,
     refreshAbortController,
     showSkeleton,

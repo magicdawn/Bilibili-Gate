@@ -2,7 +2,8 @@ import dayjs from 'dayjs'
 import { delay, shuffle } from 'es-toolkit'
 import pmap from 'promise.map'
 import { SwitchSettingItem } from '$components/ModalSettings/setting-item'
-import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
+
+import { useOnRefresh } from '$components/Recommends/rec.shared'
 import { CustomTargetLink } from '$components/VideoCard/use/useOpenRelated'
 import { EApiType } from '$define/index.shared'
 import { request } from '$request'
@@ -149,7 +150,7 @@ async function fetchWeeklyItems(episodeNum: number) {
 }
 
 function PopularWeeklyTabbarView() {
-  const onRefresh = useOnRefreshContext()
+  const onRefresh = useOnRefresh()
   return (
     <>
       <SwitchSettingItem
@@ -158,7 +159,7 @@ function PopularWeeklyTabbarView() {
         unCheckedChildren='随机顺序: 关'
         extraAction={async () => {
           await delay(100)
-          onRefresh?.()
+          onRefresh()
         }}
       />
     </>

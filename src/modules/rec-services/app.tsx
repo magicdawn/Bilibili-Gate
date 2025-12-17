@@ -2,7 +2,7 @@ import { delay, randomInt, range, shuffle, uniqBy } from 'es-toolkit'
 import { times } from 'es-toolkit/compat'
 import { HOST_APP } from '$common'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
-import { useOnRefreshContext, type OnRefresh } from '$components/RecGrid/useRefresh'
+import { useOnRefresh, type RefreshFn } from '$components/Recommends/rec.shared'
 import { isAppRecommend, type AppRecItem, type AppRecItemExtend, type RecItemType } from '$define'
 import { EApiType } from '$define/index.shared'
 import { getVideoDetail } from '$modules/bilibili/video/video-detail'
@@ -29,7 +29,7 @@ export function getAppRecServiceConfig() {
   }
 }
 
-export const appRecShowContentFromOtherTabEl = (onRefresh?: OnRefresh) => (
+export const appRecShowContentFromOtherTabEl = (refresh?: RefreshFn) => (
   <CheckboxSettingItem
     configPath='appRecommend.addOtherTabContents'
     label='显示来自其他 Tab 的内容'
@@ -42,13 +42,13 @@ export const appRecShowContentFromOtherTabEl = (onRefresh?: OnRefresh) => (
     }
     extraAction={async () => {
       await delay(100)
-      onRefresh?.()
+      refresh?.()
     }}
   />
 )
 
 function AppRecTabbarView() {
-  const onRefresh = useOnRefreshContext()
+  const onRefresh = useOnRefresh()
   return <>{appRecShowContentFromOtherTabEl(onRefresh)}</>
 }
 

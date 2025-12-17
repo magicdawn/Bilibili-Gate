@@ -5,7 +5,7 @@
 import { useEventListener, useLatest, usePrevious, useUnmountedRef } from 'ahooks'
 import { Divider } from 'antd'
 import Emittery from 'emittery'
-import { delay, isEqual, noop } from 'es-toolkit'
+import { delay, isEqual } from 'es-toolkit'
 import ms from 'ms'
 import { useInView } from 'react-intersection-observer'
 import { VirtuosoGrid } from 'react-virtuoso'
@@ -16,6 +16,7 @@ import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
 import { clsGateVideoGridDivider } from '$common/shared.module.scss'
 import { useCurrentUsingTab, useSortedTabKeys } from '$components/RecHeader/tab'
 import { ETab } from '$components/RecHeader/tab-enum'
+import { useRecommendContext, type RefreshFn } from '$components/Recommends/rec.shared'
 import { VideoCard } from '$components/VideoCard'
 import { getActiveCardBorderCss, useCardBorderCss } from '$components/VideoCard/card-border-css'
 import { EApiType } from '$define/index.shared'
@@ -25,7 +26,7 @@ import { filterRecItems } from '$modules/filter'
 import { multiSelectStore } from '$modules/multi-select/store'
 import { concatThenUniq, getGridRefreshCount, refreshForGrid } from '$modules/rec-services'
 import { getServiceFromRegistry, type ServiceMap } from '$modules/rec-services/service-map.ts'
-import { settings, useSettingsSnapshot } from '$modules/settings'
+import { settings } from '$modules/settings'
 import { isSafari } from '$ua'
 import type { VideoCardEmitter, VideoCardEvents } from '$components/VideoCard/index.shared'
 import type { RecItemType, RecItemTypeOrSeparator } from '$define'
@@ -33,11 +34,9 @@ import type { IVideoCardData } from '$modules/filter/normalize'
 import * as scssClassNames from '../video-grid.module.scss'
 import { EGridDisplayMode } from './display-mode'
 import { ErrorDetail } from './error-detail'
-import { useRecGridState } from './rec-grid-state'
 import { useRefresh } from './useRefresh'
 import { useShortcut } from './useShortcut'
 import { ENABLE_VIRTUAL_GRID, gridComponents } from './virtuoso.config'
-import type { OnRefresh } from './useRefresh'
 import type { CustomGridComponents, CustomGridContext } from './virtuoso.config'
 import type { ForwardedRef, ReactNode } from 'react'
 
@@ -47,27 +46,19 @@ const debug = baseDebug.extend('components:RecGrid')
  * Grid 需要修改并向外传播的状态
  */
 export type GridExternalState = {
-  /** state modified by refresh */
-  refreshing: boolean
   /** view for which tab */
   viewTab: ETab | undefined
   tabbarView: ReactNode
   sidebarView: ReactNode
-  /** implementation provided by RecGrid */
-  onRefresh: OnRefresh
 }
 
 export const initGridExternalState = (): GridExternalState => ({
-  refreshing: false,
   viewTab: undefined,
   tabbarView: undefined,
   sidebarView: undefined,
-  onRefresh: noop,
 })
 
-export const GridConfigContext = createContext<{ insideModal?: boolean }>({})
-
-export type RecGridRef = { refresh: OnRefresh }
+export type RecGridRef = { refresh: RefreshFn }
 
 export type RecGridProps = {
   containerClassName?: string
@@ -122,9 +113,10 @@ const RecGridInner = memo(function ({
   servicesRegistry: RefStateBox<Partial<ServiceMap>>
 }) {
   const unmountedRef = useUnmountedRef()
-  const { enableSidebar } = useSettingsSnapshot()
   const { useCustomGrid, gridDisplayMode } = useSnapshot(settings.grid)
   const { multiSelecting } = useSnapshot(multiSelectStore)
+  const { recStore } = useRecommendContext()
+  const { refreshing } = useSnapshot(recStore)
 
   // 已加载完成的 load call count, 类似 page
   const loadCompleteCountBox = useRefStateBox(0)
@@ -153,7 +145,6 @@ const RecGridInner = memo(function ({
     error: refreshError,
     refresh,
     hasMoreBox,
-    refreshingBox,
     refreshTsBox,
     refreshAbortController,
     showSkeleton,
@@ -170,15 +161,14 @@ const RecGridInner = memo(function ({
   })
 
   useImperativeHandle(handlersRef, () => ({ refresh }), [refresh])
-
-  const refreshing = refreshingBox.state
   const hasMore = hasMoreBox.state
 
-  // sync to parent component
+  // sync to context
+  // TODO: move to recStore
   useEffect(() => {
     if (unmountedRef.current) return
-    onSyncExternalState?.({ refreshing, onRefresh: refresh, tabbarView, sidebarView, viewTab: tab })
-  }, [onSyncExternalState, refreshing, refresh, tabbarView, sidebarView])
+    onSyncExternalState?.({ tabbarView, sidebarView, viewTab: tab })
+  }, [onSyncExternalState, refresh, tabbarView, sidebarView])
 
   const goOutAt = useRef<number | undefined>()
   useEventListener(
@@ -190,7 +180,7 @@ const RecGridInner = memo(function ({
         return
       }
 
-      if (refreshingBox.val) return
+      if (recStore.refreshing) return
       if (loadMoreLocker.current[refreshTsBox.val]) return
 
       // 场景
@@ -223,7 +213,7 @@ const RecGridInner = memo(function ({
     if (unmountedRef.current) return
     if (!hasMoreBox.val) return
     if (refreshAbortController.signal.aborted) return
-    if (refreshingBox.val) return
+    if (recStore.refreshing) return
 
     const getState = () => ({ refreshTs: refreshTsBox.val })
     const startingState = getState()
@@ -304,10 +294,9 @@ const RecGridInner = memo(function ({
     })
   }, [videoList])
 
-  const { gridEmitter } = useRecGridState()
-
+  const { recSharedEmitter } = useRecommendContext()
   const [activeLargePreviewUniqId, setActiveLargePreviewUniqId] = useState<string | undefined>(undefined)
-  useEmitterOn(gridEmitter, 'show-large-preview', setActiveLargePreviewUniqId)
+  useEmitterOn(recSharedEmitter, 'show-large-preview', setActiveLargePreviewUniqId)
   const activeLargePreviewItemIndex = useMemo(() => {
     if (!activeLargePreviewUniqId) return
     return videoList.findIndex((item) => item.uniqId === activeLargePreviewUniqId)
@@ -389,7 +378,9 @@ const RecGridInner = memo(function ({
       return newItems
     })
   })
-  useEmitterOn(gridEmitter, 'remove-cards', ([uniqIds, titles, silent]) => handleRemoveCards(uniqIds, titles, silent))
+  useEmitterOn(recSharedEmitter, 'remove-cards', ([uniqIds, titles, silent]) =>
+    handleRemoveCards(uniqIds, titles, silent),
+  )
 
   /**
    * footer for infinite scroll
@@ -513,9 +504,9 @@ const RecGridInner = memo(function ({
           active={active}
           onRemoveCurrent={(item, data, silent) => handleRemoveCards([item.uniqId], [data.title], silent)}
           onMoveToFirst={handleMoveCardToFirst}
-          onRefresh={refresh}
+          refresh={refresh}
           emitter={videoCardEmitters[index]}
-          gridEmitter={gridEmitter}
+          recSharedEmitter={recSharedEmitter}
           gridDisplayMode={gridDisplayMode}
           multiSelecting={multiSelecting}
         />
@@ -547,7 +538,7 @@ const RecGridInner = memo(function ({
   return render({
     gridChildren: (
       <>
-        {fullList.map((item) => renderItem(item))}
+        {fullList.map(renderItem)}
         {footer}
       </>
     ),

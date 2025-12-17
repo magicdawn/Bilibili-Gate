@@ -1,6 +1,6 @@
 import { delay } from 'es-toolkit'
 import { useSnapshot } from 'valtio'
-import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
+import { useOnRefresh } from '$components/Recommends/rec.shared'
 import {
   IconForDefaultOrder,
   IconForFav,
@@ -110,7 +110,7 @@ export function useSavedOrder(selectedKey: string, savedOrderMap: Map<string, Fa
 }
 
 export function FavItemsOrderSwitcher() {
-  const onRefresh = useOnRefreshContext()
+  const onRefresh = useOnRefresh()
   const { ref, getPopupContainer } = usePopupContainer<ElementRef<'span'>>()
 
   const { selectedKey, savedOrderMap } = useSnapshot(favStore)
@@ -123,7 +123,7 @@ export function FavItemsOrderSwitcher() {
       onChange={async (next) => {
         favStore.savedOrderMap.set(selectedKey, next)
         await delay(100)
-        onRefresh?.()
+        onRefresh()
       }}
       list={menuItems}
       listDisplayConfig={FavItemsOrderConfig}

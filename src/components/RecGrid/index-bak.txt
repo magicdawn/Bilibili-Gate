@@ -1,37 +1,36 @@
 virtuoso
-
-  if (ENABLE_VIRTUAL_GRID) {
-    return (
-      <div style={{ minHeight: '100%' }} className={videoGridContainer}>
-        {/* className={gridClassName} */}
-        <div ref={containerRef}>
-          <VirtuosoGrid
-            scrollerRef={(el) => {
-              // @ts-ignore
-              // containerRef.current = el
-            }}
-            useWindowScroll
-            data={items}
-            listClassName={gridClassName}
-            logLevel={LogLevel.DEBUG}
-            // endReached={loadMore}
-            overscan={20}
-            computeItemKey={(index, item) => item.uniqId}
-            components={{
-              Footer() {
-                return null
-                // return <>{footer}</>
-              },
-            }}
-            itemContent={(index, item) => {
-              return renderItem(item)
-            }}
-          />
-          {footer}
-        </div>
+if (ENABLE_VIRTUAL_GRID) {
+  return (
+    <div style={{ minHeight: '100%' }} className={videoGridContainer}>
+      {/* className={gridClassName} */}
+      <div ref={containerRef}>
+        <VirtuosoGrid
+          scrollerRef={(el) => {
+            // @ts-ignore
+            // containerRef.current = el
+          }}
+          useWindowScroll
+          data={items}
+          listClassName={gridClassName}
+          logLevel={LogLevel.DEBUG}
+          // endReached={loadMore}
+          overscan={20}
+          computeItemKey={(index, item) => item.uniqId}
+          components={{
+            Footer() {
+              return null
+              // return <>{footer}</>
+            },
+          }}
+          itemContent={(index, item) => {
+            return renderItem(item)
+          }}
+        />
+        {footer}
       </div>
-    )
-  }
+    </div>
+  )
+}
 
 
 ---------------
@@ -42,75 +41,75 @@ virtuoso
 import InfiniteScroll from 'react-infinite-scroller'
 
 <InfiniteScroll
-  pageStart={0}
-  hasMore={hasMore}
-  loadMore={loadMore}
-  initialLoad={false}
-  useWindow={infiteScrollUseWindow}
-  threshold={window.innerHeight * 1} // 一屏
-  style={{ minHeight: '100%' }}
+pageStart={0}
+hasMore={hasMore}
+loadMore={loadMore}
+initialLoad={false}
+useWindow={infiteScrollUseWindow}
+threshold={window.innerHeight * 1} // 一屏
+style={{ minHeight: '100%' }}
 >
 </InfiniteScroll>
 
 
 // virtual grid
-  // 有个缺点, 开始的时候只显示一个 video-card
-  if (ENABLE_VIRTUAL_GRID) {
-    return (
-      <div className={videoGridContainer}>
-        <VirtuosoGrid
-          style={{
-            // at least 1 line
-            minHeight: '300px',
-          }}
-          useWindowScroll
-          data={items}
-          overscan={20}
-          // listClassName={gridClassName}
-          computeItemKey={(index, item) => item.uniqId}
-          components={{
-            List: forwardRef((props, ref) => {
-              return (
-                <div
-                  ref={(el) => {
-                    // @ts-ignore
-                    containerRef.current = el
-                    if (ref) {
-                      if (typeof ref === 'function') ref(el)
-                      else ref.current = el
-                    }
-                  }}
-                  {...props}
-                  className={clsx(props.className, gridClassName)}
-                />
-              )
-            }),
-
-            // render footer here cause error
-            // Footer() {
-            //   return <></>
-            // },
-          }}
-          itemContent={(index, item) => {
-            const active = index === activeIndex
+// 有个缺点, 开始的时候只显示一个 video-card
+if (ENABLE_VIRTUAL_GRID) {
+  return (
+    <div className={videoGridContainer}>
+      <VirtuosoGrid
+        style={{
+          // at least 1 line
+          minHeight: '300px',
+        }}
+        useWindowScroll
+        data={items}
+        overscan={20}
+        // listClassName={gridClassName}
+        computeItemKey={(index, item) => item.uniqId}
+        components={{
+          List: forwardRef((props, ref) => {
             return (
-              <VideoCard
-                key={item.uniqId}
-                className={clsx(CardClassNames.card, { [CardClassNames.cardActive]: active })}
-                item={item}
-                active={active}
-                onRemoveCurrent={handleRemoveCard}
-                onMoveToFirst={handleMoveCardToFirst}
-                onRefresh={refresh}
-                emitter={videoCardEmitters[index]}
+              <div
+                ref={(el) => {
+                  // @ts-ignore
+                  containerRef.current = el
+                  if (ref) {
+                    if (typeof ref === 'function') ref(el)
+                    else ref.current = el
+                  }
+                }}
+                {...props}
+                className={clsx(props.className, gridClassName)}
               />
             )
-          }}
-        />
-        {footer}
-      </div>
-    )
-  }
+          }),
+
+          // render footer here cause error
+          // Footer() {
+          //   return <></>
+          // },
+        }}
+        itemContent={(index, item) => {
+          const active = index === activeIndex
+          return (
+            <VideoCard
+              key={item.uniqId}
+              className={clsx(CardClassNames.card, { [CardClassNames.cardActive]: active })}
+              item={item}
+              active={active}
+              onRemoveCurrent={handleRemoveCard}
+              onMoveToFirst={handleMoveCardToFirst}
+              refresh={refresh}
+              emitter={videoCardEmitters[index]}
+            />
+          )
+        }}
+      />
+      {footer}
+    </div>
+  )
+}
 
 
 

@@ -3,7 +3,8 @@ import { delay, groupBy } from 'es-toolkit'
 import { useSnapshot } from 'valtio'
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { useRevealMenuSelectedKey } from '$components/RecGrid/sidebar'
-import { useOnRefreshContext } from '$components/RecGrid/useRefresh'
+
+import { useOnRefresh } from '$components/Recommends/rec.shared'
 import { defineAntMenus, type AntMenuItem } from '$modules/antd'
 import { IconForOpenExternalLink } from '$modules/icon'
 import { CopyBvidButtonsTabbarView } from '$modules/rec-services/_shared/copy-bvid-buttons'
@@ -26,7 +27,7 @@ export const IconForCollection = IconIonLayersOutline
 
 function useScopeMenus(extraOnMenuItemClick?: () => void) {
   const { folders, collections, selectedKey } = useSnapshot(favStore)
-  const onRefresh = useOnRefreshContext()
+  const onRefresh = useOnRefresh()
 
   const menuItems: AntMenuItem[] = useMemo(() => {
     const collectionSubMenus: AntMenuItem[] = []
@@ -67,7 +68,7 @@ function useScopeMenus(extraOnMenuItemClick?: () => void) {
                   favStore.selectedFavCollectionId = f.id
                   extraOnMenuItemClick?.()
                   await delay(100)
-                  onRefresh?.()
+                  onRefresh()
                 },
               }
             }),
@@ -86,7 +87,7 @@ function useScopeMenus(extraOnMenuItemClick?: () => void) {
           favStore.selectedFavCollectionId = undefined
           extraOnMenuItemClick?.()
           await delay(100)
-          onRefresh?.()
+          onRefresh()
         },
       },
       !!folders.length && {
@@ -107,7 +108,7 @@ function useScopeMenus(extraOnMenuItemClick?: () => void) {
               favStore.selectedFavCollectionId = undefined
               extraOnMenuItemClick?.()
               await delay(100)
-              onRefresh?.()
+              onRefresh()
             },
           }
         }),
@@ -126,7 +127,7 @@ function useScopeMenus(extraOnMenuItemClick?: () => void) {
 export function FavTabbarView({ extraContent }: { extraContent?: ReactNode }) {
   const { fav, enableSidebar } = useSettingsSnapshot()
   const { selectedFavFolder, selectedFavCollection, selectedLabel, selectedKey } = useSnapshot(favStore)
-  const onRefresh = useOnRefreshContext()
+  const onRefresh = useOnRefresh()
   const { ref, getPopupContainer } = usePopupContainer()
 
   useMount(() => {
@@ -137,7 +138,7 @@ export function FavTabbarView({ extraContent }: { extraContent?: ReactNode }) {
   useUpdateEffect(() => {
     void (async () => {
       await delay(100)
-      onRefresh?.()
+      onRefresh()
     })()
   }, [fav.addSeparator])
 
@@ -203,7 +204,7 @@ export function ViewingAllExcludeFolderConfig({
   state: FavAllService['state']
 }) {
   const { fav } = useSettingsSnapshot()
-  const onRefresh = useOnRefreshContext()
+  const onRefresh = useOnRefresh()
   const { ref, getPopupContainer } = usePopupContainer()
   const { totalCountInFavFolders } = useSnapshot(state)
 
@@ -228,7 +229,7 @@ export function ViewingAllExcludeFolderConfig({
 
     // when close
     else if (excludeFavFolderIdsChanged) {
-      onRefresh?.()
+      onRefresh()
     }
   })
 
@@ -263,6 +264,6 @@ export function ViewingAllExcludeFolderConfig({
 
 export function FavSidebarView() {
   const { menuItems, selectedKey } = useScopeMenus()
-  const { menuRef } = useRevealMenuSelectedKey(menuItems, selectedKey)
+  const { menuRef, revealSelected } = useRevealMenuSelectedKey(menuItems, selectedKey)
   return <Menu ref={menuRef} items={menuItems} selectedKeys={[selectedKey]} mode='inline' inlineIndent={10} />
 }

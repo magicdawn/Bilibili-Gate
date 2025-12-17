@@ -8,36 +8,22 @@ import { copyContent } from '$components/VideoCard/index.shared'
 import { normalizeCardData, type IVideoCardData } from '$modules/filter/normalize'
 import { multiSelectStore } from '$modules/multi-select/store'
 import type { RecItemType } from '$define'
-import { createGridEmitter, type GridEmitter } from './grid.shared'
 
 /**
  * RecGrid 层叠
  * 可能得结构: [PureRecommend.RecGrid, ModalFeed.RecGrid]
  */
-type RecGridState = { items: RecItemType[]; gridEmitter: GridEmitter }
+type RecGridState = { items: RecItemType[] }
 const recGridStateStack: RecGridState[] = []
 
 export function getCurrentGridItems() {
   return recGridStateStack.at(-1)?.items ?? []
 }
-export function getCurrentGridEmitter() {
-  return recGridStateStack.at(-1)?.gridEmitter
-}
+
 export function setCurrentGridItems(items: RecItemType[]) {
   const state = recGridStateStack.at(-1)
   if (!state) return
   state.items = items
-}
-
-export function useRecGridState() {
-  const gridEmitter = useMemo(() => createGridEmitter(), [])
-  useMount(() => {
-    recGridStateStack.push({ items: [], gridEmitter })
-    return () => {
-      recGridStateStack.pop()
-    }
-  })
-  return { gridEmitter }
 }
 
 export function getMultiSelectedItems() {
