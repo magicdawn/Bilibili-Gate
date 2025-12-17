@@ -96,11 +96,13 @@ export function GridSidebar({
 export function useRevealMenuSelectedKey(menuItems: AntMenuItem[], selectedKey: string) {
   const menuRef = useRef<ElementRef<typeof Menu>>(null)
 
-  const revealSelected = useMemoizedFn(() => {
-    const el = menuRef.current?.menu?.findItem({ key: selectedKey })
+  const revealSelected = useMemoizedFn((key?: string) => {
+    key ||= selectedKey
+    if (!key) return
+    const el = menuRef.current?.menu?.findItem({ key })
     if (!el) return
     el.scrollIntoViewIfNeeded ? el.scrollIntoViewIfNeeded() : el.scrollIntoView()
-    return true // scroll called
+    return true // mark scroll called
   })
 
   /**

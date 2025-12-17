@@ -3,9 +3,10 @@ import { delay } from 'es-toolkit'
 import { fastSortWithOrders } from 'fast-sort-lens'
 import { useSnapshot } from 'valtio'
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
+import { useEmitterOn } from '$common/hooks/useEmitter'
 import { useRevealMenuSelectedKey, useSidebarVisible } from '$components/RecGrid/sidebar'
 import { ETab } from '$components/RecHeader/tab-enum'
-import { useOnRefresh } from '$components/Recommends/rec.shared'
+import { useOnRefresh, useRecommendContext } from '$components/Recommends/rec.shared'
 import { IconForReset } from '$modules/icon'
 import { CopyBvidButtonsTabbarView } from '$modules/rec-services/_shared/copy-bvid-buttons'
 import { useSettingsSnapshot } from '$modules/settings'
@@ -16,6 +17,7 @@ import { usePopupContainer } from '../../_base'
 import { dropdownMenuStyle } from '../../_shared'
 import { IconForGroup, IconForUp } from '../shared'
 import {
+  DF_SELECTED_KEY_ALL,
   dfStore,
   DynamicFeedVideoMinDuration,
   DynamicFeedVideoType,
@@ -52,6 +54,7 @@ function useScopeMenus(form: 'dropdown' | 'sidebar') {
   const {
     followGroup: { enabled: followGroupEnabled },
   } = useSettingsSnapshot().dynamicFeed
+  const { recSharedEmitter } = useRecommendContext()
 
   const onSelect = useMemoizedFn(async (payload: Partial<typeof dfStore>) => {
     dynamicFeedFilterSelectUp(payload)
@@ -61,6 +64,7 @@ function useScopeMenus(form: 'dropdown' | 'sidebar') {
 
   const onClear = useMemoizedFn(() => {
     onSelect({ ...clearPayload })
+    recSharedEmitter.emit('dynamic-feed:clear')
   })
 
   const menuItems = useMemo((): AntMenuItem[] => {
@@ -212,7 +216,9 @@ export function DynamicFeedTabbarView() {
 export function DynamicFeedSidebarView() {
   const sidebarVisible = useSidebarVisible(ETab.DynamicFeed)
   const { menuItems, selectedKey } = useScopeMenus('sidebar')
-  const { menuRef } = useRevealMenuSelectedKey(menuItems, selectedKey)
+  const { menuRef, revealSelected } = useRevealMenuSelectedKey(menuItems, selectedKey)
+  const { recSharedEmitter } = useRecommendContext()
+  useEmitterOn(recSharedEmitter, 'dynamic-feed:clear', () => void revealSelected(DF_SELECTED_KEY_ALL))
   if (!sidebarVisible) return undefined
   return <Menu ref={menuRef} items={menuItems} selectedKeys={[selectedKey]} mode='inline' inlineIndent={10} />
 }

@@ -13,7 +13,7 @@ export type RecSharedEmitterEvents = {
   'remove-cards': [uniqIds: string[], titles?: string[], silent?: boolean]
 
   // for views: [tabbarView, sidebarView, ...]
-  'dynamic-feed:clear': () => void
+  'dynamic-feed:clear': undefined
 }
 
 export type RecSharedEmitter = Emittery<RecSharedEmitterEvents>
