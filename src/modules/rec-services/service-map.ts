@@ -2,7 +2,6 @@ import { assert } from 'es-toolkit'
 import { snapshot } from 'valtio'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { settings } from '$modules/settings'
-import type { RefStateBox } from '$common/hooks/useRefState'
 import { AppRecService, getAppRecServiceConfig } from './app'
 import { DynamicFeedRecService, getDynamicFeedServiceConfig } from './dynamic-feed'
 import { FavRecService, getFavServiceConfig } from './fav'
@@ -50,19 +49,14 @@ export type ServiceMap = {
   [K in ServiceMapKey]: ReturnType<(typeof createServiceMap)[K]>
 }
 
-export type ServicesRegistry = RefStateBox<Partial<ServiceMap>>
-
 export type FetcherOptions = {
   tab: ETab
   abortSignal: AbortSignal
-  servicesRegistry: ServicesRegistry
+  servicesRegistry: Partial<ServiceMap>
 }
 
-export function getServiceFromRegistry<T extends ETab>(
-  servicesRegistry: RefStateBox<Partial<ServiceMap>>,
-  tab: T,
-): ServiceMap[T] {
-  const service = servicesRegistry.val[tab]
-  assert(service, `servicesRegistry.val[tab=${tab}] should not be nil`)
+export function getServiceFromRegistry<T extends ETab>(servicesRegistry: Partial<ServiceMap>, tab: T): ServiceMap[T] {
+  const service = servicesRegistry[tab]
+  assert(service, `servicesRegistry[tab=${tab}] should not be nil`)
   return service
 }

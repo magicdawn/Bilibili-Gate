@@ -6,7 +6,7 @@ import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { useEmitterOn } from '$common/hooks/useEmitter'
 import { useRevealMenuSelectedKey, useSidebarVisible } from '$components/RecGrid/sidebar'
 import { ETab } from '$components/RecHeader/tab-enum'
-import { useOnRefresh, useRecommendContext } from '$components/Recommends/rec.shared'
+import { useOnRefresh, useRecContext } from '$components/Recommends/rec.shared'
 import { IconForReset } from '$modules/icon'
 import { CopyBvidButtonsTabbarView } from '$modules/rec-services/_shared/copy-bvid-buttons'
 import { useSettingsSnapshot } from '$modules/settings'
@@ -54,7 +54,7 @@ function useScopeMenus(form: 'dropdown' | 'sidebar') {
   const {
     followGroup: { enabled: followGroupEnabled },
   } = useSettingsSnapshot().dynamicFeed
-  const { recSharedEmitter } = useRecommendContext()
+  const { recSharedEmitter } = useRecContext()
 
   const onSelect = useMemoizedFn(async (payload: Partial<typeof dfStore>) => {
     dynamicFeedFilterSelectUp(payload)
@@ -219,7 +219,7 @@ export function DynamicFeedSidebarView() {
   const sidebarVisible = useSidebarVisible(ETab.DynamicFeed)
   const { menuItems, selectedKey } = useScopeMenus('sidebar')
   const { menuRef, revealSelected } = useRevealMenuSelectedKey(menuItems, selectedKey)
-  const { recSharedEmitter } = useRecommendContext()
+  const { recSharedEmitter } = useRecContext()
   useEmitterOn(recSharedEmitter, 'dynamic-feed:clear', () => void revealSelected(DF_SELECTED_KEY_ALL))
   if (!sidebarVisible) return undefined
   return <Menu ref={menuRef} items={menuItems} selectedKeys={[selectedKey]} mode='inline' inlineIndent={10} />

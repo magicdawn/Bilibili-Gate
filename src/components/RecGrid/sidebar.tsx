@@ -3,7 +3,7 @@ import { ConfigProvider, type Menu } from 'antd'
 import { useUnoMerge } from 'unocss-merge/react'
 import { useSnapshot } from 'valtio'
 import { EHotSubTab, ETab } from '$components/RecHeader/tab-enum'
-import { useRecommendContext } from '$components/Recommends/rec.shared'
+import { useRecContext } from '$components/Recommends/rec.shared'
 import { QUERY_DYNAMIC_UP_MID } from '$modules/rec-services/dynamic-feed/store'
 import { hotStore } from '$modules/rec-services/hot'
 import { useSettingsSnapshot } from '$modules/settings'
@@ -32,7 +32,7 @@ export function useSidebarVisible(tab: ETab | undefined): boolean {
   const { enableSidebar } = useSettingsSnapshot()
   const { usingTwoColumnMode } = useGridDisplayModeChecker()
   const hotSubTab = useSnapshot(hotStore).subtab
-  const { insideModal } = useRecommendContext()
+  const { insideModal } = useRecContext()
 
   return useMemo(() => {
     if (!enableSidebar) return false // main switch
@@ -58,18 +58,18 @@ export function GridSidebar({
   className: propClassName,
   style: propStyle,
   sidebarView,
-  viewTab,
+  tab,
 }: {
   className?: string
   style?: CSSProperties
   sidebarView: ReactNode
-  viewTab: ETab | undefined
+  tab: ETab
 }) {
-  const visible = useSidebarVisible(viewTab)
+  const visible = useSidebarVisible(tab)
 
   const usingClassName = useUnoMerge(
     'h-fit w-250px flex-none overflow-x-hidden overflow-y-auto b-1px b-gate-border rounded-15px b-solid',
-    useTabExtraClassName(viewTab),
+    useTabExtraClassName(tab),
     propClassName,
   )
 

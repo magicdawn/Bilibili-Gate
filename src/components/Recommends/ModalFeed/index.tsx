@@ -1,9 +1,10 @@
+import { useSnapshot } from 'valtio'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { CollapseBtn } from '$components/_base/CollapseBtn'
 import { useModalDislikeVisible } from '$components/ModalDislike'
 import { useModalMoveFavVisible } from '$components/ModalMoveFav'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
-import { initGridExternalState, RecGrid } from '$components/RecGrid'
+import { RecGrid } from '$components/RecGrid'
 import { EGridDisplayMode, gridDisplayModeChecker } from '$components/RecGrid/display-mode'
 import { clsTwoColumnModeWidth } from '$components/RecGrid/display-mode/two-column-mode'
 import { GridSidebar } from '$components/RecGrid/sidebar'
@@ -12,8 +13,7 @@ import { RefreshButton } from '$components/RecHeader/RefreshButton'
 import { VideoSourceTab } from '$components/RecHeader/tab'
 import { antMessage } from '$modules/antd'
 import { useSettingsSnapshot } from '$modules/settings'
-import type { GridExternalState } from '$components/RecGrid'
-import { RecommendContext, useInitRecommendContext } from '../rec.shared'
+import { RecContext, useInitRecContextValue, useTabRelated } from '../rec.shared'
 
 interface IProps {
   show: boolean
@@ -25,13 +25,13 @@ interface IProps {
  * two-column-mode: 基础支持, align 不管了, sidebar 不管了
  */
 export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
-  const scrollerRef = useRef<HTMLDivElement>(null)
   const {
     grid: { gridDisplayMode },
     modalFeedFullScreen,
   } = useSettingsSnapshot()
   const { usingTwoColumnMode } = gridDisplayModeChecker(gridDisplayMode)
   const useFullScreen = !usingTwoColumnMode && modalFeedFullScreen
+  const scrollerRef = useRef<HTMLDivElement>(null)
 
   const modalBorderCls = useMemo(() => {
     const borderWidth = useFullScreen ? 'b-5px' : 'b-1px'
@@ -49,7 +49,10 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
     Boolean,
   )
 
-  const [{ viewTab, tabbarView, sidebarView }, setHeaderState] = useState<GridExternalState>(initGridExternalState)
+  const recContext = useInitRecContextValue(true)
+  const { tabbarView, sidebarView } = useSnapshot(recContext.recStore)
+  const { tab, direction } = useTabRelated()
+
   const renderHeader = () => {
     return (
       <div className={clsx(BaseModalClassNames.modalHeader, 'gap-x-15px pr-15px')}>
@@ -80,26 +83,25 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
     modalBorderCls,
   )
 
-  const recContext = useInitRecommendContext(() => ({ insideModal: true }))
-
   return (
-    <RecommendContext.Provider value={recContext}>
+    <RecContext.Provider value={recContext}>
       <BaseModal show={show} onHide={onHide} clsModalMask={clsModalMask} clsModal={clsModal}>
         {renderHeader()}
         <div data-role='modal-body' className='flex flex-1 gap-x-25px overflow-hidden'>
-          <GridSidebar sidebarView={sidebarView} viewTab={viewTab} className='max-h-full' />
+          <GridSidebar tab={tab} sidebarView={sidebarView} className='max-h-full' />
           <div className='h-full flex-1 overflow-y-scroll pr-15px' ref={scrollerRef}>
             <RecGrid
               shortcutEnabled={shortcutEnabled}
               onScrollToTop={onScrollToTop}
               infiniteScrollUseWindow={false}
               scrollerRef={scrollerRef}
-              onSyncExternalState={setHeaderState}
+              tab={tab}
+              direction={direction}
             />
           </div>
         </div>
       </BaseModal>
-    </RecommendContext.Provider>
+    </RecContext.Provider>
   )
 })
 

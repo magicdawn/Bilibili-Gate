@@ -1,5 +1,6 @@
 import { css } from '@emotion/react'
-import { initGridExternalState, RecGrid, type GridExternalState } from '$components/RecGrid'
+import { useSnapshot } from 'valtio'
+import { RecGrid } from '$components/RecGrid'
 import { useGridDisplayModeChecker } from '$components/RecGrid/display-mode'
 import { clsForTwoColumnModeAlign, clsTwoColumnModeWidth } from '$components/RecGrid/display-mode/two-column-mode'
 import { GridSidebar } from '$components/RecGrid/sidebar'
@@ -7,7 +8,7 @@ import { RecHeader, type RecHeaderRef } from '$components/RecHeader'
 import { usePlainShortcutEnabled } from '$components/RecHeader/index.shared'
 import { $headerHeight } from '$header'
 import { useSettingsSnapshot } from '$modules/settings'
-import { RecommendContext, useInitRecommendContext } from '../rec.shared'
+import { RecContext, useInitRecContextValue, useTabRelated } from '../rec.shared'
 
 // two-column mode align 是否影响 sidebar
 const TWO_COLUMN_MODE_ALIGN_APPLY_TO_SIDEBAR = false
@@ -19,9 +20,9 @@ export function PureRecommend() {
   const { usingTwoColumnMode } = useGridDisplayModeChecker()
   const shortcutEnabled = usePlainShortcutEnabled()
 
-  const recContext = useInitRecommendContext()
-
-  const [gridExternalState, setGridExternalState] = useState<GridExternalState>(initGridExternalState)
+  const recContext = useInitRecContextValue()
+  const { tabbarView, sidebarView } = useSnapshot(recContext.recStore)
+  const { tab, direction } = useTabRelated()
 
   const recHeaderRef = useRef<RecHeaderRef>(null)
   const onScrollToTop = useMemoizedFn(() => recHeaderRef.current?.scrollToTop())
@@ -54,19 +55,20 @@ export function PureRecommend() {
   }
 
   return (
-    <RecommendContext.Provider value={recContext}>
-      <RecHeader ref={recHeaderRef} leftSlot={gridExternalState.tabbarView} shortcutEnabled={shortcutEnabled} />
+    <RecContext.Provider value={recContext}>
+      <RecHeader ref={recHeaderRef} leftSlot={tabbarView} shortcutEnabled={shortcutEnabled} />
       <div className={clsFlexContainer}>
-        <GridSidebar sidebarView={gridExternalState.sidebarView} viewTab={gridExternalState.viewTab} css={sidebarCss} />
+        <GridSidebar css={sidebarCss} tab={tab} sidebarView={sidebarView} />
         <RecGrid
           containerClassName={clsRecGridContainer}
           className={clsRecGrid}
           shortcutEnabled={shortcutEnabled}
           infiniteScrollUseWindow
           onScrollToTop={onScrollToTop}
-          onSyncExternalState={setGridExternalState}
+          tab={tab}
+          direction={direction}
         />
       </div>
-    </RecommendContext.Provider>
+    </RecContext.Provider>
   )
 }

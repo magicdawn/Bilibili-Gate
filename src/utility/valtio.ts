@@ -1,8 +1,9 @@
-import { isEqual, pick, throttle, toMerged } from 'es-toolkit'
+import { isEqual, isNil, pick, throttle, toMerged } from 'es-toolkit'
 import { pLimit } from 'promise.map'
-import { proxy, snapshot, subscribe, useSnapshot } from 'valtio'
+import { proxy, ref, snapshot, subscribe, useSnapshot } from 'valtio'
 import { proxyMap, proxySet } from 'valtio/utils'
 import { reciveGmValueUpdatesFromOtherTab } from '$modules/gm'
+import type { ReactNode } from 'react'
 
 export function valtioFactory<T>(computeValue: () => T) {
   const state = proxy({ value: computeValue() })
@@ -149,4 +150,10 @@ export async function proxyMapWithGmStorage<K, V>(storageKey: string, beforeSave
     map: p,
     replaceAllWith,
   }
+}
+
+export function refReactNode(node: ReactNode) {
+  if (isNil(node)) return node
+  if (typeof node !== 'object') return node
+  return ref(node)
 }

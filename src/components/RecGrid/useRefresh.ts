@@ -1,10 +1,10 @@
 import { useUnmount } from 'ahooks'
 import { attempt, attemptAsync, isEqual } from 'es-toolkit'
 import { useEmitterOn } from '$common/hooks/useEmitter'
-import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
+import { useRefStateBox } from '$common/hooks/useRefState'
 import { TabConfig } from '$components/RecHeader/tab-config'
 import { ETab } from '$components/RecHeader/tab-enum'
-import { useRecommendContext, type RefreshFn } from '$components/Recommends/rec.shared'
+import { useRecContext, type RefreshFn } from '$components/Recommends/rec.shared'
 import { getGridRefreshCount } from '$modules/rec-services'
 import { getDynamicFeedServiceConfig, type DynamicFeedRecService } from '$modules/rec-services/dynamic-feed'
 import { getFavServiceConfig, type FavRecService } from '$modules/rec-services/fav'
@@ -30,14 +30,14 @@ export function useRefresh({
   updateViewFromService,
 }: {
   tab: ETab
-  servicesRegistry: RefStateBox<Partial<ServiceMap>>
+  servicesRegistry: Partial<ServiceMap>
   debug: Debugger
   fetcher: (opts: FetcherOptions) => Promise<RecItemTypeOrSeparator[]>
   preAction?: () => void | Promise<void>
   postAction?: () => void | Promise<void>
   updateViewFromService?: () => void
 }) {
-  const { recStore } = useRecommendContext()
+  const { recStore } = useRecContext()
   const hasMoreBox = useRefStateBox(true)
   const itemsBox = useRefStateBox<RecItemTypeOrSeparator[]>([])
   useEffect(() => setGlobalGridItems(itemsBox.state), [itemsBox.state])
@@ -72,21 +72,21 @@ export function useRefresh({
       // dynamic-feed: conditions changed
       if (
         tab === ETab.DynamicFeed &&
-        (s = servicesRegistry.val[ETab.DynamicFeed]) &&
+        (s = servicesRegistry[ETab.DynamicFeed]) &&
         !isEqual(s.config, getDynamicFeedServiceConfig())
       ) {
         debugSameTabConditionsChange()
         refreshAbortController.abort()
       }
       // fav: conditions changed
-      else if (tab === ETab.Fav && (s = servicesRegistry.val[ETab.Fav]) && !isEqual(s.config, getFavServiceConfig())) {
+      else if (tab === ETab.Fav && (s = servicesRegistry[ETab.Fav]) && !isEqual(s.config, getFavServiceConfig())) {
         debugSameTabConditionsChange()
         refreshAbortController.abort()
       }
       // space-upload: conditions changed
       else if (
         tab === ETab.SpaceUpload &&
-        (s = servicesRegistry.val[ETab.SpaceUpload]) &&
+        (s = servicesRegistry[ETab.SpaceUpload]) &&
         !isEqual(s.config, getSpaceUploadServiceConfig())
       ) {
         debugSameTabConditionsChange()
@@ -94,7 +94,7 @@ export function useRefresh({
       }
 
       // has sub-tabs
-      else if (tab === ETab.Hot && (s = servicesRegistry.val[ETab.Hot]) && s.subtab !== hotStore.subtab) {
+      else if (tab === ETab.Hot && (s = servicesRegistry[ETab.Hot]) && s.subtab !== hotStore.subtab) {
         debug('refresh(): tab=%s [start], current refreshing, sametab but subtab changed, abort existing', tab)
         refreshAbortController.abort()
       }
@@ -154,7 +154,7 @@ export function useRefresh({
     }
 
     let willRefresh: boolean
-    const existingService = reuse ? servicesRegistry.val[tab] : undefined
+    const existingService = reuse ? servicesRegistry[tab] : undefined
     // reuse existing service
     if (existingService) {
       // cache
@@ -173,8 +173,8 @@ export function useRefresh({
     if (willRefresh) {
       const [err, service] = attempt(() => createServiceMap[tab]({ existingService }))
       if (err) return onError(err)
-
-      servicesRegistry.set({ ...servicesRegistry.val, [tab]: service })
+      // TODO: type safe
+      servicesRegistry[tab] = service! as any // attempt 使用 null
       updateViewFromService?.()
 
       const success = await doFetch()
@@ -188,7 +188,7 @@ export function useRefresh({
   })
 
   // listen for `refresh` event
-  const { recSharedEmitter } = useRecommendContext()
+  const { recSharedEmitter } = useRecContext()
   useEmitterOn(recSharedEmitter, 'refresh', refresh)
 
   return {

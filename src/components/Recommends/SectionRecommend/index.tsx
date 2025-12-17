@@ -1,11 +1,9 @@
 import { range } from 'es-toolkit'
 import { useSnapshot } from 'valtio'
 import { baseDebug } from '$common'
-import { useRefStateBox, type RefStateBox } from '$common/hooks/useRefState'
 import { useRefresh } from '$components/RecGrid/useRefresh'
 import { RecHeader } from '$components/RecHeader'
 import { usePlainShortcutEnabled } from '$components/RecHeader/index.shared'
-import { useCurrentUsingTab } from '$components/RecHeader/tab'
 import { limitTwoLines, videoGrid, videoGridBiliFeed4 } from '$components/video-grid.module.scss'
 import { VideoCard } from '$components/VideoCard'
 import { useCardBorderCss } from '$components/VideoCard/card-border-css'
@@ -13,18 +11,17 @@ import { EApiType } from '$define/index.shared'
 import { refreshForHome } from '$modules/rec-services'
 import type { ETab } from '$components/RecHeader/tab-enum'
 import type { ServiceMap } from '$modules/rec-services/service-map'
-import { RecommendContext, useInitRecommendContext, useRecommendContext } from '../rec.shared'
+import { RecContext, useInitRecContextValue, useRecContext, useTabRelated } from '../rec.shared'
 
 const debug = baseDebug.extend('components:SectionRecommend')
 
 export function SectionRecommend() {
-  const tab = useDeferredValue(useCurrentUsingTab())
-  const servicesRegistry = useRefStateBox<Partial<ServiceMap>>(() => ({}))
-  const recContext = useInitRecommendContext()
+  const recContext = useInitRecContextValue()
+  const { tab } = useTabRelated()
   return (
-    <RecommendContext.Provider value={recContext}>
-      <TabContent key={tab} tab={tab} servicesRegistry={servicesRegistry} />
-    </RecommendContext.Provider>
+    <RecContext.Provider value={recContext}>
+      <TabContent key={tab} tab={tab} servicesRegistry={recContext.servicesRegistry} />
+    </RecContext.Provider>
   )
 }
 
@@ -33,13 +30,11 @@ const TabContent = memo(function TabContent({
   servicesRegistry,
 }: {
   tab: ETab
-  servicesRegistry: RefStateBox<Partial<ServiceMap>>
+  servicesRegistry: Partial<ServiceMap>
 }) {
   const skeletonPlaceholders = useMemo(() => range(20).map(() => crypto.randomUUID()), [])
-
   const {
     itemsBox,
-    refresh,
     error: refreshError,
     showSkeleton,
   } = useRefresh({
@@ -49,7 +44,7 @@ const TabContent = memo(function TabContent({
     servicesRegistry,
   })
 
-  const { recStore } = useRecommendContext()
+  const { recStore } = useRecContext()
   const { refreshing } = useSnapshot(recStore)
   const items = itemsBox.state
   const displaySkeleton = !items.length || refreshError || (refreshing && showSkeleton)
