@@ -60,13 +60,14 @@ export function PureRecommend() {
       <div className={clsFlexContainer}>
         <GridSidebar css={sidebarCss} tab={tab} sidebarView={sidebarView} />
         <RecGrid
+          key={tab}
+          tab={tab}
+          direction={direction}
           containerClassName={clsRecGridContainer}
           className={clsRecGrid}
           shortcutEnabled={shortcutEnabled}
           infiniteScrollUseWindow
           onScrollToTop={onScrollToTop}
-          tab={tab}
-          direction={direction}
         />
       </div>
     </RecContext.Provider>

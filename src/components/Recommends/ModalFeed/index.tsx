@@ -91,12 +91,13 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
           <GridSidebar tab={tab} sidebarView={sidebarView} className='max-h-full' />
           <div className='h-full flex-1 overflow-y-scroll pr-15px' ref={scrollerRef}>
             <RecGrid
+              key={tab}
+              tab={tab}
+              direction={direction}
               shortcutEnabled={shortcutEnabled}
               onScrollToTop={onScrollToTop}
               infiniteScrollUseWindow={false}
               scrollerRef={scrollerRef}
-              tab={tab}
-              direction={direction}
             />
           </div>
         </div>
