@@ -108,13 +108,12 @@ export function useRefresh({
     }
     function onError(err: any) {
       _onAny()
-      self.store.hasMore = false
-      self.store.refreshError = err
+      self.setStore({ refreshError: err })
       console.error(err)
     }
     function onSuccess() {
       _onAny()
-      self.store.hasMore = getServiceFromRegistry(servicesRegistry, tab).hasMore
+      self.setStore({ hasMore: getServiceFromRegistry(servicesRegistry, tab).hasMore })
     }
 
     async function doFetch() {
@@ -153,8 +152,8 @@ export function useRefresh({
     if (willRefresh) {
       const [err, service] = attempt(() => createServiceMap[tab]({ existingService }))
       if (err) return onError(err)
-      // TODO: type safe
-      servicesRegistry[tab] = service! as any // attempt 使用 null
+
+      servicesRegistry[tab] = service as any
       updateViewFromService?.()
 
       const success = await doFetch()

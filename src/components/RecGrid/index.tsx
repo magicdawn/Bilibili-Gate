@@ -126,7 +126,7 @@ export const RecGrid = memo(
       clearActiveIndex()
       updateViewFromService()
       self.loadedPage = 1
-      setTimeout(checkShouldLoadMore)
+      checkShouldLoadMore()
     })
     const { refresh } = useRefresh({
       tab,
@@ -168,7 +168,6 @@ export const RecGrid = memo(
     const checkShouldLoadMore = useMemoizedFn(async () => {
       // always async, `footerInViewRef` depends on `__footerInView` state
       await delay(isSafari ? 100 : 0)
-
       debug('checkShouldLoadMore(): footerInView = %s', footerInViewRef.current)
       if (footerInViewRef.current) {
         loadMore()
@@ -176,11 +175,17 @@ export const RecGrid = memo(
     })
 
     const loadMore = useMemoizedFn(async () => {
-      if (unmountedRef.current) return
-      if (recStore.refreshing) return
-      if (self.loadMoreRunning) return
-      if (self.abortController.signal.aborted) return
-      if (!self.store.hasMore) return
+      if (
+        unmountedRef.current ||
+        recStore.refreshing ||
+        self.loadMoreRunning ||
+        self.store.refreshError ||
+        self.abortController.signal.aborted ||
+        self.store.refreshTs < 0 || // refresh not started yet
+        !self.store.hasMore
+      ) {
+        return
+      }
 
       const startingRefreshTs = self.store.refreshTs
       self.lock(startingRefreshTs)
@@ -217,7 +222,7 @@ export const RecGrid = memo(
       }
 
       self.loadedPage++
-      debug('loadMore: seq(%s) len %s -> %s', self.loadedPage, self.store.items.length, newItems.length)
+      debug('loadMore: loadedPage(%s) len(%s -> %s)', self.loadedPage, self.store.items.length, newItems.length)
       self.setStore({ hasMore: newHasMore, items: newItems })
       self.unlock(startingRefreshTs)
 
@@ -359,7 +364,7 @@ export const RecGrid = memo(
       onChange(inView) {
         if (inView) {
           debug('footerInView change to visible', inView)
-          setTimeout(checkShouldLoadMore)
+          checkShouldLoadMore()
         }
       },
     })
