@@ -2,17 +2,16 @@
  * 推荐内容, 无限滚动
  */
 
-import { useEventListener, useLatest, useUnmountedRef } from 'ahooks'
+import { useCreation, useEventListener, useLatest, useUnmountedRef } from 'ahooks'
 import { Divider } from 'antd'
 import Emittery from 'emittery'
-import { delay, isEqual } from 'es-toolkit'
+import { delay } from 'es-toolkit'
 import ms from 'ms'
 import { useInView } from 'react-intersection-observer'
 import { VirtuosoGrid } from 'react-virtuoso'
-import { useSnapshot } from 'valtio'
+import { proxy, ref, useSnapshot } from 'valtio'
 import { APP_CLS_GRID, baseDebug } from '$common'
 import { useEmitterOn } from '$common/hooks/useEmitter'
-import { useRefStateBox } from '$common/hooks/useRefState'
 import { clsGateVideoGridDivider } from '$common/shared.module.scss'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { useRecContext, type RefreshFn } from '$components/Recommends/rec.shared'
@@ -20,7 +19,7 @@ import { VideoCard } from '$components/VideoCard'
 import { getActiveCardBorderCss, useCardBorderCss } from '$components/VideoCard/card-border-css'
 import { EApiType } from '$define/index.shared'
 import { $headerHeight } from '$header'
-import { antMessage } from '$modules/antd'
+import { antMessage, antNotification } from '$modules/antd'
 import { filterRecItems } from '$modules/filter'
 import { multiSelectStore } from '$modules/multi-select/store'
 import { concatThenUniq, getGridRefreshCount, refreshForGrid } from '$modules/rec-services'
@@ -34,6 +33,7 @@ import type { IVideoCardData } from '$modules/filter/normalize'
 import * as scssClassNames from '../video-grid.module.scss'
 import { EGridDisplayMode } from './display-mode'
 import { ErrorDetail } from './error-detail'
+import { setGlobalGridItems } from './unsafe-window-export'
 import { useRefresh } from './useRefresh'
 import { useShortcut } from './useShortcut'
 import { ENABLE_VIRTUAL_GRID, gridComponents } from './virtuoso.config'
@@ -57,6 +57,39 @@ export type RecGridProps = {
 
 const clsGridColSpanFull = 'grid-col-span-full'
 
+// like `this` in Class Component, but it's for Function Component
+export class RecGridSelf {
+  // render state
+  store = proxy({
+    refreshTs: -1,
+    showSkeleton: false,
+    hasMore: true,
+    refreshError: undefined as any,
+    items: [] as RecItemTypeOrSeparator[],
+  })
+
+  setStore = (payload: Partial<RecGridSelf['store']>) => {
+    const wrapRefKeys: (keyof RecGridSelf['store'])[] = ['items', 'refreshError']
+    for (const key of wrapRefKeys) {
+      if (typeof payload[key] === 'object') {
+        payload[key] = ref(payload[key])
+      }
+    }
+    Object.assign(this.store, payload)
+  }
+
+  loadedPage = 0
+  abortController = new AbortController()
+
+  private loadMoreLocker: Record<number, boolean> = {}
+  isLocked = (lockKey: number) => !!this.loadMoreLocker[lockKey]
+  lock = (lockKey: number) => void (this.loadMoreLocker = { [lockKey]: true })
+  unlock = (lockKey: number) => void (this.loadMoreLocker[lockKey] = false)
+  get loadMoreRunning() {
+    return this.isLocked(this.store.refreshTs)
+  }
+}
+
 export const RecGrid = memo(
   forwardRef<RecGridRef, RecGridProps>(function (
     {
@@ -70,14 +103,12 @@ export const RecGrid = memo(
     }: RecGridProps,
     ref: ForwardedRef<RecGridRef>,
   ) {
+    const self = useCreation(() => new RecGridSelf(), [])
     const { useCustomGrid, gridDisplayMode } = useSnapshot(settings.grid)
     const { multiSelecting } = useSnapshot(multiSelectStore)
     const { recStore, servicesRegistry } = useRecContext()
     const { refreshing } = useSnapshot(recStore)
     const unmountedRef = useUnmountedRef()
-
-    // 已加载完成的 load call count, 类似 page
-    const loadCompleteCountBox = useRefStateBox(0)
 
     const updateViewFromService = useMemoizedFn(() => {
       if (unmountedRef.current) return
@@ -94,32 +125,23 @@ export const RecGrid = memo(
     const postAction = useMemoizedFn(() => {
       clearActiveIndex()
       updateViewFromService()
-      loadCompleteCountBox.set(1)
+      self.loadedPage = 1
       setTimeout(checkShouldLoadMore)
     })
-
-    const {
-      itemsBox,
-      error: refreshError,
-      refresh,
-      hasMoreBox,
-      refreshTsBox,
-      refreshAbortController,
-      showSkeleton,
-      beforeMount,
-    } = useRefresh({
+    const { refresh } = useRefresh({
       tab,
-      servicesRegistry,
       debug,
       fetcher: refreshForGrid,
-      // actions
       preAction,
       postAction,
       updateViewFromService,
+      self,
     })
 
     useImperativeHandle(ref, () => ({ refresh }), [refresh])
-    const hasMore = hasMoreBox.state
+
+    const { items, hasMore, refreshError, refreshTs, showSkeleton } = useSnapshot(self.store)
+    useEffect(() => setGlobalGridItems(items), [items])
 
     const goOutAt = useRef<number | undefined>()
     useEventListener(
@@ -132,7 +154,7 @@ export const RecGrid = memo(
         }
 
         if (recStore.refreshing) return
-        if (loadMoreLocker.current[refreshTsBox.val]) return
+        if (self.loadMoreRunning) return
 
         // 场景
         // 当前 Tab: 稍后再看, 点视频进去, 在视频页移除了, 关闭视频页, 回到首页
@@ -153,31 +175,22 @@ export const RecGrid = memo(
       }
     })
 
-    // 在 refresh & loadMore 都有可能更改的 state, 需要 useRefState
-    type LockKey = number
-    const loadMoreLocker = useRef<Record<LockKey, boolean>>({})
-    const lock = useCallback((lockKey: LockKey) => (loadMoreLocker.current = { [lockKey]: true }), [])
-    const unlock = useCallback((lockKey: LockKey) => (loadMoreLocker.current[lockKey] = false), [])
-    const isLocked = useMemoizedFn((lockKey: LockKey) => !!loadMoreLocker.current[lockKey])
-
     const loadMore = useMemoizedFn(async () => {
       if (unmountedRef.current) return
-      if (!hasMoreBox.val) return
-      if (refreshAbortController.signal.aborted) return
       if (recStore.refreshing) return
+      if (self.loadMoreRunning) return
+      if (self.abortController.signal.aborted) return
+      if (!self.store.hasMore) return
 
-      const getState = () => ({ refreshTs: refreshTsBox.val })
-      const startingState = getState()
-      const lockKey = startingState.refreshTs
-      if (isLocked(lockKey)) return
-      lock(lockKey)
+      const startingRefreshTs = self.store.refreshTs
+      self.lock(startingRefreshTs)
 
-      let newItems = itemsBox.val
+      let newItems = self.store.items
       let newHasMore = true
       let err: any
       try {
         const service = getServiceFromRegistry(servicesRegistry, tab)
-        let more = (await service.loadMore(refreshAbortController.signal)) || []
+        let more = (await service.loadMore(self.abortController.signal)) || []
         more = filterRecItems(more, tab)
         newItems = concatThenUniq(newItems, more)
         newHasMore = service.hasMore
@@ -185,33 +198,35 @@ export const RecGrid = memo(
         err = e
       }
       if (err) {
-        unlock(lockKey)
-        // todo: how to handle this ?
+        self.unlock(startingRefreshTs)
+        antNotification.error({
+          title: '加载失败',
+          description: err.message || err.stack,
+        })
         throw err
       }
 
       // loadMore 发出请求了, 但稍候重新刷新了, setItems 以及后续操作应该 abort
       {
-        const currentState = getState()
-        if (!isEqual(startingState, currentState)) {
-          debug('loadMore: skip update for mismatch refresh state, %o != %o', startingState, currentState)
-          unlock(lockKey)
+        const currentRefreshTs = self.store.refreshTs
+        if (startingRefreshTs !== currentRefreshTs) {
+          debug('loadMore: skip update for mismatch refreshTs, %o != %o', startingRefreshTs, currentRefreshTs)
+          self.unlock(startingRefreshTs)
           return
         }
       }
 
-      debug('loadMore: seq(%s) len %s -> %s', loadCompleteCountBox.val + 1, itemsBox.val.length, newItems.length)
-      hasMoreBox.set(newHasMore)
-      itemsBox.set(newItems)
-      loadCompleteCountBox.set((c) => c + 1)
-      unlock(lockKey)
+      self.loadedPage++
+      debug('loadMore: seq(%s) len %s -> %s', self.loadedPage, self.store.items.length, newItems.length)
+      self.setStore({ hasMore: newHasMore, items: newItems })
+      self.unlock(startingRefreshTs)
 
       // check
       checkShouldLoadMore()
     })
 
     // fullList = videoList + separators
-    const fullList = itemsBox.state
+    const fullList = items
     const videoList = useMemo(() => fullList.filter((x) => x.api !== EApiType.Separator), [fullList])
 
     // .video-grid
@@ -230,7 +245,7 @@ export const RecGrid = memo(
     })
 
     // emitters
-    const emitterCache = useMemo(() => new Map<string, VideoCardEmitter>(), [refreshTsBox.state])
+    const emitterCache = useMemo(() => new Map<string, VideoCardEmitter>(), [refreshTs])
     const videoCardEmitters = useMemo(() => {
       return videoList.map(({ uniqId }) => {
         const cacheKey = uniqId
@@ -280,9 +295,11 @@ export const RecGrid = memo(
     /**
      * card state change
      */
-    const setItems = itemsBox.set
+    const modifyItems = (fn: (items: RecItemTypeOrSeparator[]) => RecItemTypeOrSeparator[]) => {
+      self.setStore({ items: fn(self.store.items) })
+    }
     const handleRemoveCards = useMemoizedFn((uniqIds: string[], titles?: string[], silent?: boolean) => {
-      setItems((items) => {
+      modifyItems((items) => {
         const newItems = items.slice()
         const removedTitles: string[] = []
 
@@ -314,7 +331,7 @@ export const RecGrid = memo(
       })
     })
     const handleMoveCardToFirst = useMemoizedFn((item: RecItemType, data: IVideoCardData) => {
-      setItems((items) => {
+      modifyItems((items) => {
         const currentItem = items.find((x) => x.uniqId === item.uniqId)
         if (!currentItem) return items
         const index = items.indexOf(currentItem)
@@ -405,11 +422,6 @@ export const RecGrid = memo(
           {gridSiblings}
         </div>
       )
-    }
-
-    // before mount
-    if (beforeMount) {
-      return render()
     }
 
     // Shit happens!

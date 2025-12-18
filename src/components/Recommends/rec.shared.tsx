@@ -24,11 +24,10 @@ export const defaultRecSharedEmitter = new Emittery<RecSharedEmitterEvents>()
 
 export class RecContextValue {
   constructor(public insideModal?: boolean) {}
-
   recSharedEmitter = new Emittery<RecSharedEmitterEvents>()
   servicesRegistry: Partial<ServiceMap> = {}
 
-  // state needed in render
+  // render state
   recStore = proxy({
     refreshing: false,
     tabbarView: undefined as ReactNode,

@@ -1,7 +1,6 @@
 import { useUnmount } from 'ahooks'
 import { attempt, attemptAsync, isEqual } from 'es-toolkit'
 import { useEmitterOn } from '$common/hooks/useEmitter'
-import { useRefStateBox } from '$common/hooks/useRefState'
 import { TabConfig } from '$components/RecHeader/tab-config'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { useRecContext, type RefreshFn } from '$components/Recommends/rec.shared'
@@ -9,52 +8,38 @@ import { getGridRefreshCount } from '$modules/rec-services'
 import { getDynamicFeedServiceConfig, type DynamicFeedRecService } from '$modules/rec-services/dynamic-feed'
 import { getFavServiceConfig, type FavRecService } from '$modules/rec-services/fav'
 import { hotStore, type HotRecService } from '$modules/rec-services/hot'
-import {
-  createServiceMap,
-  getServiceFromRegistry,
-  type FetcherOptions,
-  type ServiceMap,
-} from '$modules/rec-services/service-map'
+import { createServiceMap, getServiceFromRegistry, type FetcherOptions } from '$modules/rec-services/service-map'
 import { getSpaceUploadServiceConfig, type SpaceUploadService } from '$modules/rec-services/space-upload'
 import type { RecItemTypeOrSeparator } from '$define'
-import { setGlobalGridItems } from './unsafe-window-export'
+import type { RecGridSelf } from '.'
 import type { Debugger } from 'debug'
 
 export function useRefresh({
   tab,
-  servicesRegistry,
   debug,
   fetcher,
   preAction,
   postAction,
   updateViewFromService,
+  self,
 }: {
   tab: ETab
-  servicesRegistry: Partial<ServiceMap>
   debug: Debugger
   fetcher: (opts: FetcherOptions) => Promise<RecItemTypeOrSeparator[]>
   preAction?: () => void | Promise<void>
   postAction?: () => void | Promise<void>
   updateViewFromService?: () => void
+  self: RecGridSelf
 }) {
-  const { recStore } = useRecContext()
-  const hasMoreBox = useRefStateBox(true)
-  const itemsBox = useRefStateBox<RecItemTypeOrSeparator[]>([])
-  useEffect(() => setGlobalGridItems(itemsBox.state), [itemsBox.state])
+  const { recStore, servicesRegistry } = useRecContext()
 
-  const refreshTsBox = useRefStateBox<number>(() => Date.now())
-  const [refreshAbortController, setRefreshAbortController] = useState<AbortController>(() => new AbortController())
-  const [showSkeleton, setShowSkeleton] = useState(false)
-  const [error, setError] = useState<any>(undefined)
-
-  const [beforeMount, setBeforeMount] = useState(true)
   useMount(() => {
-    setBeforeMount(false)
-    refresh(true) // Q: why `true`   A: when switch tab, set reuse to `true`
+    // Q: why `true`   A: when switch tab, set reuse to `true`
+    refresh(true)
   })
   // switch away
   useUnmount(() => {
-    refreshAbortController.abort()
+    self.abortController.abort()
   })
 
   const refresh: RefreshFn = useMemoizedFn(async (reuse = false) => {
@@ -76,12 +61,12 @@ export function useRefresh({
         !isEqual(s.config, getDynamicFeedServiceConfig())
       ) {
         debugSameTabConditionsChange()
-        refreshAbortController.abort()
+        self.abortController.abort()
       }
       // fav: conditions changed
       else if (tab === ETab.Fav && (s = servicesRegistry[ETab.Fav]) && !isEqual(s.config, getFavServiceConfig())) {
         debugSameTabConditionsChange()
-        refreshAbortController.abort()
+        self.abortController.abort()
       }
       // space-upload: conditions changed
       else if (
@@ -90,13 +75,13 @@ export function useRefresh({
         !isEqual(s.config, getSpaceUploadServiceConfig())
       ) {
         debugSameTabConditionsChange()
-        refreshAbortController.abort()
+        self.abortController.abort()
       }
 
       // has sub-tabs
       else if (tab === ETab.Hot && (s = servicesRegistry[ETab.Hot]) && s.subtab !== hotStore.subtab) {
         debug('refresh(): tab=%s [start], current refreshing, sametab but subtab changed, abort existing', tab)
-        refreshAbortController.abort()
+        self.abortController.abort()
       }
 
       // prevent same tab `refresh()`
@@ -108,48 +93,43 @@ export function useRefresh({
       debug('refresh(): tab=%s [start]', tab)
     }
 
-    // refresh-state
-    refreshTsBox.set(Date.now())
+    // refresh start
     recStore.refreshing = true
-    // refresh-result
-    setError(undefined)
-    itemsBox.set([])
-    hasMoreBox.set(true)
+    self.setStore({ refreshError: undefined, hasMore: true, items: [], refreshTs: Date.now() })
+    const abortController = new AbortController()
+    const { signal } = abortController
+    self.abortController = abortController
 
     await preAction?.()
 
-    const _abortController = new AbortController()
-    const _signal = _abortController.signal
-    setRefreshAbortController(_abortController)
-
     function _onAny() {
       recStore.refreshing = false // refreshing
-      setShowSkeleton(false)
+      self.setStore({ showSkeleton: false })
     }
     function onError(err: any) {
       _onAny()
-      hasMoreBox.set(false)
+      self.store.hasMore = false
+      self.store.refreshError = err
       console.error(err)
-      setError(err)
     }
     function onSuccess() {
       _onAny()
-      hasMoreBox.set(getServiceFromRegistry(servicesRegistry, tab).hasMore)
+      self.store.hasMore = getServiceFromRegistry(servicesRegistry, tab).hasMore
     }
 
     async function doFetch() {
       const [err, currentItems] = await attemptAsync(() =>
         fetcher({
           tab,
-          abortSignal: _signal,
+          abortSignal: signal,
           servicesRegistry,
         }),
       )
       // explicit aborted
-      if (_signal.aborted) return debug('refresh(): tab=%s [aborted], ignoring rest code', tab)
+      if (signal.aborted) return debug('refresh(): tab=%s [aborted], ignoring rest code', tab)
       if (err) return onError(err)
 
-      itemsBox.set(currentItems ?? [])
+      self.setStore({ items: currentItems ?? [] })
       return true // mark success
     }
 
@@ -159,14 +139,14 @@ export function useRefresh({
     if (existingService) {
       // cache
       existingService.restore()
-      itemsBox.set(existingService.qs.bufferQueue.slice(0, getGridRefreshCount()))
+      self.setStore({ items: existingService.qs.bufferQueue.slice(0, getGridRefreshCount()) })
       const success = !!(await doFetch())
       // swr?
       willRefresh = success && !!TabConfig[tab].swr
     }
     // create new service
     else {
-      setShowSkeleton(true)
+      self.setStore({ showSkeleton: true })
       willRefresh = true
     }
 
@@ -191,14 +171,5 @@ export function useRefresh({
   const { recSharedEmitter } = useRecContext()
   useEmitterOn(recSharedEmitter, 'refresh', refresh)
 
-  return {
-    itemsBox,
-    error,
-    refresh,
-    hasMoreBox,
-    refreshTsBox,
-    refreshAbortController,
-    showSkeleton,
-    beforeMount,
-  }
+  return { refresh }
 }
