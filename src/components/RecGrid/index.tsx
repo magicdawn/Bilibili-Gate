@@ -410,13 +410,11 @@ export const RecGrid = memo(
         propClassName,
       )
     }, [gridDisplayMode, useCustomGrid, propClassName])
-    const gridStyle: CSSProperties = useMemo(() => {
-      let gridTemplateColumns: string | undefined
-      if (gridDisplayMode !== EGridDisplayMode.TwoColumnGrid && enableForceCoumn && forceColumnCount) {
-        gridTemplateColumns = `repeat(${forceColumnCount}, minmax(0, 1fr))`
+    const gridStyle = useMemo(() => {
+      if (gridDisplayMode !== EGridDisplayMode.TwoColumnGrid && useCustomGrid && enableForceCoumn && forceColumnCount) {
+        return { '--col': forceColumnCount.toString() } as CSSProperties
       }
-      return { gridTemplateColumns }
-    }, [gridDisplayMode, enableForceCoumn, forceColumnCount])
+    }, [gridDisplayMode, useCustomGrid, enableForceCoumn, forceColumnCount])
 
     const cardBorderCss = useCardBorderCss()
 

@@ -263,9 +263,15 @@ const countCache2 = new Map<number, number>()
 // SectionRecommend 没有 narrow-mode
 // RecGrid 有 narrow mode
 export function getColumnCount(container?: HTMLElement | null, mayHaveNarrowMode = true) {
-  if (mayHaveNarrowMode && settings.grid.gridDisplayMode === EGridDisplayMode.TwoColumnGrid) return 2
+  const { gridDisplayMode, useCustomGrid, enableForceCoumn, forceColumnCount } = settings.grid
 
-  const countCache = settings.grid.useCustomGrid ? countCache1 : countCache2
+  if (gridDisplayMode === EGridDisplayMode.List) return 1
+
+  if (mayHaveNarrowMode && gridDisplayMode === EGridDisplayMode.TwoColumnGrid) return 2
+
+  if (useCustomGrid && enableForceCoumn && forceColumnCount) return forceColumnCount
+
+  const countCache = useCustomGrid ? countCache1 : countCache2
   {
     const count = countCache.get(Math.trunc(window.innerWidth))
     if (count) return count
