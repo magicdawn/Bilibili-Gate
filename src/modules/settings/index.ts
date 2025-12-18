@@ -59,6 +59,10 @@ export const initialSettings = {
 
     // extra
     twoColumnModeAlign: TwoColumnModeAlign.Center,
+
+    // 手动指定
+    enableForceCoumn: false,
+    forceColumnCount: 4,
   },
 
   /**

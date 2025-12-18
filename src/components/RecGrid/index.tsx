@@ -38,7 +38,7 @@ import { useRefresh } from './useRefresh'
 import { useShortcut } from './useShortcut'
 import { ENABLE_VIRTUAL_GRID, gridComponents } from './virtuoso.config'
 import type { CustomGridComponents, CustomGridContext } from './virtuoso.config'
-import type { ForwardedRef, ReactNode } from 'react'
+import type { CSSProperties, ForwardedRef, ReactNode } from 'react'
 
 const debug = baseDebug.extend('components:RecGrid')
 
@@ -104,7 +104,7 @@ export const RecGrid = memo(
     ref: ForwardedRef<RecGridRef>,
   ) {
     const self = useCreation(() => new RecGridSelf(), [])
-    const { useCustomGrid, gridDisplayMode } = useSnapshot(settings.grid)
+    const { useCustomGrid, gridDisplayMode, enableForceCoumn, forceColumnCount } = useSnapshot(settings.grid)
     const { multiSelecting } = useSnapshot(multiSelectStore)
     const { recStore, servicesRegistry } = useRecContext()
     const { refreshing } = useSnapshot(recStore)
@@ -389,22 +389,34 @@ export const RecGrid = memo(
       </div>
     )
 
-    const containerClassName = clsx('min-h-100vh', scssClassNames.videoGridContainer, propContainerClassName)
-
-    const gridClassName = clsx(
-      // base
-      APP_CLS_GRID, // for customize css
-      scssClassNames.videoGrid,
-      // variants
-      useCustomGrid ? scssClassNames.videoGridCustom : scssClassNames.videoGridBiliFeed4,
-      gridDisplayMode === EGridDisplayMode.TwoColumnGrid
-        ? scssClassNames.narrowMode // 双列
-        : gridDisplayMode === EGridDisplayMode.CenterEmptyGrid
-          ? scssClassNames.videoGridCenterEmpty // 中空
-          : undefined,
-      // from props
-      propClassName,
+    const containerClassName = useMemo(
+      () => clsx('min-h-100vh', scssClassNames.videoGridContainer, propContainerClassName),
+      [propContainerClassName],
     )
+
+    const gridClassName = useMemo(() => {
+      return clsx(
+        // base
+        APP_CLS_GRID, // for customize css
+        scssClassNames.videoGrid,
+        // variants
+        useCustomGrid ? scssClassNames.videoGridCustom : scssClassNames.videoGridBiliFeed4,
+        gridDisplayMode === EGridDisplayMode.TwoColumnGrid
+          ? scssClassNames.narrowMode // 双列
+          : gridDisplayMode === EGridDisplayMode.CenterEmptyGrid
+            ? scssClassNames.videoGridCenterEmpty // 中空
+            : undefined,
+        // from props
+        propClassName,
+      )
+    }, [gridDisplayMode, useCustomGrid, propClassName])
+    const gridStyle: CSSProperties = useMemo(() => {
+      let gridTemplateColumns: string | undefined
+      if (gridDisplayMode !== EGridDisplayMode.TwoColumnGrid && enableForceCoumn && forceColumnCount) {
+        gridTemplateColumns = `repeat(${forceColumnCount}, minmax(0, 1fr))`
+      }
+      return { gridTemplateColumns }
+    }, [gridDisplayMode, enableForceCoumn, forceColumnCount])
 
     const cardBorderCss = useCardBorderCss()
 
@@ -420,8 +432,8 @@ export const RecGrid = memo(
     // 总是 render grid, getColumnCount 依赖 grid columns
     const render = ({ gridChildren, gridSiblings }: { gridChildren?: ReactNode; gridSiblings?: ReactNode } = {}) => {
       return (
-        <div ref={containerRef} className={containerClassName} data-tab={tab}>
-          <div className={gridClassName} data-tab={tab}>
+        <div data-tab={tab} ref={containerRef} className={containerClassName}>
+          <div data-tab={tab} className={gridClassName} style={gridStyle}>
             {gridChildren}
           </div>
           {gridSiblings}
