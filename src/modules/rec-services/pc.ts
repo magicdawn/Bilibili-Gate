@@ -12,12 +12,8 @@ const debug = baseDebug.extend('modules:rec-services:pc')
 /**
  * 使用 web api 获取推荐
  *
- * 分区首页
- * /x/web-interface/index/top/rcmd
- * /x/web-interface/wbi/index/top/rcmd
- *
- * Feed流首页(多一个 feed)
- * /x/web-interface/wbi/index/top/feed/rcmd
+ * bili-feed4 首页
+ * API: /x/web-interface/wbi/index/top/feed/rcmd
  * 同时会掺和
  *  - 直播 https://api.live.bilibili.com/xlive/web-interface/v1/webMain/getMoreRecList
  *  - PGC 内容
@@ -26,13 +22,12 @@ const debug = baseDebug.extend('modules:rec-services:pc')
  *    - https://api.bilibili.com/pgc/web/timeline/v2?day_before=4&day_after=2&season_type=1&web_location=333.1007
  */
 
-let _id = 0
-const genUniqId = () => Date.now() + _id++
-
 export class PcRecService extends BaseTabService<PcRecItemExtend> {
-  static PAGE_SIZE = 14
+  static PAGE_SIZE = 30 // 默认为 12, 留空即最大值为 30; 这里指定为 30
+
   override tabbarView = undefined
   override sidebarView = undefined
+  override hasMoreExceptQueue = true
 
   constructor(public isKeepFollowOnly: boolean) {
     super(PcRecService.PAGE_SIZE)
@@ -85,23 +80,19 @@ export class PcRecService extends BaseTabService<PcRecItemExtend> {
   }
 
   page = 0
-  override hasMoreExceptQueue = true
   private async getRecommend(abortSignal: AbortSignal) {
     const curpage = ++this.page // this has parallel call, can not ++ after success
 
     // https://socialsisteryi.github.io/bilibili-API-collect/docs/video/recommend.html#获取首页视频推荐列表-web端
     const url = '/x/web-interface/wbi/index/top/feed/rcmd'
     const params = {
+      fresh_type: 8, // num	相关性	非必要	默认为 4, 值越大推荐内容越相关
+      fresh_idx_1h: curpage,
+      fresh_idx: curpage,
+      ps: PcRecService.PAGE_SIZE,
       web_location: 1430650,
       feed_version: 'V8',
       homepage_ver: 1,
-      fresh_type: 4,
-      y_num: 5,
-      last_y_num: 5,
-      fresh_idx_1h: curpage,
-      fresh_idx: curpage,
-      uniq_id: genUniqId(),
-      ps: 12,
     }
 
     const res = await request.get(url, { signal: abortSignal, params })

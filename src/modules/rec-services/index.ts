@@ -28,8 +28,7 @@ export const recItemUniqer = (item: RecItemTypeOrSeparator) =>
         [EApiType.SpaceUpload]: (item) => item.bvid,
       })
 
-export function concatThenUniq(existing: RecItemTypeOrSeparator[], newItems: RecItemTypeOrSeparator[]) {
-  // 对全部 uniq 是否影响性能 ?
+export function concatRecItems(existing: RecItemTypeOrSeparator[], newItems: RecItemTypeOrSeparator[]) {
   return uniqBy([...existing, ...newItems], recItemUniqer)
 }
 
@@ -52,10 +51,10 @@ async function fetchMinCount(count: number, fetcherOptions: FetcherOptions, filt
     // live             直播
     if (!REC_TABS.includes(tab)) {
       const service = getServiceFromRegistry(servicesRegistry, tab)
-      cur = (await service.loadMore(abortSignal)) || []
+      cur = (await service.loadMore(abortSignal)) ?? []
       hasMore = service.hasMore
       cur = filterRecItems(cur, tab) // filter
-      items = concatThenUniq(items, cur) // concat
+      items = concatRecItems(items, cur) // concat
       return
     }
 
@@ -101,7 +100,7 @@ async function fetchMinCount(count: number, fetcherOptions: FetcherOptions, filt
     }
 
     cur = filterRecItems(cur, tab) // filter
-    items = concatThenUniq(items, cur) // concat
+    items = concatRecItems(items, cur) // concat
   }
 
   await addMore(count)

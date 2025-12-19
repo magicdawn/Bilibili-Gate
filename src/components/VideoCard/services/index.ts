@@ -62,6 +62,7 @@ const dislikeFactory = (type: 'dislike' | 'cancel') => {
 
   return async function (item: AppRecItem, reasonId: number) {
     const res = await gmrequest.get(HOST_APP + pathname, {
+      responseType: 'json',
       params: {
         goto: item.goto,
         id: item.param,

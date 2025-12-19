@@ -22,7 +22,7 @@ import { $headerHeight } from '$header'
 import { antMessage, antNotification } from '$modules/antd'
 import { filterRecItems } from '$modules/filter'
 import { multiSelectStore } from '$modules/multi-select/store'
-import { concatThenUniq, getGridRefreshCount, refreshForGrid } from '$modules/rec-services'
+import { concatRecItems, getGridRefreshCount, refreshForGrid } from '$modules/rec-services'
 import { getServiceFromRegistry } from '$modules/rec-services/service-map.ts'
 import { settings } from '$modules/settings'
 import { isSafari } from '$ua'
@@ -197,7 +197,7 @@ export const RecGrid = memo(
         const service = getServiceFromRegistry(servicesRegistry, tab)
         let more = (await service.loadMore(self.abortController.signal)) || []
         more = filterRecItems(more, tab)
-        newItems = concatThenUniq(newItems, more)
+        newItems = concatRecItems(newItems, more)
         newHasMore = service.hasMore
       } catch (e) {
         err = e
