@@ -4,7 +4,7 @@ import { fastSortWithOrders } from 'fast-sort-lens'
 import { useSnapshot } from 'valtio'
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { useEmitterOn } from '$common/hooks/useEmitter'
-import { useRevealMenuSelectedKey, useSidebarVisible } from '$components/RecGrid/sidebar'
+import { sidebarBottomLine, useRevealMenuSelectedKey, useSidebarVisible } from '$components/RecGrid/sidebar'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { useOnRefresh, useRecContext } from '$components/Recommends/rec.shared'
 import { IconForReset } from '$modules/icon'
@@ -222,5 +222,10 @@ export function DynamicFeedSidebarView() {
   const { recSharedEmitter } = useRecContext()
   useEmitterOn(recSharedEmitter, 'dynamic-feed:clear', () => void revealSelected(DF_SELECTED_KEY_ALL))
   if (!sidebarVisible) return undefined
-  return <Menu ref={menuRef} items={menuItems} selectedKeys={[selectedKey]} mode='inline' inlineIndent={10} />
+  return (
+    <>
+      <Menu ref={menuRef} items={menuItems} selectedKeys={[selectedKey]} mode='inline' inlineIndent={10} />
+      {sidebarBottomLine}
+    </>
+  )
 }

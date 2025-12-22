@@ -1,5 +1,5 @@
 import { css } from '@emotion/react'
-import { ConfigProvider, type Menu } from 'antd'
+import { ConfigProvider, Divider, type Menu } from 'antd'
 import { useUnoMerge } from 'unocss-merge/react'
 import { useSnapshot } from 'valtio'
 import { EHotSubTab, ETab } from '$components/RecHeader/tab-enum'
@@ -126,3 +126,7 @@ export function useRevealMenuSelectedKey(menuItems: AntMenuItem[], selectedKey: 
 
   return { menuRef, revealSelected }
 }
+
+export const sidebarBottomLine = (
+  <Divider className='[&.ant-divider-horizontal.ant-divider-with-text]:(my-5px text-14px)'>底线</Divider>
+)

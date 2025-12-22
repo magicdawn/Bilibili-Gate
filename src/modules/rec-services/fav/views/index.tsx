@@ -2,7 +2,7 @@ import { Button, Dropdown, Menu, Popover, Tag, Transfer } from 'antd'
 import { delay, groupBy } from 'es-toolkit'
 import { useSnapshot } from 'valtio'
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
-import { useRevealMenuSelectedKey } from '$components/RecGrid/sidebar'
+import { sidebarBottomLine, useRevealMenuSelectedKey } from '$components/RecGrid/sidebar'
 
 import { useOnRefresh } from '$components/Recommends/rec.shared'
 import { defineAntMenus, type AntMenuItem } from '$modules/antd'
@@ -265,6 +265,11 @@ export function ViewingAllExcludeFolderConfig({
 
 export function FavSidebarView() {
   const { menuItems, selectedKey } = useScopeMenus()
-  const { menuRef, revealSelected } = useRevealMenuSelectedKey(menuItems, selectedKey)
-  return <Menu ref={menuRef} items={menuItems} selectedKeys={[selectedKey]} mode='inline' inlineIndent={10} />
+  const { menuRef } = useRevealMenuSelectedKey(menuItems, selectedKey)
+  return (
+    <>
+      <Menu ref={menuRef} items={menuItems} selectedKeys={[selectedKey]} mode='inline' inlineIndent={10} />
+      {sidebarBottomLine}
+    </>
+  )
 }

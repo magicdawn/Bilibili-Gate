@@ -415,7 +415,7 @@ export function FollowGroupMechanismNote() {
   return (
     <>
       <p>机制介绍:</p>
-      <ul>
+      <ul className='text-13px'>
         <li className='flex items-start gap-x-10px'>
           <div>「从全部过滤」:</div>
           <div>基于全部动态 + 分组UP过滤, 速度可能巨慢, 且过滤后的数量取决于B站记录的"全部"动态范围</div>
