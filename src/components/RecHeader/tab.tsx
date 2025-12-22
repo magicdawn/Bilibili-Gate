@@ -3,7 +3,6 @@ import { usePrevious } from 'ahooks'
 import { Radio, Segmented } from 'antd'
 import { useSnapshot } from 'valtio'
 import { HelpInfo } from '$components/_base/HelpInfo'
-import { useOnRefresh } from '$components/Recommends/rec.shared'
 import { SHOW_DYNAMIC_FEED_ONLY } from '$modules/rec-services/dynamic-feed/store'
 import { SHOW_FAV_TAB_ONLY } from '$modules/rec-services/fav/store'
 import { SHOW_SPACE_UPLOAD_ONLY } from '$modules/rec-services/space-upload/store'
@@ -146,7 +145,6 @@ export function VideoSourceTab() {
   const tab = useCurrentUsingTab()
   const currentTabConfigList = useCurrentDisplayingTabConfigList()
   const { __internalRecTabRenderAsSegments } = useSettingsSnapshot()
-  const onRefresh = useOnRefresh()
 
   const onChangeTab = useMemoizedFn((newTab: ETab) => {
     if (!logined && !TabConfig[newTab].anonymousUsage && !checkLoginStatus()) {

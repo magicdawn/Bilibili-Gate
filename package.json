@@ -57,10 +57,10 @@
     "react-dom": "18.3.1",
     "react-intersection-observer": "^10.0.0",
     "react-virtuoso": "^4.17.0",
-    "sass-embedded": "^1.97.0",
+    "sass-embedded": "^1.97.1",
     "spark-md5": "^3.0.2",
     "ua-parser-js": "^1.0.40",
-    "unocss-merge": "^0.6.0",
+    "unocss-merge": "^0.7.3",
     "valtio": "^2.2.0"
   },
   "devDependencies": {
@@ -80,7 +80,7 @@
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/debug": "^4.1.12",
     "@types/ms": "^2.1.0",
-    "@types/node": "^25.0.2",
+    "@types/node": "^25.0.3",
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
     "@types/spark-md5": "^3.0.5",
@@ -91,7 +91,7 @@
     "@violentmonkey/types": "^0.3.1",
     "@vitejs/plugin-react": "^5.1.2",
     "@vitejs/plugin-react-swc": "^4.2.2",
-    "@vitest/ui": "4.0.15",
+    "@vitest/ui": "4.0.16",
     "concurrently": "^9.2.1",
     "eslint": "^9.39.2",
     "husky": "^9.1.7",
@@ -101,8 +101,8 @@
     "oxlint": "^1.33.0",
     "postcss-media-minmax": "^5.0.0",
     "prettier": "^3.7.4",
-    "sass": "^1.97.0",
-    "turbo": "^2.6.3",
+    "sass": "^1.97.1",
+    "turbo": "^2.7.1",
     "type-fest": "^5.3.1",
     "typed-query-selector": "^2.12.0",
     "typed-scss-modules": "^8.1.1",
@@ -115,8 +115,8 @@
     "vite-plugin-importer": "^0.2.5",
     "vite-plugin-inspect": "^11.3.3",
     "vite-plugin-monkey": "^7.1.8",
-    "vite-tsconfig-paths": "5",
-    "vitest": "^4.0.15"
+    "vite-tsconfig-paths": "6",
+    "vitest": "^4.0.16"
   },
   "lint-staged": {
     "*.{?(c|m)(j|t)s?(x),json,y?(a)ml}": [

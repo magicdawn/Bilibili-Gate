@@ -8,7 +8,7 @@ import { RecGrid } from '$components/RecGrid'
 import { EGridDisplayMode, gridDisplayModeChecker } from '$components/RecGrid/display-mode'
 import { clsTwoColumnModeWidth } from '$components/RecGrid/display-mode/two-column-mode'
 import { ESidebarAlign, GridSidebar } from '$components/RecGrid/sidebar'
-import { useHeaderState } from '$components/RecHeader/index.shared'
+import { useModalsState } from '$components/RecHeader/modals'
 import { RefreshButton } from '$components/RecHeader/RefreshButton'
 import { useDeferredTab, VideoSourceTab } from '$components/RecHeader/tab'
 import { antMessage } from '$modules/antd'
@@ -45,7 +45,7 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
     }
   })
 
-  const { modalSettingsVisible } = useHeaderState()
+  const { modalSettingsVisible } = useModalsState()
   const shortcutEnabled = [show, !modalSettingsVisible, !useModalDislikeVisible(), !useModalMoveFavVisible()].every(
     Boolean,
   )

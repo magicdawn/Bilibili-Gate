@@ -43,16 +43,6 @@
 
   .ant-btn {
     font-size: 13px;
-    // line-height: 24px;
-    &:disabled {
-      cursor: wait;
-    }
-  }
-  .ant-btn > span.ant-btn-icon {
-    line-height: 0;
-  }
-  .ant-radio-button-wrapper-disabled {
-    cursor: wait;
   }
 }
 

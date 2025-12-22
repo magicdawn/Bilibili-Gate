@@ -99,7 +99,7 @@ export function TabPaneCustomUI() {
           <CheckboxSettingItem
             disabled={!style.pureRecommend.useStickyTabbar}
             configPath='style.pureRecommend.stickyTabbarShadow'
-            label='全屏模式: 固定 Tab 栏 : 添加边框 & 阴影'
+            label='全屏模式: 固定 Tab 栏时添加边框 & 阴影'
             tooltip={explainForFlag('Tab 栏在吸附状态下: 加宽, 添加边框 & 阴影', '不改变')}
           />
 

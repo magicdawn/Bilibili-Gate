@@ -121,16 +121,7 @@ export function TabPaneBasic() {
         </Space>
       </SettingsGroup>
 
-      <SettingsGroup
-        title={
-          <>
-            布局
-            <HelpInfo className='ml-5px size-18px' IconComponent={IconParkOutlineHelp}>
-              网格布局
-            </HelpInfo>
-          </>
-        }
-      >
+      <SettingsGroup title='布局'>
         <div className='flex items-center gap-x-15px'>
           <CheckboxSettingItem
             configPath='grid.useCustomGrid'

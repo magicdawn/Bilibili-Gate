@@ -7,6 +7,8 @@ allowedDeprecatedVersions:
 minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
   - '@magicdawn/*'
+  - unocss-merge
+
 onlyBuiltDependencies:
   - '@biomejs/biome'
   - '@parcel/watcher'

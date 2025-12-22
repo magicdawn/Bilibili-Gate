@@ -1,7 +1,3 @@
 # Todos
 
-## 投稿查看器
-
-新版空间:
-
-- pagetual 无法实现了, 页码不参与 url 构造, 只能一页一页点, 太二了...
+- [ ] RecHeader, dark-mode background

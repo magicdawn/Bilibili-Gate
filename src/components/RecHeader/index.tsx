@@ -54,7 +54,6 @@ export const RecHeader = forwardRef<
   )
 
   const [stickyRef, sticky] = useSticky<HTMLDivElement>()
-
   const scrollToTop = useMemoizedFn(() => {
     if (!pureRecommend) return
 
@@ -72,11 +71,11 @@ export const RecHeader = forwardRef<
   useImperativeHandle(ref, () => ({ scrollToTop }))
 
   const headerHeight = $headerHeight.use()
-
   const showAccessKeyManage = useShouldShowAccessKeyManage()
-
   const usingEvolevdHeader = $usingEvolevdHeader.use()
   const dark = useIsDarkMode()
+  const expandToFullWidthCss = useExpandToFullWidthCss()
+
   const boxShadowCss = (() => {
     let val: string
     if (usingEvolevdHeader) {
@@ -89,11 +88,12 @@ export const RecHeader = forwardRef<
     `
   })()
 
-  const expandToFullWidthCss = useExpandToFullWidthCss()
-
   const _className = useUnoMerge(
-    pureRecommend && useStickyTabbar && 'sticky z-gate-rec-header mb-10px b-b-1px b-b-transparent b-b-solid',
-    pureRecommend && useStickyTabbar && sticky && 'b-b-gate-bg-lv1 bg-$bg1_float',
+    pureRecommend &&
+      useStickyTabbar && [
+        'sticky z-gate-rec-header mb-10px b-b-1px b-b-transparent b-b-solid',
+        sticky && ['b-b-gate-bg-lv1', stickyTabbarShadow ? 'bg-$bg1_float' : 'bg-$bg1'],
+      ],
     sticky && 'sticky-state-on',
   )
   const _css: CssProp = useMemo(() => {
@@ -101,9 +101,9 @@ export const RecHeader = forwardRef<
     const topCss = css`
       top: ${headerHeight - 1}px; // 有缝隙, 故 -1 px
     `
-    const styles = [topCss]
-    if (stickyTabbarShadow && sticky) styles.push(boxShadowCss, expandToFullWidthCss)
-    return styles
+    const arr = [topCss]
+    if (stickyTabbarShadow && sticky) arr.push(boxShadowCss, expandToFullWidthCss)
+    return arr
   }, [pureRecommend, useStickyTabbar, stickyTabbarShadow, sticky, headerHeight, boxShadowCss, expandToFullWidthCss])
 
   return (

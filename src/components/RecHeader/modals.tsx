@@ -1,13 +1,22 @@
 import { once } from 'es-toolkit'
+import { proxy, useSnapshot } from 'valtio'
 import { APP_CLS_ROOT, IN_BILIBILI_HOMEPAGE } from '$common'
 import { AppRoot } from '$components/AppRoot'
 import { ModalSettings } from '$components/ModalSettings'
 import { ModalFeed } from '$components/Recommends/ModalFeed'
 import { settings } from '$modules/settings'
-import { headerState, useHeaderState } from './index.shared'
+
+export const modalsState = proxy({
+  modalFeedVisible: false,
+  modalSettingsVisible: false,
+})
+
+export function useModalsState() {
+  return useSnapshot(modalsState)
+}
 
 export function toggleModalFeed() {
-  if (headerState.modalFeedVisible) {
+  if (modalsState.modalFeedVisible) {
     hideModalFeed()
   } else {
     showModalFeed()
@@ -15,10 +24,10 @@ export function toggleModalFeed() {
 }
 export function showModalFeed() {
   renderOnce()
-  headerState.modalFeedVisible = true
+  modalsState.modalFeedVisible = true
 }
 export function hideModalFeed() {
-  headerState.modalFeedVisible = false
+  modalsState.modalFeedVisible = false
 }
 
 /**
@@ -30,7 +39,7 @@ if (IN_BILIBILI_HOMEPAGE && settings.showModalFeedOnLoad) {
 }
 
 export function toggleModalSettings() {
-  if (headerState.modalSettingsVisible) {
+  if (modalsState.modalSettingsVisible) {
     hideModalSettings()
   } else {
     showModalSettings()
@@ -38,10 +47,10 @@ export function toggleModalSettings() {
 }
 export function showModalSettings() {
   renderOnce()
-  headerState.modalSettingsVisible = true
+  modalsState.modalSettingsVisible = true
 }
 export function hideModalSettings() {
-  headerState.modalSettingsVisible = false
+  modalsState.modalSettingsVisible = false
 }
 
 export function registerSettingsGmCommand() {
@@ -61,7 +70,7 @@ const renderOnce = once(function render() {
 })
 
 function ModalsContainer() {
-  const { modalFeedVisible, modalSettingsVisible } = useHeaderState()
+  const { modalFeedVisible, modalSettingsVisible } = useModalsState()
   return (
     <>
       <ModalFeed show={modalFeedVisible} onHide={hideModalFeed} />
