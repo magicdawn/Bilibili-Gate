@@ -7,7 +7,7 @@ import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { RecGrid } from '$components/RecGrid'
 import { EGridDisplayMode, gridDisplayModeChecker } from '$components/RecGrid/display-mode'
 import { clsTwoColumnModeWidth } from '$components/RecGrid/display-mode/two-column-mode'
-import { GridSidebar } from '$components/RecGrid/sidebar'
+import { ESidebarAlign, GridSidebar } from '$components/RecGrid/sidebar'
 import { useHeaderState } from '$components/RecHeader/index.shared'
 import { RefreshButton } from '$components/RecHeader/RefreshButton'
 import { useDeferredTab, VideoSourceTab } from '$components/RecHeader/tab'
@@ -28,6 +28,7 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
   const {
     grid: { gridDisplayMode },
     modalFeedFullScreen,
+    sidebarAlign,
   } = useSettingsSnapshot()
   const { usingTwoColumnMode } = gridDisplayModeChecker(gridDisplayMode)
   const useFullScreen = !usingTwoColumnMode && modalFeedFullScreen
@@ -87,7 +88,13 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
     <RecContext.Provider value={recContext}>
       <BaseModal show={show} onHide={onHide} clsModalMask={clsModalMask} clsModal={clsModal}>
         {renderHeader()}
-        <div data-role='modal-body' className='flex flex-1 gap-x-25px overflow-hidden'>
+        <div
+          data-role='modal-body'
+          className={clsx(
+            'flex flex-1 gap-x-25px overflow-hidden',
+            sidebarAlign === ESidebarAlign.Right && 'flex-row-reverse',
+          )}
+        >
           <GridSidebar tab={tab} sidebarView={sidebarView} className='max-h-full' />
           <div className='h-full flex-1 overflow-y-scroll pr-15px' ref={scrollerRef}>
             <RecGrid

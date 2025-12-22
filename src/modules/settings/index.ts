@@ -4,6 +4,7 @@ import { proxy, snapshot, subscribe, useSnapshot } from 'valtio'
 import { baseDebug, IN_BILIBILI_HOMEPAGE } from '$common'
 import { EGridDisplayMode } from '$components/RecGrid/display-mode'
 import { TwoColumnModeAlign } from '$components/RecGrid/display-mode/two-column-mode'
+import { ESidebarAlign } from '$components/RecGrid/sidebar'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { VideoLinkOpenMode } from '$components/VideoCard/index.shared'
 import { reciveGmValueUpdatesFromOtherTab } from '$modules/gm'
@@ -107,6 +108,7 @@ export const initialSettings = {
 
   // 启用侧边栏
   enableSidebar: true,
+  sidebarAlign: ESidebarAlign.Left,
 
   /**
    * tab=dynamic-feed

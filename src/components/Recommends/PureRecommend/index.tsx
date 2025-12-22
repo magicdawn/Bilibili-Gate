@@ -3,7 +3,7 @@ import { useSnapshot } from 'valtio'
 import { RecGrid } from '$components/RecGrid'
 import { useGridDisplayModeChecker } from '$components/RecGrid/display-mode'
 import { clsForTwoColumnModeAlign, clsTwoColumnModeWidth } from '$components/RecGrid/display-mode/two-column-mode'
-import { GridSidebar } from '$components/RecGrid/sidebar'
+import { ESidebarAlign, GridSidebar } from '$components/RecGrid/sidebar'
 import { RecHeader, type RecHeaderRef } from '$components/RecHeader'
 import { usePlainShortcutEnabled } from '$components/RecHeader/index.shared'
 import { useDeferredTab } from '$components/RecHeader/tab'
@@ -17,6 +17,7 @@ const TWO_COLUMN_MODE_ALIGN_APPLY_TO_SIDEBAR = false
 export function PureRecommend() {
   const {
     grid: { twoColumnModeAlign },
+    sidebarAlign,
   } = useSettingsSnapshot()
   const { usingTwoColumnMode } = useGridDisplayModeChecker()
   const shortcutEnabled = usePlainShortcutEnabled()
@@ -44,11 +45,12 @@ export function PureRecommend() {
   if (TWO_COLUMN_MODE_ALIGN_APPLY_TO_SIDEBAR) {
     clsFlexContainer = clsx(
       'flex gap-x-25px',
+      sidebarAlign === ESidebarAlign.Right && 'flex-row-reverse',
       usingTwoColumnMode && clsForTwoColumnModeAlign(twoColumnModeAlign, 'flex'),
     )
     clsRecGridContainer = usingTwoColumnMode ? clsTwoColumnModeWidth : 'flex-1'
   } else {
-    clsFlexContainer = clsx('flex gap-x-25px')
+    clsFlexContainer = clsx('flex gap-x-25px', sidebarAlign === ESidebarAlign.Right && 'flex-row-reverse')
     clsRecGridContainer = 'flex-1'
     clsRecGrid = clsx(
       usingTwoColumnMode && [clsTwoColumnModeWidth, clsForTwoColumnModeAlign(twoColumnModeAlign, 'margin')],

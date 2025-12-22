@@ -11,6 +11,11 @@ import type { AntMenuItem } from '$modules/antd'
 import { useGridDisplayModeChecker } from './display-mode'
 import type { CSSProperties, ElementRef, ReactNode } from 'react'
 
+export enum ESidebarAlign {
+  Left = 'left',
+  Right = 'right',
+}
+
 const sidebarViewWrapperCss = css`
   scrollbar-width: thin;
   /* scrollbar-gutter: stable; */
