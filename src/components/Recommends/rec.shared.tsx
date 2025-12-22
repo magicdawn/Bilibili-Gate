@@ -1,6 +1,7 @@
 import { useCreation, useLockFn } from 'ahooks'
 import Emittery from 'emittery'
 import { proxy, useSnapshot } from 'valtio'
+import type { ETab } from '$components/RecHeader/tab-enum'
 import type { ServiceMap } from '$modules/rec-services/service-map'
 
 /* #region RecSharedEmitter */
@@ -26,10 +27,10 @@ export class RecContextValue {
   constructor(public insideModal?: boolean) {}
   recSharedEmitter = new Emittery<RecSharedEmitterEvents>()
   servicesRegistry: Partial<ServiceMap> = {}
-
   // render state
   recStore = proxy({
     refreshing: false,
+    refreshingTab: undefined as ETab | undefined,
     tabbarView: undefined as ReactNode,
     sidebarView: undefined as ReactNode,
   })

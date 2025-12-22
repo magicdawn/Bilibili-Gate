@@ -2,15 +2,17 @@ import { useUnmount } from 'ahooks'
 import { attempt, attemptAsync, isEqual } from 'es-toolkit'
 import { useEmitterOn } from '$common/hooks/useEmitter'
 import { TabConfig } from '$components/RecHeader/tab-config'
-import { ETab } from '$components/RecHeader/tab-enum'
+import { EHotSubTab, ETab } from '$components/RecHeader/tab-enum'
 import { useRecContext, type RefreshFn } from '$components/Recommends/rec.shared'
 import { getGridRefreshCount } from '$modules/rec-services'
 import { getDynamicFeedServiceConfig, type DynamicFeedRecService } from '$modules/rec-services/dynamic-feed'
 import { getFavServiceConfig, type FavRecService } from '$modules/rec-services/fav'
 import { hotStore, type HotRecService } from '$modules/rec-services/hot'
+import { RankRecService } from '$modules/rec-services/hot/rank'
+import { rankStore } from '$modules/rec-services/hot/rank/store'
 import { createServiceMap, getServiceFromRegistry, type FetcherOptions } from '$modules/rec-services/service-map'
-import { getSpaceUploadServiceConfig, type SpaceUploadService } from '$modules/rec-services/space-upload'
 import type { RecItemTypeOrSeparator } from '$define'
+import type { SpaceUploadService } from '$modules/rec-services/space-upload'
 import type { RecGridSelf } from '.'
 import type { Debugger } from 'debug'
 
@@ -42,50 +44,45 @@ export function useRefresh({
     self.abortController.abort()
   })
 
-  const refresh: RefreshFn = useMemoizedFn(async (reuse = false) => {
+  const refresh: RefreshFn = useMemoizedFn(async (reuse: boolean = false) => {
     const start = performance.now()
 
-    // when already in refreshing
-    if (recStore.refreshing) {
+    const isSameTabRefreshing = recStore.refreshing && recStore.refreshingTab === tab
+    if (isSameTabRefreshing) {
       /**
        * same tab but conditions changed
        */
       let s: DynamicFeedRecService | FavRecService | HotRecService | SpaceUploadService | undefined
-      const debugSameTabConditionsChange = () =>
+      const isSameTabButConditionsChanged = (() => {
+        switch (tab) {
+          case ETab.DynamicFeed:
+            s = servicesRegistry[ETab.DynamicFeed]
+            return !isEqual(s?.config, getDynamicFeedServiceConfig())
+          case ETab.Fav:
+            s = servicesRegistry[ETab.Fav]
+            return !isEqual(s?.config, getFavServiceConfig())
+          case ETab.Hot:
+            s = servicesRegistry[ETab.Hot]
+            if (s?.subtab !== hotStore.subtab) return true // subtab changed
+            if (
+              // rank slug changed
+              s.subtab === EHotSubTab.Rank &&
+              s.service instanceof RankRecService &&
+              s.service.rankTab.slug !== rankStore.slug
+            ) {
+              return true
+            }
+            return false
+          default:
+            return false
+        }
+      })()
+
+      if (isSameTabButConditionsChanged) {
         debug('refresh(): tab=%s [start], current refreshing, sametab but conditions change, abort existing', tab)
-
-      // dynamic-feed: conditions changed
-      if (
-        tab === ETab.DynamicFeed &&
-        (s = servicesRegistry[ETab.DynamicFeed]) &&
-        !isEqual(s.config, getDynamicFeedServiceConfig())
-      ) {
-        debugSameTabConditionsChange()
         self.abortController.abort()
-      }
-      // fav: conditions changed
-      else if (tab === ETab.Fav && (s = servicesRegistry[ETab.Fav]) && !isEqual(s.config, getFavServiceConfig())) {
-        debugSameTabConditionsChange()
-        self.abortController.abort()
-      }
-      // space-upload: conditions changed
-      else if (
-        tab === ETab.SpaceUpload &&
-        (s = servicesRegistry[ETab.SpaceUpload]) &&
-        !isEqual(s.config, getSpaceUploadServiceConfig())
-      ) {
-        debugSameTabConditionsChange()
-        self.abortController.abort()
-      }
-
-      // has sub-tabs
-      else if (tab === ETab.Hot && (s = servicesRegistry[ETab.Hot]) && s.subtab !== hotStore.subtab) {
-        debug('refresh(): tab=%s [start], current refreshing, sametab but subtab changed, abort existing', tab)
-        self.abortController.abort()
-      }
-
-      // prevent same tab `refresh()`
-      else {
+      } else {
+        // prevent same tab `refresh()`
         debug('refresh() tab=%s [start], current refreshing, prevent same tab refresh()', tab)
         return
       }
@@ -95,6 +92,7 @@ export function useRefresh({
 
     // refresh start
     recStore.refreshing = true
+    recStore.refreshingTab = tab
     self.setStore({ refreshError: undefined, hasMore: true, items: [], refreshTs: Date.now() })
     const abortController = new AbortController()
     const { signal } = abortController
@@ -104,6 +102,7 @@ export function useRefresh({
 
     function _onAny() {
       recStore.refreshing = false // refreshing
+      recStore.refreshingTab = undefined
       self.setStore({ showSkeleton: false })
     }
     function onError(err: any) {
