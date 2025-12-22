@@ -52,7 +52,10 @@ jobs:
       #
       # commit to release branch, orphan commit
       #
-      - run: mkdir dist-release-branch && touch ./dist-release-branch/bilibili-gate.user.js
+      - run: |
+          mkdir dist-release-branch
+          touch ./dist-release-branch/bilibili-gate.user.js
+          touch ./dist-release-branch/bilibili-gate.mini.user.js
       - uses: peaceiris/actions-gh-pages@v4
         with:
           publish_branch: release
