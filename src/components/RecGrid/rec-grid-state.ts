@@ -26,6 +26,15 @@ export function setCurrentGridItems(items: RecItemType[]) {
   state.items = items
 }
 
+export function useSetupGridState() {
+  useMount(() => {
+    recGridStateStack.push({ items: [] })
+    return () => {
+      recGridStateStack.pop()
+    }
+  })
+}
+
 export function getMultiSelectedItems() {
   const { multiSelecting, selectedIdSet } = multiSelectStore
   return multiSelecting ? getCurrentGridItems().filter((item) => selectedIdSet.has(item.uniqId)) : []

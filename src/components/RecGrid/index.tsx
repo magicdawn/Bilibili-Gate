@@ -33,6 +33,7 @@ import type { IVideoCardData } from '$modules/filter/normalize'
 import * as scssClassNames from '../video-grid.module.scss'
 import { EGridDisplayMode } from './display-mode'
 import { ErrorDetail } from './error-detail'
+import { useSetupGridState } from './rec-grid-state'
 import { setGlobalGridItems } from './unsafe-window-export'
 import { useRefresh } from './useRefresh'
 import { useShortcut } from './useShortcut'
@@ -109,6 +110,7 @@ export const RecGrid = memo(
     const { recStore, servicesRegistry } = useRecContext()
     const { refreshing } = useSnapshot(recStore)
     const unmountedRef = useUnmountedRef()
+    useSetupGridState()
 
     const updateViewFromService = useMemoizedFn(() => {
       if (unmountedRef.current) return
