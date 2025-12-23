@@ -62,7 +62,7 @@ export const initialSettings = {
     twoColumnModeAlign: TwoColumnModeAlign.Center,
 
     // 手动指定
-    enableForceCoumn: false,
+    enableForceColumn: false,
     forceColumnCount: 4,
   },
 
@@ -428,6 +428,9 @@ export function runSettingsMigration(val: object | undefined) {
 
     // 2025-12-13
     ['grid.useCustomGrid', 'style.pureRecommend.useCustomGrid'],
+
+    // 2025-12-23: fix typo
+    ['grid.enableForceColumn', 'grid.enableForceCoumn'],
   ]
   // 伪代码: savedConfig[newName] = savedConfig[legacyName]
   for (const [configPath, legacyConfigPath] of config) {

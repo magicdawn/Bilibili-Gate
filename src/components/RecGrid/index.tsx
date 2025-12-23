@@ -105,7 +105,7 @@ export const RecGrid = memo(
     ref: ForwardedRef<RecGridRef>,
   ) {
     const self = useCreation(() => new RecGridSelf(), [])
-    const { useCustomGrid, gridDisplayMode, enableForceCoumn, forceColumnCount } = useSnapshot(settings.grid)
+    const { useCustomGrid, gridDisplayMode, enableForceColumn, forceColumnCount } = useSnapshot(settings.grid)
     const { multiSelecting } = useSnapshot(multiSelectStore)
     const { recStore, servicesRegistry } = useRecContext()
     const { refreshing } = useSnapshot(recStore)
@@ -413,10 +413,15 @@ export const RecGrid = memo(
       )
     }, [gridDisplayMode, useCustomGrid, propClassName])
     const gridStyle = useMemo(() => {
-      if (gridDisplayMode !== EGridDisplayMode.TwoColumnGrid && useCustomGrid && enableForceCoumn && forceColumnCount) {
+      if (
+        gridDisplayMode !== EGridDisplayMode.TwoColumnGrid &&
+        useCustomGrid &&
+        enableForceColumn &&
+        forceColumnCount
+      ) {
         return { '--col': forceColumnCount.toString() } as CSSProperties
       }
-    }, [gridDisplayMode, useCustomGrid, enableForceCoumn, forceColumnCount])
+    }, [gridDisplayMode, useCustomGrid, enableForceColumn, forceColumnCount])
 
     const cardBorderCss = useCardBorderCss()
 

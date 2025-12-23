@@ -19,7 +19,7 @@ export function TabPaneBasic() {
     videoCard: {
       actions: { showLargePreview, openInPipWindow },
     },
-    grid: { useCustomGrid, enableForceCoumn, forceColumnCount },
+    grid: { useCustomGrid, enableForceColumn, forceColumnCount },
     videoLinkOpenMode,
   } = useSettingsSnapshot()
 
@@ -140,11 +140,11 @@ export function TabPaneBasic() {
           <div className='flex items-center gap-x-4px'>
             <CheckboxSettingItem
               disabled={!useCustomGrid}
-              configPath='grid.enableForceCoumn'
+              configPath='grid.enableForceColumn'
               label='手动设置列数'
               tooltip={<>手动设置列数</>}
             />
-            {useCustomGrid && enableForceCoumn && (
+            {useCustomGrid && enableForceColumn && (
               <InputNumber
                 value={forceColumnCount}
                 onChange={(val) => {
