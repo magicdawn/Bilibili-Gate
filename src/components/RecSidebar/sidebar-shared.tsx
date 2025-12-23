@@ -1,37 +1,17 @@
-import { css } from '@emotion/react'
-import { ConfigProvider, Divider, type Menu } from 'antd'
-import { useUnoMerge } from 'unocss-merge/react'
-import { useSnapshot } from 'valtio'
+import { Divider, type Menu } from 'antd'
+import { useSnapshot } from 'valtio/react'
+import { useGridDisplayModeChecker } from '$components/RecGrid/display-mode'
 import { EHotSubTab, ETab } from '$components/RecHeader/tab-enum'
 import { useRecContext } from '$components/Recommends/rec.shared'
 import { QUERY_DYNAMIC_UP_MID } from '$modules/rec-services/dynamic-feed/store'
 import { hotStore } from '$modules/rec-services/hot'
 import { useSettingsSnapshot } from '$modules/settings'
 import type { AntMenuItem } from '$modules/antd'
-import { useGridDisplayModeChecker } from './display-mode'
-import type { CSSProperties, ElementRef, ReactNode } from 'react'
+import type { ElementRef } from 'react'
 
-export enum ESidebarAlign {
-  Left = 'left',
-  Right = 'right',
-}
-
-const sidebarViewWrapperCss = css`
-  scrollbar-width: thin;
-  /* scrollbar-gutter: stable; */
-
-  .ant-menu-item-group-title {
-    padding: 4px 8px;
-  }
-  .ant-menu-item {
-    margin-block: 1px;
-  }
-
-  /* required for bilibili.com default style impact */
-  ul.ant-menu-item-group-list {
-    font-size: inherit;
-  }
-`
+export const sidebarBottomLine = (
+  <Divider className='[&.ant-divider-horizontal.ant-divider-with-text]:(my-5px text-14px)'>底线</Divider>
+)
 
 export function useSidebarVisible(tab: ETab | undefined): boolean {
   const { enableSidebar } = useSettingsSnapshot()
@@ -42,6 +22,7 @@ export function useSidebarVisible(tab: ETab | undefined): boolean {
   return useMemo(() => {
     if (!enableSidebar) return false // main switch
     if (insideModal && usingTwoColumnMode) return false // disable sidebar in Modal+TwoColumnMode
+
     // tab specific
     if (tab === ETab.DynamicFeed) {
       if (QUERY_DYNAMIC_UP_MID) return false
@@ -51,51 +32,6 @@ export function useSidebarVisible(tab: ETab | undefined): boolean {
     if (tab === ETab.Fav) return true
     return false
   }, [tab, enableSidebar, hotSubTab, insideModal, usingTwoColumnMode])
-}
-
-function useTabExtraClassName(tab: ETab | undefined): string | undefined {
-  const hotSubTab = useSnapshot(hotStore).subtab
-  if (tab === ETab.Fav) return 'w-300px'
-  if (tab === ETab.Hot && hotSubTab === EHotSubTab.Rank) return 'w-200px'
-}
-
-export function GridSidebar({
-  className: propClassName,
-  style: propStyle,
-  sidebarView,
-  tab,
-}: {
-  className?: string
-  style?: CSSProperties
-  sidebarView: ReactNode
-  tab: ETab
-}) {
-  const visible = useSidebarVisible(tab)
-
-  const usingClassName = useUnoMerge(
-    'h-fit w-250px flex-none overflow-x-hidden overflow-y-auto b-1px b-gate-border rounded-15px b-solid',
-    useTabExtraClassName(tab),
-    propClassName,
-  )
-
-  return (
-    visible &&
-    sidebarView && (
-      <div className={usingClassName} css={sidebarViewWrapperCss} style={propStyle}>
-        <ConfigProvider
-          theme={{
-            components: {
-              Menu: {
-                itemHeight: 30,
-              },
-            },
-          }}
-        >
-          {sidebarView}
-        </ConfigProvider>
-      </div>
-    )
-  )
 }
 
 export function useRevealMenuSelectedKey(menuItems: AntMenuItem[], selectedKey: string) {
@@ -126,7 +62,3 @@ export function useRevealMenuSelectedKey(menuItems: AntMenuItem[], selectedKey: 
 
   return { menuRef, revealSelected }
 }
-
-export const sidebarBottomLine = (
-  <Divider className='[&.ant-divider-horizontal.ant-divider-with-text]:(my-5px text-14px)'>底线</Divider>
-)

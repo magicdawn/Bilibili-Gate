@@ -5,12 +5,13 @@ import { useModalDislikeVisible } from '$components/ModalDislike'
 import { useModalMoveFavVisible } from '$components/ModalMoveFav'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { RecGrid } from '$components/RecGrid'
-import { EGridDisplayMode, gridDisplayModeChecker } from '$components/RecGrid/display-mode'
+import { gridDisplayModeChecker } from '$components/RecGrid/display-mode'
 import { clsTwoColumnModeWidth } from '$components/RecGrid/display-mode/two-column-mode'
-import { ESidebarAlign, GridSidebar } from '$components/RecGrid/sidebar'
 import { useModalsState } from '$components/RecHeader/modals'
 import { RefreshButton } from '$components/RecHeader/RefreshButton'
 import { useDeferredTab, VideoSourceTab } from '$components/RecHeader/tab'
+import { RecSidebar } from '$components/RecSidebar'
+import { EGridDisplayMode, ESidebarAlign } from '$enums'
 import { antMessage } from '$modules/antd'
 import { useSettingsSnapshot } from '$modules/settings'
 import { RecContext, useInitRecContextValue } from '../rec.shared'
@@ -95,7 +96,7 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
             sidebarAlign === ESidebarAlign.Right && 'flex-row-reverse',
           )}
         >
-          <GridSidebar tab={tab} sidebarView={sidebarView} className='max-h-full' />
+          <RecSidebar tab={tab} sidebarView={sidebarView} className='max-h-full' />
           <div className='h-full flex-1 overflow-y-scroll pr-15px' ref={scrollerRef}>
             <RecGrid
               key={tab}

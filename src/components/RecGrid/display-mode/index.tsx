@@ -1,17 +1,10 @@
 import { Radio } from 'antd'
 import { useUnoMerge } from 'unocss-merge/react'
 import { useSnapshot } from 'valtio'
+import { EGridDisplayMode } from '$enums'
 import { AntdTooltip } from '$modules/antd/custom'
 import { settings } from '$modules/settings'
 import { TwoColumnModeAlignSwitcher } from './two-column-mode'
-
-export enum EGridDisplayMode {
-  NormalGrid = 'grid', // Normal grid
-  // rest are PureRecommend only!
-  List = 'list', // list
-  TwoColumnGrid = 'two-column-grid', // 2 column grid
-  CenterEmptyGrid = 'center-empty-grid', // center empty grid
-}
 
 export function gridDisplayModeChecker(x: EGridDisplayMode) {
   return {

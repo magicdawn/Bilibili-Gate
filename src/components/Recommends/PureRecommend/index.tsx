@@ -3,10 +3,11 @@ import { useSnapshot } from 'valtio'
 import { RecGrid } from '$components/RecGrid'
 import { useGridDisplayModeChecker } from '$components/RecGrid/display-mode'
 import { clsForTwoColumnModeAlign, clsTwoColumnModeWidth } from '$components/RecGrid/display-mode/two-column-mode'
-import { ESidebarAlign, GridSidebar } from '$components/RecGrid/sidebar'
 import { RecHeader, type RecHeaderRef } from '$components/RecHeader'
 import { usePlainShortcutEnabled } from '$components/RecHeader/index.shared'
 import { useDeferredTab } from '$components/RecHeader/tab'
+import { RecSidebar } from '$components/RecSidebar'
+import { ESidebarAlign } from '$enums'
 import { $headerHeight } from '$header'
 import { useSettingsSnapshot } from '$modules/settings'
 import { RecContext, useInitRecContextValue } from '../rec.shared'
@@ -61,7 +62,7 @@ export function PureRecommend() {
     <RecContext.Provider value={recContext}>
       <RecHeader ref={recHeaderRef} leftSlot={tabbarView} shortcutEnabled={shortcutEnabled} />
       <div className={clsFlexContainer}>
-        <GridSidebar css={sidebarCss} tab={tab} sidebarView={sidebarView} />
+        <RecSidebar css={sidebarCss} tab={tab} sidebarView={sidebarView} />
         <RecGrid
           key={tab}
           tab={tab}

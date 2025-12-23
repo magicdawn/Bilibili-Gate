@@ -11,7 +11,7 @@
  */
 
 import '$common/global.scss' // styles
-import '$common/shared.module.scss'
+import '$components/shared.module.scss'
 import '$components/video-grid.module.scss' // css modules 与 emtion 混用, 先 import 作为 base 的 css modules
 import 'virtual:uno.css'
 import '$modules/settings' // load config first

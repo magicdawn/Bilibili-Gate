@@ -2,11 +2,9 @@ import { cloneDeep, isNil } from 'es-toolkit'
 import { get, set } from 'es-toolkit/compat'
 import { proxy, snapshot, subscribe, useSnapshot } from 'valtio'
 import { baseDebug, IN_BILIBILI_HOMEPAGE } from '$common'
-import { EGridDisplayMode } from '$components/RecGrid/display-mode'
-import { TwoColumnModeAlign } from '$components/RecGrid/display-mode/two-column-mode'
-import { ESidebarAlign } from '$components/RecGrid/sidebar'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { VideoLinkOpenMode } from '$components/VideoCard/index.shared'
+import { EGridDisplayMode, ESidebarAlign, ETwoColumnModeAlign } from '$enums'
 import { reciveGmValueUpdatesFromOtherTab } from '$modules/gm'
 import { WatchlaterItemsOrder } from '$modules/rec-services/watchlater/watchlater-enum'
 import { getLeafPaths, type BooleanPaths, type LeafPaths, type ListPaths } from '$utility/object-paths'
@@ -59,7 +57,7 @@ export const initialSettings = {
     gridDisplayMode: EGridDisplayMode.NormalGrid,
 
     // extra
-    twoColumnModeAlign: TwoColumnModeAlign.Center,
+    twoColumnModeAlign: ETwoColumnModeAlign.Center,
 
     // 手动指定
     enableForceColumn: false,
