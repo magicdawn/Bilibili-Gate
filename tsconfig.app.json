@@ -26,7 +26,6 @@
     "skipLibCheck": true,
     "types": [
       "@total-typescript/ts-reset",
-      "node",
       "vite/client",
       "unplugin-icons/types/react",
       "typed-query-selector",
@@ -36,6 +35,7 @@
     "jsxImportSource": "@emotion/react",
     "useDefineForClassFields": true,
     "allowImportingTsExtensions": true,
+    "exactOptionalPropertyTypes": false, // 库(如 antd) 不支持
     "noFallthroughCasesInSwitch": true,
     "noEmit": true,
     "plugins": [{ "name": "@styled/typescript-styled-plugin" }]
