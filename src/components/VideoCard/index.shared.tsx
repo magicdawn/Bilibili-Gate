@@ -13,24 +13,24 @@ export function copyContent(content: string) {
   antMessage.success(`已复制: ${content}`)
 }
 
-export enum QueryKey {
+export enum EQueryKey {
   PlayerScreenMode = `${APP_SHORT_PREFIX}-player-screen-mode`,
   ForceAutoPlay = `${APP_SHORT_PREFIX}-force-auto-play`,
 }
 
-export enum PlayerScreenMode {
+export enum EPlayerScreenMode {
   Normal = 'normal',
   Wide = 'wide',
   WebFullscreen = 'web',
   Fullscreen = 'full',
 }
 
-export enum ForceAutoPlay {
+export enum EForceAutoPlay {
   ON = 'on',
   OFF = 'off',
 }
 
-export enum VideoLinkOpenMode {
+export enum EVideoLinkOpenMode {
   Normal = 'Normal',
   CurrentPage = 'CurrentPage',
   NormalWebFullscreen = 'NormalWebFullscreen',
@@ -39,11 +39,11 @@ export enum VideoLinkOpenMode {
   Iina = 'Iina',
 }
 
-export const VideoLinkOpenModeKey: Record<VideoLinkOpenMode, string> = Object.entries(VideoLinkOpenMode).reduce(
+export const VideoLinkOpenModeKey: Record<EVideoLinkOpenMode, string> = Object.entries(EVideoLinkOpenMode).reduce(
   (record, [key, value]) => {
     return { ...record, [value]: `LinkOpenMode.${key}` }
   },
-  {} as Record<VideoLinkOpenMode, string>,
+  {} as Record<EVideoLinkOpenMode, string>,
 )
 
 export type VideoLinkOpenModeConfigItem = {
@@ -53,23 +53,23 @@ export type VideoLinkOpenModeConfigItem = {
   enabled?: boolean
 }
 
-export const VideoLinkOpenModeConfig: Record<VideoLinkOpenMode, VideoLinkOpenModeConfigItem> = {
-  [VideoLinkOpenMode.Normal]: {
+export const VideoLinkOpenModeConfig: Record<EVideoLinkOpenMode, VideoLinkOpenModeConfigItem> = {
+  [EVideoLinkOpenMode.Normal]: {
     icon: <IconForOpenExternalLink className='size-16px' />,
     label: '打开',
     desc: '默认在新标签页中打开',
   },
-  [VideoLinkOpenMode.CurrentPage]: {
+  [EVideoLinkOpenMode.CurrentPage]: {
     icon: <IconMaterialSymbolsLightOpenInNewOff className='size-16px' />,
     label: '当前页中打开',
     desc: '不打开新标签页, 使用当前标签页打开, 适用于将网站作为应用安装场景',
   },
-  [VideoLinkOpenMode.NormalWebFullscreen]: {
+  [EVideoLinkOpenMode.NormalWebFullscreen]: {
     icon: <IconRiFullscreenFill className='size-15px' />,
     label: '打开-网页全屏',
     desc: <>默认在新标签页中打开, 打开后自动网页全屏</>,
   },
-  [VideoLinkOpenMode.Popup]: {
+  [EVideoLinkOpenMode.Popup]: {
     icon: <IconAkarIconsMiniplayer className='size-15px' />,
     label: '小窗打开',
     desc: (
@@ -84,11 +84,11 @@ export const VideoLinkOpenModeConfig: Record<VideoLinkOpenMode, VideoLinkOpenMod
       </>
     ),
   },
-  [VideoLinkOpenMode.Background]: {
+  [EVideoLinkOpenMode.Background]: {
     icon: <IconEosIconsBackgroundTasks className='size-15px' />,
     label: '后台打开',
   },
-  [VideoLinkOpenMode.Iina]: {
+  [EVideoLinkOpenMode.Iina]: {
     icon: <IconForPlayer className='size-15px' />,
     label: '在 IINA 中打开',
     enabled: isMac,

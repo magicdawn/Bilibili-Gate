@@ -9,7 +9,7 @@ import { defineAntMenus } from '$modules/antd'
 import { openNewTab } from '$modules/gm'
 import { settings } from '$modules/settings'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
-import { QueryKey } from '../index.shared'
+import { EQueryKey } from '../index.shared'
 
 export function renderInPipWindow(newHref: string, pipWindow: Window) {
   const cssInsertContainer = pipWindow.document.head
@@ -141,8 +141,8 @@ function CloseThenOpenButton({ newHref, pipWindow }: { pipWindow: Window; newHre
   const onClick = () => {
     pipWindow.close()
     const u = new URL(newHref)
-    u.searchParams.delete(QueryKey.PlayerScreenMode)
-    u.searchParams.delete(QueryKey.ForceAutoPlay)
+    u.searchParams.delete(EQueryKey.PlayerScreenMode)
+    u.searchParams.delete(EQueryKey.ForceAutoPlay)
     openNewTab(u.href)
   }
 

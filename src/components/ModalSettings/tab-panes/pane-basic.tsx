@@ -6,7 +6,7 @@ import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { GridDisplayModeSwitcher } from '$components/RecGrid/display-mode'
 import { TabIcon } from '$components/RecHeader/tab-config'
 import { ETab } from '$components/RecHeader/tab-enum'
-import { VideoLinkOpenMode, VideoLinkOpenModeConfig } from '$components/VideoCard/index.shared'
+import { EVideoLinkOpenMode, VideoLinkOpenModeConfig } from '$components/VideoCard/index.shared'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconForCopy } from '$modules/icon'
@@ -24,7 +24,7 @@ export function TabPaneBasic() {
   } = useSettingsSnapshot()
 
   const openModeOptions = useMemo(() => {
-    return Object.values(VideoLinkOpenMode)
+    return Object.values(EVideoLinkOpenMode)
       .filter((mode) => VideoLinkOpenModeConfig[mode].enabled ?? true)
       .map((mode) => {
         const config = VideoLinkOpenModeConfig[mode]

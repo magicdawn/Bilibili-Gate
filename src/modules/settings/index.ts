@@ -3,7 +3,7 @@ import { get, set } from 'es-toolkit/compat'
 import { proxy, snapshot, subscribe, useSnapshot } from 'valtio'
 import { baseDebug, IN_BILIBILI_HOMEPAGE } from '$common'
 import { ETab } from '$components/RecHeader/tab-enum'
-import { VideoLinkOpenMode } from '$components/VideoCard/index.shared'
+import { EVideoLinkOpenMode } from '$components/VideoCard/index.shared'
 import { EGridDisplayMode, ESidebarAlign, ETwoColumnModeAlign } from '$enums'
 import { reciveGmValueUpdatesFromOtherTab } from '$modules/gm'
 import { WatchlaterItemsOrder } from '$modules/rec-services/watchlater/watchlater-enum'
@@ -263,7 +263,7 @@ export const initialSettings = {
   backupSettingsToArticleDraft: false,
 
   // 默认打开模式
-  videoLinkOpenMode: VideoLinkOpenMode.Normal,
+  videoLinkOpenMode: EVideoLinkOpenMode.Normal,
 
   pipWindow: {
     defaultLocked: true, // 小窗默认锁定

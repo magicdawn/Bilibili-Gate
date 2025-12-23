@@ -12,12 +12,12 @@ import type { VideoPage } from '$modules/bilibili/video/types/page-list'
 import type { IVideoCardData } from '$modules/filter/normalize'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
 import {
-  ForceAutoPlay,
-  VideoLinkOpenMode as Mode,
+  EForceAutoPlay,
+  EPlayerScreenMode,
+  EQueryKey,
+  EVideoLinkOpenMode,
+  EVideoLinkOpenMode as Mode,
   VideoLinkOpenModeConfig as ModeConfig,
-  PlayerScreenMode,
-  QueryKey,
-  VideoLinkOpenMode,
   VideoLinkOpenModeKey,
 } from '../index.shared'
 import { renderInPipWindow } from './_pip-window'
@@ -68,9 +68,9 @@ export function useOpenRelated({
 
     const newHref = getHref((u) => {
       if (mode === Mode.NormalWebFullscreen || (mode === Mode.Popup && settings.pipWindow.autoWebFullscreen)) {
-        u.searchParams.set(QueryKey.PlayerScreenMode, PlayerScreenMode.WebFullscreen)
+        u.searchParams.set(EQueryKey.PlayerScreenMode, EPlayerScreenMode.WebFullscreen)
         if (mode === Mode.Popup && !getBiliPlayerConfigAutoPlay()) {
-          u.searchParams.set(QueryKey.ForceAutoPlay, ForceAutoPlay.ON)
+          u.searchParams.set(EQueryKey.ForceAutoPlay, EForceAutoPlay.ON)
         }
       }
 
@@ -118,7 +118,7 @@ export function useOpenRelated({
   }
 
   const consistentOpenMenus: AntMenuItem[] = useMemo(() => {
-    return Object.values(VideoLinkOpenMode)
+    return Object.values(EVideoLinkOpenMode)
       .filter((mode) => ModeConfig[mode].enabled === undefined)
       .map((mode) => {
         return {
@@ -134,7 +134,7 @@ export function useOpenRelated({
     return Object.values(Mode).filter(
       (mode) => typeof ModeConfig[mode].enabled === 'boolean' && ModeConfig[mode].enabled,
     ).length
-      ? Object.values(VideoLinkOpenMode)
+      ? Object.values(EVideoLinkOpenMode)
           .filter((mode) => typeof ModeConfig[mode].enabled === 'boolean' && ModeConfig[mode].enabled)
           .map((mode) => {
             return {
@@ -148,7 +148,7 @@ export function useOpenRelated({
   }, [])
 
   const openInPopupActionButtonEl: ReactNode = useMemo(() => {
-    if (videoLinkOpenMode === VideoLinkOpenMode.Popup) return
+    if (videoLinkOpenMode === EVideoLinkOpenMode.Popup) return
     if (item.api === EApiType.Live) return
     if (!hasDocumentPictureInPicture) return
     if (!hasOpenInPopupActionButton) return
@@ -161,14 +161,14 @@ export function useOpenRelated({
         onClick={(e) => {
           e.preventDefault()
           e.stopPropagation()
-          onOpenWithMode(VideoLinkOpenMode.Popup)
+          onOpenWithMode(EVideoLinkOpenMode.Popup)
         }}
       />
     )
   }, [videoLinkOpenMode, actionButtonVisible])
 
   const onOpenInPopup = useMemoizedFn(() => {
-    onOpenWithMode(VideoLinkOpenMode.Popup)
+    onOpenWithMode(EVideoLinkOpenMode.Popup)
   })
 
   return {
@@ -293,7 +293,7 @@ function openPopupWindow(newHref: string, popupWidth: number, popupHeight: numbe
 
 export function useLinkNewTab() {
   const { videoLinkOpenMode } = useSettingsSnapshot()
-  return videoLinkOpenMode !== VideoLinkOpenMode.CurrentPage
+  return videoLinkOpenMode !== EVideoLinkOpenMode.CurrentPage
 }
 
 export function useLinkTarget() {
@@ -302,7 +302,7 @@ export function useLinkTarget() {
 }
 
 export function getLinkTarget() {
-  const newTab = settings.videoLinkOpenMode !== VideoLinkOpenMode.CurrentPage
+  const newTab = settings.videoLinkOpenMode !== EVideoLinkOpenMode.CurrentPage
   return newTab ? '_blank' : '_self'
 }
 

@@ -3,7 +3,7 @@ import { delay } from 'es-toolkit'
 import ms from 'ms'
 import { baseDebug } from '$common'
 import { pickFavFolder } from '$components/ModalMoveFav'
-import { ForceAutoPlay, PlayerScreenMode, QueryKey } from '$components/VideoCard/index.shared'
+import { EForceAutoPlay, EPlayerScreenMode, EQueryKey } from '$components/VideoCard/index.shared'
 import { hasDocumentPictureInPicture, openInPipOrPopup } from '$components/VideoCard/use/useOpenRelated'
 import { antMessage } from '$modules/antd'
 import { getBiliPlayer } from '$modules/bilibili/player'
@@ -53,23 +53,23 @@ function registerOpenInIinaCommand() {
  */
 
 async function handleFullscreen() {
-  const targetMode = new URL(location.href).searchParams.get(QueryKey.PlayerScreenMode)
-  const next = targetMode === PlayerScreenMode.WebFullscreen || targetMode === PlayerScreenMode.Fullscreen
+  const targetMode = new URL(location.href).searchParams.get(EQueryKey.PlayerScreenMode)
+  const next = targetMode === EPlayerScreenMode.WebFullscreen || targetMode === EPlayerScreenMode.Fullscreen
   if (!next) return
 
   let action: (() => void) | undefined
   // NOTE: aria-label 使用中文, 目前没找到 bilibili.com 在哪切换语言, 应该只有中文
-  if (targetMode === PlayerScreenMode.WebFullscreen) {
+  if (targetMode === EPlayerScreenMode.WebFullscreen) {
     action = () => document.querySelector<HTMLElement>('[role="button"][aria-label="网页全屏"]')?.click()
   }
-  if (targetMode === PlayerScreenMode.Fullscreen) {
+  if (targetMode === EPlayerScreenMode.Fullscreen) {
     action = () => document.querySelector<HTMLElement>('[role="button"][aria-label="全屏"]')?.click()
   }
 
-  const getCurrentMode = (): PlayerScreenMode =>
+  const getCurrentMode = (): EPlayerScreenMode =>
     (document.querySelector<HTMLDivElement>('#bilibili-player .bpx-player-container')?.dataset.screen as
-      | PlayerScreenMode
-      | undefined) || PlayerScreenMode.Normal
+      | EPlayerScreenMode
+      | undefined) || EPlayerScreenMode.Normal
 
   const timeoutAt = Date.now() + ms('30s')
   while (getCurrentMode() !== targetMode && Date.now() <= timeoutAt) {
@@ -86,7 +86,7 @@ async function handleForceAutoPlay() {
   // already on
   if (getBiliPlayerConfigAutoPlay()) return
   // no need
-  const isON = new URL(location.href).searchParams.get(QueryKey.ForceAutoPlay) === ForceAutoPlay.ON
+  const isON = new URL(location.href).searchParams.get(EQueryKey.ForceAutoPlay) === EForceAutoPlay.ON
   if (!isON) return
 
   const playing = (): boolean => {
@@ -113,7 +113,7 @@ function pausePlayingVideo() {
 function openInPipWindow() {
   // open in pipwindow
   const u = new URL(location.href)
-  u.searchParams.set(QueryKey.PlayerScreenMode, PlayerScreenMode.WebFullscreen)
+  u.searchParams.set(EQueryKey.PlayerScreenMode, EPlayerScreenMode.WebFullscreen)
   const newHref = u.href
   openInPipOrPopup(newHref, '')
 }
