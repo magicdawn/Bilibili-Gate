@@ -309,7 +309,7 @@ function DynamicFeedWhenViewAllHideIdsPanel() {
   }
 
   return (
-    <div className='max-h-250px flex flex-wrap gap-10px overflow-y-scroll'>
+    <div className='max-h-250px flex flex-wrap gap-10px overflow-y-auto'>
       {hideIds.map((tag) => {
         return (
           <TagItemDisplay

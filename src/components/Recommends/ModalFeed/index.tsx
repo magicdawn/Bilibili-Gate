@@ -97,7 +97,7 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
           )}
         >
           <RecSidebar tab={tab} sidebarView={sidebarView} className='max-h-full' />
-          <div className='h-full flex-1 overflow-y-scroll pr-15px' ref={scrollerRef}>
+          <div className='h-full flex-1 overflow-y-auto pr-15px' ref={scrollerRef}>
             <RecGrid
               key={tab}
               tab={tab}
