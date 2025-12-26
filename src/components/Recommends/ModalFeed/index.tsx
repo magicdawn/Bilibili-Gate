@@ -1,4 +1,3 @@
-import { useSnapshot } from 'valtio'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { CollapseBtn } from '$components/_base/CollapseBtn'
 import { useModalDislikeVisible } from '$components/ModalDislike'
@@ -14,7 +13,7 @@ import { RecSidebar } from '$components/RecSidebar'
 import { EGridDisplayMode, ESidebarAlign } from '$enums'
 import { antMessage } from '$modules/antd'
 import { useSettingsSnapshot } from '$modules/settings'
-import { RecContext, useInitRecContextValue } from '../rec.shared'
+import { RecSelfContext, useInitRecSelf } from '../rec.shared'
 
 interface IProps {
   show: boolean
@@ -51,8 +50,8 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
     Boolean,
   )
 
-  const recContext = useInitRecContextValue(true)
-  const { tabbarView, sidebarView } = useSnapshot(recContext.recStore)
+  const recContext = useInitRecSelf(true)
+  const { tabbarView, sidebarView } = recContext.useStore()
   const { tab, direction } = useDeferredTab()
 
   const renderHeader = () => {
@@ -86,7 +85,7 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
   )
 
   return (
-    <RecContext.Provider value={recContext}>
+    <RecSelfContext.Provider value={recContext}>
       <BaseModal show={show} onHide={onHide} clsModalMask={clsModalMask} clsModal={clsModal}>
         {renderHeader()}
         <div
@@ -110,7 +109,7 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
           </div>
         </div>
       </BaseModal>
-    </RecContext.Provider>
+    </RecSelfContext.Provider>
   )
 })
 

@@ -1,5 +1,4 @@
 import { css } from '@emotion/react'
-import { useSnapshot } from 'valtio'
 import { RecGrid } from '$components/RecGrid'
 import { useGridDisplayModeChecker } from '$components/RecGrid/display-mode'
 import { clsForTwoColumnModeAlign, clsTwoColumnModeWidth } from '$components/RecGrid/display-mode/two-column-mode'
@@ -10,7 +9,7 @@ import { RecSidebar } from '$components/RecSidebar'
 import { ESidebarAlign } from '$enums'
 import { $headerHeight } from '$header'
 import { useSettingsSnapshot } from '$modules/settings'
-import { RecContext, useInitRecContextValue } from '../rec.shared'
+import { RecSelfContext, useInitRecSelf } from '../rec.shared'
 
 // two-column mode align 是否影响 sidebar
 const TWO_COLUMN_MODE_ALIGN_APPLY_TO_SIDEBAR = false
@@ -23,8 +22,8 @@ export function PureRecommend() {
   const { usingTwoColumnMode } = useGridDisplayModeChecker()
   const shortcutEnabled = usePlainShortcutEnabled()
 
-  const recContext = useInitRecContextValue()
-  const { tabbarView, sidebarView } = useSnapshot(recContext.recStore)
+  const recContext = useInitRecSelf()
+  const { tabbarView, sidebarView } = recContext.useStore()
   const { tab, direction } = useDeferredTab()
 
   const recHeaderRef = useRef<RecHeaderRef>(null)
@@ -59,7 +58,7 @@ export function PureRecommend() {
   }
 
   return (
-    <RecContext.Provider value={recContext}>
+    <RecSelfContext.Provider value={recContext}>
       <RecHeader ref={recHeaderRef} leftSlot={tabbarView} shortcutEnabled={shortcutEnabled} />
       <div className={clsFlexContainer}>
         <RecSidebar css={sidebarCss} tab={tab} sidebarView={sidebarView} />
@@ -74,6 +73,6 @@ export function PureRecommend() {
           onScrollToTop={onScrollToTop}
         />
       </div>
-    </RecContext.Provider>
+    </RecSelfContext.Provider>
   )
 }

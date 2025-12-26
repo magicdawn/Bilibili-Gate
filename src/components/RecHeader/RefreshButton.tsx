@@ -1,7 +1,7 @@
 import { Button } from 'antd'
 import { useAnimate } from 'framer-motion'
 import { useSnapshot } from 'valtio'
-import { useOnRefresh, useRecStoreSnapshot } from '$components/Recommends/rec.shared'
+import { useOnRefresh, useRecSelfContext } from '$components/Recommends/rec.shared'
 import { IconForRoll } from '$modules/icon/stat-icons'
 import { favStore } from '$modules/rec-services/fav/store'
 import { isHotTabUsingShuffle } from '$modules/rec-services/hot'
@@ -23,7 +23,7 @@ export const RefreshButton = forwardRef<RefreshButtonActions, RefreshButtonProps
   ref,
 ) {
   refreshHotkeyEnabled ??= true
-  const { refreshing } = useRecStoreSnapshot()
+  const { refreshing } = useRecSelfContext().useStore()
   const onRefresh = useOnRefresh()
 
   const btn = useRef<HTMLButtonElement>(null)

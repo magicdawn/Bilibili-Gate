@@ -2,7 +2,7 @@ import { Button, Input, Tag } from 'antd'
 import { delay } from 'es-toolkit'
 import { useSnapshot } from 'valtio'
 
-import { useOnRefresh, useRecContext } from '$components/Recommends/rec.shared'
+import { useOnRefresh, useRecSelfContext } from '$components/Recommends/rec.shared'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconForRemove, IconForShuffle, IconForTimestamp, withAscIcon, withDescIcon } from '$modules/icon'
 import { useMultiSelecting } from '$modules/multi-select/store'
@@ -21,7 +21,7 @@ export function WatchlaterTabbarView({ service }: { service: WatchlaterRecServic
   const onRefresh = useOnRefresh()
   const { searchText } = useSnapshot(watchlaterStore, { sync: true })
   const multiSelecting = useMultiSelecting()
-  const { recSharedEmitter } = useRecContext()
+  const { recSharedEmitter } = useRecSelfContext()
 
   // 修改 watchlater 相关设置, 即时生效
   useUpdateEffect(() => {

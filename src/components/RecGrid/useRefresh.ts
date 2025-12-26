@@ -3,18 +3,59 @@ import { attempt, attemptAsync, isEqual } from 'es-toolkit'
 import { useEmitterOn } from '$common/hooks/useEmitter'
 import { TabConfig } from '$components/RecHeader/tab-config'
 import { EHotSubTab, ETab } from '$components/RecHeader/tab-enum'
-import { useRecContext, type RefreshFn } from '$components/Recommends/rec.shared'
+import { useRecSelfContext, type RefreshFn } from '$components/Recommends/rec.shared'
 import { getGridRefreshCount } from '$modules/rec-services'
 import { getDynamicFeedServiceConfig, type DynamicFeedRecService } from '$modules/rec-services/dynamic-feed'
 import { getFavServiceConfig, type FavRecService } from '$modules/rec-services/fav'
 import { hotStore, type HotRecService } from '$modules/rec-services/hot'
 import { RankRecService } from '$modules/rec-services/hot/rank'
 import { rankStore } from '$modules/rec-services/hot/rank/store'
-import { createServiceMap, getServiceFromRegistry, type FetcherOptions } from '$modules/rec-services/service-map'
+import {
+  createServiceMap,
+  getServiceFromRegistry,
+  type FetcherOptions,
+  type ServiceMap,
+} from '$modules/rec-services/service-map'
 import { getSpaceUploadServiceConfig, type SpaceUploadService } from '$modules/rec-services/space-upload'
 import type { RecItemTypeOrSeparator } from '$define'
 import type { RecGridSelf } from '.'
 import type { Debugger } from 'debug'
+
+/**
+ * refresh for same tab, but conditions changed
+ */
+function checkIsSameTabButConditionsChanged(tab: ETab, servicesRegistry: Partial<ServiceMap>) {
+  let s: DynamicFeedRecService | FavRecService | HotRecService | SpaceUploadService | undefined
+  switch (tab) {
+    case ETab.DynamicFeed:
+      s = servicesRegistry[ETab.DynamicFeed]
+      return !isEqual(s?.config, getDynamicFeedServiceConfig())
+
+    case ETab.Fav:
+      s = servicesRegistry[ETab.Fav]
+      return !isEqual(s?.config, getFavServiceConfig())
+
+    case ETab.Hot:
+      s = servicesRegistry[ETab.Hot]
+      if (s?.subtab !== hotStore.subtab) return true // subtab changed
+      if (
+        // rank slug changed
+        s.subtab === EHotSubTab.Rank &&
+        s.service instanceof RankRecService &&
+        s.service.rankTab.slug !== rankStore.slug
+      ) {
+        return true
+      }
+      return false
+
+    case ETab.SpaceUpload:
+      s = servicesRegistry[ETab.SpaceUpload]
+      return !isEqual(s?.config, getSpaceUploadServiceConfig())
+
+    default:
+      return false
+  }
+}
 
 export function useRefresh({
   tab,
@@ -33,7 +74,8 @@ export function useRefresh({
   updateViewFromService?: () => void
   self: RecGridSelf
 }) {
-  const { recStore, servicesRegistry } = useRecContext()
+  const recSelf = useRecSelfContext()
+  const { servicesRegistry } = recSelf
 
   useMount(() => {
     // Q: why `true`   A: when switch tab, set reuse to `true`
@@ -45,43 +87,9 @@ export function useRefresh({
   })
 
   const refresh: RefreshFn = useMemoizedFn(async (reuse: boolean = false) => {
-    const start = performance.now()
-
-    const isSameTabRefreshing = recStore.refreshing && recStore.refreshingTab === tab
+    const isSameTabRefreshing = recSelf.refreshing && recSelf.refreshingTab === tab
     if (isSameTabRefreshing) {
-      /**
-       * same tab but conditions changed
-       */
-      const isSameTabButConditionsChanged = (() => {
-        let s: DynamicFeedRecService | FavRecService | HotRecService | SpaceUploadService | undefined
-        switch (tab) {
-          case ETab.DynamicFeed:
-            s = servicesRegistry[ETab.DynamicFeed]
-            return !isEqual(s?.config, getDynamicFeedServiceConfig())
-          case ETab.Fav:
-            s = servicesRegistry[ETab.Fav]
-            return !isEqual(s?.config, getFavServiceConfig())
-          case ETab.Hot:
-            s = servicesRegistry[ETab.Hot]
-            if (s?.subtab !== hotStore.subtab) return true // subtab changed
-            if (
-              // rank slug changed
-              s.subtab === EHotSubTab.Rank &&
-              s.service instanceof RankRecService &&
-              s.service.rankTab.slug !== rankStore.slug
-            ) {
-              return true
-            }
-            return false
-          case ETab.SpaceUpload:
-            s = servicesRegistry[ETab.SpaceUpload]
-            return !isEqual(s?.config, getSpaceUploadServiceConfig())
-          default:
-            return false
-        }
-      })()
-
-      if (isSameTabButConditionsChanged) {
+      if (checkIsSameTabButConditionsChanged(tab, servicesRegistry)) {
         debug('refresh(): tab=%s [start], current refreshing, sametab but conditions change, abort existing', tab)
         self.abortController.abort()
       } else {
@@ -94,8 +102,8 @@ export function useRefresh({
     }
 
     // refresh start
-    recStore.refreshing = true
-    recStore.refreshingTab = tab
+    const start = performance.now()
+    recSelf.setStore({ refreshing: true, refreshingTab: tab })
     self.setStore({ refreshError: undefined, hasMore: true, items: [], refreshTs: Date.now() })
     const abortController = new AbortController()
     const { signal } = abortController
@@ -104,8 +112,7 @@ export function useRefresh({
     await preAction?.()
 
     function _onAny() {
-      recStore.refreshing = false // refreshing
-      recStore.refreshingTab = undefined
+      recSelf.setStore({ refreshing: false, refreshingTab: undefined })
       self.setStore({ showSkeleton: false })
     }
     function onError(err: any) {
@@ -169,7 +176,7 @@ export function useRefresh({
   })
 
   // listen for `refresh` event
-  const { recSharedEmitter } = useRecContext()
+  const { recSharedEmitter } = useRecSelfContext()
   useEmitterOn(recSharedEmitter, 'refresh', refresh)
 
   return { refresh }

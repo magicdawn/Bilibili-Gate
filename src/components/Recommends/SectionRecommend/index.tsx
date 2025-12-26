@@ -1,6 +1,5 @@
 import { useCreation } from 'ahooks'
 import { range } from 'es-toolkit'
-import { useSnapshot } from 'valtio'
 import { baseDebug } from '$common'
 import { RecGridSelf } from '$components/RecGrid'
 import { useRefresh } from '$components/RecGrid/useRefresh'
@@ -13,17 +12,17 @@ import { useCardBorderCss } from '$components/VideoCard/card-border-css'
 import { EApiType } from '$define/index.shared'
 import { refreshForHome } from '$modules/rec-services'
 import type { ETab } from '$components/RecHeader/tab-enum'
-import { RecContext, useInitRecContextValue, useRecContext } from '../rec.shared'
+import { RecSelfContext, useInitRecSelf, useRecSelfContext } from '../rec.shared'
 
 const debug = baseDebug.extend('components:SectionRecommend')
 
 export function SectionRecommend() {
-  const recContext = useInitRecContextValue()
+  const recContext = useInitRecSelf()
   const { tab } = useDeferredTab()
   return (
-    <RecContext.Provider value={recContext}>
+    <RecSelfContext.Provider value={recContext}>
       <TabContent key={tab} tab={tab} />
-    </RecContext.Provider>
+    </RecSelfContext.Provider>
   )
 }
 
@@ -36,9 +35,8 @@ const TabContent = memo(function TabContent({ tab }: { tab: ETab }) {
     fetcher: refreshForHome,
     self,
   })
-  const { items, refreshError, showSkeleton } = useSnapshot(self.store)
-  const { recStore } = useRecContext()
-  const { refreshing } = useSnapshot(recStore)
+  const { items, refreshError, showSkeleton } = self.useStore()
+  const { refreshing } = useRecSelfContext().useStore()
   const displaySkeleton = !items.length || refreshError || (refreshing && showSkeleton)
   const cardBorderCss = useCardBorderCss()
   const shortcutEnabled = usePlainShortcutEnabled()

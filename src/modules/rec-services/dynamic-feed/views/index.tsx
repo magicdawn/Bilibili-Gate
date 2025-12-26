@@ -5,7 +5,7 @@ import { useSnapshot } from 'valtio'
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { useEmitterOn } from '$common/hooks/useEmitter'
 import { ETab } from '$components/RecHeader/tab-enum'
-import { useOnRefresh, useRecContext } from '$components/Recommends/rec.shared'
+import { useOnRefresh, useRecSelfContext } from '$components/Recommends/rec.shared'
 import { sidebarBottomLine, useRevealMenuSelectedKey, useSidebarVisible } from '$components/RecSidebar/sidebar-shared'
 import { IconForReset } from '$modules/icon'
 import { CopyBvidButtonsTabbarView } from '$modules/rec-services/_shared/copy-bvid-buttons'
@@ -54,7 +54,7 @@ function useScopeMenus(form: 'dropdown' | 'sidebar') {
   const {
     followGroup: { enabled: followGroupEnabled },
   } = useSettingsSnapshot().dynamicFeed
-  const { recSharedEmitter } = useRecContext()
+  const { recSharedEmitter } = useRecSelfContext()
 
   const onSelect = useMemoizedFn(async (payload: Partial<typeof dfStore>) => {
     dynamicFeedFilterSelectUp(payload)
@@ -219,7 +219,7 @@ export function DynamicFeedSidebarView() {
   const sidebarVisible = useSidebarVisible(ETab.DynamicFeed)
   const { menuItems, selectedKey } = useScopeMenus('sidebar')
   const { menuRef, revealSelected } = useRevealMenuSelectedKey(menuItems, selectedKey)
-  const { recSharedEmitter } = useRecContext()
+  const { recSharedEmitter } = useRecSelfContext()
   useEmitterOn(recSharedEmitter, 'dynamic-feed:clear', () => void revealSelected(DF_SELECTED_KEY_ALL))
   if (!sidebarVisible) return undefined
   return (

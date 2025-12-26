@@ -11,7 +11,7 @@ import {
   getCurrentGridItems,
 } from '$components/RecGrid/rec-grid-state'
 import { ETab } from '$components/RecHeader/tab-enum'
-import { useRecContext, type RefreshFn } from '$components/Recommends/rec.shared'
+import { useRecSelfContext, type RefreshFn } from '$components/Recommends/rec.shared'
 import { isDynamicFeed, isLive, isSpaceUpload, type DynamicFeedItemExtend, type RecItemType } from '$define'
 import { EApiType } from '$define/index.shared'
 import { antMessage, antModal, defineAntMenus, type AntMenuItem } from '$modules/antd'
@@ -105,7 +105,7 @@ export function useContextMenus({
   } = cardData
 
   const { enableHideSomeContents } = useSnapshot(settings.dynamicFeed.whenViewAll)
-  const { recSharedEmitter } = useRecContext()
+  const { recSharedEmitter } = useRecSelfContext()
 
   const onCopyLink = useMemoizedFn(() => {
     let content = href

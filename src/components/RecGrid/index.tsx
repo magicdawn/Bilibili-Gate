@@ -13,7 +13,7 @@ import { proxy, ref, useSnapshot } from 'valtio'
 import { APP_CLS_GRID, baseDebug } from '$common'
 import { useEmitterOn } from '$common/hooks/useEmitter'
 import { ETab } from '$components/RecHeader/tab-enum'
-import { useRecContext, type RefreshFn } from '$components/Recommends/rec.shared'
+import { useRecSelfContext, type RefreshFn } from '$components/Recommends/rec.shared'
 import { clsGateVideoGridDivider } from '$components/shared.module.scss'
 import { VideoCard } from '$components/VideoCard'
 import { getActiveCardBorderCss, useCardBorderCss } from '$components/VideoCard/card-border-css'
@@ -27,7 +27,6 @@ import { concatRecItems, getGridRefreshCount, refreshForGrid } from '$modules/re
 import { getServiceFromRegistry } from '$modules/rec-services/service-map.ts'
 import { settings } from '$modules/settings'
 import { isSafari } from '$ua'
-import { refReactNode } from '$utility/valtio'
 import type { VideoCardEmitter, VideoCardEvents } from '$components/VideoCard/index.shared'
 import type { RecItemType, RecItemTypeOrSeparator } from '$define'
 import type { IVideoCardData } from '$modules/filter/normalize'
@@ -61,6 +60,7 @@ const clsGridColSpanFull = 'grid-col-span-full'
 // like `this` in Class Component, but it's for Function Component
 export class RecGridSelf {
   // render state
+  // should be private, but I'm too lazy to add getters and refactor
   store = proxy({
     refreshTs: -1,
     showSkeleton: false,
@@ -68,6 +68,11 @@ export class RecGridSelf {
     refreshError: undefined as any,
     items: [] as RecItemTypeOrSeparator[],
   })
+
+  useStore = () => {
+    // oxlint-disable-next-line react-hooks/rules-of-hooks
+    return useSnapshot(this.store)
+  }
 
   setStore = (payload: Partial<RecGridSelf['store']>) => {
     const wrapRefKeys: (keyof RecGridSelf['store'])[] = ['items', 'refreshError']
@@ -107,15 +112,18 @@ export const RecGrid = memo(
     const self = useCreation(() => new RecGridSelf(), [])
     const { useCustomGrid, gridDisplayMode, enableForceColumn, forceColumnCount } = useSnapshot(settings.grid)
     const { multiSelecting } = useSnapshot(multiSelectStore)
-    const { recStore, servicesRegistry } = useRecContext()
-    const { refreshing } = useSnapshot(recStore)
+    const recSelf = useRecSelfContext()
+    const { servicesRegistry } = recSelf
+    const { refreshing } = recSelf.useStore()
     const unmountedRef = useUnmountedRef()
     useSetupGridState()
 
     const updateViewFromService = useMemoizedFn(() => {
       if (unmountedRef.current) return
-      recStore.tabbarView = refReactNode(servicesRegistry[tab]?.tabbarView)
-      recStore.sidebarView = refReactNode(servicesRegistry[tab]?.sidebarView)
+      recSelf.setStore({
+        tabbarView: servicesRegistry[tab]?.tabbarView,
+        sidebarView: servicesRegistry[tab]?.sidebarView,
+      })
     })
     useMount(updateViewFromService)
 
@@ -142,20 +150,20 @@ export const RecGrid = memo(
 
     useImperativeHandle(ref, () => ({ refresh }), [refresh])
 
-    const { items, hasMore, refreshError, refreshTs, showSkeleton } = useSnapshot(self.store)
+    const { items, hasMore, refreshError, refreshTs, showSkeleton } = self.useStore()
     useEffect(() => setGlobalGridItems(items), [items])
 
     const goOutAt = useRef<number | undefined>()
     useEventListener(
       'visibilitychange',
-      (e) => {
+      (_e) => {
         const visible = document.visibilityState === 'visible'
         if (!visible) {
           goOutAt.current = Date.now()
           return
         }
 
-        if (recStore.refreshing) return
+        if (recSelf.refreshing) return
         if (self.loadMoreRunning) return
 
         // 场景
@@ -179,7 +187,7 @@ export const RecGrid = memo(
     const loadMore = useMemoizedFn(async () => {
       if (
         unmountedRef.current ||
-        recStore.refreshing ||
+        recSelf.refreshing ||
         self.loadMoreRunning ||
         self.store.refreshError ||
         self.abortController.signal.aborted ||
@@ -267,7 +275,7 @@ export const RecGrid = memo(
       })
     }, [videoList])
 
-    const { recSharedEmitter } = useRecContext()
+    const { recSharedEmitter } = useRecSelfContext()
     const [activeLargePreviewUniqId, setActiveLargePreviewUniqId] = useState<string | undefined>(undefined)
     useEmitterOn(recSharedEmitter, 'show-large-preview', setActiveLargePreviewUniqId)
     const activeLargePreviewItemIndex = useMemo(() => {
@@ -328,7 +336,7 @@ export const RecGrid = memo(
 
         if (!silent && removedTitles.length) {
           if (removedTitles.length <= 3) {
-            removedTitles.forEach((t) => antMessage.success(`已移除: ${removedTitles.join(', ')}`))
+            removedTitles.forEach((_t) => antMessage.success(`已移除: ${removedTitles.join(', ')}`))
           } else {
             antMessage.success(`已移除: ${removedTitles.length}个视频`)
           }
@@ -337,7 +345,7 @@ export const RecGrid = memo(
         return newItems
       })
     })
-    const handleMoveCardToFirst = useMemoizedFn((item: RecItemType, data: IVideoCardData) => {
+    const handleMoveCardToFirst = useMemoizedFn((item: RecItemType, _data: IVideoCardData) => {
       modifyItems((items) => {
         const currentItem = items.find((x) => x.uniqId === item.uniqId)
         if (!currentItem) return items

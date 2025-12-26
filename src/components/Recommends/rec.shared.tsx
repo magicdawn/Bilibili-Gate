@@ -1,6 +1,6 @@
 import { useCreation, useLockFn } from 'ahooks'
 import Emittery from 'emittery'
-import { proxy, useSnapshot } from 'valtio'
+import { proxy, ref, useSnapshot } from 'valtio'
 import type { ETab } from '$components/RecHeader/tab-enum'
 import type { ServiceMap } from '$modules/rec-services/service-map'
 
@@ -23,31 +23,54 @@ export type RecSharedEmitter = Emittery<RecSharedEmitterEvents>
 export const defaultRecSharedEmitter = new Emittery<RecSharedEmitterEvents>()
 /* #endregion */
 
-export class RecContextValue {
+/**
+ * Self is `this` for FC
+ */
+export class RecSelf {
   constructor(public insideModal?: boolean) {}
   recSharedEmitter = new Emittery<RecSharedEmitterEvents>()
   servicesRegistry: Partial<ServiceMap> = {}
+
   // render state
-  recStore = proxy({
+  private store = proxy({
     refreshing: false,
     refreshingTab: undefined as ETab | undefined,
     tabbarView: undefined as ReactNode,
     sidebarView: undefined as ReactNode,
   })
+
+  get refreshing() {
+    return this.store.refreshing
+  }
+  get refreshingTab() {
+    return this.store.refreshingTab
+  }
+
+  useStore = () => {
+    // oxlint-disable-next-line react-hooks/rules-of-hooks
+    return useSnapshot(this.store)
+  }
+
+  setStore = (payload: Partial<typeof this.store>) => {
+    const wrapRefKeys: (keyof typeof this.store)[] = ['tabbarView', 'sidebarView']
+    for (const key of wrapRefKeys) {
+      const v = payload[key]
+      if (typeof v === 'object' && v !== null) {
+        payload[key] = ref(v) as any
+      }
+    }
+    Object.assign(this.store, payload)
+  }
 }
 
-export const RecContext = createContext(new RecContextValue())
+export const RecSelfContext = createContext(new RecSelf())
 
-export function useInitRecContextValue(...args: ConstructorParameters<typeof RecContextValue>) {
-  return useCreation(() => new RecContextValue(...args), [])
+export function useInitRecSelf(...args: ConstructorParameters<typeof RecSelf>) {
+  return useCreation(() => new RecSelf(...args), [])
 }
 
-export function useRecContext() {
-  return useContext(RecContext)
-}
-
-export function useRecStoreSnapshot() {
-  return useSnapshot(useRecContext().recStore)
+export function useRecSelfContext() {
+  return useContext(RecSelfContext)
 }
 
 export type RefreshFn = (reuse?: boolean) => void | Promise<void>
@@ -56,6 +79,6 @@ export type RefreshFn = (reuse?: boolean) => void | Promise<void>
  * return a function to trigger a refresh event
  */
 export function useOnRefresh() {
-  const { recSharedEmitter } = useRecContext()
+  const { recSharedEmitter } = useRecSelfContext()
   return useLockFn((reuse?: boolean) => recSharedEmitter.emit('refresh', reuse))
 }
