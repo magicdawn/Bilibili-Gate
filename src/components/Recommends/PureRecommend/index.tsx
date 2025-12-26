@@ -22,8 +22,8 @@ export function PureRecommend() {
   const { usingTwoColumnMode } = useGridDisplayModeChecker()
   const shortcutEnabled = usePlainShortcutEnabled()
 
-  const recContext = useInitRecSelf()
-  const { tabbarView, sidebarView } = recContext.useStore()
+  const recSelf = useInitRecSelf()
+  const { tabbarView, sidebarView } = recSelf.useStore()
   const { tab, direction } = useDeferredTab()
 
   const recHeaderRef = useRef<RecHeaderRef>(null)
@@ -58,7 +58,7 @@ export function PureRecommend() {
   }
 
   return (
-    <RecSelfContext.Provider value={recContext}>
+    <RecSelfContext.Provider value={recSelf}>
       <RecHeader ref={recHeaderRef} leftSlot={tabbarView} shortcutEnabled={shortcutEnabled} />
       <div className={clsFlexContainer}>
         <RecSidebar css={sidebarCss} tab={tab} sidebarView={sidebarView} />

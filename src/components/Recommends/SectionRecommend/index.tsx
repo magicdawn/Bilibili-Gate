@@ -17,10 +17,10 @@ import { RecSelfContext, useInitRecSelf, useRecSelfContext } from '../rec.shared
 const debug = baseDebug.extend('components:SectionRecommend')
 
 export function SectionRecommend() {
-  const recContext = useInitRecSelf()
+  const recSelf = useInitRecSelf()
   const { tab } = useDeferredTab()
   return (
-    <RecSelfContext.Provider value={recContext}>
+    <RecSelfContext.Provider value={recSelf}>
       <TabContent key={tab} tab={tab} />
     </RecSelfContext.Provider>
   )

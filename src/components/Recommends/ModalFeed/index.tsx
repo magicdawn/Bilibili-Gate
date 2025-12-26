@@ -50,8 +50,8 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
     Boolean,
   )
 
-  const recContext = useInitRecSelf(true)
-  const { tabbarView, sidebarView } = recContext.useStore()
+  const recSelf = useInitRecSelf(true)
+  const { tabbarView, sidebarView } = recSelf.useStore()
   const { tab, direction } = useDeferredTab()
 
   const renderHeader = () => {
@@ -85,7 +85,7 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
   )
 
   return (
-    <RecSelfContext.Provider value={recContext}>
+    <RecSelfContext.Provider value={recSelf}>
       <BaseModal show={show} onHide={onHide} clsModalMask={clsModalMask} clsModal={clsModal}>
         {renderHeader()}
         <div
