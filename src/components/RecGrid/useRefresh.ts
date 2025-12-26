@@ -11,8 +11,8 @@ import { hotStore, type HotRecService } from '$modules/rec-services/hot'
 import { RankRecService } from '$modules/rec-services/hot/rank'
 import { rankStore } from '$modules/rec-services/hot/rank/store'
 import { createServiceMap, getServiceFromRegistry, type FetcherOptions } from '$modules/rec-services/service-map'
+import { getSpaceUploadServiceConfig, type SpaceUploadService } from '$modules/rec-services/space-upload'
 import type { RecItemTypeOrSeparator } from '$define'
-import type { SpaceUploadService } from '$modules/rec-services/space-upload'
 import type { RecGridSelf } from '.'
 import type { Debugger } from 'debug'
 
@@ -52,8 +52,8 @@ export function useRefresh({
       /**
        * same tab but conditions changed
        */
-      let s: DynamicFeedRecService | FavRecService | HotRecService | SpaceUploadService | undefined
       const isSameTabButConditionsChanged = (() => {
+        let s: DynamicFeedRecService | FavRecService | HotRecService | SpaceUploadService | undefined
         switch (tab) {
           case ETab.DynamicFeed:
             s = servicesRegistry[ETab.DynamicFeed]
@@ -73,6 +73,9 @@ export function useRefresh({
               return true
             }
             return false
+          case ETab.SpaceUpload:
+            s = servicesRegistry[ETab.SpaceUpload]
+            return !isEqual(s?.config, getSpaceUploadServiceConfig())
           default:
             return false
         }
