@@ -48,19 +48,18 @@ export async function initHomepage() {
   if (settings.pureRecommend) {
     await initHomepagePureRecommend()
   } else {
-    await initHomepageSection()
+    await initHomepageSectionRecommend()
   }
   tryDetectBewlyBewly()
 }
 
-async function initHomepageSection() {
+async function initHomepageSectionRecommend() {
   const layoutEl = await poll(() => document.querySelector('.bili-feed4-layout'))
   if (!layoutEl) {
     appWarn(`init fail, can not find .bili-feed4-layout`)
     return
   }
 
-  // attach to dom
   const container = document.createElement('section')
   container.classList.add(APP_CLS_ROOT)
   layoutEl.insertAdjacentElement('afterbegin', container)

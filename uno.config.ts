@@ -4,13 +4,14 @@ import { defineConfig, presetWind3, presetWind4, transformerDirectives, transfor
 
 const usingWind3 = defineConfig({
   presets: [
-    presetRemToPx(),
+    presetRemToPx() as any,
     presetWind3({
       preflight: 'on-demand',
       dark: { dark: '.bilibili-gate-using-dark' },
     }),
   ],
 })
+
 const usingWind4 = defineConfig({
   presets: [
     presetWind4({
@@ -28,8 +29,10 @@ const usingWind4 = defineConfig({
  * 影响 @unocss/eslint-config className 顺序
  * - wind4 有 bug, 会按照 alphabetical 排序
  */
-const USE_WIND4 = false
-const usingConfig = USE_WIND4 ? usingWind4 : usingWind3
+
+// const USE_WIND4 = false
+// const usingConfig = USE_WIND4 ? usingWind4 : usingWind3
+const usingConfig = usingWind3
 
 export default defineConfig({
   ...usingConfig,
