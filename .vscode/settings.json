@@ -1,18 +1,16 @@
 {
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-    // "source.organizeImports": "explicit"
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.oxc": "explicit"
   },
   "css.customData": [
     // ^ whatever the name/path of your custom data file is
     ".vscode/css-custom-data.json"
   ],
   "eslint.lintTask.enable": true,
-
   // for + @container, syntax error
   // https://sass-lang.com/playground/#eJxtkM1uwyAQhO88xUjxIWlEU1vyBdoor0INtpFisIgTN7V49xpo3B8ZaQ+zGma/3Tx/vmmpLG2clrSyZhDaKIeJAIuiRnSKYc3I//iGez/7tDnPil70p+LEE5I1oqfOjgzlS//Bk67smaFIuhJO0k4bOmo5tHM7+chvtFqY6h6xopwjGB7BeCQGGkrTrxj6bp2cuZyQ+nphyMuQGzxpPMfhgLFVBnEyXpEFjCJQn2rrkGnUznYoMLTOXpsWZWQ4/Vxq9XzblHd8w2ba/tsP+4V3h6cwgi4Nv4vxwPrq4X2zb6ZMex57noTyX0sGj9A=
   // "scss.validate": false,
-
   "typescript.preferences.organizeImports": {
     "typeOrder": "last"
   },
