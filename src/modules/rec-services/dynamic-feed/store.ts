@@ -7,8 +7,8 @@ import { settings } from '$modules/settings'
 import { getUid } from '$utility/cookie'
 import { setPageTitle, whenIdle } from '$utility/dom'
 import { proxyMapWithGmStorage, proxySetWithGmStorage, subscribeOnKeys } from '$utility/valtio'
-import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 import { getRecentUpdateUpList } from './up'
+import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 import type { DynamicPortalUp } from './up/portal-types'
 
 /**

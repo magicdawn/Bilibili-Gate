@@ -4,7 +4,6 @@ import { APP_NAME } from '$common'
 import { toastAndReload } from '$components/ModalSettings/index.shared'
 import { antMessage } from '$modules/antd'
 import toast from '$utility/toast'
-import { set_HAS_RESTORED_SETTINGS } from './restore-flag'
 import {
   allowedLeafSettingsPaths,
   getSettingsSnapshot,
@@ -13,6 +12,7 @@ import {
   updateSettings,
   type Settings,
 } from './index'
+import { set_HAS_RESTORED_SETTINGS } from './restore-flag'
 import type { PartialDeep } from 'type-fest'
 
 let lastUrl: string | undefined

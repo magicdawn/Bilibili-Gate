@@ -1,8 +1,8 @@
 import { isEqual, orderBy } from 'es-toolkit'
 import pmap from 'promise.map'
 import { wrapWithIdbCache } from '$utility/idb'
-import type { DynamicFeedItem } from '$define'
 import { fetchVideoDynamicFeeds } from '../api'
+import type { DynamicFeedItem } from '$define'
 import type { UpMidType } from '../store'
 
 export const fetchVideoDynamicFeedsWithCache = wrapWithIdbCache({

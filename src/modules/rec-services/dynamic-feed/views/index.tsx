@@ -12,7 +12,6 @@ import { CopyBvidButtonsTabbarView } from '$modules/rec-services/_shared/copy-bv
 import { useSettingsSnapshot } from '$modules/settings'
 import { getAvatarSrc } from '$utility/image'
 import { localeComparer, mapNameForSort } from '$utility/sort'
-import type { AntMenuItem } from '$modules/antd'
 import { usePopupContainer } from '../../_base'
 import { dropdownMenuStyle } from '../../_shared'
 import { IconForGroup, IconForUp } from '../shared'
@@ -26,6 +25,7 @@ import {
   type DynamicFeedStoreSelectedKey,
 } from '../store'
 import { usePopoverRelated } from './popover-related'
+import type { AntMenuItem } from '$modules/antd'
 import type { ReactNode } from 'react'
 
 export function dynamicFeedFilterSelectUp(payload: Partial<typeof dfStore>) {

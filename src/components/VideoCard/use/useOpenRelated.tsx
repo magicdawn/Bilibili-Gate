@@ -6,10 +6,6 @@ import { getVideoPageList } from '$modules/bilibili/video/video-detail'
 import { openNewTab } from '$modules/gm'
 import { isNormalRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { settings, useSettingsSnapshot } from '$modules/settings'
-import type { RecItemType } from '$define'
-import type { AntMenuItem } from '$modules/antd'
-import type { VideoPage } from '$modules/bilibili/video/types/page-list'
-import type { IVideoCardData } from '$modules/filter/normalize'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
 import {
   EForceAutoPlay,
@@ -21,6 +17,10 @@ import {
   VideoLinkOpenModeKey,
 } from '../index.shared'
 import { renderInPipWindow } from './_pip-window'
+import type { RecItemType } from '$define'
+import type { AntMenuItem } from '$modules/antd'
+import type { VideoPage } from '$modules/bilibili/video/types/page-list'
+import type { IVideoCardData } from '$modules/filter/normalize'
 import type { ComponentProps, MouseEvent, MouseEventHandler, ReactNode } from 'react'
 
 const debug = baseDebug.extend('VideoCard:useOpenRelated')

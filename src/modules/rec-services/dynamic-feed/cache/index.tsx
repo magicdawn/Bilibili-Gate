@@ -1,8 +1,8 @@
 import { throttle, uniqBy } from 'es-toolkit'
 import { antNotification } from '$modules/antd'
 import { getIdbCache } from '$utility/idb'
-import type { DynamicFeedItem } from '$define'
 import { fetchVideoDynamicFeeds } from '../api'
+import type { DynamicFeedItem } from '$define'
 import type { UpMidType } from '../store'
 
 const cache = getIdbCache<DynamicFeedItem[]>('dynamic-feed-items')

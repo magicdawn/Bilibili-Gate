@@ -9,9 +9,9 @@ import { gmrequest, isWebApiSuccess, request } from '$request'
 import { reusePendingPromise } from '$utility/async'
 import { getCsrfToken } from '$utility/cookie'
 import toast from '$utility/toast'
+import { getVideoshotJson, isVideoshotDataValid } from './videoshot'
 import type { AppRecItem, PvideoJson } from '$define'
 import type { VideoPage } from '$modules/bilibili/video/types/page-list'
-import { getVideoshotJson, isVideoshotDataValid } from './videoshot'
 
 const debug = baseDebug.extend('VideoCard:services')
 

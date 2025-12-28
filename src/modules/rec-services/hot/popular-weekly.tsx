@@ -2,16 +2,14 @@ import dayjs from 'dayjs'
 import { delay, shuffle } from 'es-toolkit'
 import pmap from 'promise.map'
 import { SwitchSettingItem } from '$components/ModalSettings/setting-item'
-
 import { useOnRefresh } from '$components/Recommends/rec.shared'
 import { CustomTargetLink } from '$components/VideoCard/use/useOpenRelated'
 import { EApiType } from '$define/index.shared'
 import { request } from '$request'
+import { QueueStrategy, type IService } from '../_base'
 import type { ItemsSeparator, PopularWeeklyItemExtend } from '$define'
 import type { PopularWeeklyJson } from '$define/popular-weekly'
 import type { PopularWeeklyListItem, PopularWeeklyListJson } from '$define/popular-weekly.list'
-import { QueueStrategy } from '../_base'
-import type { IService } from '../_base'
 
 let episodes: PopularWeeklyListItem[] = []
 let cacheKey = ''

@@ -10,9 +10,9 @@ import { clearFavFolderAllItemsCache } from '$modules/rec-services/fav/service/f
 import { FavQueryKey, favStore } from '$modules/rec-services/fav/store'
 import { defaultFavFolderTitle, UserFavService } from '$modules/rec-services/fav/user-fav-service'
 import toast from '$utility/toast'
+import { getLinkTarget } from './useOpenRelated'
 import type { RecSharedEmitter } from '$components/Recommends/rec.shared'
 import type { IVideoCardData } from '$modules/filter/normalize'
-import { getLinkTarget } from './useOpenRelated'
 
 export type FavContext = ReturnType<typeof useInitFavContext>
 

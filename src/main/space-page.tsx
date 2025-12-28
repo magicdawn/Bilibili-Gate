@@ -35,7 +35,7 @@ async function addDynEntry() {
       const rootEl = document.createElement('span')
       rootEl.id = rootElId
       rootEl.classList.add('mr-24px')
-      container.insertAdjacentElement('afterbegin', rootEl)
+      container.prepend(rootEl)
       const root = createRoot(rootEl)
       root.render(
         <AppRoot injectGlobalStyle>

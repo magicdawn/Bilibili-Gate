@@ -5,8 +5,8 @@
 import { uniqBy } from 'es-toolkit'
 import { appError } from '$common'
 import { getGroupFromKvRecord, getKvData } from '$modules/bilibili/kv'
-import type { RankItemExtend, RankItemExtendProps } from '$define'
 import { STATIC_RANK_TABS } from './rank-tab-static'
+import type { RankItemExtend, RankItemExtendProps } from '$define'
 import type { NormalRankItem, PgcSeasonRankItem, PgcWebRankItem } from './types'
 
 export const defaultRankTab: IRankTab = {

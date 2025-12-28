@@ -15,8 +15,8 @@ import { useIsDisplayAsList } from '$components/RecGrid/display-mode'
 import { multiSelectStore } from '$modules/multi-select/store'
 import { useSettingsSnapshot } from '$modules/settings'
 import { tweakLightness } from '$utility/css'
-import type { CssProp } from '$utility/type'
 import { bgValue, videoCardBorderRadiusValue } from '../css-vars'
+import type { CssProp } from '$utility/type'
 
 const c = tweakLightness(primaryColorValue, 0.1)
 

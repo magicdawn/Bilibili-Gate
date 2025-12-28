@@ -2,8 +2,8 @@ import { APP_CLS_CARD, APP_CLS_CARD_ACTIVE } from '$common'
 import { EGridDisplayMode } from '$enums'
 import { settings } from '$modules/settings'
 import { shouldDisableShortcut } from '$utility/dom'
-import type { VideoCardEmitter } from '$components/VideoCard/index.shared'
 import { videoGrid } from './video-grid.module.scss'
+import type { VideoCardEmitter } from '$components/VideoCard/index.shared'
 import type { KeyFilter, KeyType } from 'ahooks/lib/useKeyPress'
 
 interface IOptions {

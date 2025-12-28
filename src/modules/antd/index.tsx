@@ -2,10 +2,9 @@
  * https://ant.design/components/app-cn
  */
 
-import { App, message, Modal, notification } from 'antd'
+import { App, message, Modal, notification, type MenuProps } from 'antd'
 import { omit } from 'es-toolkit'
 import { $headerHeight } from '$header'
-import type { MenuProps } from 'antd'
 import type { ConfigOptions as MessageConfigOptions, MessageInstance } from 'antd/es/message/interface'
 import type { HookAPI as ModalHookAPI } from 'antd/es/modal/useModal'
 import type { NotificationInstance } from 'antd/es/notification/interface'

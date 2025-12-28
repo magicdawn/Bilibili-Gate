@@ -3,8 +3,7 @@
 import { Button, Checkbox, Switch } from 'antd'
 import { get, set } from 'es-toolkit/compat'
 import { AntdTooltip } from '$modules/antd/custom'
-import { settings, useSettingsSnapshot } from '$modules/settings'
-import type { BooleanSettingsPath } from '$modules/settings'
+import { settings, useSettingsSnapshot, type BooleanSettingsPath } from '$modules/settings'
 import type { CheckboxChangeEvent } from 'antd/es/checkbox'
 import type { ComponentProps, ElementRef, ReactNode, Ref } from 'react'
 

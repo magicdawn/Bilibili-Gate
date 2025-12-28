@@ -4,9 +4,9 @@ import { EApiType } from '$define/index.shared'
 import { blacklistMids } from '$modules/bilibili/me/relations/blacklist'
 import { isNormalRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { getSettingsSnapshot, settings } from '$modules/settings'
-import type { RecItemTypeOrSeparator } from '$define'
 import { normalizeCardData } from './normalize'
 import { parseFilterByAuthor, parseFilterByTitle } from './parse'
+import type { RecItemTypeOrSeparator } from '$define'
 
 const debug = baseDebug.extend('modules:filter')
 

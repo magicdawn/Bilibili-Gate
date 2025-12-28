@@ -1,4 +1,4 @@
-import { closestCenter, DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import { closestCenter, DndContext, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core'
 import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -27,11 +27,10 @@ import {
 } from '$modules/rec-services/dynamic-feed/store'
 import { FollowGroupMechanismNote } from '$modules/rec-services/dynamic-feed/views/popover-related'
 import { settings, updateSettings, updateSettingsInnerArray, useSettingsSnapshot } from '$modules/settings'
-import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 import { TagItemDisplay } from '../EditableListSettingItem'
 import { explainForFlag } from '../index.shared'
 import { ResetPartialSettingsButton, SettingsGroup, sharedClassNames } from './shared'
-import type { DragEndEvent } from '@dnd-kit/core'
+import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 import type { CSSProperties } from 'react'
 
 export function TabPaneRecTabsConfig() {

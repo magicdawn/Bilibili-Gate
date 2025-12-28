@@ -5,16 +5,16 @@ import { EApiType } from '$define/index.shared'
 import { AntdTooltip } from '$modules/antd/custom'
 import { getSpaceAccInfo } from '$modules/bilibili/user/space-acc-info'
 import { IconForOpenExternalLink, IconForPlayer } from '$modules/icon'
-import type { ItemsSeparator } from '$define'
 import { fetchCollectionDetail } from '../collection/api'
 import { FavItemsOrder, handleItemsOrder } from '../fav-enum'
 import { formatBvidUrl, formatFavCollectionUrl } from '../fav-url'
 import { favStore } from '../store'
 import { FavItemsOrderSwitcher } from '../views/fav-items-order'
+import { clsFavSeparator, FAV_PAGE_SIZE } from './_base'
+import type { ItemsSeparator } from '$define'
 import type { IFavInnerService } from '../index'
 import type { FavItemExtend } from '../types'
 import type { FavCollectionDetailInfo, FavCollectionDetailMedia } from '../types/collections/collection-detail'
-import { clsFavSeparator, FAV_PAGE_SIZE } from './_base'
 
 export class FavCollectionService implements IFavInnerService {
   constructor(

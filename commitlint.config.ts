@@ -1,7 +1,6 @@
 import defaultConfig from '@commitlint/config-conventional'
-import { RuleConfigSeverity } from '@commitlint/types'
+import { RuleConfigSeverity, type UserConfig } from '@commitlint/types'
 import { identity } from 'es-toolkit'
-import type { UserConfig } from '@commitlint/types'
 
 /**
  * why: 我把 performance perf, 打成了 pref, preference, 直到 release changelog 里没有, 才发现 typo

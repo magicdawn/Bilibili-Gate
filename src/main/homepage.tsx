@@ -62,7 +62,7 @@ async function initHomepageSectionRecommend() {
 
   const container = document.createElement('section')
   container.classList.add(APP_CLS_ROOT)
-  layoutEl.insertAdjacentElement('afterbegin', container)
+  layoutEl.prepend(container)
 
   root = createRoot(container)
   root.render(

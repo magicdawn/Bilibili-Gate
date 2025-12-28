@@ -6,11 +6,11 @@ import { FavItemsOrder } from '../fav-enum'
 import { favStore, updateFavList } from '../store'
 import { ViewingAllExcludeFolderConfig } from '../views'
 import { FavItemsOrderSwitcher } from '../views/fav-items-order'
-import type { IFavInnerService } from '../index'
-import type { FavItemExtend } from '../types'
 import { FAV_PAGE_SIZE } from './_base'
 import { FavCollectionService } from './fav-collection'
 import { FavFolderBasicService, FavFolderService } from './fav-folder'
+import type { IFavInnerService } from '../index'
+import type { FavItemExtend } from '../types'
 
 export class FavAllService implements IFavInnerService {
   constructor(

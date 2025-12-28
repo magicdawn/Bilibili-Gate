@@ -1,15 +1,13 @@
 import { Input } from 'antd'
 import { useSnapshot } from 'valtio'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
-
 import { useOnRefresh } from '$components/Recommends/rec.shared'
 import { AntdTooltip } from '$modules/antd/custom'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { CopyBvidButtonsTabbarView } from '../_shared/copy-bvid-buttons'
 import { GenericOrderSwitcher } from '../_shared/generic-order-switcher'
-import { SpaceUploadOrderConfig } from './api'
+import { SpaceUploadOrderConfig, type SpaceUploadOrder } from './api'
 import { SpaceUploadQueryKey, spaceUploadStore } from './store'
-import type { SpaceUploadOrder } from './api'
 
 export function SpaceUploadTabbarView() {
   const { searchText, filterText } = useSnapshot(spaceUploadStore, { sync: true })

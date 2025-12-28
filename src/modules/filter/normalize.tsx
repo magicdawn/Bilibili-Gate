@@ -1,7 +1,7 @@
 import { BvCode } from '@mgdn/bvid'
 import dayjs from 'dayjs'
 import { appWarn } from '$common'
-import { defineStatItems } from '$components/VideoCard/stat-item'
+import { defineStatItems, type StatItemField, type StatItemType } from '$components/VideoCard/stat-item'
 import {
   isAppRecommend,
   isDynamicFeed,
@@ -38,7 +38,6 @@ import { WatchlaterItemsOrder } from '$modules/rec-services/watchlater/watchlate
 import { getSettingsSnapshot } from '$modules/settings'
 import { toHttps } from '$utility/url'
 import { formatDuration, formatTimeStamp, getVideoInvalidReason, parseCount, parseDuration } from '$utility/video'
-import type { StatItemField, StatItemType } from '$components/VideoCard/stat-item'
 import type { Badge as DynamicFeedBadge } from '$define/pc-dynamic-feed'
 import type { FavItemExtend } from '$modules/rec-services/fav/types'
 import type { ReactNode } from 'react'

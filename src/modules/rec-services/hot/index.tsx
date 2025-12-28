@@ -1,20 +1,18 @@
 import { Button, Dropdown, Space } from 'antd'
 import { useSnapshot } from 'valtio'
-
 import { EHotSubTab } from '$components/RecHeader/tab-enum'
 import { useOnRefresh } from '$components/Recommends/rec.shared'
 import { styled } from '$libs'
 import { AntdTooltip } from '$modules/antd/custom'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { proxyWithGmStorage } from '$utility/valtio'
-import type { RecItemTypeOrSeparator } from '$define'
-import type { AntMenuItem } from '$modules/antd'
-import { BaseTabService, usePopupContainer } from '../_base'
-import type { IService } from '../_base'
+import { BaseTabService, usePopupContainer, type IService } from '../_base'
 import { PopularGeneralRecService } from './popular-general'
 import { PopularWeeklyRecService } from './popular-weekly'
 import { RankRecService } from './rank'
 import { rankStore } from './rank/store'
+import type { RecItemTypeOrSeparator } from '$define'
+import type { AntMenuItem } from '$modules/antd'
 import type { ReactNode } from 'react'
 
 const subtabServiceCreators = {

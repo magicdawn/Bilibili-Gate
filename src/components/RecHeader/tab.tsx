@@ -9,9 +9,8 @@ import { SHOW_SPACE_UPLOAD_ONLY } from '$modules/rec-services/space-upload/store
 import { useSettingsSnapshot } from '$modules/settings'
 import { checkLoginStatus, useHasLogined } from '$utility/cookie'
 import { proxyWithGmStorage } from '$utility/valtio'
-import { TabConfig, TabIcon, toastNeedLogin } from './tab-config'
+import { TabConfig, TabIcon, toastNeedLogin, type TabConfigItem } from './tab-config'
 import { ALL_TAB_KEYS, CONFIGURABLE_TAB_KEYS, ETab } from './tab-enum'
-import type { TabConfigItem } from './tab-config'
 import type { ReactNode } from 'react'
 
 /**

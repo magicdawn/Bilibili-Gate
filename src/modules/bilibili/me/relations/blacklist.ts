@@ -7,8 +7,8 @@ import { baseDebug, IN_BILIBILI_HOMEPAGE } from '$common'
 import { isWebApiSuccess, request } from '$request'
 import { whenIdle } from '$utility/dom'
 import { proxySetWithGmStorage } from '$utility/valtio'
-import type { UpMidType } from '$modules/rec-services/dynamic-feed/store'
 import { modifyRelations } from './common'
+import type { UpMidType } from '$modules/rec-services/dynamic-feed/store'
 import type { ListBlackJson } from './types/list-black'
 
 const debug = baseDebug.extend('service:user:relations:blacklist')

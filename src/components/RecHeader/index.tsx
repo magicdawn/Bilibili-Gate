@@ -13,12 +13,12 @@ import { MultiSelectButton } from '$modules/multi-select'
 import { useSettingsSnapshot } from '$modules/settings'
 import { isMac, isSafari } from '$ua'
 import { getElementOffset, shouldDisableShortcut } from '$utility/dom'
-import type { CssProp } from '$utility/type'
 import { AccessKeyManage } from '../AccessKeyManage'
 import { showModalFeed, showModalSettings, toggleModalSettings } from './modals'
 import { RefreshButton } from './RefreshButton'
 import { useCurrentUsingTab, VideoSourceTab } from './tab'
 import { ETab } from './tab-enum'
+import type { CssProp } from '$utility/type'
 
 const debug = baseDebug.extend('RecHeader')
 

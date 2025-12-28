@@ -7,8 +7,6 @@ import { getFollowGroupContent } from '$modules/bilibili/me/follow-group'
 import { settings } from '$modules/settings'
 import { parseSearchInput } from '$utility/search'
 import { parseDuration } from '$utility/video'
-import type { DynamicFeedItem, DynamicFeedItemExtend, ItemsSeparator, LiveItemExtend } from '$define'
-import type { Nullable } from '$utility/type'
 import { BaseTabService, QueueStrategy } from '../_base'
 import { LiveRecService } from '../live'
 import { ELiveStatus } from '../live/live-enum'
@@ -30,6 +28,8 @@ import {
   type DynamicFeedStore,
 } from './store'
 import { DynamicFeedSidebarView, DynamicFeedTabbarView } from './views'
+import type { DynamicFeedItem, DynamicFeedItemExtend, ItemsSeparator, LiveItemExtend } from '$define'
+import type { Nullable } from '$utility/type'
 import type { ReactNode } from 'react'
 
 export type DynamicFeedServiceConfig = ReturnType<typeof getDynamicFeedServiceConfig>

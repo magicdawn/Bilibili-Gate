@@ -10,8 +10,6 @@ import { getFollowedStatus } from '$modules/filter'
 import { getSettingsSnapshot } from '$modules/settings'
 import { gmrequest } from '$request'
 import { getHasLogined } from '$utility/cookie'
-import type { ipad } from '$define/app-recommend.ipad'
-import type { IVideoCardData } from '$modules/filter/normalize'
 import { BaseTabService, type IService } from './_base'
 import { DynamicFeedRecService, getDynamicFeedServiceConfig } from './dynamic-feed'
 import { createDfStore } from './dynamic-feed/store'
@@ -19,6 +17,8 @@ import { FavRecService, getFavServiceConfig, type FavServiceConfig } from './fav
 import { FavItemsOrder } from './fav/fav-enum'
 import { WatchlaterRecService } from './watchlater'
 import { WatchlaterItemsOrder } from './watchlater/watchlater-enum'
+import type { ipad } from '$define/app-recommend.ipad'
+import type { IVideoCardData } from '$modules/filter/normalize'
 
 type AppRecServiceConfig = ReturnType<typeof getAppRecServiceConfig>
 

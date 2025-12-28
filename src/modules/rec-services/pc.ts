@@ -4,8 +4,8 @@ import { EApiType } from '$define/index.shared'
 import { PcRecGoto } from '$define/pc-recommend'
 import { isWebApiSuccess, request } from '$request'
 import toast from '$utility/toast'
-import type { PcRecItem, PcRecItemExtend, PcRecommendJson } from '$define'
 import { BaseTabService } from './_base'
+import type { PcRecItem, PcRecItemExtend, PcRecommendJson } from '$define'
 
 const debug = baseDebug.extend('modules:rec-services:pc')
 

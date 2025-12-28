@@ -1,8 +1,8 @@
 import { isEqual, throttle } from 'es-toolkit'
 import ms from 'ms'
+import { allowedLeafSettingsPaths, pickSettings, type Settings } from '.'
 import { articleDraft, debug, getBackupOmitPaths } from './index.shared'
 import { HAS_RESTORED_SETTINGS } from './restore-flag'
-import { allowedLeafSettingsPaths, pickSettings, type Settings } from '.'
 import type { PartialDeep, ReadonlyDeep } from 'type-fest'
 
 let lastBackupVal: PartialDeep<Settings> | undefined

@@ -3,7 +3,6 @@ import { useLockFn } from 'ahooks'
 import { Dropdown } from 'antd'
 import { useUnoMerge } from 'unocss-merge/react'
 import { APP_CLS_CARD, APP_CLS_CARD_ACTIVE, APP_CLS_CARD_COVER, APP_CLS_ROOT, APP_KEY_PREFIX, appWarn } from '$common'
-import { zIndexVideoCardContextMenu } from '$common/css-vars-export.module.scss'
 import { useEmitterOn } from '$common/hooks/useEmitter'
 import { isEmptyFragment } from '$common/hooks/useIsEmptyFragment'
 import { useLessFrequentFn } from '$common/hooks/useLessFrequentFn'
@@ -32,7 +31,7 @@ import { PcRecGoto } from '$define/pc-recommend'
 import { antNotification } from '$modules/antd'
 import { useInBlacklist } from '$modules/bilibili/me/relations/blacklist'
 import { useInFilterByAuthorList } from '$modules/filter/block-state'
-import { normalizeCardData } from '$modules/filter/normalize'
+import { normalizeCardData, type IVideoCardData } from '$modules/filter/normalize'
 import { IconForCopy } from '$modules/icon'
 import { useMultiSelectState } from '$modules/multi-select/store'
 import { ELiveStatus } from '$modules/rec-services/live/live-enum'
@@ -40,10 +39,6 @@ import { useWatchlaterState } from '$modules/rec-services/watchlater'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { isWebApiSuccess } from '$request'
 import { isFirefox, isSafari } from '$ua'
-
-import type { EGridDisplayMode } from '$enums'
-import type { IVideoCardData } from '$modules/filter/normalize'
-import type { CssProp } from '$utility/type'
 import { videoCardBorderRadiusValue } from '../css-vars'
 import { useLargePreviewRelated } from '../LargePreview/useLargePreview'
 import { multiSelectedCss, useBlockedCardCss } from './card-border-css'
@@ -52,8 +47,14 @@ import { SimpleProgressBar } from './child-components/PreviewImage'
 import { VideoCardActionButton, VideoCardActionsClassNames } from './child-components/VideoCardActions'
 import { VideoCardBottom } from './child-components/VideoCardBottom'
 import { showNativeContextMenuWhenAltKeyPressed, useContextMenus } from './context-menus'
-import { clsZWatchlaterProgressBar, copyContent, defaultVideoCardEmitter, displayAsListCss } from './index.shared'
-import { fetchImagePreviewData, isImagePreviewDataValid } from './services'
+import {
+  clsZWatchlaterProgressBar,
+  copyContent,
+  defaultVideoCardEmitter,
+  displayAsListCss,
+  type VideoCardEmitter,
+} from './index.shared'
+import { fetchImagePreviewData, isImagePreviewDataValid, type ImagePreviewData } from './services'
 import { StatItemDisplay } from './stat-item'
 import {
   ApiTypeTag,
@@ -69,8 +70,9 @@ import { useMultiSelectRelated } from './use/useMultiSelect'
 import { getRecItemDimension, useLinkTarget, useOpenRelated } from './use/useOpenRelated'
 import { usePreviewRelated } from './use/usePreviewRelated'
 import { useWatchlaterRelated } from './use/useWatchlaterRelated'
-import type { VideoCardEmitter } from './index.shared'
-import type { ImagePreviewData } from './services'
+import { zIndexVideoCardContextMenu } from '$common/css-vars-export.module.scss'
+import type { EGridDisplayMode } from '$enums'
+import type { CssProp } from '$utility/type'
 import type { ComponentRef, CSSProperties, MouseEventHandler, ReactNode } from 'react'
 
 export type VideoCardProps = {

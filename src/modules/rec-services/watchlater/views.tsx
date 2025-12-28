@@ -1,7 +1,6 @@
 import { Button, Input, Tag } from 'antd'
 import { delay } from 'es-toolkit'
 import { useSnapshot } from 'valtio'
-
 import { useOnRefresh, useRecSelfContext } from '$components/Recommends/rec.shared'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconForRemove, IconForShuffle, IconForTimestamp, withAscIcon, withDescIcon } from '$modules/icon'
@@ -11,9 +10,9 @@ import toast from '$utility/toast'
 import { usePopupContainer } from '../_base'
 import { CopyBvidButtonsTabbarView } from '../_shared/copy-bvid-buttons'
 import { GenericOrderSwitcher } from '../_shared/generic-order-switcher'
+import { removeMultiSelectedWatchlaterItems, type WatchlaterRecService } from '.'
 import { watchlaterStore } from './store'
 import { WatchlaterItemsOrder } from './watchlater-enum'
-import { removeMultiSelectedWatchlaterItems, type WatchlaterRecService } from '.'
 import type { ElementRef, ReactNode } from 'react'
 
 export function WatchlaterTabbarView({ service }: { service: WatchlaterRecService }) {

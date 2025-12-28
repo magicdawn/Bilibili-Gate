@@ -41,7 +41,7 @@ function addLargePreview(el: HTMLDivElement) {
   if (!prevEl) return
 
   const container = document.createElement('div')
-  prevEl.insertAdjacentElement('afterend', container)
+  prevEl.after(container)
   processed.add(el)
   el.setAttribute(processedAttr, 'true')
 

@@ -1,6 +1,6 @@
 import { minmax } from '$utility/num'
-import type { PvideoData } from '$define'
 import { clsZPreviewImageWrapper } from '../index.shared'
+import type { PvideoData } from '$define'
 import type { ComponentProps, ComponentPropsWithoutRef, ComponentRef } from 'react'
 
 /**

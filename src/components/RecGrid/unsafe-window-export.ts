@@ -5,8 +5,8 @@
 import { attempt } from 'es-toolkit'
 import { APP_KEY_PREFIX } from '$common'
 import { EApiType } from '$define/index.shared'
-import type { RecItemTypeOrSeparator } from '$define'
 import { copyBvidInfos, copyBvidsSingleLine, getGenericCardDatas, setCurrentGridItems } from './rec-grid-state'
+import type { RecItemTypeOrSeparator } from '$define'
 
 // 实验:
 // window === globalThis 总是成立

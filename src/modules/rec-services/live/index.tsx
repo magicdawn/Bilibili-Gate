@@ -3,9 +3,9 @@ import { REQUEST_FAIL_MSG } from '$common'
 import { EApiType } from '$define/index.shared'
 import { isWebApiSuccess, request } from '$request'
 import toast from '$utility/toast'
-import type { ItemsSeparator, LiveItemExtend } from '$define'
 import { BaseTabService } from '../_base'
 import { ELiveStatus } from './live-enum'
+import type { ItemsSeparator, LiveItemExtend } from '$define'
 import type { ListFollowingLiveJson } from './types/list-live'
 
 export async function getLiveList(page: number) {

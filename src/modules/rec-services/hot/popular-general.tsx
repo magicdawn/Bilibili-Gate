@@ -1,7 +1,6 @@
 import { delay } from 'es-toolkit'
 import { REQUEST_FAIL_MSG } from '$common'
 import { CheckboxSettingItem, SwitchSettingItem } from '$components/ModalSettings/setting-item'
-
 import { useOnRefresh } from '$components/Recommends/rec.shared'
 import { EApiType } from '$define/index.shared'
 import { isWebApiSuccess, request } from '$request'

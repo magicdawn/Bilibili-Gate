@@ -5,10 +5,10 @@ import { ETab } from '$components/RecHeader/tab-enum'
 import { EApiType } from '$define/index.shared'
 import { anyFilterEnabled, filterRecItems } from '$modules/filter'
 import { lookinto } from '$modules/filter/normalize'
-import type { RecItemTypeOrSeparator } from '$define'
 import { AppRecService } from './app'
 import { PcRecService } from './pc'
 import { getServiceFromRegistry, REC_TABS, type FetcherOptions } from './service-map'
+import type { RecItemTypeOrSeparator } from '$define'
 
 const debug = baseDebug.extend('service')
 
