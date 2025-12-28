@@ -590,6 +590,8 @@ function apiLiveAdapter(item: LiveItemExtend): IVideoCardData {
       ? '' // 「 不需要 space padding
       : `${DESC_SEPARATOR}${formatLiveTime(item.record_live_time)} 直播过`
 
+  const coverFallback = 'https://s1.hdslb.com/bfs/static/blive/blfe-link-center/static/img/average-backimg.e65973e.png'
+
   function formatLiveTime(ts: number) {
     const today = dayjs().format('YYYYMMDD')
     const yesterday = dayjs().subtract(1, 'day').format('YYYYMMDD')
@@ -609,7 +611,7 @@ function apiLiveAdapter(item: LiveItemExtend): IVideoCardData {
     goto: 'live',
     href: `https://live.bilibili.com/${item.roomid}`,
     title: item.title,
-    cover: item.room_cover,
+    cover: item.room_cover || coverFallback,
     recommendReason: area,
     liveExtraDesc,
     // stat
