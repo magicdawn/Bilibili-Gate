@@ -12,10 +12,10 @@ import toast from '$utility/toast'
 import { QueueStrategy, type IService } from '../../_base'
 import { defaultRankTab, ERankApiType, getRankTabRequestConfig, type IRankTab } from './rank-tab'
 import { rankStore, updateRankTabs } from './store'
+import type { MouseEvent, ReactNode } from 'react'
 import type { RankItemExtend } from '$define'
 import type { AntMenuItem } from '$modules/antd'
 import type { RankItem } from './types'
-import type { MouseEvent, ReactNode } from 'react'
 
 export class RankRecService implements IService {
   loaded = false

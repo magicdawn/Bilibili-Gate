@@ -14,10 +14,10 @@ import { fetchAllFavCollections } from './collection/api'
 import { FavItemsOrder } from './fav-enum'
 import { fetchAllFavFolders } from './user-fav-service'
 import { getSavedOrder } from './views/fav-items-order'
+import type { ReadonlyKeysOf } from 'type-fest'
 import type { FavCollectionDetailInfo } from './types/collections/collection-detail'
 import type { FavCollection } from './types/collections/list-all-collections'
 import type { FavFolder } from './types/folders/list-all-folders'
-import type { ReadonlyKeysOf } from 'type-fest'
 
 const debug = baseDebug.extend('modules:rec-services:fav:store')
 

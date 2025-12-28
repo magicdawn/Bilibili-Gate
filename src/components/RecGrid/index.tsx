@@ -14,6 +14,7 @@ import { APP_CLS_GRID, baseDebug } from '$common'
 import { useEmitterOn } from '$common/hooks/useEmitter'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { useRecSelfContext, type RefreshFn } from '$components/Recommends/rec.shared'
+import { clsGateVideoGridDivider } from '$components/shared.module.scss'
 import { VideoCard } from '$components/VideoCard'
 import { getActiveCardBorderCss, useCardBorderCss } from '$components/VideoCard/card-border-css'
 import { EApiType } from '$define/index.shared'
@@ -31,18 +32,17 @@ import { useSetupGridState } from './rec-grid-state'
 import { setGlobalGridItems } from './unsafe-window-export'
 import { useRefresh } from './useRefresh'
 import { useShortcut } from './useShortcut'
+import * as scssClassNames from './video-grid.module.scss'
 import {
   ENABLE_VIRTUAL_GRID,
   gridComponents,
   type CustomGridComponents,
   type CustomGridContext,
 } from './virtuoso.config'
-import { clsGateVideoGridDivider } from '$components/shared.module.scss'
-import * as scssClassNames from './video-grid.module.scss'
+import type { CSSProperties, ForwardedRef, ReactNode } from 'react'
 import type { VideoCardEmitter, VideoCardEvents } from '$components/VideoCard/index.shared'
 import type { RecItemType, RecItemTypeOrSeparator } from '$define'
 import type { IVideoCardData } from '$modules/filter/normalize'
-import type { CSSProperties, ForwardedRef, ReactNode } from 'react'
 
 const debug = baseDebug.extend('components:RecGrid')
 

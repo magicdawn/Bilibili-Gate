@@ -8,9 +8,9 @@ import { FavFolderService } from './service/fav-folder'
 import { favStore, updateFavFolderMediaCount } from './store'
 import { FavSidebarView, FavTabbarView } from './views'
 import { getSavedOrder } from './views/fav-items-order'
+import type { ReactNode } from 'react'
 import type { FavItemExtend, ItemsSeparator } from '$define'
 import type { FavItemsOrder } from './fav-enum'
-import type { ReactNode } from 'react'
 
 export type FavServiceConfig = ReturnType<typeof getFavServiceConfig>
 

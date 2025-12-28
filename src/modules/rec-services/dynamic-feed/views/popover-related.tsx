@@ -41,11 +41,11 @@ import {
   SHOW_DYNAMIC_FEED_ONLY,
   type UpMidType,
 } from '../store'
-import type { RefreshFn } from '$components/Recommends/rec.shared'
-import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 import type { CheckboxChangeEvent } from 'antd/es/checkbox'
 import type { ReactNode } from 'react'
 import type { Get } from 'type-fest'
+import type { RefreshFn } from '$components/Recommends/rec.shared'
+import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 
 export function usePopoverRelated({
   externalSearchInput,

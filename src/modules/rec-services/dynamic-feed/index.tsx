@@ -28,9 +28,9 @@ import {
   type DynamicFeedStore,
 } from './store'
 import { DynamicFeedSidebarView, DynamicFeedTabbarView } from './views'
+import type { ReactNode } from 'react'
 import type { DynamicFeedItem, DynamicFeedItemExtend, ItemsSeparator, LiveItemExtend } from '$define'
 import type { Nullable } from '$utility/type'
-import type { ReactNode } from 'react'
 
 export type DynamicFeedServiceConfig = ReturnType<typeof getDynamicFeedServiceConfig>
 

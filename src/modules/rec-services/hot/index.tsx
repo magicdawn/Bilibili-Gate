@@ -11,9 +11,9 @@ import { PopularGeneralRecService } from './popular-general'
 import { PopularWeeklyRecService } from './popular-weekly'
 import { RankRecService } from './rank'
 import { rankStore } from './rank/store'
+import type { ReactNode } from 'react'
 import type { RecItemTypeOrSeparator } from '$define'
 import type { AntMenuItem } from '$modules/antd'
-import type { ReactNode } from 'react'
 
 const subtabServiceCreators = {
   [EHotSubTab.PopularGeneral]: () => new PopularGeneralRecService(settings.popularGeneralUseAnonymous),

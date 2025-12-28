@@ -9,6 +9,7 @@ import { Avatar } from 'antd'
 import dayjs from 'dayjs'
 import { useSnapshot } from 'valtio'
 import { APP_CLS_CARD_RECOMMEND_REASON } from '$common'
+import { appClsDarkSelector } from '$common/css-vars-export.module.scss'
 import { primaryColorValue } from '$components/css-vars'
 import { isDisplayAsList } from '$components/RecGrid/display-mode'
 import { isLive, isPcRecommend, isRank, type RecItemType } from '$define'
@@ -24,9 +25,8 @@ import { getAvatarSrc } from '$utility/image'
 import { showNativeContextMenuWhenAltKeyPressed } from '../context-menus'
 import { useLinkTarget } from '../use/useOpenRelated'
 import { UnixTsDisplay } from './UnixTsDisplay'
-import { appClsDarkSelector } from '$common/css-vars-export.module.scss'
-import type { EGridDisplayMode } from '$enums'
 import type { MouseEventHandler, ReactNode } from 'react'
+import type { EGridDisplayMode } from '$enums'
 
 const S = {
   recommendReason: css`

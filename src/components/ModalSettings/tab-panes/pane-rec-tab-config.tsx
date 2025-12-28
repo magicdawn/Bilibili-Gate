@@ -30,8 +30,8 @@ import { settings, updateSettings, updateSettingsInnerArray, useSettingsSnapshot
 import { TagItemDisplay } from '../EditableListSettingItem'
 import { explainForFlag } from '../index.shared'
 import { ResetPartialSettingsButton, SettingsGroup, sharedClassNames } from './shared'
-import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 import type { CSSProperties } from 'react'
+import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 
 export function TabPaneRecTabsConfig() {
   const { dynamicFeed, sidebarAlign, enableSidebar } = useSettingsSnapshot()

@@ -10,8 +10,8 @@ import { DynamicFeedBadgeText } from '$modules/rec-services/dynamic-feed/store'
 import { isNormalRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { useTooltip } from './child-components/VideoCardActions'
 import { useLinkNewTab } from './use/useOpenRelated'
-import type { NormalRankItem } from '$modules/rec-services/hot/rank/types'
 import type { CSSProperties, ReactNode } from 'react'
+import type { NormalRankItem } from '$modules/rec-services/hot/rank/types'
 
 export const clsBadgeContainer =
   'pointer-events-none h-19px flex-center whitespace-nowrap rounded-2px bg-gate-primary px-4px text-center text-12px color-white'

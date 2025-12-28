@@ -1,12 +1,12 @@
 import { css as _css, css, Global } from '@emotion/react'
 import { APP_CLS_ROOT, IN_BILIBILI_HOMEPAGE } from '$common'
+import { appBgId, appPrimaryColorId, appTextColorId } from '$common/css-vars-export.module.scss'
 import { useAntLinkColorGlobalStyle } from '$common/emotion-css'
 import { $headerWidth, $usingEvolevdHeader, useBackToTopRight } from '$header'
 import { useIsDarkMode } from '$modules/dark-mode'
 import { useSettingsSnapshot } from '$modules/settings'
 import { modalGlobalStyle } from './_base/BaseModal'
 import { useColorPrimaryHex } from './ModalSettings/theme.shared'
-import { appBgId, appPrimaryColorId, appTextColorId } from '$common/css-vars-export.module.scss'
 
 export function GlobalStyle() {
   const colorPrimary = useColorPrimaryHex()

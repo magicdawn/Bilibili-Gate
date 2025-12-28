@@ -17,11 +17,11 @@ import {
   VideoLinkOpenModeKey,
 } from '../index.shared'
 import { renderInPipWindow } from './_pip-window'
+import type { ComponentProps, MouseEvent, MouseEventHandler, ReactNode } from 'react'
 import type { RecItemType } from '$define'
 import type { AntMenuItem } from '$modules/antd'
 import type { VideoPage } from '$modules/bilibili/video/types/page-list'
 import type { IVideoCardData } from '$modules/filter/normalize'
-import type { ComponentProps, MouseEvent, MouseEventHandler, ReactNode } from 'react'
 
 const debug = baseDebug.extend('VideoCard:useOpenRelated')
 

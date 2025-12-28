@@ -1,7 +1,7 @@
 import { ButtonSettingItem } from '$components/ModalSettings/setting-item'
 import { IconForDefaultOrder, IconForShuffle } from '$modules/icon'
-import type { BooleanSettingsPath } from '$modules/settings'
 import type { ComponentProps, CSSProperties } from 'react'
+import type { BooleanSettingsPath } from '$modules/settings'
 
 export function ShuffleSettingsItemFor({
   configPath,

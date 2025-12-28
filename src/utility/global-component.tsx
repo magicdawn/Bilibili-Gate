@@ -3,8 +3,8 @@ import { createRoot } from 'react-dom/client'
 import { proxy, useSnapshot } from 'valtio'
 import { APP_CLS_ROOT } from '$common'
 import { AppRoot } from '$components/AppRoot'
-import type { AnyFunction } from './type'
 import type { ComponentType } from 'react'
+import type { AnyFunction } from './type'
 
 export function wrapComponent<IProps extends object>({
   Component,

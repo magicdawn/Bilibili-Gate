@@ -1,7 +1,7 @@
 import { minmax } from '$utility/num'
 import { clsZPreviewImageWrapper } from '../index.shared'
-import type { PvideoData } from '$define'
 import type { ComponentProps, ComponentPropsWithoutRef, ComponentRef } from 'react'
+import type { PvideoData } from '$define'
 
 /**
  * 关于 `pointer-events: none`

@@ -17,9 +17,9 @@ import {
   type ServiceMap,
 } from '$modules/rec-services/service-map'
 import { getSpaceUploadServiceConfig, type SpaceUploadService } from '$modules/rec-services/space-upload'
+import type { Debugger } from 'debug'
 import type { RecItemTypeOrSeparator } from '$define'
 import type { RecGridSelf } from '.'
-import type { Debugger } from 'debug'
 
 /**
  * refresh for same tab, but conditions changed

@@ -1,8 +1,8 @@
 import { delay } from 'es-toolkit'
 import { subscribe } from 'valtio'
+import { appClsDark } from '$common/css-vars-export.module.scss'
 import { poll } from '$utility/dom'
 import { valtioFactory } from '$utility/valtio'
-import { appClsDark } from '$common/css-vars-export.module.scss'
 
 /**
  * using dark-mode?

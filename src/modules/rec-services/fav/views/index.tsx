@@ -14,10 +14,10 @@ import { usePopupContainer } from '../../_base'
 import { dropdownMenuStyle } from '../../_shared'
 import { isFavFolderDefault, isFavFolderPrivate } from '../fav-util'
 import { favStore, updateFavList, type FavStore } from '../store'
-import type { FavAllService } from '../service/fav-all'
-import type { FavFolderBasicService } from '../service/fav-folder'
 import type { TransferDirection } from 'antd/es/transfer'
 import type { Key } from 'react'
+import type { FavAllService } from '../service/fav-all'
+import type { FavFolderBasicService } from '../service/fav-folder'
 
 export const IconForAll = IconLucideList
 export const IconForPrivateFolder = IconLucideFolderLock

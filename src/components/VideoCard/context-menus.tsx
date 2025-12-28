@@ -44,9 +44,9 @@ import toast from '$utility/toast'
 import { copyContent } from './index.shared'
 import { watchlaterAdd } from './services'
 import { getFavTabMenus, getWatchlaterTabFavMenus, type FavContext } from './use/useFavRelated'
+import type { MouseEvent } from 'react'
 import type { IVideoCardData } from '$modules/filter/normalize'
 import type { WatchlaterRelatedContext } from './use/useWatchlaterRelated'
-import type { MouseEvent } from 'react'
 
 const clsMenuIcon = 'size-16px' // icon 可能看起来不一样大, 但文字对不齐的体验更差, 所以还是优先文字对齐
 

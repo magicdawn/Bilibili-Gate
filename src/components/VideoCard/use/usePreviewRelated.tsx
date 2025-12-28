@@ -6,9 +6,9 @@ import { useRefBox, useRefStateBox, type RefBox, type RefStateBox } from '$commo
 import { settings } from '$modules/settings'
 import { minmax } from '$utility/num'
 import { PreviewImage, type PreviewImageRef } from '../child-components/PreviewImage'
+import type { ComponentProps, MouseEvent, ReactNode } from 'react'
 import type { RecSharedEmitter } from '$components/Recommends/rec.shared'
 import type { ImagePreviewData } from '../services'
-import type { ComponentProps, MouseEvent, ReactNode } from 'react'
 
 const DEBUG_ANIMATION = __PROD__
   ? false //

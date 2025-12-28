@@ -8,9 +8,9 @@ import { IconAnimatedChecked } from '$modules/icon/animated-checked'
 import { watchlaterState } from '$modules/rec-services/watchlater'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
 import { watchlaterAdd, watchlaterDel } from '../services'
+import type { MouseEvent } from 'react'
 import type { IVideoCardData } from '$modules/filter/normalize'
 import type { VideoCardInnerProps } from '..'
-import type { MouseEvent } from 'react'
 
 export type WatchlaterRelatedContext = ReturnType<typeof useWatchlaterRelated>['context']
 

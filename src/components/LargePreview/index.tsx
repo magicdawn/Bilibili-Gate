@@ -4,11 +4,11 @@ import { orderBy, throttle } from 'es-toolkit'
 import { motion } from 'framer-motion'
 import { createPortal } from 'react-dom'
 import { APP_CLS_CARD, APP_CLS_CARD_COVER, baseDebug } from '$common'
+import { zIndexVideoCardLargePreview } from '$common/css-vars-export.module.scss'
 import { useMixedRef } from '$common/hooks/mixed-ref'
 import { primaryColorValue } from '$components/css-vars'
 import { useSettingsSnapshot } from '$modules/settings'
 import { isSafari } from '$ua'
-import { zIndexVideoCardLargePreview } from '$common/css-vars-export.module.scss'
 import type { ComponentRef, ReactNode } from 'react'
 
 const debug = baseDebug.extend('VideoCard:LargePreview')

@@ -12,9 +12,9 @@ import { fetchVideoPreviewData, isVideoPreviewDataValid, type VideoPreviewData }
 import { getRecItemDimension } from '../VideoCard/use/useOpenRelated'
 import { LargePreview } from './index'
 import { RecoverableVideo } from './RecoverableVideo'
+import type { ComponentRef, MutableRefObject } from 'react'
 import type { RecSharedEmitter } from '$components/Recommends/rec.shared'
 import type { CssProp } from '$utility/type'
-import type { ComponentRef, MutableRefObject } from 'react'
 
 type Timer = ReturnType<typeof setTimeout>
 type TimerRef = MutableRefObject<Timer | undefined>

@@ -13,12 +13,12 @@ import { formatFavFolderUrl, formatFavPlaylistUrl } from '../fav-url'
 import { favStore, updateFavFolderMediaCount, updateFavList } from '../store'
 import { FavItemsOrderSwitcher } from '../views/fav-items-order'
 import { clsFavSeparator, FAV_PAGE_SIZE } from './_base'
+import type { SetNonNullable } from 'type-fest'
 import type { ItemsSeparator } from '$define'
 import type { IFavInnerService } from '../index'
 import type { FavItemExtend } from '../types'
 import type { FavFolder } from '../types/folders/list-all-folders'
 import type { FavFolderDetailInfo, ResourceListJSON } from '../types/folders/list-folder-items'
-import type { SetNonNullable } from 'type-fest'
 
 export function FavFolderSeparator({ service }: { service: FavFolderBasicService }) {
   return (

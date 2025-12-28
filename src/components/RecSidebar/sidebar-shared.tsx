@@ -6,8 +6,8 @@ import { useRecSelfContext } from '$components/Recommends/rec.shared'
 import { QUERY_DYNAMIC_UP_MID } from '$modules/rec-services/dynamic-feed/store'
 import { hotStore } from '$modules/rec-services/hot'
 import { useSettingsSnapshot } from '$modules/settings'
-import type { AntMenuItem } from '$modules/antd'
 import type { ElementRef } from 'react'
+import type { AntMenuItem } from '$modules/antd'
 
 export const sidebarBottomLine = (
   <Divider className='[&.ant-divider-horizontal.ant-divider-with-text]:(my-5px text-14px)'>底线</Divider>

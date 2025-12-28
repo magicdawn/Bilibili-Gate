@@ -3,11 +3,11 @@ import { cache as emotionCssDefaultCache } from '@emotion/css'
 import { CacheProvider, type EmotionCache } from '@emotion/react'
 import { ConfigProvider, theme } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
+import { appUsingFont, zIndexAntdPopupBase } from '$common/css-vars-export.module.scss'
 import { AntdStaticFunctionsSetup } from '$modules/antd'
 import { useIsDarkMode } from '$modules/dark-mode'
 import { GlobalStyle } from './GlobalStyle'
 import { useColorPrimaryHex } from './ModalSettings/theme.shared'
-import { appUsingFont, zIndexAntdPopupBase } from '$common/css-vars-export.module.scss'
 import type { ReactNode } from 'react'
 
 // https://github.com/emotion-js/emotion/issues/1105

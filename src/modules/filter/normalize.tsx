@@ -38,9 +38,9 @@ import { WatchlaterItemsOrder } from '$modules/rec-services/watchlater/watchlate
 import { getSettingsSnapshot } from '$modules/settings'
 import { toHttps } from '$utility/url'
 import { formatDuration, formatTimeStamp, getVideoInvalidReason, parseCount, parseDuration } from '$utility/video'
+import type { ReactNode } from 'react'
 import type { Badge as DynamicFeedBadge } from '$define/pc-dynamic-feed'
 import type { FavItemExtend } from '$modules/rec-services/fav/types'
-import type { ReactNode } from 'react'
 
 export const DESC_SEPARATOR = ' · '
 
