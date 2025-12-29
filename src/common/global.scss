@@ -35,6 +35,17 @@
   font-size: 14px;
   --back-top-right: 24px;
 
+  button,
+  dd,
+  dl,
+  ol,
+  ul {
+    font-size: inherit;
+  }
+  li {
+    list-style: unset;
+  }
+
   .bili-video-card {
     .bili-video-card__info--tit:hover, // fix https://github.com/magicdawn/Bilibili-Gate/issues/168
     a:not(.disable-hover):hover {

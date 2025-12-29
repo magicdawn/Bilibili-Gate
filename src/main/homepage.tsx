@@ -87,17 +87,13 @@ async function initHomepagePureRecommend() {
   tryToRemove('.palette-button-wrap') // 右侧浮动按钮
 
   const biliLayout = document.createElement('div')
-  biliLayout.classList.add('bili-feed4-layout', 'pure-recommend')
-  await poll(() => document.querySelector('.bili-feed4 .bili-header'), {
-    interval: 20,
-    timeout: 2_000,
-  }) // biliLayout should come after header+channel
-  document.body.appendChild(biliLayout)
+  biliLayout.classList.add('bili-feed4-layout', 'pure-recommend', APP_CLS_ROOT)
+  // biliLayout should come after header+channel
+  await poll(() => document.querySelector('.bili-feed4 .bili-header'), { interval: 20, timeout: 2_000 })
+  document.body.append(biliLayout)
 
-  const container = document.createElement('section')
-  container.classList.add(APP_CLS_ROOT)
-  biliLayout.appendChild(container)
-
+  const container = document.createElement('div')
+  biliLayout.append(container)
   root = createRoot(container)
   root.render(
     <AppRoot injectGlobalStyle antdSetup>

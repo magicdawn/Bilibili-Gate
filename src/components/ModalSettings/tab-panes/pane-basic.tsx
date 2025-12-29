@@ -2,7 +2,7 @@ import { Button, Divider, InputNumber, Select, Space, Tag } from 'antd'
 import { APP_NAME } from '$common'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { AccessKeyManage } from '$components/AccessKeyManage'
-import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
+import { CheckboxSettingItem, SwitchSettingItem } from '$components/ModalSettings/setting-item'
 import { GridDisplayModeSwitcher } from '$components/RecGrid/display-mode'
 import { TabIcon } from '$components/RecHeader/tab-config'
 import { ETab } from '$components/RecHeader/tab-enum'
@@ -18,6 +18,7 @@ export function TabPaneBasic() {
   const {
     videoCard: {
       actions: { showLargePreview, openInPipWindow },
+      imgPreview: { enabled: imgPreviewEnabled },
     },
     grid: { useCustomGrid, enableForceColumn, forceColumnCount },
     videoLinkOpenMode,
@@ -282,16 +283,16 @@ export function TabPaneBasic() {
             />
             <CheckboxSettingItem
               configPath='videoCard.videoPreview.useVideoCardAsTrigger'
-              disabled={!showLargePreview}
               label='浮动预览: 使用视频卡片作为触发器'
               tooltip={
                 <>
-                  {explainForFlag('使用「视频卡片」作为触发器', '使用「视频卡片右上角按钮」作为触发器')}
+                  {explainForFlag(
+                    '使用「视频卡片」作为触发器',
+                    '使用「视频卡片右上角按钮」作为触发器, 悬浮视频卡片 1 秒后展开',
+                  )}
                   <Divider className='my-1' />
-                  <ul className='list-circle pl-25px'>
-                    <li>悬浮视频卡片 1 秒后展开「浮动预览」</li>
-                    <li>「视频卡片」更容易触发, 但也容易非预览意图误触发</li>
-                    <li>与「视频卡片右上角按钮」独立, 关掉视频卡片按钮, 此选项仍然生效</li>
+                  <ul className='ml-25px list-circle'>
+                    <li>与上面「浮动预览」开关独立</li>
                   </ul>
                 </>
               }
@@ -318,9 +319,13 @@ export function TabPaneBasic() {
         titleClassName='justify-between'
         title={
           <>
-            快照预览
+            <div>
+              快照预览
+              <SwitchSettingItem configPath='videoCard.imgPreview.enabled' tooltip='关闭此功能' className='ml-3' />
+            </div>
             <ResetPartialSettingsButton
               paths={[
+                'videoCard.imgPreview.enabled',
                 'videoCard.imgPreview.autoPreviewWhenKeyboardSelect',
                 'videoCard.imgPreview.autoPreviewWhenHover',
                 'videoCard.imgPreview.disableWhenMultiSelecting',
@@ -331,6 +336,7 @@ export function TabPaneBasic() {
         contentClassName='flex-row flex-wrap items-center gap-x-10px'
       >
         <CheckboxSettingItem
+          disabled={!imgPreviewEnabled}
           configPath='videoCard.imgPreview.autoPreviewWhenKeyboardSelect'
           label='键盘选中后自动开始'
           tooltip={
@@ -341,6 +347,7 @@ export function TabPaneBasic() {
           }
         />
         <CheckboxSettingItem
+          disabled={!imgPreviewEnabled}
           configPath='videoCard.imgPreview.autoPreviewWhenHover'
           label='鼠标悬浮后自动开始'
           tooltip={
@@ -351,6 +358,7 @@ export function TabPaneBasic() {
           }
         />
         <CheckboxSettingItem
+          disabled={!imgPreviewEnabled}
           configPath='videoCard.imgPreview.disableWhenMultiSelecting'
           label='多选时禁用'
           tooltip={explainForFlag('多选开启时, 禁用快照预览', '不禁用')}

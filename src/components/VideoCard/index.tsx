@@ -214,7 +214,7 @@ const VideoCardInner = memo(function VideoCardInner({
     },
     videoCard: {
       actions: videoCardActions,
-      imgPreview: { autoPreviewWhenHover, disableWhenMultiSelecting },
+      imgPreview: { enabled: imgPreviewEnabled, autoPreviewWhenHover, disableWhenMultiSelecting },
     },
     spaceUpload: { showVol },
     __internalEnableCopyBvidInfo,
@@ -240,10 +240,7 @@ const VideoCardInner = memo(function VideoCardInner({
     authorMid,
   } = cardData
 
-  // snapshot computed
   const authed = !!accessKey
-  const showPreviewImageEl = !(disableWhenMultiSelecting && multiSelecting)
-
   const isNormalVideo = goto === 'av'
   const allowed = ['av', 'bangumi', 'picture', 'live']
   if (!allowed.includes(goto)) {
@@ -253,16 +250,24 @@ const VideoCardInner = memo(function VideoCardInner({
   const displayingAsList = isDisplayAsList(gridDisplayMode)
   const aspectRatioFromItem = useMemo(() => getRecItemDimension({ item })?.aspectRatio, [item])
 
-  const imagePreviewDataBox = useRefStateBox<ImagePreviewData | undefined>(undefined)
+  // shared by video-preview & image-preview
   const shouldFetchPreviewData = useMemo(() => {
     if (!bvid) return false // no bvid
     if (!bvid.startsWith('BV')) return false // bvid invalid
-    if (goto !== 'av') return false // scrrenshot only for video
-    if (!showPreviewImageEl) return false // disabled when `multi-selecting` | future-more-case
+    if (goto !== 'av') return false // only for video
     return true
-  }, [bvid, goto, showPreviewImageEl])
+  }, [bvid, goto])
+
+  const showPreviewImageEl = (() => {
+    if (!imgPreviewEnabled) return false
+    if (disableWhenMultiSelecting && multiSelecting) return false
+    return true
+  })()
+
+  const imagePreviewDataBox = useRefStateBox<ImagePreviewData | undefined>(undefined)
   const tryFetchImagePreviewData = useLockFn(async () => {
     if (!shouldFetchPreviewData) return
+    if (!showPreviewImageEl) return
     if (isImagePreviewDataValid(imagePreviewDataBox.val)) return // already fetched
     const data = await fetchImagePreviewData(bvid!)
     imagePreviewDataBox.set(data)
@@ -298,9 +303,7 @@ const VideoCardInner = memo(function VideoCardInner({
     onHotkeyPreviewAnimation,
     // flag
     isHovering,
-    isHoveringAfterDelay,
     // el
-    previewImageRef,
     previewImageEl,
   } = usePreviewRelated({
     uniqId: item.uniqId,

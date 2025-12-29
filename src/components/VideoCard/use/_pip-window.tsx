@@ -36,7 +36,7 @@ export function renderInPipWindow(newHref: string, pipWindow: Window) {
 
   const root = createRoot(container)
   root.render(
-    <AppRoot emotionCache={cache} styleProviderProps={{ container: cssInsertContainer }} injectGlobalStyle>
+    <AppRoot cssInsertContainer={cssInsertContainer} cssInsertContainerEmotionKey='pip-window' injectGlobalStyle>
       <ConfigProvider getPopupContainer={() => pipWindow.document.body} getTargetContainer={() => pipWindow}>
         <App message={{ getContainer: () => pipWindow.document.body }}>
           <PipWindowContent newHref={newHref} pipWindow={pipWindow} />

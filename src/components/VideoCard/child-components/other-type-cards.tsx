@@ -41,7 +41,7 @@ const blockedCardClassNames = {
   // grid align-items 默认为 stretch, 同 row 互相撑起高度
   wrapper: 'h-full flex flex-col overflow-hidden',
   cover: 'relative aspect-16/9 rounded-t-6px',
-  coverInner: 'absolute left-0 top-0 h-full w-full flex flex-col items-center justify-center',
+  coverInner: 'absolute left-0 top-0 h-full w-full flex flex-col items-center justify-center gap-y-2',
   dislikeReason: 'text-center font-size-20px',
   dislikeDesc: 'text-center text-16px',
   action: 'relative flex-1',
@@ -91,7 +91,7 @@ export const DislikedCard = memo(function DislikedCard({
     <div className={blockedCardClassNames.wrapper}>
       <div className={blockedCardClassNames.cover}>
         <div className={blockedCardClassNames.coverInner}>
-          <IconParkOutlineDistraughtFace className='mb-5px size-32px' />
+          <IconParkOutlineDistraughtFace className='size-32px' />
           <div className={blockedCardClassNames.dislikeReason}>{dislikedReason?.name}</div>
           <div className={blockedCardClassNames.dislikeDesc}>{dislikedReason?.toast || '将减少此类内容推荐'}</div>
         </div>
@@ -155,7 +155,7 @@ export const BlockedCard = memo(function BlockedCardInner({
     <div className={blockedCardClassNames.wrapper}>
       <div className={blockedCardClassNames.cover}>
         <div className={blockedCardClassNames.coverInner}>
-          <IconForBlacklist className='mb-5px size-32px' />
+          <IconForBlacklist className='size-32px' />
           <div className={blockedCardClassNames.dislikeReason}>{label}</div>
           <div className={blockedCardClassNames.dislikeDesc}>UP: {authorName}</div>
         </div>

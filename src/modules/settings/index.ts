@@ -86,6 +86,8 @@ export const initialSettings = {
     },
 
     imgPreview: {
+      enabled: true,
+
       // 自动开始预览: 按键选择
       autoPreviewWhenKeyboardSelect: false,
 

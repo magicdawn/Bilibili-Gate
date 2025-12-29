@@ -1,8 +1,10 @@
-import { StyleProvider, type StyleProviderProps } from '@ant-design/cssinjs'
-import { cache as emotionCssDefaultCache } from '@emotion/css'
-import { CacheProvider, type EmotionCache } from '@emotion/react'
+import { StyleProvider } from '@ant-design/cssinjs'
+import createEmotion from '@emotion/css/create-instance'
+import { CacheProvider } from '@emotion/react'
 import { ConfigProvider, theme } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
+import { assert } from 'es-toolkit'
+import { APP_CLS_ROOT } from '$common'
 import { appUsingFont, zIndexAntdPopupBase } from '$common/css-vars-export.module.scss'
 import { AntdStaticFunctionsSetup } from '$modules/antd'
 import { useIsDarkMode } from '$modules/dark-mode'
@@ -10,12 +12,9 @@ import { GlobalStyle } from './GlobalStyle'
 import { useColorPrimaryHex } from './ModalSettings/theme.shared'
 import type { ReactNode } from 'react'
 
-// https://github.com/emotion-js/emotion/issues/1105
-emotionCssDefaultCache.compat = true
-
-function compose(...fns: Array<(c: ReactNode) => ReactNode>) {
+function compose(...fns: Array<((c: ReactNode) => ReactNode) | false>) {
   return function (c: ReactNode) {
-    return fns.reduceRight((content, fn) => fn(content), c)
+    return fns.reduceRight((content, fn) => (fn ? fn(content) : content), c)
   }
 }
 
@@ -23,30 +22,44 @@ export function AppRoot({
   children,
   injectGlobalStyle = false,
   antdSetup = false,
-  emotionCache = emotionCssDefaultCache,
-  styleProviderProps,
+  cssInsertContainer,
+  cssInsertContainerEmotionKey,
 }: {
   children?: ReactNode
   injectGlobalStyle?: boolean
   antdSetup?: boolean
-  emotionCache?: EmotionCache
-  styleProviderProps?: StyleProviderProps
+  cssInsertContainer?: Element | ShadowRoot
+  cssInsertContainerEmotionKey?: string
 }) {
+  if (cssInsertContainer) {
+    assert(cssInsertContainerEmotionKey, 'cssInsertContainerEmotionKey is required when cssInsertContainer is provided')
+  }
+
+  const emotionCache = useMemo(() => {
+    if (cssInsertContainer) {
+      return createEmotion({
+        key: cssInsertContainerEmotionKey!,
+        container: cssInsertContainer,
+      }).cache
+    }
+  }, [cssInsertContainer, cssInsertContainerEmotionKey])
+
   const dark = useIsDarkMode()
   const colorPrimary = useColorPrimaryHex()
 
   const wrap = compose(
     // emotion cache
-    (c) => <CacheProvider value={emotionCache}>{c}</CacheProvider>,
+    !!emotionCache && ((c) => <CacheProvider value={emotionCache}>{c}</CacheProvider>),
 
     // antd style
-    (c) => <StyleProvider {...styleProviderProps}>{c}</StyleProvider>,
+    !!cssInsertContainer && ((c) => <StyleProvider container={cssInsertContainer}>{c}</StyleProvider>),
 
     // antd config
     (c) => (
       <ConfigProvider
         locale={zhCN}
         button={{ autoInsertSpace: false }}
+        getPopupContainer={(triggerNode) => triggerNode?.closest<HTMLDivElement>('.' + APP_CLS_ROOT) ?? document.body}
         theme={{
           algorithm: dark ? theme.darkAlgorithm : theme.defaultAlgorithm,
           token: {
@@ -55,7 +68,6 @@ export function AppRoot({
             zIndexPopupBase: Number(zIndexAntdPopupBase),
             fontFamily: appUsingFont,
           },
-
           components: {
             Notification: {
               zIndexPopup: Number(zIndexAntdPopupBase),
