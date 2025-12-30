@@ -108,7 +108,7 @@ export const initialSettings = {
 
   // 启用侧边栏
   enableSidebar: true,
-  sidebarAlign: ESidebarAlign.Left,
+  sidebarAlign: ESidebarAlign.Right,
 
   /**
    * tab=dynamic-feed
