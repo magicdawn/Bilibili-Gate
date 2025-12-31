@@ -2,7 +2,6 @@
   "include": ["src", "src/auto-imports.d.ts"],
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-    "baseUrl": "./",
     "paths": {
       "$*": ["./src/*"]
     },
