@@ -39,23 +39,20 @@ importers:
         specifier: 3.9.6
         version: 3.9.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       antd:
-        specifier: 6.1.2
-        version: 6.1.2(date-fns@2.30.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: 6.1.3
+        version: 6.1.3(date-fns@2.30.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       axios:
         specifier: ^0.30.2
-        version: 0.30.2(debug@4.4.3)
+        version: 0.30.2
       axios-userscript-adapter:
         specifier: ^0.2.0
-        version: 0.2.0(axios@0.30.2(debug@4.4.3))
+        version: 0.2.0(axios@0.30.2)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
       dayjs:
         specifier: 1.11.19
         version: 1.11.19
-      debug:
-        specifier: ^4.4.3
-        version: 4.4.3
       emittery:
         specifier: ^1.2.0
         version: 1.2.0
@@ -74,6 +71,9 @@ importers:
       ms:
         specifier: ^2.1.3
         version: 2.1.3
+      obug:
+        specifier: ^2.1.1
+        version: 2.1.1
       p-memoize:
         specifier: ^8.0.0
         version: 8.0.0
@@ -102,8 +102,8 @@ importers:
         specifier: ^10.0.0
         version: 10.0.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-virtuoso:
-        specifier: ^4.18.0
-        version: 4.18.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^4.18.1
+        version: 4.18.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       sass-embedded:
         specifier: ^1.97.1
         version: 1.97.1
@@ -162,9 +162,6 @@ importers:
       '@total-typescript/ts-reset':
         specifier: ^0.6.1
         version: 0.6.1
-      '@types/debug':
-        specifier: ^4.1.12
-        version: 4.1.12
       '@types/ms':
         specifier: ^2.1.0
         version: 2.1.0
@@ -223,8 +220,8 @@ importers:
         specifier: ^0.1.7
         version: 0.1.7
       oxlint:
-        specifier: ^1.35.0
-        version: 1.35.0
+        specifier: ^1.36.0
+        version: 1.36.0
       postcss-media-minmax:
         specifier: ^5.0.0
         version: 5.0.0(postcss@8.5.6)
@@ -1395,47 +1392,47 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@oxlint/darwin-arm64@1.35.0':
-    resolution: {integrity: sha512-ieiYVHkNZPo77Hgrxav595wGS4rRNKuDNrljf+4xhwpJsddrxMpM64IQUf2IvR3MhK4FxdGzhhB6OVmGVHY5/w==}
+  '@oxlint/darwin-arm64@1.36.0':
+    resolution: {integrity: sha512-MJkj82GH+nhvWKJhSIM6KlZ8tyGKdogSQXtNdpIyP02r/tTayFJQaAEWayG2Jhsn93kske+nimg5MYFhwO/rlg==}
     cpu: [arm64]
     os: [darwin]
 
-  '@oxlint/darwin-x64@1.35.0':
-    resolution: {integrity: sha512-1jNHu3j66X5jKySvgtE+jGtjx4ye+xioAucVTi2IuROZO6keK2YG74pnD+9FT+DpWZAtWRZGoW0r0x6aN9sEEg==}
+  '@oxlint/darwin-x64@1.36.0':
+    resolution: {integrity: sha512-VvEhfkqj/99dCTqOcfkyFXOSbx4lIy5u2m2GHbK4WCMDySokOcMTNRHGw8fH/WgQ5cDrDMSTYIGQTmnBGi9tiQ==}
     cpu: [x64]
     os: [darwin]
 
-  '@oxlint/linux-arm64-gnu@1.35.0':
-    resolution: {integrity: sha512-T1lc0UaYbTxZyqVpLfC7eipbauNG8pBpkaZEW4JGz8Y68rxTH7d9s+CF0zxUxNr5RCtcmT669RLVjQT7VrKVLg==}
+  '@oxlint/linux-arm64-gnu@1.36.0':
+    resolution: {integrity: sha512-EMx92X5q+hHc3olTuj/kgkx9+yP0p/AVs4yvHbUfzZhBekXNpUWxWvg4hIKmQWn+Ee2j4o80/0ACGO0hDYJ9mg==}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@oxlint/linux-arm64-musl@1.35.0':
-    resolution: {integrity: sha512-7Wv5Pke9kwWKFycUziSHsmi3EM0389TLzraB0KE/MArrKxx30ycwfJ5PYoMj9ERoW+Ybs0txdaOF/xJy/XyYkg==}
+  '@oxlint/linux-arm64-musl@1.36.0':
+    resolution: {integrity: sha512-7YCxtrPIctVYLqWrWkk8pahdCxch6PtsaucfMLC7TOlDt4nODhnQd4yzEscKqJ8Gjrw1bF4g+Ngob1gB+Qr9Fw==}
     cpu: [arm64]
     os: [linux]
     libc: [musl]
 
-  '@oxlint/linux-x64-gnu@1.35.0':
-    resolution: {integrity: sha512-HDMPOzyVVy+rQl3H7UOq8oGHt7m1yaiWCanlhAu4jciK8dvXeO9OG/OQd74lD/h05IcJh93pCLEJ3wWOG8hTiQ==}
+  '@oxlint/linux-x64-gnu@1.36.0':
+    resolution: {integrity: sha512-lnaJVlx5r3NWmoOMesfQXJSf78jHTn8Z+sdAf795Kgteo72+qGC1Uax2SToCJVN2J8PNG3oRV5bLriiCNR2i6Q==}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@oxlint/linux-x64-musl@1.35.0':
-    resolution: {integrity: sha512-kAPBBsUOM3HQQ6n3nnZauvFR9EoXqCSoj4O3OSXXarzsRTiItNrHabVUwxeswZEc+xMzQNR0FHEWg/d4QAAWLw==}
+  '@oxlint/linux-x64-musl@1.36.0':
+    resolution: {integrity: sha512-AhuEU2Qdl66lSfTGu/Htirq8r/8q2YnZoG3yEXLMQWnPMn7efy8spD/N1NA7kH0Hll+cdfwgQkQqC2G4MS2lPQ==}
     cpu: [x64]
     os: [linux]
     libc: [musl]
 
-  '@oxlint/win32-arm64@1.35.0':
-    resolution: {integrity: sha512-qrpBkkOASS0WT8ra9xmBRXOEliN6D/MV9JhI/68lFHrtLhfFuRwg4AjzjxrCWrQCnQ0WkvAVpJzu73F4ICLYZw==}
+  '@oxlint/win32-arm64@1.36.0':
+    resolution: {integrity: sha512-GlWCBjUJY2QgvBFuNRkiRJu7K/djLmM0UQKfZV8IN+UXbP/JbjZHWKRdd4LXlQmzoz7M5Hd6p+ElCej8/90FCg==}
     cpu: [arm64]
     os: [win32]
 
-  '@oxlint/win32-x64@1.35.0':
-    resolution: {integrity: sha512-yPFcj6umrhusnG/kMS5wh96vblsqZ0kArQJS+7kEOSJDrH+DsFWaDCsSRF8U6gmSmZJ26KVMU3C3TMpqDN4M1g==}
+  '@oxlint/win32-x64@1.36.0':
+    resolution: {integrity: sha512-J+Vc00Utcf8p77lZPruQgb0QnQXuKnFogN88kCnOqs2a83I+vTBB8ILr0+L9sTwVRvIDMSC0pLdeQH4svWGFZg==}
     cpu: [x64]
     os: [win32]
 
@@ -1545,8 +1542,8 @@ packages:
     resolution: {integrity: sha512-qgGdcVIF604M9EqjNF0hbUTz42bz/RDtxWdWuU5EQe3hi7M8ob54B6B35rOsvX5eSvIHIzT9iH1R3n+hk3CGfg==}
     engines: {node: '>=14.x'}
 
-  '@rc-component/cascader@1.9.0':
-    resolution: {integrity: sha512-2jbthe1QZrMBgtCvNKkJFjZYC3uKl4N/aYm5SsMvO3T+F+qRT1CGsSM9bXnh1rLj7jDk/GK0natShWF/jinhWQ==}
+  '@rc-component/cascader@1.10.0':
+    resolution: {integrity: sha512-D1XOKvbhdo9kX+cG1p8qJOnSq+sMK3L84iVYjGQIx950kJt0ixN+Xac75ykyK/AC8V3GUanjNK14Qkv149RrEw==}
     peerDependencies:
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
@@ -1725,8 +1722,8 @@ packages:
       react: '>=16.0.0'
       react-dom: '>=16.0.0'
 
-  '@rc-component/select@1.3.6':
-    resolution: {integrity: sha512-CzbJ9TwmWcF5asvTMZ9BMiTE9CkkrigeOGRPpzCNmeZP7KBwwmYrmOIiKh9tMG7d6DyGAEAQ75LBxzPx+pGTHA==}
+  '@rc-component/select@1.4.0':
+    resolution: {integrity: sha512-DDCsUkx3lHAO42fyPiBADzZgbqOp3gepjBCusuy6DDN51Vx73cwX0aqsid1asxpIwHPMYGgYg+wXbLi4YctzLQ==}
     engines: {node: '>=8.x'}
     peerDependencies:
       react: '*'
@@ -1785,8 +1782,8 @@ packages:
       react: '>=16.9.0'
       react-dom: '>=16.9.0'
 
-  '@rc-component/tree-select@1.4.0':
-    resolution: {integrity: sha512-I3UAlO2hNqy9CSKc8EBaESgnmKk2QaRzuZ2XHZGFCgsSMkGl06mdF97sVfROM02YIb64ocgLKefsjE0Ch4ocwQ==}
+  '@rc-component/tree-select@1.5.0':
+    resolution: {integrity: sha512-1nBAMreFJXkCIeZlWG0l+6i0jLWzlmmRv/TrtZjLkoq8WmpzSuDhP32YroC7rAhGFR34thpHkvCedPzBXIL/XQ==}
     peerDependencies:
       react: '*'
       react-dom: '*'
@@ -2469,8 +2466,8 @@ packages:
     resolution: {integrity: sha512-HqZ5rWlFjGiV0tDm3UxxgNRqsOTniqoKZu0pIAfh7TZQMGuZK+hH0drySty0si0QXj1ieop4+SkSfPZBPPkHig==}
     engines: {node: '>=14'}
 
-  antd@6.1.2:
-    resolution: {integrity: sha512-pqYaZECL/7TBiNxxz+LieLiPCem6DaEzudqN44EZ3SvJjixLP7K41n6clo0zxe/2HiOUe9KxTMxGN+icOkL6Tw==}
+  antd@6.1.3:
+    resolution: {integrity: sha512-kvaLtOm0UwCIdtR424/Mo6pyJxN34/6003e1io3GIKWQOdlddplFylv767iGxXLMrxfNoQmxuNJcF1miFbxCZQ==}
     peerDependencies:
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
@@ -4063,8 +4060,8 @@ packages:
   oxc-resolver@11.16.2:
     resolution: {integrity: sha512-Uy76u47vwhhF7VAmVY61Srn+ouiOobf45MU9vGct9GD2ARy6hKoqEElyHDB0L+4JOM6VLuZ431KiLwyjI/A21g==}
 
-  oxlint@1.35.0:
-    resolution: {integrity: sha512-QDX1aUgaiqznkGfTM2qHwva2wtKqhVoqPSVXrnPz+yLUhlNadikD3QRuRtppHl7WGuy3wG6nKAuR8lash3aWSg==}
+  oxlint@1.36.0:
+    resolution: {integrity: sha512-IicUdXfXgI8OKrDPnoSjvBfeEF8PkKtm+CoLlg4LYe4ypc8U+T4r7730XYshdBGZdelg+JRw8GtCb2w/KaaZvw==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
     peerDependencies:
@@ -4305,8 +4302,8 @@ packages:
     resolution: {integrity: sha512-QgT5//D3jfjJb6Gsjxv0Slpj23ip+HtOpnNgnb2S5zU3CB26G/IDPGoy4RJB42wzFE46DRsstbW6tKHoKbhAxw==}
     engines: {node: '>=0.10.0'}
 
-  react-virtuoso@4.18.0:
-    resolution: {integrity: sha512-bpbbqHQ/EhP4LLD+UAakmxdr+3V0A7v7s76/N51O5Jllaf68srzgSdgjji2U/7Ozbn/KKI/a+VzfnbUeQgLemQ==}
+  react-virtuoso@4.18.1:
+    resolution: {integrity: sha512-KF474cDwaSb9+SJ380xruBB4P+yGWcVkcu26HtMqYNMTYlYbrNy8vqMkE+GpAApPPufJqgOLMoWMFG/3pJMXUA==}
     peerDependencies:
       react: '>=16 || >=17 || >= 18 || >= 19'
       react-dom: '>=16 || >=17 || >= 18 || >=19'
@@ -6231,28 +6228,28 @@ snapshots:
   '@oxc-resolver/binding-win32-x64-msvc@11.16.2':
     optional: true
 
-  '@oxlint/darwin-arm64@1.35.0':
+  '@oxlint/darwin-arm64@1.36.0':
     optional: true
 
-  '@oxlint/darwin-x64@1.35.0':
+  '@oxlint/darwin-x64@1.36.0':
     optional: true
 
-  '@oxlint/linux-arm64-gnu@1.35.0':
+  '@oxlint/linux-arm64-gnu@1.36.0':
     optional: true
 
-  '@oxlint/linux-arm64-musl@1.35.0':
+  '@oxlint/linux-arm64-musl@1.36.0':
     optional: true
 
-  '@oxlint/linux-x64-gnu@1.35.0':
+  '@oxlint/linux-x64-gnu@1.36.0':
     optional: true
 
-  '@oxlint/linux-x64-musl@1.35.0':
+  '@oxlint/linux-x64-musl@1.36.0':
     optional: true
 
-  '@oxlint/win32-arm64@1.35.0':
+  '@oxlint/win32-arm64@1.36.0':
     optional: true
 
-  '@oxlint/win32-x64@1.35.0':
+  '@oxlint/win32-x64@1.36.0':
     optional: true
 
   '@parcel/watcher-android-arm64@2.5.1':
@@ -6332,9 +6329,9 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.28.4
 
-  '@rc-component/cascader@1.9.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@rc-component/cascader@1.10.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@rc-component/select': 1.3.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@rc-component/select': 1.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@rc-component/tree': 1.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@rc-component/util': 1.6.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       clsx: 2.1.1
@@ -6546,7 +6543,7 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  '@rc-component/select@1.3.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@rc-component/select@1.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@rc-component/overflow': 1.0.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@rc-component/trigger': 3.7.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -6624,9 +6621,9 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  '@rc-component/tree-select@1.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@rc-component/tree-select@1.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@rc-component/select': 1.3.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@rc-component/select': 1.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@rc-component/tree': 1.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@rc-component/util': 1.6.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       clsx: 2.1.1
@@ -7441,7 +7438,7 @@ snapshots:
 
   ansis@4.2.0: {}
 
-  antd@6.1.2(date-fns@2.30.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  antd@6.1.3(date-fns@2.30.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@ant-design/colors': 8.0.0
       '@ant-design/cssinjs': 2.0.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -7450,7 +7447,7 @@ snapshots:
       '@ant-design/icons': 6.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@ant-design/react-slick': 2.0.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@babel/runtime': 7.28.4
-      '@rc-component/cascader': 1.9.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@rc-component/cascader': 1.10.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@rc-component/checkbox': 1.0.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@rc-component/collapse': 1.1.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@rc-component/color-picker': 3.0.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -7473,7 +7470,7 @@ snapshots:
       '@rc-component/rate': 1.0.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@rc-component/resize-observer': 1.0.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@rc-component/segmented': 1.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@rc-component/select': 1.3.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@rc-component/select': 1.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@rc-component/slider': 1.0.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@rc-component/steps': 1.2.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@rc-component/switch': 1.0.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -7483,7 +7480,7 @@ snapshots:
       '@rc-component/tooltip': 1.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@rc-component/tour': 2.2.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@rc-component/tree': 1.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@rc-component/tree-select': 1.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@rc-component/tree-select': 1.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@rc-component/trigger': 3.7.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@rc-component/upload': 1.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@rc-component/util': 1.6.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -7513,13 +7510,13 @@ snapshots:
 
   asynckit@0.4.0: {}
 
-  axios-userscript-adapter@0.2.0(axios@0.30.2(debug@4.4.3)):
+  axios-userscript-adapter@0.2.0(axios@0.30.2):
     dependencies:
-      axios: 0.30.2(debug@4.4.3)
+      axios: 0.30.2
 
-  axios@0.30.2(debug@4.4.3):
+  axios@0.30.2:
     dependencies:
-      follow-redirects: 1.15.11(debug@4.4.3)
+      follow-redirects: 1.15.11
       form-data: 4.0.5
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
@@ -8427,9 +8424,7 @@ snapshots:
 
   flatted@3.3.3: {}
 
-  follow-redirects@1.15.11(debug@4.4.3):
-    optionalDependencies:
-      debug: 4.4.3
+  follow-redirects@1.15.11: {}
 
   form-data@4.0.5:
     dependencies:
@@ -9356,16 +9351,16 @@ snapshots:
       '@oxc-resolver/binding-win32-ia32-msvc': 11.16.2
       '@oxc-resolver/binding-win32-x64-msvc': 11.16.2
 
-  oxlint@1.35.0:
+  oxlint@1.36.0:
     optionalDependencies:
-      '@oxlint/darwin-arm64': 1.35.0
-      '@oxlint/darwin-x64': 1.35.0
-      '@oxlint/linux-arm64-gnu': 1.35.0
-      '@oxlint/linux-arm64-musl': 1.35.0
-      '@oxlint/linux-x64-gnu': 1.35.0
-      '@oxlint/linux-x64-musl': 1.35.0
-      '@oxlint/win32-arm64': 1.35.0
-      '@oxlint/win32-x64': 1.35.0
+      '@oxlint/darwin-arm64': 1.36.0
+      '@oxlint/darwin-x64': 1.36.0
+      '@oxlint/linux-arm64-gnu': 1.36.0
+      '@oxlint/linux-arm64-musl': 1.36.0
+      '@oxlint/linux-x64-gnu': 1.36.0
+      '@oxlint/linux-x64-musl': 1.36.0
+      '@oxlint/win32-arm64': 1.36.0
+      '@oxlint/win32-x64': 1.36.0
 
   p-limit@3.1.0:
     dependencies:
@@ -9574,7 +9569,7 @@ snapshots:
 
   react-refresh@0.18.0: {}
 
-  react-virtuoso@4.18.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  react-virtuoso@4.18.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
