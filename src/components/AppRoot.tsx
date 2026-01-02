@@ -5,10 +5,11 @@ import { ConfigProvider, theme } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
 import { assert } from 'es-toolkit'
 import { APP_CLS_ROOT } from '$common'
-import { appUsingFont, zIndexAntdPopupBase } from '$common/css-vars-export.module.scss'
+import { appUsingFont } from '$common/css-vars-export.module.scss'
 import { AntdStaticFunctionsSetup } from '$modules/antd'
 import { useIsDarkMode } from '$modules/dark-mode'
-import { GlobalStyle } from './GlobalStyle'
+import { clsZAntdPopupBase, parseZ } from './fragments'
+import { GlobalBaseStyle, GlobalStyle } from './GlobalStyle'
 import { useColorPrimaryHex } from './ModalSettings/theme.shared'
 import type { ReactNode } from 'react'
 
@@ -65,12 +66,12 @@ export function AppRoot({
           token: {
             colorPrimary,
             colorBgSpotlight: colorPrimary, // tooltip bg
-            zIndexPopupBase: Number(zIndexAntdPopupBase),
+            zIndexPopupBase: parseZ(clsZAntdPopupBase),
             fontFamily: appUsingFont,
           },
           components: {
             Notification: {
-              zIndexPopup: Number(zIndexAntdPopupBase),
+              zIndexPopup: parseZ(clsZAntdPopupBase),
             },
             Button: {
               // the `default` / `primary` shadow is ugly, `danger` shadow 看不出来
@@ -88,6 +89,7 @@ export function AppRoot({
   return wrap(
     <>
       {antdSetup && <AntdStaticFunctionsSetup />}
+      <GlobalBaseStyle />
       {injectGlobalStyle && <GlobalStyle />}
       {children}
     </>,

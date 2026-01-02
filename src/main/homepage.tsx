@@ -1,22 +1,19 @@
 import { FloatButton } from 'antd'
 import { delay } from 'es-toolkit'
 import { createRoot, type Root } from 'react-dom/client'
-import { APP_CLS_ROOT, APP_NAMESPACE, appWarn } from '$common'
+import { APP_CLS_ROOT, appWarn } from '$common'
 import { AppRoot } from '$components/AppRoot'
+import { GateFloatEntry } from '$components/GateFloatEntry'
 import { registerSettingsGmCommand } from '$components/RecHeader/modals'
 import { PureRecommend } from '$components/Recommends/PureRecommend'
-import { SectionRecommend } from '$components/Recommends/SectionRecommend'
 import { settings } from '$modules/settings'
+import { getOnlyTab, inGateEntry } from '$routes'
 import { isSafari } from '$ua'
 import { poll, tryAction, tryToRemove } from '$utility/dom'
 
-// in this entry, if no insert point found, render to document body
-const isHashEntry = location.hash.startsWith(`#/${APP_NAMESPACE}/`)
-
 const bewlyEnabledSelector = 'html.bewly-design:not(:has(#i_cecream,#app))'
-
 function hasBewlyBewly() {
-  return !isHashEntry && !!document.querySelector(bewlyEnabledSelector)
+  return !!document.querySelector(bewlyEnabledSelector)
 }
 
 // 有时入口检测不到 bewly, bewly 比本脚本后运行, 在渲染完成后, 持续检测一段时间, 检测到取消渲染
@@ -45,37 +42,26 @@ export async function initHomepage() {
     return appWarn(`quit for using bewly-design`)
   }
 
-  if (settings.pureRecommend) {
+  const shouldInit = settings.pureRecommend || inGateEntry() || getOnlyTab()
+  if (shouldInit) {
     await initHomepagePureRecommend()
+    tryDetectBewlyBewly()
   } else {
-    await initHomepageSectionRecommend()
+    initHomepageGateFloatEntry()
   }
-  tryDetectBewlyBewly()
 }
 
-async function initHomepageSectionRecommend() {
-  const layoutEl = await poll(() => document.querySelector('.bili-feed4-layout'))
-  if (!layoutEl) {
-    appWarn(`init fail, can not find .bili-feed4-layout`)
-    return
-  }
-
+function initHomepageGateFloatEntry() {
   const container = document.createElement('section')
   container.classList.add(APP_CLS_ROOT)
-  layoutEl.prepend(container)
+  document.body.append(container)
 
   root = createRoot(container)
   root.render(
-    <AppRoot injectGlobalStyle antdSetup>
-      <SectionRecommend />
+    <AppRoot antdSetup>
+      <GateFloatEntry />
     </AppRoot>,
   )
-
-  // header
-  // https://github.com/magicdawn/Bilibili-Gate/issues/30
-  // SectionRecommend: 这个 header channel fixed 样式有问题
-  // 尝试修复太复杂了, 这里直接移除. 其功能有替代: 滚动到首页顶部查看分区
-  tryToRemove('.bili-feed4 .header-channel')
 }
 
 async function initHomepagePureRecommend() {

@@ -20,16 +20,6 @@
   }
 }
 
-// z-index
-:root {
-  --#{$app-name}--z-rec-header: #{$z-index-rec-header};
-  --#{$app-name}--z-base-modal: #{$z-index-base-modal};
-  --#{$app-name}--z-antd-popup-base: #{$z-index-antd-popup-base};
-  --#{$app-name}--z-video-card-large-preview: #{$z-index-video-card-large-preview};
-  --#{$app-name}--z-video-card-context-menu: #{$z-index-video-card-context-menu};
-  --#{$app-name}--z-toast: #{$z-index-toast};
-}
-
 .#{$app-cls-root} {
   font-family: $app-using-font;
   font-size: 14px;

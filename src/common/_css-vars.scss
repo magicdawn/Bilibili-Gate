@@ -41,16 +41,6 @@ $app-using-font: var(--custom-font-family--options--font-family, var(#{$app-cust
 $app-video-card-border-radius-id: --#{$app-name}--video-card--border-radius;
 
 //
-// z-index
-//
-$z-index-rec-header: 1001; // Evolved custom-header z-index:10001; .bili-header__bar z-index:1002;
-$z-index-base-modal: 10003;
-$z-index-antd-popup-base: 11000;
-$z-index-video-card-large-preview: 11200;
-$z-index-video-card-context-menu: 11300;
-$z-index-toast: 90000;
-
-//
 // exports
 //
 $use-export: false !default;
@@ -77,13 +67,5 @@ $use-export: false !default;
     app-cls-root: $app-cls-root;
     app-cls-dark: $app-cls-dark;
     app-cls-dark-selector: #{string.unquote($app-cls-dark-selector)};
-
-    // z-index
-    z-index-rec-header: $z-index-rec-header;
-    z-index-base-modal: $z-index-base-modal;
-    z-index-antd-popup-base: $z-index-antd-popup-base;
-    z-index-video-card-large-preview: $z-index-video-card-large-preview;
-    z-index-video-card-context-menu: $z-index-video-card-context-menu;
-    z-index-toast: $z-index-toast;
   }
 }

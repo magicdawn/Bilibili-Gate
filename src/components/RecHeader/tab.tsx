@@ -3,10 +3,8 @@ import { usePrevious } from 'ahooks'
 import { Radio, Segmented } from 'antd'
 import { useSnapshot } from 'valtio'
 import { HelpInfo } from '$components/_base/HelpInfo'
-import { SHOW_DYNAMIC_FEED_ONLY } from '$modules/rec-services/dynamic-feed/store'
-import { SHOW_FAV_TAB_ONLY } from '$modules/rec-services/fav/store'
-import { SHOW_SPACE_UPLOAD_ONLY } from '$modules/rec-services/space-upload/store'
 import { useSettingsSnapshot } from '$modules/settings'
+import { getOnlyTab } from '$routes'
 import { checkLoginStatus, useHasLogined } from '$utility/cookie'
 import { proxyWithGmStorage } from '$utility/valtio'
 import { TabConfig, TabIcon, toastNeedLogin, type TabConfigItem } from './tab-config'
@@ -20,14 +18,9 @@ export const videoSourceTabState = await proxyWithGmStorage<{ value: ETab }>(
   { value: ETab.AppRecommend },
   `video-source-tab`,
 )
-if (SHOW_DYNAMIC_FEED_ONLY) {
-  videoSourceTabState.value = ETab.DynamicFeed
-}
-if (SHOW_FAV_TAB_ONLY) {
-  videoSourceTabState.value = ETab.Fav
-}
-if (SHOW_SPACE_UPLOAD_ONLY) {
-  videoSourceTabState.value = ETab.SpaceUpload
+{
+  const onlyTab = getOnlyTab()
+  if (onlyTab) videoSourceTabState.value = onlyTab
 }
 
 function getSortedTabKeys(customTabKeysOrder: ETab[]) {
@@ -48,40 +41,16 @@ export function useSortedTabKeys() {
 export function useCurrentDisplayingTabKeys() {
   const { hidingTabKeys, customTabKeysOrder } = useSettingsSnapshot()
   const logined = useHasLogined()
+  const onlyTab = useMemo(getOnlyTab, [])
   const keys = useMemo(() => {
     const tabkeys = getSortedTabKeys(customTabKeysOrder)
     return tabkeys.filter((key) => {
-      if (key === ETab.AppRecommend && !logined) {
-        return true
-      }
-      if (key === ETab.DynamicFeed && SHOW_DYNAMIC_FEED_ONLY) {
-        return true
-      }
-      if (key === ETab.Fav && SHOW_FAV_TAB_ONLY) {
-        return true
-      }
-      if (key === ETab.SpaceUpload && !SHOW_SPACE_UPLOAD_ONLY) {
-        return false
-      }
+      if (key === ETab.AppRecommend && !logined) return true // when not logined, show AppRecommend regardless of `hidingTabKeys`
       return !hidingTabKeys.includes(key)
     })
   }, [hidingTabKeys, customTabKeysOrder, logined])
 
-  // dynamic-feed only
-  if (SHOW_DYNAMIC_FEED_ONLY && keys.includes(ETab.DynamicFeed)) {
-    return [ETab.DynamicFeed]
-  }
-
-  // fav only
-  if (SHOW_FAV_TAB_ONLY && keys.includes(ETab.Fav)) {
-    return [ETab.Fav]
-  }
-
-  // space-upload
-  if (SHOW_SPACE_UPLOAD_ONLY) {
-    return [ETab.SpaceUpload]
-  }
-
+  if (onlyTab) return [onlyTab]
   return keys
 }
 

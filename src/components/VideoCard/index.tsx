@@ -3,12 +3,12 @@ import { useLockFn } from 'ahooks'
 import { Dropdown } from 'antd'
 import { useUnoMerge } from 'unocss-merge/react'
 import { APP_CLS_CARD, APP_CLS_CARD_ACTIVE, APP_CLS_CARD_COVER, APP_CLS_ROOT, APP_KEY_PREFIX, appWarn } from '$common'
-import { zIndexVideoCardContextMenu } from '$common/css-vars-export.module.scss'
 import { useEmitterOn } from '$common/hooks/useEmitter'
 import { isEmptyFragment } from '$common/hooks/useIsEmptyFragment'
 import { useLessFrequentFn } from '$common/hooks/useLessFrequentFn'
 import { useRefStateBox } from '$common/hooks/useRefState'
 import { Picture } from '$components/_base/Picture'
+import { clsZVideoCardContextMenu, parseZ } from '$components/fragments'
 import { useDislikedReason } from '$components/ModalDislike'
 import { isDisplayAsList } from '$components/RecGrid/display-mode'
 import { getBvidInfo } from '$components/RecGrid/rec-grid-state'
@@ -672,7 +672,7 @@ const VideoCardInner = memo(function VideoCardInner({
           return cardRef.current || document.body
         }}
         styles={{
-          root: { zIndex: Number(zIndexVideoCardContextMenu) },
+          root: { zIndex: parseZ(clsZVideoCardContextMenu) },
         }}
         menu={{
           items: contextMenus,

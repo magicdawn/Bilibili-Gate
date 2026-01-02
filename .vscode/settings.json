@@ -5,7 +5,7 @@
   },
   "eslint.lintTask.enable": true,
   "scss.validate": true,
-  "typescript.experimental.useTsgo": true,
+  "typescript.experimental.useTsgo": false,
   "typescript.preferences.organizeImports": {
     "typeOrder": "last"
   },

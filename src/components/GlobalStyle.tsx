@@ -8,18 +8,14 @@ import { useSettingsSnapshot } from '$modules/settings'
 import { modalGlobalStyle } from './_base/BaseModal'
 import { useColorPrimaryHex } from './ModalSettings/theme.shared'
 
-export function GlobalStyle() {
+/**
+ * should inject in ALL cases
+ */
+export function GlobalBaseStyle() {
   const colorPrimary = useColorPrimaryHex()
-  const { grid, pureRecommend, style } = useSettingsSnapshot()
+  const { style } = useSettingsSnapshot()
   const dark = useIsDarkMode()
-  const backToTopRight = useBackToTopRight()
-  const usingEvolevdHeader = $usingEvolevdHeader.use()
   const antLinkColorGlobalStyle = useAntLinkColorGlobalStyle()
-
-  // 会有多次变宽的效果, 看起来很诡异!!!
-  // bilibili-default -> 90 % -> evolved宽度计算
-  const width = $headerWidth.use() ?? 90
-  const padding = '0 10px'
 
   const { useWhiteBackground } = style.pureRecommend
   const config = useMemo(() => {
@@ -31,22 +27,36 @@ export function GlobalStyle() {
   }, [dark, useWhiteBackground])
 
   return (
-    <>
-      <Global
-        styles={[
-          antLinkColorGlobalStyle,
-          modalGlobalStyle,
-          _css`
+    <Global
+      styles={[
+        antLinkColorGlobalStyle,
+        modalGlobalStyle,
+        _css`
             :root {
               ${appPrimaryColorId}: ${colorPrimary};
               ${appBgId}: var(${config.bgSrc}, ${config.bgFallback});
               ${appTextColorId}: var(--text1, ${config.text});
             }
           `,
-        ]}
-      />
+      ]}
+    />
+  )
+}
 
-      {IN_BILIBILI_HOMEPAGE && pureRecommend && (
+export function GlobalStyle() {
+  const { grid, style } = useSettingsSnapshot()
+  const dark = useIsDarkMode()
+  const backToTopRight = useBackToTopRight()
+  const usingEvolevdHeader = $usingEvolevdHeader.use()
+
+  // 会有多次变宽的效果, 看起来很诡异!!!
+  // bilibili-default -> 90 % -> evolved宽度计算
+  const width = $headerWidth.use() ?? 90
+  const padding = '0 10px'
+
+  return (
+    <>
+      {IN_BILIBILI_HOMEPAGE && (
         <Global
           styles={[
             css`

@@ -4,6 +4,7 @@ import { useUnoMerge } from 'unocss-merge/react'
 import { APP_CLS_TAB_BAR, baseDebug } from '$common'
 import { useSizeExpression } from '$common/hooks/useResizeObserverExpression'
 import { useSticky } from '$common/hooks/useSticky'
+import { clsZRecHeader } from '$components/fragments'
 import { ModalSettingsHotkey } from '$components/ModalSettings'
 import { $headerHeight, $usingEvolevdHeader } from '$header'
 import { AntdTooltip } from '$modules/antd/custom'
@@ -91,7 +92,8 @@ export const RecHeader = forwardRef<
   const _className = useUnoMerge(
     pureRecommend &&
       useStickyTabbar && [
-        'sticky z-gate-rec-header mb-10px b-b-1px b-b-transparent b-b-solid',
+        'sticky  mb-10px b-b-1px b-b-transparent b-b-solid',
+        clsZRecHeader,
         sticky && ['b-b-gate-bg-lv1', stickyTabbarShadow ? 'bg-$bg1_float' : 'bg-$bg1'],
       ],
     sticky && 'sticky-state-on',

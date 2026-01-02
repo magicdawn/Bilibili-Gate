@@ -2,10 +2,11 @@ import { css } from '@emotion/react'
 import { createPortal } from 'react-dom'
 import { useUnoMerge } from 'unocss-merge/react'
 import { APP_CLS_ROOT, APP_NAMESPACE } from '$common'
+import { clsZBaseModal } from '$components/fragments'
 import type { ComponentProps, MouseEvent } from 'react'
 
 export const BaseModalClassNames = {
-  modalMask: 'fixed inset-0 z-gate-base-modal flex items-center justify-center bg-black/50',
+  modalMask: clsx('fixed inset-0 flex items-center justify-center bg-black/50', clsZBaseModal),
   modal:
     'max-h-[calc(90vh-50px)] w-500px flex flex-col overflow-hidden b-1px b-transparent rounded-10px b-solid bg-gate-bg px-15px pb-15px text-gate-text dark:b-gate-border',
   modalHeader: 'flex items-center justify-between border-b-0 py-10px',
