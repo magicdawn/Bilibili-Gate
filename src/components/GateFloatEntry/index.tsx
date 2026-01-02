@@ -71,6 +71,17 @@ function GateFloatEntryInner() {
         appLog('new pos', { align, top })
         floatEntryStore.align = align
         floatEntryStore.top = top
+
+        wrapperRef.current?.animate(
+          [
+            {
+              transform:
+                align === 'right' ? `translateX(-${window.innerWidth - rect.right}px)` : `translateX(${rect.left}px)`,
+            },
+            { transform: 'translateX(0)' },
+          ],
+          { duration: 200, easing: 'ease-in-out' },
+        )
       }
     },
   })
