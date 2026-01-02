@@ -1,5 +1,4 @@
 import { DndContext, useDndMonitor, useDraggable } from '@dnd-kit/core'
-import { CSS } from '@dnd-kit/utilities'
 import { Button } from 'antd'
 import { useUnoMerge } from 'unocss-merge/react'
 import { useSnapshot } from 'valtio'
@@ -38,6 +37,18 @@ export function GateFloatEntry() {
   )
 }
 
+/**
+ * Drag
+ *
+ * try1: transform 加在 wrapper | wrapperInner 上
+ * 会出现 el.top 先回到原位(transform:null), 再回到 top 值的位置
+ *
+ * try2: transform.x 加在 wrapper 上, y 算到 fixed-top 上
+ * 不会跳了, 但是拖动不跟手...
+ *
+ * try DragOverlay
+ */
+
 function GateFloatEntryInner() {
   const { align, top } = useSnapshot(floatEntryStore, { sync: true })
 
@@ -54,15 +65,11 @@ function GateFloatEntryInner() {
 
   const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform } = useDraggable({ id: 'GateFloatEntry' })
 
-  useMount($windowSize.updateThrottled)
-  const { height: windowHeight } = $windowSize.use()
-  const usingTop = useMemo(() => minmax(top, 0, windowHeight - 150), [top, windowHeight])
-
   useDndMonitor({
     onDragEnd(e) {
       if (e.active.id === 'GateFloatEntry') {
         $windowSize.update()
-        const rect = wrapperRef.current?.children[0].getBoundingClientRect()
+        const rect = wrapperRef.current?.getBoundingClientRect()
         if (!rect) return
 
         const top = minmax(Math.round(rect.top), 0, window.innerHeight - rect.height)
@@ -81,16 +88,31 @@ function GateFloatEntryInner() {
 
   const wrapperRef = useMixedRef<HTMLDivElement>(setNodeRef)
 
+  // width: 48px
   const wrapperClassName = useUnoMerge(
-    'fixed transition-200 transition-ease-out transition-property-transform,right,left,top',
+    'fixed transition-200 transition-ease-out transition-property-transform,right,left',
     clsZGateFloatEntry,
-    align === 'left' && 'left-0 translate-x--55% pl-6px hover:(translate-x-0)',
-    align === 'right' && 'right-0 translate-x-55% pr-6px hover:(translate-x-0)',
+    align === 'right' && 'right--30px pr-6px hover:(right-0)',
+    align === 'left' && 'left--30px pl-6px hover:(left-0)',
+  )
+
+  useMount($windowSize.updateThrottled)
+  const { height: windowHeight } = $windowSize.use()
+  const usingTop = useMemo(
+    () => minmax(top + (transform?.y ?? 0), 0, windowHeight - 150),
+    [top, windowHeight, transform?.y],
   )
 
   return (
-    <div ref={wrapperRef} className={wrapperClassName} style={{ top: `${usingTop}px` }}>
-      <div className={C.wrapperInner} style={{ transform: CSS.Transform.toString(transform) }}>
+    <div
+      ref={wrapperRef}
+      className={wrapperClassName}
+      style={{
+        top: `${usingTop}px`,
+        transform: transform ? `translateX(${transform.x}px)` : undefined,
+      }}
+    >
+      <div className={C.wrapperInner}>
         <AntdTooltip title={<>{APP_NAME}: 在新窗口打开</>} {...tooltipConfig}>
           <Button className='icon-only-round-button' href={gateEntryHref} target='_blank'>
             <IconForOpenExternalLink className={C.buttonIcon} />

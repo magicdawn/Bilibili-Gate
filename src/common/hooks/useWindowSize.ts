@@ -28,3 +28,4 @@ export const $windowSize = valtioFactory(() => ({
 
 document.addEventListener('resize', $windowSize.updateThrottled)
 document.addEventListener('orientationchange', $windowSize.updateThrottled)
+document.addEventListener('scroll', $windowSize.updateThrottled)
