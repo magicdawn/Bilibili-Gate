@@ -1,10 +1,9 @@
 import { once } from 'es-toolkit'
 import { proxy, useSnapshot } from 'valtio'
-import { APP_CLS_ROOT, IN_BILIBILI_HOMEPAGE } from '$common'
+import { APP_CLS_ROOT } from '$common'
 import { AppRoot } from '$components/AppRoot'
 import { ModalSettings } from '$components/ModalSettings'
 import { ModalFeed } from '$components/Recommends/ModalFeed'
-import { settings } from '$modules/settings'
 
 export const modalsState = proxy({
   modalFeedVisible: false,
@@ -28,14 +27,6 @@ export function showModalFeed() {
 }
 export function hideModalFeed() {
   modalsState.modalFeedVisible = false
-}
-
-/**
- * NOTE: side-effects
- * showModalFeed on load
- */
-if (IN_BILIBILI_HOMEPAGE && settings.showModalFeedOnLoad) {
-  setTimeout(showModalFeed)
 }
 
 export function toggleModalSettings() {

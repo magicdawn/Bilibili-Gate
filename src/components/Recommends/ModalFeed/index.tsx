@@ -11,7 +11,6 @@ import { RefreshButton } from '$components/RecHeader/RefreshButton'
 import { useDeferredTab, VideoSourceTab } from '$components/RecHeader/tab'
 import { RecSidebar } from '$components/RecSidebar'
 import { EGridDisplayMode, ESidebarAlign } from '$enums'
-import { antMessage } from '$modules/antd'
 import { useSettingsSnapshot } from '$modules/settings'
 import { RecSelfContext, useInitRecSelf } from '../rec.shared'
 
@@ -116,16 +115,6 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
 function ModalFeedConfigChecks() {
   return (
     <>
-      <CheckboxSettingItem
-        configPath={'showModalFeedOnLoad'}
-        label='自动查看更多'
-        tooltip='打开首页时默认打开推荐弹窗'
-        extraAction={(val) => {
-          if (val) {
-            antMessage.success('已开启自动查看更多: 下次打开首页时将直接展示推荐弹窗')
-          }
-        }}
-      />
       <CheckboxSettingItem configPath='modalFeedFullScreen' label='全屏' tooltip='世界清净了~' />
     </>
   )

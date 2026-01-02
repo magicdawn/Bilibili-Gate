@@ -112,7 +112,7 @@ function GateFloatEntryInner() {
             <IconForOpenExternalLink className={C.buttonIcon} />
           </Button>
         </AntdTooltip>
-        <AntdTooltip title={<>{APP_NAME}:「查看更多」</>} {...tooltipConfig}>
+        <AntdTooltip title={<>{APP_NAME}: 弹窗打开</>} {...tooltipConfig}>
           <Button className='icon-only-round-button' onClick={toggleModalFeed}>
             <IconParkOutlineRight className={C.buttonIcon} />
           </Button>

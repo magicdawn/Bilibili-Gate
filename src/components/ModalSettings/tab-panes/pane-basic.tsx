@@ -75,43 +75,21 @@ export function TabPaneBasic() {
         title={
           <>
             开关
-            <ResetPartialSettingsButton
-              paths={['pureRecommend', 'showModalFeedOnLoad', 'showModalFeedEntry', 'multiSelect.showIcon']}
-            />
+            <ResetPartialSettingsButton paths={['pureRecommend', 'multiSelect.showIcon']} />
           </>
         }
       >
         <Space size={10} wrap>
           <CheckboxSettingItem
             configPath='pureRecommend'
-            label='全屏模式'
+            label='覆盖默认推荐'
             tooltip={
               <>
-                清空自带推荐内容, 只显示脚本推荐
-                <br />
-                P.S 需要刷新网页~
-                <br />
-                P.S 之前版本称 (纯推荐模式)
+                {explainForFlag('覆盖默认推荐内容', `保留默认首页, 你可以从侧边按钮使用 ${APP_NAME} 的功能`)} <br />
+                P.S 需要刷新网页
               </>
             }
             extraAction={() => toastAndReload()}
-          />
-
-          <CheckboxSettingItem
-            configPath={'showModalFeedOnLoad'}
-            label='自动「查看更多」'
-            tooltip='打开首页时自动打开「查看更多」弹窗'
-            extraAction={(val) => {
-              if (val) {
-                antMessage.success('已开启自动「查看更多」: 下次打开首页时将自动打开「查看更多」弹窗')
-              }
-            }}
-          />
-
-          <CheckboxSettingItem
-            configPath={'showModalFeedEntry'}
-            label='「查看更多」按钮'
-            tooltip='是否显示「查看更多」按钮'
           />
 
           <CheckboxSettingItem

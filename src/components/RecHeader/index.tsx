@@ -15,7 +15,7 @@ import { useSettingsSnapshot } from '$modules/settings'
 import { isMac, isSafari } from '$ua'
 import { getElementOffset, shouldDisableShortcut } from '$utility/dom'
 import { AccessKeyManage } from '../AccessKeyManage'
-import { showModalFeed, showModalSettings, toggleModalSettings } from './modals'
+import { showModalSettings, toggleModalSettings } from './modals'
 import { RefreshButton } from './RefreshButton'
 import { useCurrentUsingTab, VideoSourceTab } from './tab'
 import { ETab } from './tab-enum'
@@ -38,7 +38,6 @@ export const RecHeader = forwardRef<
   const {
     accessKey,
     pureRecommend,
-    showModalFeedEntry,
     multiSelect: { showIcon: multiSelectShowIcon },
     style: {
       pureRecommend: { useStickyTabbar, stickyTabbarShadow },
@@ -134,13 +133,6 @@ export const RecHeader = forwardRef<
           </AntdTooltip>
 
           <RefreshButton refreshHotkeyEnabled={shortcutEnabled} />
-
-          {showModalFeedEntry && (
-            <Button onClick={showModalFeed} className='gap-0'>
-              <span className='relative top-1px'>查看更多</span>
-              <IconParkOutlineRight />
-            </Button>
-          )}
         </div>
       </div>
     </div>
