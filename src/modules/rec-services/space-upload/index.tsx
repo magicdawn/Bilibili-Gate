@@ -18,6 +18,7 @@ import { SpaceUploadOrder, tryGetSpaceUpload } from './api'
 import { QUERY_SPACE_UPLOAD_INITIAL_PAGE, spaceUploadStore } from './store'
 import { isSpaceUploadItemChargeOnly } from './util'
 import { SpaceUploadTabbarView } from './views'
+import type { ReactNode } from 'react'
 import type { WritableDeep } from 'type-fest'
 import type { SpaceUploadItem, SpaceUploadItemExtend } from '$define'
 

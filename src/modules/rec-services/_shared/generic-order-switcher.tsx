@@ -3,7 +3,7 @@ import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { styled } from '$libs'
 import { defineAntMenus } from '$modules/antd'
-import type { ElementRef, MouseEvent } from 'react'
+import type { CSSProperties, ElementRef, MouseEvent, ReactNode, RefObject } from 'react'
 
 const clsMenuRoot = styled.createClass`
   .ant-dropdown &.ant-dropdown-menu .ant-dropdown-menu-item {

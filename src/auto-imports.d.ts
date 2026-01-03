@@ -119,12 +119,3 @@ declare global {
   const useTransition: typeof import('react').useTransition
   const useUpdateEffect: typeof import('ahooks').useUpdateEffect
 }
-// for type re-export
-declare global {
-  // @ts-ignore
-  export type { ComponentProps, CSSProperties, ReactNode, RefObject } from 'react'
-  import('react')
-  // @ts-ignore
-  export type { Root } from 'react-dom/client'
-  import('react-dom/client')
-}

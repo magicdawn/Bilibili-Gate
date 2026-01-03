@@ -10,7 +10,7 @@ import { useSettingsSnapshot } from '$modules/settings'
 import { shouldDisableShortcut } from '$utility/dom'
 import { useCurrentUsingTab } from './tab'
 import { ETab } from './tab-enum'
-import type { MouseEvent, MouseEventHandler } from 'react'
+import type { CSSProperties, MouseEvent, MouseEventHandler } from 'react'
 
 export type RefreshButtonActions = { click: () => void }
 export type RefreshButtonProps = {

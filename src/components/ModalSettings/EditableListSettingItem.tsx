@@ -13,7 +13,7 @@ import {
   useSettingsInnerArray,
   type ListSettingsPath,
 } from '$modules/settings'
-import type { ComponentPropsWithoutRef } from 'react'
+import type { ComponentProps, ComponentPropsWithoutRef, ReactNode } from 'react'
 
 const { Search } = Input
 

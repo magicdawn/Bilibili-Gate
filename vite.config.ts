@@ -144,27 +144,6 @@ export default defineConfig(({ command, mode }) => ({
           },
         }),
       ],
-      imports: [
-        'react',
-        // 'ahooks',
-        { from: 'react', imports: ['Fragment'] },
-        {
-          from: 'react',
-          imports: ['ComponentProps', 'CSSProperties', 'ReactNode', 'RefObject'],
-          type: true,
-        },
-        {
-          from: 'ahooks',
-          imports: ['useMemoizedFn', 'useKeyPress', 'useMount', 'useUpdateEffect'],
-        },
-        { from: 'react-dom/client', imports: ['Root'], type: true },
-        { from: 'react-dom/client', imports: ['createRoot'] },
-
-        // @emotion/babel-plugin can not optimize auto-import, babel is pre transform, auto-import is a post transform
-        // { from: '@emotion/react', imports: ['css'] },
-
-        { from: 'clsx', imports: ['clsx'] },
-      ],
     }),
 
     Icons({

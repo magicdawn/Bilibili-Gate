@@ -2,6 +2,7 @@ import { useRequest } from 'ahooks'
 import { Button, Popconfirm, Space } from 'antd'
 import { deleteAccessKey, getAccessKey } from '$modules/access-key'
 import { useSettingsSnapshot } from '$modules/settings'
+import type { CSSProperties } from 'react'
 
 const btnAccessKeyHelpLink = (
   <Button

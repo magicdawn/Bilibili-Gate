@@ -9,7 +9,7 @@ import { primaryColorValue } from '$components/css-vars'
 import { clsZVideoCardLargePreview } from '$components/fragments'
 import { useSettingsSnapshot } from '$modules/settings'
 import { isSafari } from '$ua'
-import type { ComponentRef, ReactNode } from 'react'
+import type { ComponentProps, ComponentRef, ReactNode } from 'react'
 
 const debug = baseDebug.extend('VideoCard:LargePreview')
 

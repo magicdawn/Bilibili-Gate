@@ -10,6 +10,7 @@ import { NeedValidAccessKeyError } from '$utility/app-api'
 import { BaseTabService } from '../_base'
 import { fetchMyLikedVideos } from './api/liked'
 import { LikedTabbarView } from './tabbar-view'
+import type { ReactNode } from 'react'
 import type { LikedItemExtend, RecItemTypeOrSeparator } from '$define'
 
 export class LikedRecService extends BaseTabService {

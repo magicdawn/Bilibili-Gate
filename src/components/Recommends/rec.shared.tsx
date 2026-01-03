@@ -1,6 +1,7 @@
 import { useCreation, useLockFn } from 'ahooks'
 import Emittery from 'emittery'
 import { proxy, ref, useSnapshot } from 'valtio'
+import type { ReactNode } from 'react'
 import type { ETab } from '$components/RecHeader/tab-enum'
 import type { ServiceMap } from '$modules/rec-services/service-map'
 

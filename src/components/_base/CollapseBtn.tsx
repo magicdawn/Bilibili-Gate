@@ -1,6 +1,7 @@
 import { useToggle } from 'ahooks'
 import { Button } from 'antd'
 import type { Actions } from 'ahooks/lib/useToggle'
+import type { ReactNode } from 'react'
 
 interface IProps {
   children: ReactNode

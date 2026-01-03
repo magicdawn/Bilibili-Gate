@@ -12,7 +12,7 @@ import { fetchVideoPreviewData, isVideoPreviewDataValid, type VideoPreviewData }
 import { getRecItemDimension } from '../VideoCard/use/useOpenRelated'
 import { LargePreview } from './index'
 import { RecoverableVideo } from './RecoverableVideo'
-import type { ComponentRef, MutableRefObject } from 'react'
+import type { ComponentProps, ComponentRef, MutableRefObject } from 'react'
 import type { RecSharedEmitter } from '$components/Recommends/rec.shared'
 import type { CssProp } from '$utility/type'
 

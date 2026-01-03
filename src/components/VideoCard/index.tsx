@@ -71,7 +71,7 @@ import { useMultiSelectRelated } from './use/useMultiSelect'
 import { getRecItemDimension, useLinkTarget, useOpenRelated } from './use/useOpenRelated'
 import { usePreviewRelated } from './use/usePreviewRelated'
 import { useWatchlaterRelated } from './use/useWatchlaterRelated'
-import type { ComponentRef, CSSProperties, MouseEventHandler, ReactNode } from 'react'
+import type { ComponentProps, ComponentRef, CSSProperties, MouseEventHandler, ReactNode } from 'react'
 import type { EGridDisplayMode } from '$enums'
 import type { CssProp } from '$utility/type'
 
@@ -467,7 +467,7 @@ const VideoCardInner = memo(function VideoCardInner({
   const hasApiTypeTag = tab === ETab.AppRecommend && !isAppRecommend(item) && !isLive(item)
   const hasVolMark = (isSpaceUpload(item) && showVol) || (isFav(item) && !!item.vol && !hasApiTypeTag)
 
-  const copyBvidInfoButtonEl = __internalEnableCopyBvidInfo && (
+  const copyBvidInfoButtonEl = __internalEnableCopyBvidInfo && bvid && (
     <VideoCardActionButton
       visible={actionButtonVisible}
       inlinePosition='right'
@@ -527,7 +527,7 @@ const VideoCardInner = memo(function VideoCardInner({
   const clsTopLeftMarksContainer = useUnoMerge(
     'left-top-marks',
     VideoCardActionsClassNames.topContainer('left'),
-    multiSelecting ? 'gap-x-10px' : undefined,
+    multiSelecting && 'gap-x-10px',
   )
 
   const watchlaterProgressBar =

@@ -39,7 +39,7 @@ import {
   type CustomGridComponents,
   type CustomGridContext,
 } from './virtuoso.config'
-import type { CSSProperties, ForwardedRef, ReactNode } from 'react'
+import type { CSSProperties, ForwardedRef, ReactNode, RefObject } from 'react'
 import type { VideoCardEmitter, VideoCardEvents } from '$components/VideoCard/index.shared'
 import type { RecItemType, RecItemTypeOrSeparator } from '$define'
 import type { IVideoCardData } from '$modules/filter/normalize'

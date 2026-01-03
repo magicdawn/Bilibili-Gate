@@ -19,6 +19,7 @@ import { showModalSettings, toggleModalSettings } from './modals'
 import { RefreshButton } from './RefreshButton'
 import { useCurrentUsingTab, VideoSourceTab } from './tab'
 import { ETab } from './tab-enum'
+import type { ReactNode } from 'react'
 import type { CssProp } from '$utility/type'
 
 const debug = baseDebug.extend('RecHeader')

@@ -4,6 +4,7 @@ import { settings } from '$modules/settings'
 import { shouldDisableShortcut } from '$utility/dom'
 import { videoGrid } from './video-grid.module.scss'
 import type { KeyFilter, KeyType } from 'ahooks/lib/useKeyPress'
+import type { RefObject } from 'react'
 import type { VideoCardEmitter } from '$components/VideoCard/index.shared'
 
 interface IOptions {

@@ -10,6 +10,7 @@ import { openNewTab } from '$modules/gm'
 import { settings } from '$modules/settings'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
 import { EQueryKey } from '../index.shared'
+import type { ReactNode } from 'react'
 
 export function renderInPipWindow(newHref: string, pipWindow: Window) {
   const cssInsertContainer = pipWindow.document.head

@@ -6,6 +6,7 @@ import pRetry from 'p-retry'
 import { OPERATION_FAIL_MSG } from '$common'
 import { IconForFav, IconForPlayer, IconForTimestamp } from '$modules/icon'
 import { isWebApiSuccess, request } from '$request'
+import type { ReactNode } from 'react'
 import type { SpaceUploadJson } from './types/space-upload'
 
 export enum SpaceUploadOrder {

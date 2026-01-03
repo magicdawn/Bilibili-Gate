@@ -1,6 +1,6 @@
 import { useUnoMerge } from 'unocss-merge/react'
 import { AntdTooltip } from '$modules/antd/custom'
-import type { ComponentType, ReactNode } from 'react'
+import type { ComponentProps, ComponentType, ReactNode } from 'react'
 
 const DefaultIconComponent = IconParkOutlineTips
 

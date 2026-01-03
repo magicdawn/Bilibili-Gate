@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { useUnoMerge } from 'unocss-merge/react'
 import { APP_CLS_ROOT, APP_NAMESPACE } from '$common'
 import { clsZBaseModal } from '$components/fragments'
-import type { ComponentProps, MouseEvent } from 'react'
+import type { ComponentProps, CSSProperties, MouseEvent, ReactNode } from 'react'
 
 export const BaseModalClassNames = {
   modalMask: clsx('fixed inset-0 flex items-center justify-center bg-black/50', clsZBaseModal),

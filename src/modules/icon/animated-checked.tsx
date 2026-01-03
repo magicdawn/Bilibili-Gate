@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import type { ComponentProps } from 'react'
 
 /**
  * svg checked mark

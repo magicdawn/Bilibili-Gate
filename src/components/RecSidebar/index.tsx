@@ -5,6 +5,7 @@ import { useSnapshot } from 'valtio'
 import { EHotSubTab, ETab } from '$components/RecHeader/tab-enum'
 import { hotStore } from '$modules/rec-services/hot'
 import { useSidebarVisible } from './sidebar-shared'
+import type { CSSProperties, ReactNode } from 'react'
 
 const sidebarViewWrapperCss = css`
   scrollbar-width: thin;
