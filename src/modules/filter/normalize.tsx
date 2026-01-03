@@ -1,4 +1,4 @@
-import { av2bv, BvCode } from '@mgdn/bvid'
+import { av2bv } from '@mgdn/bvid'
 import dayjs from 'dayjs'
 import { appWarn } from '$common'
 import { defineStatItems, type StatItemField, type StatItemType } from '$components/VideoCard/stat-item'
@@ -178,7 +178,7 @@ function apiIpadAppAdapter(item: IpadAppRecItemExtend): IVideoCardData {
   }
 
   const avid = item.param
-  const bvid = item.bvid || BvCode.av2bv(Number(item.param))
+  const bvid = item.bvid || av2bv(Number(item.param))
   const cid = item.player_args?.cid
 
   const href = (() => {
