@@ -5,6 +5,7 @@ import {
   IconForFav,
   IconForFollowedOnly,
   IconForHot,
+  IconForLike,
   IconForLive,
   IconForPc,
   IconForPhone,
@@ -94,6 +95,11 @@ export const TabConfig: Record<ETab, TabConfigItem> = {
         <div className='ml-20px'>{advancedSearchHelpInfo}</div>
       </div>
     ),
+  },
+  [ETab.Liked]: {
+    icon: <IconForLike className='size-16px' />,
+    label: '赞',
+    desc: '点赞过的视频. 使用 App 端 API, 需要 access_key',
   },
 }
 

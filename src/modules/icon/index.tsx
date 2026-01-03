@@ -2,6 +2,7 @@ import IconCuidaShuffleOutline from '~icons/cuida/shuffle-outline' // 这个不�
 import { IconFreshSpaceDynamicFeed } from './fresh-space-icons'
 import { defineSvgComponent } from './util'
 
+export const IconForLike = IconPhThumbsUpDuotone
 export const IconForDislike = IconPhThumbsDownDuotone
 export const IconForConfig = IconParkOutlineConfig
 export const IconForPlayer = IconParkOutlinePlayTwo

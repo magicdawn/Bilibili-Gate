@@ -15,4 +15,5 @@ export enum EApiType {
   Rank = 'ranking',
   Live = 'live',
   SpaceUpload = 'space-upload',
+  Liked = 'liked',
 }

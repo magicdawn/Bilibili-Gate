@@ -2,13 +2,17 @@ import { delay, randomInt, range, shuffle, uniqBy } from 'es-toolkit'
 import { times } from 'es-toolkit/compat'
 import { HOST_APP } from '$common'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
+import { ETab } from '$components/RecHeader/tab-enum'
 import { useOnRefresh, type RefreshFn } from '$components/Recommends/rec.shared'
 import { isAppRecommend, type AppRecItem, type AppRecItemExtend, type RecItemType } from '$define'
 import { EApiType } from '$define/index.shared'
+import { AntdTooltip } from '$modules/antd/custom'
 import { getVideoDetail } from '$modules/bilibili/video/video-detail'
 import { getFollowedStatus } from '$modules/filter'
-import { getSettingsSnapshot } from '$modules/settings'
+import { IconForLike } from '$modules/icon'
+import { getSettingsSnapshot, useSettingsSnapshot } from '$modules/settings'
 import { gmrequest } from '$request'
+import { GateQueryKey } from '$routes'
 import { getHasLogined } from '$utility/cookie'
 import { BaseTabService, type IService } from './_base'
 import { DynamicFeedRecService, getDynamicFeedServiceConfig } from './dynamic-feed'
@@ -49,7 +53,20 @@ export const appRecShowContentFromOtherTabEl = (refresh?: RefreshFn) => (
 
 function AppRecTabbarView() {
   const onRefresh = useOnRefresh()
-  return <>{appRecShowContentFromOtherTabEl(onRefresh)}</>
+  const { hidingTabKeys } = useSettingsSnapshot()
+  const showLikedEntry = hidingTabKeys.includes(ETab.Liked)
+  return (
+    <div className='flex items-center gap-x-10px'>
+      {appRecShowContentFromOtherTabEl(onRefresh)}
+      {showLikedEntry && (
+        <AntdTooltip title='查看「我」点赞的视频'>
+          <a href={`/?${GateQueryKey.Tab}=${ETab.Liked}`} target='_blank'>
+            <IconForLike className='size-16px' />
+          </a>
+        </AntdTooltip>
+      )}
+    </div>
+  )
 }
 
 export class AppRecService extends BaseTabService<RecItemType> {

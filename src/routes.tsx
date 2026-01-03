@@ -7,16 +7,23 @@ export function getOnlyTab() {
   if (SHOW_DYNAMIC_FEED_ONLY) return ETab.DynamicFeed
   if (SHOW_FAV_TAB_ONLY) return ETab.Fav
   if (SHOW_SPACE_UPLOAD_ONLY) return ETab.SpaceUpload
+  if (searchParams.get(GateQueryKey.Tab)) return searchParams.get(GateQueryKey.Tab) as ETab
 }
 
+export enum GateQueryKey {
+  MainSwitch = 'gate',
+  Tab = 'gate-tab',
+}
+
+export const searchParams = new URL(location.href).searchParams
+
 export function inGateEntry() {
-  const { searchParams } = new URL(location.href)
-  return searchParams.has('gate')
+  return searchParams.has(GateQueryKey.MainSwitch)
 }
 
 export function getGateEntryHref() {
   const u = new URL(location.href)
   u.search = ''
-  u.searchParams.set('gate', '1')
+  u.searchParams.set(GateQueryKey.MainSwitch, '1')
   return u.href
 }

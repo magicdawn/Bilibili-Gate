@@ -1,4 +1,4 @@
-import { BvCode } from '@mgdn/bvid'
+import { av2bv, BvCode } from '@mgdn/bvid'
 import dayjs from 'dayjs'
 import { appWarn } from '$common'
 import { defineStatItems, type StatItemField, type StatItemType } from '$components/VideoCard/stat-item'
@@ -6,6 +6,7 @@ import {
   isAppRecommend,
   isDynamicFeed,
   isFav,
+  isLiked,
   isLive,
   isPcRecommend,
   isPopularGeneral,
@@ -16,6 +17,7 @@ import {
   type AppRecItemExtend,
   type DynamicFeedItemExtend,
   type IpadAppRecItemExtend,
+  type LikedItemExtend,
   type LiveItemExtend,
   type PcRecItemExtend,
   type PopularGeneralItemExtend,
@@ -41,8 +43,9 @@ import { formatDuration, formatTimeStamp, getVideoInvalidReason, parseCount, par
 import type { ReactNode } from 'react'
 import type { Badge as DynamicFeedBadge } from '$define/pc-dynamic-feed'
 import type { FavItemExtend } from '$modules/rec-services/fav/types'
+import type { LikedItem } from '$modules/rec-services/liked/api/liked.api'
 
-export const DESC_SEPARATOR = ' · '
+export const DESC_SEPARATOR = '·'
 
 export interface IVideoCardData {
   // video
@@ -105,6 +108,7 @@ export function lookinto<T>(
     [EApiType.Rank]: (item: RankItemExtend) => T
     [EApiType.Live]: (item: LiveItemExtend) => T
     [EApiType.SpaceUpload]: (item: SpaceUploadItemExtend) => T
+    [EApiType.Liked]: (item: LikedItemExtend) => T
   },
 ): T {
   if (isAppRecommend(item)) return opts[EApiType.AppRecommend](item)
@@ -117,6 +121,7 @@ export function lookinto<T>(
   if (isRank(item)) return opts[EApiType.Rank](item)
   if (isLive(item)) return opts[EApiType.Live](item)
   if (isSpaceUpload(item)) return opts[EApiType.SpaceUpload](item)
+  if (isLiked(item)) return opts[EApiType.Liked](item)
   throw new Error(`unknown api type`)
 }
 
@@ -132,6 +137,7 @@ export function normalizeCardData(item: RecItemType) {
     [EApiType.Rank]: apiRankAdapter,
     [EApiType.Live]: apiLiveAdapter,
     [EApiType.SpaceUpload]: apiSpaceUploadAdapter,
+    [EApiType.Liked]: apiLikedAdapter,
   })
 
   // handle mixed content
@@ -661,5 +667,41 @@ function apiSpaceUploadAdapter(item: SpaceUploadItemExtend): IVideoCardData {
     authorFace: spaceUploadAvatarCache.get(item.mid),
     authorMid: item.mid.toString(),
     followed: spaceUploadFollowedMidSet.has(item.mid),
+  }
+}
+
+function apiLikedAdapter(item: LikedItem): IVideoCardData {
+  const avid = item.param
+  const bvid = av2bv(Number(avid))
+
+  return {
+    // video
+    avid,
+    bvid,
+    cid: undefined,
+    goto: 'av',
+    href: `/video/${bvid}/`,
+    title: item.title,
+    cover: item.cover,
+    pubts: item.ctime,
+    duration: item.duration,
+    durationStr: formatDuration(item.duration),
+    recommendReason: undefined,
+
+    // stat
+    play: item.play,
+    danmaku: item.danmaku,
+    like: undefined,
+    coin: undefined,
+    favorite: undefined,
+    statItems: defineStatItems([
+      { field: 'play', value: item.play },
+      { field: 'danmaku', value: item.danmaku },
+    ]),
+
+    // author
+    authorName: item.author,
+    authorFace: undefined,
+    authorMid: undefined,
   }
 }

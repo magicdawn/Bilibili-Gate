@@ -6,6 +6,7 @@ import { AppRecService, getAppRecServiceConfig } from './app'
 import { DynamicFeedRecService, getDynamicFeedServiceConfig } from './dynamic-feed'
 import { FavRecService, getFavServiceConfig } from './fav'
 import { HotRecService } from './hot'
+import { LikedRecService } from './liked'
 import { LiveRecService } from './live'
 import { PcRecService } from './pc'
 import { getSpaceUploadServiceConfig, SpaceUploadService } from './space-upload'
@@ -41,6 +42,7 @@ export const createServiceMap = {
   [ETab.Hot]: () => new HotRecService(),
   [ETab.Live]: () => new LiveRecService(),
   [ETab.SpaceUpload]: () => new SpaceUploadService(getSpaceUploadServiceConfig()),
+  [ETab.Liked]: () => new LikedRecService(),
 } satisfies Record<ETab, (options: { existingService?: BaseTabService }) => BaseTabService>
 
 export type ServiceMapKey = keyof typeof createServiceMap

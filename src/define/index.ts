@@ -1,6 +1,7 @@
 import { EApiType } from './index.shared'
 import type { ERankApiType, IRankTab } from '$modules/rec-services/hot/rank/rank-tab'
 import type { RankItem } from '$modules/rec-services/hot/rank/types'
+import type { LikedItem } from '$modules/rec-services/liked/api/liked.api'
 import type { LiveItem } from '$modules/rec-services/live/types/list-live'
 import type { SpaceUploadItem } from '$modules/rec-services/space-upload/types/space-upload'
 import type { FavItemExtend } from '../modules/rec-services/fav/types'
@@ -52,6 +53,7 @@ export type RecItemType =
   | RankItemExtend
   | LiveItemExtend
   | SpaceUploadItemExtend
+  | LikedItemExtend
 
 // #region define ItemExtend
 export type PcRecItemExtend = PcRecItem & {
@@ -101,6 +103,11 @@ export type SpaceUploadItemExtend = SpaceUploadItem & {
   vol: number
   page?: number
 }
+
+export type LikedItemExtend = LikedItem & {
+  uniqId: string
+  api: EApiType.Liked
+}
 // #endregion
 
 // #region predicates
@@ -133,5 +140,8 @@ export function isLive(item: RecItemType): item is LiveItemExtend {
 }
 export function isSpaceUpload(item: RecItemType): item is SpaceUploadItemExtend {
   return item.api === EApiType.SpaceUpload
+}
+export function isLiked(item: RecItemType): item is LikedItemExtend {
+  return item.api === EApiType.Liked
 }
 // #endregion

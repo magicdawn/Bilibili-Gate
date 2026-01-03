@@ -10,6 +10,7 @@ export enum ETab {
   Hot = 'hot',
   Live = 'live',
   SpaceUpload = 'space-upload',
+  Liked = 'liked', // 点赞的视频
 }
 
 export enum EHotSubTab {

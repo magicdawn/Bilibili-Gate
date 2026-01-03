@@ -26,6 +26,7 @@ export const recItemUniqer = (item: RecItemTypeOrSeparator) =>
         [EApiType.Rank]: (item) => item.uniqId,
         [EApiType.Live]: (item) => item.roomid,
         [EApiType.SpaceUpload]: (item) => item.bvid,
+        [EApiType.Liked]: (item) => item.param,
       })
 
 export function concatRecItems(existing: RecItemTypeOrSeparator[], newItems: RecItemTypeOrSeparator[]) {

@@ -270,7 +270,7 @@ export const initialSettings = {
    * 隐藏的 tab, 使用黑名单, 功能迭代之后新增的 tab, 默认开启.
    * 如果使用白名单, 新增的 tab 会被隐藏
    */
-  hidingTabKeys: [ETab.KeepFollowOnly, ETab.Live] satisfies ETab[] as ETab[],
+  hidingTabKeys: [ETab.KeepFollowOnly, ETab.Live, ETab.Liked] satisfies ETab[] as ETab[],
   customTabKeysOrder: [] satisfies ETab[] as ETab[],
 
   /**
