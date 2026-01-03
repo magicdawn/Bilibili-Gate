@@ -1,9 +1,11 @@
 import { cloneDeep } from 'es-toolkit'
+import { AccessKeyManage } from '$components/AccessKeyManage'
 import { EHotSubTab, ETab } from '$components/RecHeader/tab-enum'
 import { useLinkTarget } from '$components/VideoCard/use/useOpenRelated'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconForOpenExternalLink } from '$modules/icon'
 import { hotStore } from '$modules/rec-services/hot'
+import { NeedValidAccessKeyError } from '$utility/app-api'
 import type { AxiosError } from 'axios'
 import type { ReactNode } from 'react'
 
@@ -64,6 +66,7 @@ function inspectErrDetail(err: any): ReactNode {
 
 function getErrLabel(err: any): ReactNode {
   if (err && err instanceof ShowMessageError && err.message) return err.message
+  if (err && err instanceof NeedValidAccessKeyError) return err.message
   return '出错了, 请刷新重试!'
 }
 
@@ -79,7 +82,7 @@ export function ErrorDetail({ err, tab }: { err: any; tab: ETab }) {
   const errLabel = useMemo(() => getErrLabel(err), [err])
   const errDetail = useMemo(() => inspectErrDetail(err), [err])
   return (
-    <div className='p-20px text-center text-size-20px'>
+    <div className='flex flex-col items-center gap-y-0.5em p-20px text-center text-size-20px'>
       <AntdTooltip
         title={
           <div className='py-10px'>
@@ -96,6 +99,7 @@ export function ErrorDetail({ err, tab }: { err: any; tab: ETab }) {
         </p>
       </AntdTooltip>
 
+      {/* appendix */}
       {tab === ETab.Hot && hotStore.subtab === EHotSubTab.PopularWeekly && (
         <p className='mt-8px flex items-center justify-center'>
           可能需手动输入验证码
@@ -105,6 +109,8 @@ export function ErrorDetail({ err, tab }: { err: any; tab: ETab }) {
           </a>
         </p>
       )}
+
+      {tab === ETab.Liked && err instanceof NeedValidAccessKeyError && <AccessKeyManage className='mt-0.5em' />}
     </div>
   )
 }

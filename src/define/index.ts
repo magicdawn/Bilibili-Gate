@@ -1,4 +1,5 @@
 import { EApiType } from './index.shared'
+import type { VideoDetailData } from '$modules/bilibili/video/types/video-detail'
 import type { ERankApiType, IRankTab } from '$modules/rec-services/hot/rank/rank-tab'
 import type { RankItem } from '$modules/rec-services/hot/rank/types'
 import type { LikedItem } from '$modules/rec-services/liked/api/liked.api'
@@ -107,6 +108,7 @@ export type SpaceUploadItemExtend = SpaceUploadItem & {
 export type LikedItemExtend = LikedItem & {
   uniqId: string
   api: EApiType.Liked
+  videoDetail?: VideoDetailData
 }
 // #endregion
 

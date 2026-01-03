@@ -19,3 +19,11 @@ export const appApiCommonParams = {
   c_locale: 'zh-Hans_CN',
   s_locale: 'zh-Hans_CN',
 } as const
+
+export class NeedValidAccessKeyError extends Error {
+  constructor(msg?: string, cause?: unknown) {
+    msg ||= '需要有效的 access_key'
+    super(msg, { cause })
+    this.name = 'NeedValidAccessKeyError'
+  }
+}

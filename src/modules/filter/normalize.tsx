@@ -43,7 +43,6 @@ import { formatDuration, formatTimeStamp, getVideoInvalidReason, parseCount, par
 import type { ReactNode } from 'react'
 import type { Badge as DynamicFeedBadge } from '$define/pc-dynamic-feed'
 import type { FavItemExtend } from '$modules/rec-services/fav/types'
-import type { LikedItem } from '$modules/rec-services/liked/api/liked.api'
 
 export const DESC_SEPARATOR = '·'
 
@@ -670,7 +669,8 @@ function apiSpaceUploadAdapter(item: SpaceUploadItemExtend): IVideoCardData {
   }
 }
 
-function apiLikedAdapter(item: LikedItem): IVideoCardData {
+function apiLikedAdapter(item: LikedItemExtend): IVideoCardData {
+  const { videoDetail } = item
   const avid = item.param
   const bvid = av2bv(Number(avid))
 
@@ -701,7 +701,7 @@ function apiLikedAdapter(item: LikedItem): IVideoCardData {
 
     // author
     authorName: item.author,
-    authorFace: undefined,
-    authorMid: undefined,
+    authorFace: videoDetail?.owner.face,
+    authorMid: videoDetail?.owner.mid?.toString(),
   }
 }

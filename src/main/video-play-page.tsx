@@ -1,4 +1,4 @@
-import { BvCode, type BV1String } from '@mgdn/bvid'
+import { bv2av } from '@mgdn/bvid'
 import { delay } from 'es-toolkit'
 import ms from 'ms'
 import { baseDebug } from '$common'
@@ -161,7 +161,7 @@ async function setupCustomFavPicker() {
 async function addToFav() {
   const bvid = getCurrentPageBvid()
   if (!bvid) return antMessage.error('无法解析视频 BVID !')
-  const avid = BvCode.bv2av(bvid as BV1String)
+  const avid = bv2av(bvid)
   await pickFavFolder(undefined, async (targetFolder) => {
     const success = await UserFavService.addFav(avid, targetFolder.id)
     if (success) antMessage.success(`已加入收藏夹「${targetFolder.title}」`)
