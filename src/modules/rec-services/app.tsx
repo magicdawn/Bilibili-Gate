@@ -61,7 +61,7 @@ function AppRecTabbarView() {
       {showLikedEntry && (
         <AntdTooltip title='查看「我」点赞的视频'>
           <a href={`/?${GateQueryKey.Tab}=${ETab.Liked}`} target='_blank'>
-            <IconForLike className='size-16px' />
+            <IconForLike className='size-18px align-top' />
           </a>
         </AntdTooltip>
       )}

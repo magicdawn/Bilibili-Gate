@@ -1,5 +1,6 @@
 import { av2bv } from '@mgdn/bvid'
 import { attemptAsync } from 'es-toolkit'
+import { proxy, useSnapshot } from 'valtio'
 import { EApiType } from '$define/index.shared'
 import { antNotification } from '$modules/antd'
 import { getVideoDetail } from '$modules/bilibili/video/video-detail'
@@ -8,6 +9,7 @@ import { isWebApiSuccess } from '$request'
 import { NeedValidAccessKeyError } from '$utility/app-api'
 import { BaseTabService } from '../_base'
 import { fetchMyLikedVideos } from './api/liked'
+import { LikedTabbarView } from './tabbar-view'
 import type { LikedItemExtend, RecItemTypeOrSeparator } from '$define'
 
 export class LikedRecService extends BaseTabService {
@@ -17,16 +19,21 @@ export class LikedRecService extends BaseTabService {
     super(LikedRecService.PAGE_SIZE)
   }
 
-  override tabbarView: ReactNode
+  override tabbarView = (<LikedTabbarView service={this} />)
   override sidebarView?: ReactNode
   override get hasMoreExceptQueue() {
     if (this.errorJson) return false
-    return LikedRecService.PAGE_SIZE * this.pn < this.count
+    return LikedRecService.PAGE_SIZE * this.pn < this.store.count
   }
 
   pn = 0
-  count = Infinity
   errorJson: any = undefined
+
+  private store = proxy({ count: Infinity })
+  useStore = () => {
+    // oxlint-disable-next-line rules-of-hooks
+    return useSnapshot(this.store)
+  }
 
   showErrorNotification(payload: Partial<typeof antNotification.error>) {
     antNotification.error({ key: 'LikedRecService:error', title: '获取喜欢列表失败', ...payload })
@@ -44,13 +51,16 @@ export class LikedRecService extends BaseTabService {
     }
 
     const { count, item: list } = json.data
-    const [_, detailList] = await attemptAsync(() => Promise.all(list.map((x) => getVideoDetail(av2bv(x.param)))))
+    const [_, detailList] = await attemptAsync(() =>
+      // `x.state = false`: 表示已失效, 请求详情也是报错...
+      Promise.all(list.map((x) => (x.state ? getVideoDetail(av2bv(x.param)) : undefined))),
+    )
     const extendedList: LikedItemExtend[] = list.map((item, index) => {
       return { ...item, uniqId: item.param, api: EApiType.Liked, videoDetail: detailList?.[index] }
     })
 
     this.pn++
-    this.count = count
+    this.store.count = count
     return extendedList
   }
 }
