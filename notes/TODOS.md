@@ -1,3 +1,4 @@
 # Todos
 
-- [ ] RecHeader, dark-mode background
+- [ ] TabOrderConfig dnd-kit jumping
+- [ ] copyBvidInfo + live

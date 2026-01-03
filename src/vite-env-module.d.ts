@@ -1,7 +1,8 @@
 export {}
 
 declare module 'valtio' {
-  function useSnapshot<T extends object>(p: T): T
+  export type UseSnapshotOptions = { sync?: boolean }
+  function useSnapshot<T extends object>(p: T, options?: UseSnapshotOptions): T
 }
 
 declare module 'react' {

@@ -1,7 +1,7 @@
 import { css } from '@emotion/react'
 import { usePrevious } from 'ahooks'
 import { Radio, Segmented } from 'antd'
-import { useSnapshot } from 'valtio'
+import { useSnapshot, type UseSnapshotOptions } from 'valtio'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { useSettingsSnapshot } from '$modules/settings'
 import { getOnlyTab } from '$routes'
@@ -33,8 +33,8 @@ function getSortedTabKeys(customTabKeysOrder: ETab[]) {
   })
 }
 
-export function useSortedTabKeys() {
-  const { customTabKeysOrder } = useSettingsSnapshot()
+export function useSortedTabKeys(options?: UseSnapshotOptions) {
+  const { customTabKeysOrder } = useSettingsSnapshot(options)
   return useMemo(() => getSortedTabKeys(customTabKeysOrder), [customTabKeysOrder])
 }
 

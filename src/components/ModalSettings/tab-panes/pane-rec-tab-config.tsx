@@ -201,8 +201,7 @@ function useCurrentShowingTabKeys(): ETab[] {
 
 function VideoSourceTabOrder({ className, style }: { className?: string; style?: CSSProperties }) {
   const currentShowingTabKeys = useCurrentShowingTabKeys()
-  const sortedTabKeys = useSortedTabKeys()
-
+  const sortedTabKeys = useSortedTabKeys({ sync: true })
   const sensors = useSensors(useSensor(PointerSensor))
 
   const handleDragEnd = useMemoizedFn((e: DragEndEvent) => {
@@ -213,7 +212,7 @@ function VideoSourceTabOrder({ className, style }: { className?: string; style?:
     const newIndex = sortedTabKeys.indexOf(over.id.toString())
     // console.log('re-order:', oldIndex, newIndex)
     const newList = arrayMove(sortedTabKeys, oldIndex, newIndex)
-    updateSettings({ customTabKeysOrder: newList })
+    settings.customTabKeysOrder = newList
   })
 
   return (
@@ -248,14 +247,9 @@ function VideoSourceTabOrder({ className, style }: { className?: string; style?:
 }
 
 function VideoSourceTabSortableItem({ id }: { id: ETab }) {
-  const { attributes, listeners, setNodeRef, transform, transition, setActivatorNodeRef } = useSortable({ id })
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  }
-
   const { label, desc } = TabConfig[id]
+  const { attributes, listeners, setNodeRef, transform, transition, setActivatorNodeRef } = useSortable({ id })
+  const style = { transform: CSS.Transform.toString(transform), transition }
 
   return (
     <div
@@ -263,7 +257,6 @@ function VideoSourceTabSortableItem({ id }: { id: ETab }) {
       ref={setNodeRef}
       style={style}
       className='mt-8px h-35px flex items-center justify-between b-1px b-gate-bg-lv-2 rounded-6px b-solid pl-10px pr-6px'
-      {...attributes}
     >
       <Checkbox
         value={id}
@@ -277,6 +270,7 @@ function VideoSourceTabSortableItem({ id }: { id: ETab }) {
 
       <div
         {...listeners}
+        {...attributes}
         ref={setActivatorNodeRef}
         className='cursor-grab rounded-5px px-5px py-3px text-size-0 hover:bg-gate-bg-lv-3'
       >

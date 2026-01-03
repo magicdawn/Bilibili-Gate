@@ -1,6 +1,6 @@
 import { cloneDeep, isNil } from 'es-toolkit'
 import { get, set } from 'es-toolkit/compat'
-import { proxy, snapshot, subscribe, useSnapshot } from 'valtio'
+import { proxy, snapshot, subscribe, useSnapshot, type UseSnapshotOptions } from 'valtio'
 import { baseDebug, IN_BILIBILI_HOMEPAGE } from '$common'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { EVideoLinkOpenMode } from '$components/VideoCard/index.shared'
@@ -303,8 +303,8 @@ export const internalBooleanPaths = allowedLeafSettingsPaths.filter(
 ) as BooleanSettingsPath[]
 debug('allowedLeafSettingsPaths = %O, internalBooleanPaths = %O', allowedLeafSettingsPaths, internalBooleanPaths)
 
-export function useSettingsSnapshot() {
-  return useSnapshot(settings)
+export function useSettingsSnapshot(options?: UseSnapshotOptions) {
+  return useSnapshot(settings, options)
 }
 
 export function getSettingsSnapshot() {
