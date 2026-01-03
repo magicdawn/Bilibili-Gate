@@ -683,7 +683,7 @@ function apiLikedAdapter(item: LikedItemExtend): IVideoCardData {
     href: `/video/${bvid}/`,
     title: item.title,
     cover: item.cover,
-    pubts: item.ctime,
+    pubts: videoDetail?.pubdate ?? item.ctime,
     duration: item.duration,
     durationStr: formatDuration(item.duration),
     recommendReason: undefined,

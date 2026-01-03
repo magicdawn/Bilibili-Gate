@@ -85,7 +85,7 @@ export function TabPaneBasic() {
             label='覆盖默认推荐'
             tooltip={
               <>
-                {explainForFlag('覆盖默认推荐内容', `保留默认首页, 你可以从侧边按钮使用 ${APP_NAME} 的功能`)} <br />
+                {explainForFlag('覆盖默认推荐内容', `保留默认首页, 你可以从侧边按钮使用 ${APP_NAME} 的功能`)}
                 P.S 需要刷新网页
               </>
             }
