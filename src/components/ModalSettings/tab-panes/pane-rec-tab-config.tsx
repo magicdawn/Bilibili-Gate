@@ -2,7 +2,10 @@ import { closestCenter, DndContext, PointerSensor, useSensor, useSensors, type D
 import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { useMemoizedFn, useMount } from 'ahooks'
 import { Checkbox, Collapse, Empty, Radio, Space } from 'antd'
+import clsx from 'clsx'
+import { useMemo, useState, type CSSProperties } from 'react'
 import { useSnapshot } from 'valtio'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
@@ -30,7 +33,6 @@ import { settings, updateSettings, updateSettingsInnerArray, useSettingsSnapshot
 import { TagItemDisplay } from '../EditableListSettingItem'
 import { explainForFlag } from '../index.shared'
 import { ResetPartialSettingsButton, SettingsGroup, sharedClassNames } from './shared'
-import type { CSSProperties } from 'react'
 import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 
 export function TabPaneRecTabsConfig() {

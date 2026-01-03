@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { APP_NAME } from '$common'
 import { kbdClassName } from '$components/fragments'
 import { CheckboxSettingItem } from '../setting-item'

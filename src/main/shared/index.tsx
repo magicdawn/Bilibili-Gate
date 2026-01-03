@@ -1,4 +1,5 @@
 import { once } from 'es-toolkit'
+import { createRoot } from 'react-dom/client'
 import { AppRoot } from '$components/AppRoot'
 import { registerSettingsGmCommand } from '$components/RecHeader/modals'
 

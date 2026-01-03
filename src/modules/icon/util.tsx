@@ -1,4 +1,4 @@
-import type { ComponentProps, ForwardedRef, ReactNode } from 'react'
+import { forwardRef, type ComponentProps, type ForwardedRef, type ReactNode } from 'react'
 
 export function defineSvgComponent(
   render: (options: ComponentProps<'svg'> & { ref: ForwardedRef<SVGSVGElement> }) => ReactNode,

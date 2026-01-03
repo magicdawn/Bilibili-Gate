@@ -2,6 +2,7 @@
  * RecGrid inner state
  */
 
+import { useMount } from 'ahooks'
 import dayjs from 'dayjs'
 import { fastOrderBy } from 'fast-sort-lens'
 import { copyContent } from '$components/VideoCard/index.shared'

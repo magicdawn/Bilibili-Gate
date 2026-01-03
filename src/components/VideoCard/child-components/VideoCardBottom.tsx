@@ -6,7 +6,9 @@
 import { css } from '@emotion/react'
 import { useRequest } from 'ahooks'
 import { Avatar } from 'antd'
+import clsx from 'clsx'
 import dayjs from 'dayjs'
+import { memo, useMemo, type MouseEventHandler, type ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
 import { APP_CLS_CARD_RECOMMEND_REASON } from '$common'
 import { appClsDarkSelector } from '$common/css-vars-export.module.scss'
@@ -25,7 +27,6 @@ import { getAvatarSrc } from '$utility/image'
 import { showNativeContextMenuWhenAltKeyPressed } from '../context-menus'
 import { useLinkTarget } from '../use/useOpenRelated'
 import { UnixTsDisplay } from './UnixTsDisplay'
-import type { MouseEventHandler, ReactNode } from 'react'
 import type { EGridDisplayMode } from '$enums'
 
 const S = {

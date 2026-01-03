@@ -6,8 +6,6 @@
 // biome-ignore lint: disable
 export {}
 declare global {
-  const Activity: typeof import('react').Activity
-  const Fragment: typeof import('react').Fragment
   const IconAkarIconsMiniplayer: typeof import('~icons/akar-icons/miniplayer.jsx').default
   const IconBiUiChecksGrid: typeof import('~icons/bi/ui-checks-grid.jsx').default
   const IconCarbonStar: typeof import('~icons/carbon/star.jsx').default
@@ -65,7 +63,6 @@ declare global {
   const IconPhCrownFill: typeof import('~icons/ph/crown-fill.jsx').default
   const IconPhThumbsDownDuotone: typeof import('~icons/ph/thumbs-down-duotone.jsx').default
   const IconPhThumbsUpDuotone: typeof import('~icons/ph/thumbs-up-duotone.jsx').default
-  const IconRadixIconsClose: typeof import('~icons/radix-icons/close.jsx').default
   const IconRadixIconsCross2: typeof import('~icons/radix-icons/cross2.jsx').default
   const IconRadixIconsLockClosed: typeof import('~icons/radix-icons/lock-closed.jsx').default
   const IconRadixIconsLockOpen1: typeof import('~icons/radix-icons/lock-open1.jsx').default
@@ -84,38 +81,4 @@ declare global {
   const IconTablerRestore: typeof import('~icons/tabler/restore.jsx').default
   const IconTablerSortAscending2: typeof import('~icons/tabler/sort-ascending2.jsx').default
   const IconTablerSortDescending2: typeof import('~icons/tabler/sort-descending2.jsx').default
-  const Suspense: typeof import('react').Suspense
-  const cache: typeof import('react').cache
-  const cacheSignal: typeof import('react').cacheSignal
-  const clsx: typeof import('clsx').clsx
-  const createContext: typeof import('react').createContext
-  const createRef: typeof import('react').createRef
-  const createRoot: typeof import('react-dom/client').createRoot
-  const forwardRef: typeof import('react').forwardRef
-  const lazy: typeof import('react').lazy
-  const memo: typeof import('react').memo
-  const startTransition: typeof import('react').startTransition
-  const use: typeof import('react').use
-  const useActionState: typeof import('react').useActionState
-  const useCallback: typeof import('react').useCallback
-  const useContext: typeof import('react').useContext
-  const useDebugValue: typeof import('react').useDebugValue
-  const useDeferredValue: typeof import('react').useDeferredValue
-  const useEffect: typeof import('react').useEffect
-  const useEffectEvent: typeof import('react').useEffectEvent
-  const useId: typeof import('react').useId
-  const useImperativeHandle: typeof import('react').useImperativeHandle
-  const useInsertionEffect: typeof import('react').useInsertionEffect
-  const useKeyPress: typeof import('ahooks').useKeyPress
-  const useLayoutEffect: typeof import('react').useLayoutEffect
-  const useMemo: typeof import('react').useMemo
-  const useMemoizedFn: typeof import('ahooks').useMemoizedFn
-  const useMount: typeof import('ahooks').useMount
-  const useOptimistic: typeof import('react').useOptimistic
-  const useReducer: typeof import('react').useReducer
-  const useRef: typeof import('react').useRef
-  const useState: typeof import('react').useState
-  const useSyncExternalStore: typeof import('react').useSyncExternalStore
-  const useTransition: typeof import('react').useTransition
-  const useUpdateEffect: typeof import('ahooks').useUpdateEffect
 }

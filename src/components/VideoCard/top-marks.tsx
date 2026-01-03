@@ -1,4 +1,6 @@
 import { Dropdown } from 'antd'
+import clsx from 'clsx'
+import { useMemo, type CSSProperties, type ReactNode } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
 import { Picture } from '$components/_base/Picture'
 import { primaryColorValue } from '$components/css-vars'
@@ -10,7 +12,6 @@ import { DynamicFeedBadgeText } from '$modules/rec-services/dynamic-feed/store'
 import { isNormalRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { useTooltip } from './child-components/VideoCardActions'
 import { useLinkNewTab } from './use/useOpenRelated'
-import type { CSSProperties, ReactNode } from 'react'
 import type { NormalRankItem } from '$modules/rec-services/hot/rank/types'
 
 export const clsBadgeContainer =

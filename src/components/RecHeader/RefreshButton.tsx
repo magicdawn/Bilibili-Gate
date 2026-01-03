@@ -1,5 +1,15 @@
+import { useKeyPress, useMemoizedFn } from 'ahooks'
 import { Button } from 'antd'
+import clsx from 'clsx'
 import { useAnimate } from 'framer-motion'
+import {
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  type CSSProperties,
+  type MouseEvent,
+  type MouseEventHandler,
+} from 'react'
 import { useSnapshot } from 'valtio'
 import { useOnRefresh, useRecSelfContext } from '$components/Recommends/rec.shared'
 import { IconForRoll } from '$modules/icon/stat-icons'
@@ -10,7 +20,6 @@ import { useSettingsSnapshot } from '$modules/settings'
 import { shouldDisableShortcut } from '$utility/dom'
 import { useCurrentUsingTab } from './tab'
 import { ETab } from './tab-enum'
-import type { CSSProperties, MouseEvent, MouseEventHandler } from 'react'
 
 export type RefreshButtonActions = { click: () => void }
 export type RefreshButtonProps = {

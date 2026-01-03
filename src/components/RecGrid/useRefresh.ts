@@ -1,4 +1,4 @@
-import { useUnmount } from 'ahooks'
+import { useMemoizedFn, useMount, useUnmount } from 'ahooks'
 import { attempt, attemptAsync, isEqual } from 'es-toolkit'
 import { useEmitterOn } from '$common/hooks/useEmitter'
 import { TabConfig } from '$components/RecHeader/tab-config'

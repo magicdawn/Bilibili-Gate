@@ -1,6 +1,8 @@
 import { DndContext, useDndMonitor, useDraggable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
+import { useMount } from 'ahooks'
 import { Button } from 'antd'
+import { useMemo, type ComponentProps } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
 import { useSnapshot } from 'valtio'
 import { APP_NAME, appLog } from '$common'
@@ -13,7 +15,6 @@ import { IconForOpenExternalLink } from '$modules/icon'
 import { getGateEntryHref } from '$routes'
 import { minmax } from '$utility/num'
 import { proxyWithLocalStorage } from '$utility/valtio'
-import type { ComponentProps } from 'react'
 
 type InlineAlign = 'left' | 'right'
 

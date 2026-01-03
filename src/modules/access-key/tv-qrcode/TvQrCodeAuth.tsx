@@ -1,4 +1,5 @@
 import { QRCode } from 'antd'
+import clsx from 'clsx'
 import Emittery from 'emittery'
 import { once } from 'es-toolkit'
 import { createRoot } from 'react-dom/client'

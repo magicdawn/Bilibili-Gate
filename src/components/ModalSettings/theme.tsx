@@ -7,8 +7,10 @@
  */
 
 import { css } from '@emotion/react'
-import { usePrevious } from 'ahooks'
+import { useMount, usePrevious } from 'ahooks'
 import { ColorPicker } from 'antd'
+import clsx from 'clsx'
+import { Fragment, useMemo, useState, type ReactNode } from 'react'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { $evolvedThemeColor } from '$header'
 import { AntdTooltip } from '$modules/antd/custom'
@@ -16,7 +18,6 @@ import { IconAnimatedChecked } from '$modules/icon/animated-checked'
 import { updateSettings, useSettingsSnapshot } from '$modules/settings'
 import { DEFAULT_BILI_PINK_THEME, EXTRA_TOOLTIP, ThemeGroups, useCurrentTheme } from './theme.shared'
 import type { Color } from 'antd/es/color-picker'
-import type { ReactNode } from 'react'
 
 export function ThemesSelect() {
   const activeId = useCurrentTheme().id

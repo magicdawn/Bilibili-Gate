@@ -1,6 +1,7 @@
-import { useRequest } from 'ahooks'
+import { useMemoizedFn, useRequest } from 'ahooks'
 import { Badge, Button, Checkbox, Input, Popover, Radio } from 'antd'
 import { delay, throttle } from 'es-toolkit'
+import { useCallback, useMemo, useState, type ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
 import { __PROD__ } from '$common'
 import { APP_CLS_USE_ANT_LINK_COLOR, buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
@@ -42,7 +43,6 @@ import {
   type UpMidType,
 } from '../store'
 import type { CheckboxChangeEvent } from 'antd/es/checkbox'
-import type { ReactNode } from 'react'
 import type { Get } from 'type-fest'
 import type { RefreshFn } from '$components/Recommends/rec.shared'
 import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
@@ -129,8 +129,8 @@ export function usePopoverRelated({
 
 const classes = {
   wrapper: 'max-w-350px',
-  section: 'mt-10px first:mt-0px min-w-300px',
-  sectionTilte: 'flex items-center text-20px pl-2px pb-2px',
+  section: 'mt-10px min-w-300px first:mt-0px',
+  sectionTilte: 'flex items-center pb-2px pl-2px text-20px',
   sectionContent: 'flex flex-col items-start gap-x-10px gap-y-6px',
 } as const
 

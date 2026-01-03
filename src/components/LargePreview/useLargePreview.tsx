@@ -1,4 +1,13 @@
-import { useClickAway, useEventListener, useLockFn, useRequest } from 'ahooks'
+import {
+  useClickAway,
+  useEventListener,
+  useKeyPress,
+  useLockFn,
+  useMemoizedFn,
+  useRequest,
+  useUpdateEffect,
+} from 'ahooks'
+import { useMemo, useRef, useState, type ComponentProps, type ComponentRef, type MutableRefObject } from 'react'
 import { useSnapshot } from 'valtio'
 import { __PROD__, APP_CLS_CARD, appLog, BiliDomain } from '$common'
 import { useEmitterOn } from '$common/hooks/useEmitter'
@@ -12,7 +21,6 @@ import { fetchVideoPreviewData, isVideoPreviewDataValid, type VideoPreviewData }
 import { getRecItemDimension } from '../VideoCard/use/useOpenRelated'
 import { LargePreview } from './index'
 import { RecoverableVideo } from './RecoverableVideo'
-import type { ComponentProps, ComponentRef, MutableRefObject } from 'react'
 import type { RecSharedEmitter } from '$components/Recommends/rec.shared'
 import type { CssProp } from '$utility/type'
 

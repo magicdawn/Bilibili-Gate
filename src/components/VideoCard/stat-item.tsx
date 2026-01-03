@@ -1,8 +1,9 @@
+import clsx from 'clsx'
+import { memo, useMemo, type ReactNode } from 'react'
 import { IconForFav } from '$modules/icon'
 import { IconForStatDanmaku, IconForStatPlay } from '$modules/icon/stat-icons'
 import { formatCount } from '$utility/video'
 import { STAT_NUMBER_FALLBACK } from './index.shared'
-import type { ReactNode } from 'react'
 
 export const AllowedStatItemFields = [
   'play',

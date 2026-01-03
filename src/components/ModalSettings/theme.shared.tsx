@@ -1,9 +1,9 @@
 import { PURPLE_COLORS } from 'purple-colors'
+import { useMemo, type ReactNode } from 'react'
 import { primaryColorValue } from '$components/css-vars'
 import { $evolvedThemeColor } from '$header'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import LX_THEMES from './lx-themes.json'
-import type { ReactNode } from 'react'
 
 // https://github.com/argyleink/gui-challenges/blob/main/color-palettes/oklch-palette.css
 export const primaryPalatte = {

@@ -1,4 +1,5 @@
 import { useMemoizedFn } from 'ahooks'
+import { useEffect } from 'react'
 import type Emittery from 'emittery'
 
 export function useEmitterOn<EventData, Event extends keyof EventData>(

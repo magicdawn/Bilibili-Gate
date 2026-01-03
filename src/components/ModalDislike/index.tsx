@@ -1,9 +1,10 @@
 /* eslint-disable require-await */
 
-import { useLockFn, useRequest, useUpdateLayoutEffect } from 'ahooks'
+import { useKeyPress, useLockFn, useMemoizedFn, useRequest, useUpdateLayoutEffect } from 'ahooks'
 import { Button, Spin } from 'antd'
 import { clsx } from 'clsx'
 import Emittery from 'emittery'
+import { useRef, useState, type MouseEvent } from 'react'
 import { useSnapshot } from 'valtio'
 import { proxyMap } from 'valtio/utils'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
@@ -13,7 +14,6 @@ import { IconForDislike } from '$modules/icon'
 import { IconAnimatedChecked } from '$modules/icon/animated-checked'
 import { shouldDisableShortcut } from '$utility/dom'
 import { wrapComponent } from '$utility/global-component'
-import type { MouseEvent } from 'react'
 
 export type DislikeReason = { id: number; name: string; toast: string }
 

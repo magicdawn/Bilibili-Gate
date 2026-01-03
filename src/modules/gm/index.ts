@@ -4,7 +4,8 @@ export enum ScriptManager {
   Userscripts = 'Userscripts',
 }
 
-export const RUNNING_IN_USERSCRIPTS = GM_info?.scriptHandler === ScriptManager.Userscripts
+export const RUNNING_IN_USERSCRIPTS =
+  typeof GM_info !== 'undefined' && GM_info.scriptHandler === ScriptManager.Userscripts
 
 export function openNewTab(url: string, active = true) {
   if (url.startsWith('/')) url = location.origin + url // safari Userscripts will complain with pathname only

@@ -1,4 +1,5 @@
 import { av2bv } from '@mgdn/bvid'
+import clsx from 'clsx'
 import dayjs from 'dayjs'
 import { appWarn } from '$common'
 import { defineStatItems, type StatItemField, type StatItemType } from '$components/VideoCard/stat-item'

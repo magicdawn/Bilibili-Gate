@@ -1,3 +1,5 @@
+import clsx from 'clsx'
+import { createRoot } from 'react-dom/client'
 import { useUnoMerge } from 'unocss-merge/react'
 import { proxy, useSnapshot } from 'valtio'
 import { APP_NAME, APP_NAMESPACE } from '$common'

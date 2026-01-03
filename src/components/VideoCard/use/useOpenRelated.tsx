@@ -1,4 +1,6 @@
+import { useMemoizedFn } from 'ahooks'
 import { delay } from 'es-toolkit'
+import { useMemo, type ComponentProps, type MouseEvent, type MouseEventHandler, type ReactNode } from 'react'
 import { baseDebug } from '$common'
 import { EApiType } from '$define/index.shared'
 import { getBiliPlayerConfigAutoPlay } from '$modules/bilibili/player-config'
@@ -17,7 +19,6 @@ import {
   VideoLinkOpenModeKey,
 } from '../index.shared'
 import { renderInPipWindow } from './_pip-window'
-import type { ComponentProps, MouseEvent, MouseEventHandler, ReactNode } from 'react'
 import type { RecItemType } from '$define'
 import type { AntMenuItem } from '$modules/antd'
 import type { VideoPage } from '$modules/bilibili/video/types/page-list'

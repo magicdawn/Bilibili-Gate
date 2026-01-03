@@ -1,6 +1,8 @@
 import { useHover } from 'ahooks'
 import { limitFunction } from 'promise.map'
+import { useMemo, useRef } from 'react'
 import { createPortal } from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import { useUnoMerge } from 'unocss-merge/react'
 import { APP_NAMESPACE } from '$common'
 import { AppRoot } from '$components/AppRoot'

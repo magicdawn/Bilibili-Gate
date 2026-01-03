@@ -2,7 +2,7 @@
  * 我不想看
  */
 
-import { useLockFn } from 'ahooks'
+import { useLockFn, useMemoizedFn } from 'ahooks'
 import { OPERATION_FAIL_MSG } from '$common'
 import { dislikedIds, pickDislikeReason, type DislikeReason } from '$components/ModalDislike'
 import { isAppRecommend, type RecItemType } from '$define'

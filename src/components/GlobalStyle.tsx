@@ -1,4 +1,5 @@
 import { css as _css, css, Global } from '@emotion/react'
+import { useMemo } from 'react'
 import { APP_CLS_ROOT, IN_BILIBILI_HOMEPAGE } from '$common'
 import { appBgId, appPrimaryColorId, appTextColorId } from '$common/css-vars-export.module.scss'
 import { useAntLinkColorGlobalStyle } from '$common/emotion-css'

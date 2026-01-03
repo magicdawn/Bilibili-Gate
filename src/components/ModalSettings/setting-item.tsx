@@ -2,10 +2,10 @@
 
 import { Button, Checkbox, Switch } from 'antd'
 import { get, set } from 'es-toolkit/compat'
+import { forwardRef, useCallback, type ComponentProps, type ElementRef, type ReactNode, type Ref } from 'react'
 import { AntdTooltip } from '$modules/antd/custom'
 import { settings, useSettingsSnapshot, type BooleanSettingsPath } from '$modules/settings'
 import type { CheckboxChangeEvent } from 'antd/es/checkbox'
-import type { ComponentProps, ElementRef, ReactNode, Ref } from 'react'
 
 function useBooleanSettingsPath(configPath: BooleanSettingsPath, extraAction?: (val: boolean) => void) {
   const snap = useSettingsSnapshot()

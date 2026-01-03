@@ -1,4 +1,6 @@
+import { useMemoizedFn, useMount, useUpdateEffect } from 'ahooks'
 import { Divider, type Menu } from 'antd'
+import { useMemo, useRef, type ElementRef } from 'react'
 import { useSnapshot } from 'valtio/react'
 import { useGridDisplayModeChecker } from '$components/RecGrid/display-mode'
 import { EHotSubTab, ETab } from '$components/RecHeader/tab-enum'
@@ -6,7 +8,6 @@ import { useRecSelfContext } from '$components/Recommends/rec.shared'
 import { QUERY_DYNAMIC_UP_MID } from '$modules/rec-services/dynamic-feed/store'
 import { hotStore } from '$modules/rec-services/hot'
 import { useSettingsSnapshot } from '$modules/settings'
-import type { ElementRef } from 'react'
 import type { AntMenuItem } from '$modules/antd'
 
 export const sidebarBottomLine = (

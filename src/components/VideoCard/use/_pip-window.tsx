@@ -2,6 +2,9 @@ import createEmotion from '@emotion/css/create-instance'
 import { css, Global } from '@emotion/react'
 import { useHover } from 'ahooks'
 import { App, ConfigProvider, Dropdown } from 'antd'
+import clsx from 'clsx'
+import { useMemo, useState, type ReactNode } from 'react'
+import { createRoot } from 'react-dom/client'
 import { APP_CLS_ROOT, APP_NAMESPACE } from '$common'
 import { useLessFrequentFn } from '$common/hooks/useLessFrequentFn'
 import { AppRoot } from '$components/AppRoot'
@@ -10,7 +13,6 @@ import { openNewTab } from '$modules/gm'
 import { settings } from '$modules/settings'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
 import { EQueryKey } from '../index.shared'
-import type { ReactNode } from 'react'
 
 export function renderInPipWindow(newHref: string, pipWindow: Window) {
   const cssInsertContainer = pipWindow.document.head

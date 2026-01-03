@@ -1,4 +1,6 @@
+import clsx from 'clsx'
 import { delay } from 'es-toolkit'
+import { useMemo, type ElementRef, type ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
 import { useOnRefresh } from '$components/Recommends/rec.shared'
 import {
@@ -14,7 +16,6 @@ import { usePopupContainer } from '$modules/rec-services/_base'
 import { GenericOrderSwitcher } from '$modules/rec-services/_shared/generic-order-switcher'
 import { FavItemsOrder } from '../fav-enum'
 import { favStore, type FavSelectedKeyPrefix } from '../store'
-import type { ElementRef, ReactNode } from 'react'
 
 // 需要统一尺寸
 const clsIconSize = 'size-16px'
