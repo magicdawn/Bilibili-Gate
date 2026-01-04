@@ -234,14 +234,15 @@ export default defineConfig(({ command, mode }) => ({
           // '@emotion/css': cdn.npmmirror('emotion', 'dist/emotion-css.umd.min.js'),
           // '@emotion/react': cdn.npmmirror('emotionReact', 'dist/emotion-react.umd.min.js'),
 
-          ...(minify
+          // FIXME when https://github.com/magicdawn/Bilibili-Gate/issues/204 resolved
+          // oxlint-disable-next-line no-constant-binary-expression no-constant-condition
+          ...(true || minify
             ? {}
             : // external more when no-minify: [antd]
               {
                 // antd deps = [react, react-dom, dayjs]
                 'dayjs': cdn.npmmirror('dayjs', 'dayjs.min.js'),
                 'dayjs/plugin/duration': cdn.npmmirror('dayjs_plugin_duration', 'plugin/duration.js'),
-
                 // https://github.com/ant-design/ant-design/issues/45262
                 '@ant-design/cssinjs': cdn.npmmirror('antdCssinjs', 'dist/umd/cssinjs.min.js'),
                 'antd': cdn.npmmirror('antd', 'dist/antd.min.js'),
