@@ -10,7 +10,7 @@ import { appUsingFont } from '$common/css-vars-export.module.scss'
 import { AntdStaticFunctionsSetup } from '$modules/antd'
 import { useIsDarkMode } from '$modules/dark-mode'
 import { clsZAntdPopupBase, parseZ } from './fragments'
-import { GlobalBaseStyle, GlobalStyle } from './GlobalStyle'
+import { BaseGlobalStyle, HomePageGlobalStyle } from './global-styles'
 import { useColorPrimaryHex } from './ModalSettings/theme.shared'
 
 function compose(...fns: Array<((c: ReactNode) => ReactNode) | false>) {
@@ -21,14 +21,10 @@ function compose(...fns: Array<((c: ReactNode) => ReactNode) | false>) {
 
 export function AppRoot({
   children,
-  injectGlobalStyle = false,
-  antdSetup = false,
   cssInsertContainer,
   cssInsertContainerEmotionKey,
 }: {
   children?: ReactNode
-  injectGlobalStyle?: boolean
-  antdSetup?: boolean
   cssInsertContainer?: Element | ShadowRoot
   cssInsertContainerEmotionKey?: string
 }) {
@@ -85,13 +81,26 @@ export function AppRoot({
       </ConfigProvider>
     ),
   )
+  return wrap(children)
+}
 
-  return wrap(
+/**
+ * this component create SideEffects
+ */
+export function SetupForPage({
+  antd,
+  baseGlobalStyle,
+  homePageGlobalStyle,
+}: {
+  antd?: boolean
+  baseGlobalStyle?: boolean
+  homePageGlobalStyle?: boolean
+}) {
+  return (
     <>
-      {antdSetup && <AntdStaticFunctionsSetup />}
-      <GlobalBaseStyle />
-      {injectGlobalStyle && <GlobalStyle />}
-      {children}
-    </>,
+      {antd && <AntdStaticFunctionsSetup />}
+      {baseGlobalStyle && <BaseGlobalStyle />}
+      {homePageGlobalStyle && <HomePageGlobalStyle />}
+    </>
   )
 }

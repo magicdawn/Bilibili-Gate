@@ -7,7 +7,7 @@ import { useMemo, useState, type ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { APP_CLS_ROOT, APP_NAMESPACE } from '$common'
 import { useLessFrequentFn } from '$common/hooks/useLessFrequentFn'
-import { AppRoot } from '$components/AppRoot'
+import { AppRoot, SetupForPage } from '$components/AppRoot'
 import { defineAntMenus } from '$modules/antd'
 import { openNewTab } from '$modules/gm'
 import { settings } from '$modules/settings'
@@ -39,9 +39,10 @@ export function renderInPipWindow(newHref: string, pipWindow: Window) {
 
   const root = createRoot(container)
   root.render(
-    <AppRoot cssInsertContainer={cssInsertContainer} cssInsertContainerEmotionKey='pip-window' injectGlobalStyle>
+    <AppRoot cssInsertContainer={cssInsertContainer} cssInsertContainerEmotionKey='pip-window'>
       <ConfigProvider getPopupContainer={() => pipWindow.document.body} getTargetContainer={() => pipWindow}>
         <App message={{ getContainer: () => pipWindow.document.body }}>
+          <SetupForPage baseGlobalStyle />
           <PipWindowContent newHref={newHref} pipWindow={pipWindow} />
         </App>
       </ConfigProvider>

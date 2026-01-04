@@ -1,6 +1,6 @@
 import { once } from 'es-toolkit'
 import { createRoot } from 'react-dom/client'
-import { AppRoot } from '$components/AppRoot'
+import { AppRoot, SetupForPage } from '$components/AppRoot'
 import { registerSettingsGmCommand } from '$components/RecHeader/modals'
 
 export function setupForNoneHomepage() {
@@ -12,7 +12,11 @@ const _setupOnce = once(() => {
   const container = document.createElement('div')
   document.body.appendChild(container)
   const root = createRoot(container)
-  root.render(<AppRoot injectGlobalStyle antdSetup />)
+  root.render(
+    <AppRoot>
+      <SetupForPage antd baseGlobalStyle />
+    </AppRoot>,
+  )
 })
 export function setupAppRootForNoneHomepage() {
   _setupOnce()

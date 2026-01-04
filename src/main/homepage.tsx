@@ -2,7 +2,7 @@ import { FloatButton } from 'antd'
 import { delay } from 'es-toolkit'
 import { createRoot, type Root } from 'react-dom/client'
 import { APP_CLS_ROOT, appWarn } from '$common'
-import { AppRoot } from '$components/AppRoot'
+import { AppRoot, SetupForPage } from '$components/AppRoot'
 import { GateFloatEntry } from '$components/GateFloatEntry'
 import { registerSettingsGmCommand } from '$components/RecHeader/modals'
 import { PureRecommend } from '$components/Recommends/PureRecommend'
@@ -58,7 +58,8 @@ function initHomepageGateFloatEntry() {
 
   root = createRoot(container)
   root.render(
-    <AppRoot antdSetup>
+    <AppRoot>
+      <SetupForPage antd baseGlobalStyle />
       <GateFloatEntry />
     </AppRoot>,
   )
@@ -82,7 +83,8 @@ async function initHomepagePureRecommend() {
   biliLayout.append(container)
   root = createRoot(container)
   root.render(
-    <AppRoot injectGlobalStyle antdSetup>
+    <AppRoot>
+      <SetupForPage antd baseGlobalStyle homePageGlobalStyle />
       <PureRecommend />
       <FloatButton.BackTop
         style={{

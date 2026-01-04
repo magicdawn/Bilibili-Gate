@@ -40,7 +40,7 @@ async function addDynEntry() {
       container.prepend(rootEl)
       const root = createRoot(rootEl)
       root.render(
-        <AppRoot injectGlobalStyle>
+        <AppRoot>
           <ActionButtons />
         </AppRoot>,
       )
