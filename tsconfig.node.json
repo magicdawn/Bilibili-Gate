@@ -1,15 +1,16 @@
 {
-  "include": ["*.config.ts", "eslint.config.js"],
+  "include": ["*.config.ts"],
   "exclude": ["vite.config.ts"],
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
     "module": "nodenext",
-    "moduleResolution": "nodenext",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
     "allowJs": true,
-    "noEmit": true
+    "noEmit": true,
+    "erasableSyntaxOnly": true
   }
 }
