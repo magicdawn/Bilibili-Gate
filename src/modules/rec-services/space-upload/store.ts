@@ -32,7 +32,7 @@ const store = proxy({
   filterText: QUERY_SPACE_UPLOAD_FILTER_TEXT as string | undefined,
 
   get isMultipleTraget() {
-    return this.mids.length > 1 || !!this.groupId
+    return this.mids.length > 1 || this.groupId !== undefined
   },
   get allowedOrders() {
     return [SpaceUploadOrder.Latest, SpaceUploadOrder.View, !this.isMultipleTraget && SpaceUploadOrder.Fav].filter(

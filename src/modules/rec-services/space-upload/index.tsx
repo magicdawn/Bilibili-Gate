@@ -72,9 +72,9 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
     Object.assign(this, config)
     this.mids = config.mids
     this.order = config.order
-    assert(this.mids.length || this.groupId, 'mid & groupId can not both be empty')
+    assert(this.mids.length || this.groupId !== undefined, 'mid & groupId can not both be empty')
     this.searchText = this.searchText?.trim()
-    if (this.initialPage && (this.groupId || this.mids.length > 1)) {
+    if (this.initialPage && (this.groupId !== undefined || this.mids.length > 1)) {
       throw new Error('initialPage not supported when merging')
     }
   }
@@ -150,9 +150,10 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
       return
     }
 
-    if (this.groupId) {
+    if (this.groupId !== undefined) {
       const mids = await getFollowGroupContent(this.groupId!)
       mids.forEach((x) => spaceUploadFollowedMidSet.add(x)) // mark followed
+      if (!mids.length) throw new Error('Group is Empty!')
       this.mergeTimelineService = new MergeTimelineService(
         mids.map((x) => x.toString()),
         this.order,

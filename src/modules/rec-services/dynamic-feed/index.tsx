@@ -210,7 +210,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
   private groupMids = new Set<number>()
   private groupMidsLoaded = false
   private async loadGroupMids() {
-    if (typeof this.groupId !== 'number') return // no need
+    if (this.groupId === undefined) return // no need
     if (this.groupMidsLoaded) return // loaded
     try {
       const mids = await getFollowGroupContent(this.groupId)
