@@ -42,7 +42,7 @@ export function getDynamicFeedServiceConfig(usingDfStore: DynamicFeedStore = dfS
      */
     // UP | 分组
     upMid: snap.upMid,
-    groupId: snap.selectedGroup?.tagid,
+    groupId: snap.selectedGroupId,
 
     // 搜索
     searchText: snap.searchText,

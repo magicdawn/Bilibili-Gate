@@ -22,7 +22,7 @@ const mids = (QUERY_SPACE_UPLOAD_MID || '')
   .filter(Boolean)
   .filter((x) => /^\d+$/.test(x))
 const groupId = QUERY_SPACE_UPLOAD_GROUP_ID ? Number(QUERY_SPACE_UPLOAD_GROUP_ID) : undefined
-export const SHOW_SPACE_UPLOAD_ONLY = !!(mids.length || groupId)
+export const SHOW_SPACE_UPLOAD_ONLY = !!mids.length || groupId !== undefined
 
 const store = proxy({
   mids,

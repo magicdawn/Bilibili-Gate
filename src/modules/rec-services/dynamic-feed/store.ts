@@ -17,6 +17,7 @@ import type { DynamicPortalUp } from './up/portal-types'
 
 export enum DynamicFeedQueryKey {
   Mid = 'dyn-mid',
+  GroupId = 'dyn-group-id',
 
   SearchTextFull = 'dyn-search-text',
   SearchTextShort = 'dyn-search',
@@ -28,6 +29,9 @@ export enum DynamicFeedQueryKey {
 
 const searchParams = new URLSearchParams(location.search)
 export const QUERY_DYNAMIC_UP_MID = searchParams.get(DynamicFeedQueryKey.Mid)?.trim()
+export const QUERY_DYNAMIC_GROUP_ID = searchParams.get(DynamicFeedQueryKey.GroupId)?.trim()
+  ? Number(searchParams.get(DynamicFeedQueryKey.GroupId)!.trim())
+  : undefined
 export const QUERY_DYNAMIC_OFFSET = searchParams.get(DynamicFeedQueryKey.Offset) || undefined // where to start, exclusive
 export const QUERY_DYNAMIC_SEARCH_TEXT = QUERY_DYNAMIC_UP_MID // only support using with `dyn-mid`
   ? searchParams.get(DynamicFeedQueryKey.SearchTextFull) ||
@@ -41,13 +45,19 @@ export const QUERY_DYNAMIC_MIN_TS = QUERY_DYNAMIC_MIN_ID // only support using w
   ? searchParams.get(DynamicFeedQueryKey.MinTs)
   : undefined
 
-export const SHOW_DYNAMIC_FEED_ONLY = IN_BILIBILI_HOMEPAGE && !!QUERY_DYNAMIC_UP_MID
+export const SHOW_DYNAMIC_FEED_ONLY =
+  IN_BILIBILI_HOMEPAGE && (!!QUERY_DYNAMIC_UP_MID || QUERY_DYNAMIC_GROUP_ID !== undefined)
 
 let upMidInitial: UpMidType | undefined
 let upNameInitial: string | undefined
+let groupIdInitial: number | undefined
 if (SHOW_DYNAMIC_FEED_ONLY) {
-  upMidInitial = QUERY_DYNAMIC_UP_MID
-  upNameInitial = searchParams.get('dyn-name') ?? upMidInitial?.toString() ?? undefined
+  if (QUERY_DYNAMIC_UP_MID) {
+    upMidInitial = QUERY_DYNAMIC_UP_MID
+    upNameInitial = searchParams.get('dyn-name') ?? upMidInitial?.toString() ?? undefined
+  } else if (QUERY_DYNAMIC_GROUP_ID !== undefined) {
+    groupIdInitial = QUERY_DYNAMIC_GROUP_ID
+  }
 }
 
 export type UpMidType = string
@@ -123,7 +133,7 @@ export function createDfStore() {
 
     groups: [] as FollowGroup[],
     groupsUpdatedAt: 0,
-    selectedGroupId: undefined as number | undefined,
+    selectedGroupId: groupIdInitial as number | undefined,
     get selectedGroup(): FollowGroup | undefined {
       if (typeof this.selectedGroupId !== 'number') return
       return this.groups.find((x) => x.tagid === this.selectedGroupId)
@@ -146,7 +156,7 @@ export function createDfStore() {
     // 筛选 UP & 分组 select 控件的 key
     get selectedKey(): DynamicFeedStoreSelectedKey {
       if (this.upMid) return `${DF_SELECTED_KEY_PREFIX_UP}${this.upMid}`
-      if (this.selectedGroup) return `${DF_SELECTED_KEY_PREFIX_GROUP}${this.selectedGroup.tagid}`
+      if (this.selectedGroupId !== undefined) return `${DF_SELECTED_KEY_PREFIX_GROUP}${this.selectedGroupId}`
       return DF_SELECTED_KEY_ALL
     },
 
