@@ -441,7 +441,7 @@ export const RecGrid = memo(
           // noop
         }
 
-        if (gridDisplayMode === EGridDisplayMode.NormalGrid && useCustomGrid) {
+        if (useCustomGrid) {
           const usingForceColumn = !!(enableForceColumn && forceColumnCount)
           if (usingForceColumn) {
             // noop, only need set `--col`
