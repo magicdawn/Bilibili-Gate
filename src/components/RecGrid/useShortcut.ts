@@ -258,12 +258,9 @@ export function useShortcut({
   }
 }
 
-// use window.innerHeight as cache key
 const countCache1 = new Map<string, number>()
 const countCache2 = new Map<string, number>()
 
-// SectionRecommend 没有 narrow-mode
-// RecGrid 有 narrow mode
 export function getColumnCount(gridEl?: HTMLElement | null, mayHaveNarrowMode = true) {
   const { gridDisplayMode, useCustomGrid, enableForceColumn, forceColumnCount, cardMinWidth } = settings.grid
 
