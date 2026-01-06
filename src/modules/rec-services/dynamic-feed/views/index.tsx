@@ -42,7 +42,7 @@ const clearPayload: Partial<DynamicFeedStore> = {
   upMid: undefined,
   upName: undefined,
   upFace: undefined,
-  searchText: undefined,
+  filterText: undefined,
   selectedGroupId: undefined,
   dynamicFeedVideoType: DynamicFeedVideoType.All,
   filterMinDuration: DynamicFeedVideoMinDuration.All,
@@ -134,7 +134,7 @@ function useScopeMenus(form: 'dropdown' | 'sidebar') {
 export function DynamicFeedTabbarView() {
   const {
     dynamicFeed: {
-      __internal: { externalSearchInput },
+      __internal: { externalFilterInput },
     },
   } = useSettingsSnapshot()
   const { viewingSomeUp, upName, upFace, selectedGroup } = useSnapshot(dfStore)
@@ -183,8 +183,8 @@ export function DynamicFeedTabbarView() {
   )
   // #endregion
 
-  const { popoverTrigger, searchInput } = usePopoverRelated({
-    externalSearchInput,
+  const { popoverTrigger, filterInput } = usePopoverRelated({
+    externalFilterInput,
     onRefresh,
     getPopupContainer,
   })
@@ -209,7 +209,7 @@ export function DynamicFeedTabbarView() {
 
       {popoverTrigger}
 
-      {externalSearchInput && searchInput}
+      {externalFilterInput && filterInput}
 
       <CopyBvidButtonsTabbarView />
     </div>

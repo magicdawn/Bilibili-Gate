@@ -19,8 +19,8 @@ export enum DynamicFeedQueryKey {
   Mid = 'dyn-mid',
   GroupId = 'dyn-group-id',
 
-  SearchTextFull = 'dyn-search-text',
-  SearchTextShort = 'dyn-search',
+  FilterTextFull = 'dyn-filter-text',
+  FilterTextShort = 'dyn-filter',
 
   Offset = 'dyn-offset',
   MinId = 'dyn-min-id',
@@ -33,9 +33,9 @@ export const QUERY_DYNAMIC_GROUP_ID = searchParams.get(DynamicFeedQueryKey.Group
   ? Number(searchParams.get(DynamicFeedQueryKey.GroupId)!.trim())
   : undefined
 export const QUERY_DYNAMIC_OFFSET = searchParams.get(DynamicFeedQueryKey.Offset) || undefined // where to start, exclusive
-export const QUERY_DYNAMIC_SEARCH_TEXT = QUERY_DYNAMIC_UP_MID // only support using with `dyn-mid`
-  ? searchParams.get(DynamicFeedQueryKey.SearchTextFull) ||
-    searchParams.get(DynamicFeedQueryKey.SearchTextShort) ||
+export const QUERY_DYNAMIC_FILTER_TEXT = QUERY_DYNAMIC_UP_MID // only support using with `dyn-mid`
+  ? searchParams.get(DynamicFeedQueryKey.FilterTextFull) ||
+    searchParams.get(DynamicFeedQueryKey.FilterTextShort) ||
     undefined
   : undefined
 export const QUERY_DYNAMIC_MIN_ID = QUERY_DYNAMIC_UP_MID // only support using with `dyn-mid`, dyn.id_str >= dyn-min-id, stands for `update since`
@@ -140,7 +140,7 @@ export function createDfStore() {
     },
 
     dynamicFeedVideoType: DynamicFeedVideoType.All,
-    searchText: (QUERY_DYNAMIC_SEARCH_TEXT ?? undefined) as string | undefined,
+    filterText: (QUERY_DYNAMIC_FILTER_TEXT ?? undefined) as string | undefined,
 
     // 选择状态
     get viewingAll(): boolean {
@@ -235,11 +235,11 @@ void (async () => {
 if (QUERY_DYNAMIC_UP_MID) {
   subscribeOnKeys(
     dfStore,
-    ['upName', 'searchText', 'selectedGroup', 'viewingSomeUp', 'viewingAll'],
-    ({ upName, searchText, selectedGroup, viewingSomeUp, viewingAll }) => {
+    ['upName', 'filterText', 'selectedGroup', 'viewingSomeUp', 'viewingAll'],
+    ({ upName, filterText, selectedGroup, viewingSomeUp, viewingAll }) => {
       let title = viewingAll ? '动态' : viewingSomeUp ? `「${upName}」的动态` : `「${selectedGroup?.name}」分组动态`
-      if (searchText) {
-        title = `🔍【${searchText}】 - ${title}`
+      if (filterText) {
+        title = `🔍【${filterText}】 - ${title}`
       }
       setPageTitle(title)
     },

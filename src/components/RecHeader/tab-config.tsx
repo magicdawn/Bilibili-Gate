@@ -14,7 +14,7 @@ import {
 } from '$modules/icon'
 import { favStore } from '$modules/rec-services/fav/store'
 import { isHotTabUsingShuffle } from '$modules/rec-services/hot'
-import { advancedSearchHelpInfo } from '$utility/search'
+import { advancedFilterHelpInfo } from '$utility/local-filter'
 import toast from '$utility/toast'
 import { ETab } from './tab-enum'
 
@@ -92,7 +92,7 @@ export const TabConfig: Record<ETab, TabConfigItem> = {
       <div className='ml-20px'>
         搜索词: 搜索相关作品 <br />
         本地过滤词: 本地过滤搜索结果; 本地过滤词支持高级规则:
-        <div className='ml-20px'>{advancedSearchHelpInfo}</div>
+        <div className='ml-20px'>{advancedFilterHelpInfo}</div>
       </div>
     ),
   },

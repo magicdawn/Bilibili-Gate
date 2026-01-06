@@ -19,9 +19,9 @@ import {
   type ListSettingsPath,
   type Settings,
 } from '$modules/settings'
-import { advancedSearchHelpInfo } from '$utility/search'
+import { advancedFilterHelpInfo } from '$utility/local-filter'
 import {
-  createUpdateSearchCacheNotifyFns,
+  createUpdateFilterCacheNotifyFns,
   hasLocalDynamicFeedCache,
   localDynamicFeedInfoCache,
   updateLocalDynamicFeedCache,
@@ -38,7 +38,7 @@ import {
   DynamicFeedVideoMinDurationConfig,
   DynamicFeedVideoType,
   DynamicFeedVideoTypeLabel,
-  QUERY_DYNAMIC_SEARCH_TEXT,
+  QUERY_DYNAMIC_FILTER_TEXT,
   SHOW_DYNAMIC_FEED_ONLY,
   type UpMidType,
 } from '../store'
@@ -48,36 +48,36 @@ import type { RefreshFn } from '$components/Recommends/rec.shared'
 import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 
 export function usePopoverRelated({
-  externalSearchInput,
+  externalFilterInput,
   onRefresh,
   getPopupContainer,
 }: {
-  externalSearchInput: boolean
+  externalFilterInput: boolean
   onRefresh: RefreshFn
   getPopupContainer: (() => HTMLElement) | undefined
 }) {
-  const { upMid, dynamicFeedVideoType, filterMinDuration, searchText, hideChargeOnlyVideos } = useSnapshot(dfStore)
+  const { upMid, dynamicFeedVideoType, filterMinDuration, filterText, hideChargeOnlyVideos } = useSnapshot(dfStore)
 
-  const searchInput = (
+  const filterInput = (
     <Input.Search
-      style={{ width: externalSearchInput ? '250px' : undefined }}
+      style={{ width: externalFilterInput ? '250px' : undefined }}
       placeholder='按标题关键字过滤'
       type='search'
       autoCorrect='off'
       autoCapitalize='off'
-      name={`searchText_${upMid}`}
+      name={`filterText_${upMid}`}
       // 有自带的历史记录, 何乐而不为
       // 悬浮 autocomplete 时 popover 关闭了
       // autoComplete='on'
       variant='outlined'
-      defaultValue={dfStore.searchText}
+      defaultValue={dfStore.filterText}
       autoComplete='off'
       allowClear
       onChange={(e) => {
-        tryInstantSearchWithCache({ searchText: e.target.value, upMid, onRefresh })
+        tryInstantFilterWithCache({ filterText: e.target.value, upMid, onRefresh })
       }}
       onSearch={async (val) => {
-        dfStore.searchText = val || undefined
+        dfStore.filterText = val || undefined
         await delay(100)
         onRefresh()
       }}
@@ -85,7 +85,7 @@ export function usePopoverRelated({
   )
 
   const popoverContent = (
-    <PopoverContent externalSearchInput={externalSearchInput} searchInput={searchInput} refresh={onRefresh} />
+    <PopoverContent externalFilterInput={externalFilterInput} filterInput={filterInput} refresh={onRefresh} />
   )
 
   const [popoverOpen, setPopoverOpen] = useState(
@@ -101,10 +101,10 @@ export function usePopoverRelated({
     return !!(
       dynamicFeedVideoType !== DynamicFeedVideoType.All ||
       hideChargeOnlyVideos ||
-      searchText ||
+      filterText ||
       filterMinDuration !== DynamicFeedVideoMinDuration.All
     )
-  }, [dynamicFeedVideoType, hideChargeOnlyVideos, searchText, filterMinDuration])
+  }, [dynamicFeedVideoType, hideChargeOnlyVideos, filterText, filterMinDuration])
 
   const popoverTrigger = (
     <Popover
@@ -124,7 +124,7 @@ export function usePopoverRelated({
     </Popover>
   )
 
-  return { searchInput, popoverContent, popoverTrigger }
+  return { filterInput, popoverContent, popoverTrigger }
 }
 
 const classes = {
@@ -135,12 +135,12 @@ const classes = {
 } as const
 
 function PopoverContent({
-  externalSearchInput,
-  searchInput,
+  externalFilterInput,
+  filterInput,
   refresh,
 }: {
-  externalSearchInput: boolean
-  searchInput: ReactNode
+  externalFilterInput: boolean
+  filterInput: ReactNode
   refresh: RefreshFn | undefined
 }) {
   const {
@@ -152,28 +152,28 @@ function PopoverContent({
     filterMinDuration,
     hideChargeOnlyVideos,
     addSeparators,
-    searchText,
+    filterText,
   } = useSnapshot(dfStore)
 
-  let linkToReflectSearchTextEl: ReactNode
+  let linkToReflectFilterTextEl: ReactNode
   {
-    const show = SHOW_DYNAMIC_FEED_ONLY && !!searchText
-    const disabled = searchText === QUERY_DYNAMIC_SEARCH_TEXT
-    const { href, path } = useMemo(() => {
+    const show = SHOW_DYNAMIC_FEED_ONLY && !!filterText
+    const disabled = filterText === QUERY_DYNAMIC_FILTER_TEXT
+    const { href } = useMemo(() => {
       const u = new URL(location.href)
-      if (u.searchParams.has(DynamicFeedQueryKey.SearchTextFull)) {
-        u.searchParams.set(DynamicFeedQueryKey.SearchTextFull, searchText || '')
-      } else if (u.searchParams.has(DynamicFeedQueryKey.SearchTextShort)) {
-        u.searchParams.set(DynamicFeedQueryKey.SearchTextShort, searchText || '')
+      if (u.searchParams.has(DynamicFeedQueryKey.FilterTextFull)) {
+        u.searchParams.set(DynamicFeedQueryKey.FilterTextFull, filterText || '')
+      } else if (u.searchParams.has(DynamicFeedQueryKey.FilterTextShort)) {
+        u.searchParams.set(DynamicFeedQueryKey.FilterTextShort, filterText || '')
       } else {
-        u.searchParams.set(DynamicFeedQueryKey.SearchTextFull, searchText || '')
+        u.searchParams.set(DynamicFeedQueryKey.FilterTextFull, filterText || '')
       }
       return { href: u.href, path: `${u.pathname}?${u.search}` }
-    }, [searchText])
-    linkToReflectSearchTextEl = show && (
+    }, [filterText])
+    linkToReflectFilterTextEl = show && (
       <AntdTooltip title={href}>
         <Button disabled={disabled} href={href}>
-          转到搜索词为「{searchText || '空'}」的链接
+          转到过滤词为「{filterText || '空'}」的链接
         </Button>
       </AntdTooltip>
     )
@@ -269,19 +269,19 @@ function PopoverContent({
         </div>
       </div>
 
-      {/* search */}
-      {(!externalSearchInput || linkToReflectSearchTextEl) && (
+      {/* filter */}
+      {(!externalFilterInput || linkToReflectFilterTextEl) && (
         <div className={classes.section}>
-          <div className={classes.sectionTilte}>搜索</div>
+          <div className={classes.sectionTilte}>过滤</div>
           <div className={classes.sectionContent}>
-            {!externalSearchInput && searchInput}
-            {linkToReflectSearchTextEl}
+            {!externalFilterInput && filterInput}
+            {linkToReflectFilterTextEl}
           </div>
         </div>
       )}
 
-      {/* search-cache */}
-      <SearchCacheRelated />
+      {/* filter-cache */}
+      <FilterCacheRelated />
 
       <div className={classes.section}>
         <div className={classes.sectionTilte}>
@@ -322,19 +322,17 @@ function PopoverContent({
   )
 }
 
-function SearchCacheRelated() {
+function FilterCacheRelated() {
   const { cacheAllItemsEntry, cacheAllItemsUpMids } = useSettingsSnapshot().dynamicFeed.__internal
   const { viewingSomeUp, upMid, upName } = useSnapshot(dfStore)
 
   const $req = useRequest(
     async (upMid: UpMidType, upName: string) => {
-      const { notifyOnProgress, notifyOnSuccess } = createUpdateSearchCacheNotifyFns(upMid, upName)
+      const { notifyOnProgress, notifyOnSuccess } = createUpdateFilterCacheNotifyFns(upMid, upName)
       await updateLocalDynamicFeedCache(upMid, notifyOnProgress)
       notifyOnSuccess()
     },
-    {
-      manual: true,
-    },
+    { manual: true },
   )
 
   const checked = useMemo(() => !!upMid && cacheAllItemsUpMids.includes(upMid.toString()), [upMid, cacheAllItemsUpMids])
@@ -350,16 +348,16 @@ function SearchCacheRelated() {
       {cacheAllItemsEntry && viewingSomeUp && upMid && upName && (
         <div className={classes.section}>
           <div className={classes.sectionTilte}>
-            搜索缓存
+            过滤缓存
             <HelpInfo>
-              开启搜索缓存后, 会加载并缓存 UP 所有的动态 <br />
-              {'当本地有缓存且总条数 <= 5000时, 搜索框成为及时搜索, 无需点击搜索按钮'}
+              开启过滤缓存后, 会加载并缓存 UP 所有的动态 <br />
+              {'当本地有缓存且总条数 <= 5000时, 过滤框成为及时过滤, 无需点击过滤按钮'}
             </HelpInfo>
           </div>
           <div className={classes.sectionContent}>
             <div className='flex flex-wrap items-center gap-x-10px gap-y-3px'>
               <Checkbox className='inline-flex items-center' checked={checked} onChange={onChange}>
-                <AntdTooltip title='只有开启此项, 搜索时才会使用缓存'>
+                <AntdTooltip title='只有开启此项, 过滤时才会使用缓存'>
                   <span>为「{upName}」开启</span>
                 </AntdTooltip>
               </Checkbox>
@@ -373,9 +371,9 @@ function SearchCacheRelated() {
               </Button>
             </div>
             <CheckboxSettingItem
-              configPath='dynamicFeed.advancedSearch'
-              label={'使用高级搜索'}
-              tooltip={advancedSearchHelpInfo}
+              configPath='dynamicFeed.advancedFilter'
+              label='使用高级过滤'
+              tooltip={advancedFilterHelpInfo}
             />
           </div>
         </div>
@@ -384,17 +382,17 @@ function SearchCacheRelated() {
   )
 }
 
-const tryInstantSearchWithCache = throttle(async function ({
-  searchText,
+const tryInstantFilterWithCache = throttle(async function ({
+  filterText,
   upMid,
   onRefresh,
 }: {
-  searchText: string
+  filterText: string
   upMid?: UpMidType | undefined
   onRefresh: RefreshFn
 }) {
   if (!upMid) return
-  if (!(searchText || (!searchText && dfStore.searchText))) return
+  if (!(filterText || (!filterText && dfStore.filterText))) return
   if (!settings.dynamicFeed.__internal.cacheAllItemsEntry) return // feature not enabled
   if (!settings.dynamicFeed.__internal.cacheAllItemsUpMids.includes(upMid.toString())) return // up not checked
   if (!(await hasLocalDynamicFeedCache(upMid))) return // cache not exist
@@ -404,8 +402,8 @@ const tryInstantSearchWithCache = throttle(async function ({
   if (!info || !info.count) return
   if (info.count >= 5000) return // for bad performance
 
-  // instant search
-  dfStore.searchText = searchText
+  // instant filter
+  dfStore.filterText = filterText
   await delay(0)
   onRefresh()
 }, 100)

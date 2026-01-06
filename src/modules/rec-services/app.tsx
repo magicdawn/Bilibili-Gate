@@ -100,7 +100,7 @@ export class AppRecService extends BaseTabService<RecItemType> {
       Object.assign(config, {
         showLiveInDynamicFeed: true,
         whenViewAllEnableHideSomeContents: false,
-        searchCacheEnabled: false,
+        filterCacheEnabled: false,
       } satisfies Partial<typeof config>)
       dynamicFeedService = new DynamicFeedRecService(config)
     }

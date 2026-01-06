@@ -14,14 +14,14 @@ export async function hasLocalDynamicFeedCache(upMid: UpMidType) {
   return !!existing?.count
 }
 
-export function createUpdateSearchCacheNotifyFns(upMid: UpMidType, upName: string) {
-  const notiKey = (mid: UpMidType) => `update-search-cache-${mid}`
+export function createUpdateFilterCacheNotifyFns(upMid: UpMidType, upName: string) {
+  const notiKey = (mid: UpMidType) => `update-filter-cache:${mid}`
 
   const _onProgress: OnProgress = (page: number, total: number) => {
     antNotification.info({
       icon: <IconSvgSpinnersBarsRotateFade className='size-16px' />,
       key: notiKey(upMid),
-      title: `搜索缓存更新中...`,
+      title: `过滤缓存更新中...`,
       description: `「${upName}」更新中: Page(${page}) Total(${total})`,
       duration: false, // do not auto close
     })
@@ -35,7 +35,7 @@ export function createUpdateSearchCacheNotifyFns(upMid: UpMidType, upName: strin
     antNotification.success({
       key: notiKey(upMid),
       title: `缓存更新成功`,
-      description: `「${upName}」的搜索缓存更新成功`,
+      description: `「${upName}」的过滤缓存更新成功`,
       duration: false, // do not auto close
     })
   }

@@ -12,7 +12,7 @@ import { getUserNickname } from '$modules/bilibili/user/nickname'
 import { getSpaceAccInfo } from '$modules/bilibili/user/space-acc-info'
 import { checkLoginStatus } from '$utility/cookie'
 import { setPageTitle } from '$utility/dom'
-import { parseSearchInput } from '$utility/search'
+import { parseFilterInput } from '$utility/local-filter'
 import { BaseTabService, type IService } from '../_base'
 import { SpaceUploadOrder, tryGetSpaceUpload } from './api'
 import { QUERY_SPACE_UPLOAD_INITIAL_PAGE, spaceUploadStore } from './store'
@@ -202,7 +202,7 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
     list = list.filter((item) => !isSpaceUploadItemChargeOnly(item))
 
     if (this.filterText) {
-      const { includes, excludes } = parseSearchInput(this.filterText)
+      const { includes, excludes } = parseFilterInput(this.filterText)
       list = list.filter((item) => {
         return (
           includes.every((include) => item.title.includes(include)) &&

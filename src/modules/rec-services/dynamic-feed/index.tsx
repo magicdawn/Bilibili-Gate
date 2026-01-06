@@ -5,7 +5,7 @@ import { baseDebug } from '$common'
 import { EApiType } from '$define/index.shared'
 import { getFollowGroupContent } from '$modules/bilibili/me/follow-group'
 import { settings } from '$modules/settings'
-import { parseSearchInput } from '$utility/search'
+import { parseFilterInput } from '$utility/local-filter'
 import { parseDuration } from '$utility/video'
 import { BaseTabService, QueueStrategy } from '../_base'
 import { LiveRecService } from '../live'
@@ -44,8 +44,8 @@ export function getDynamicFeedServiceConfig(usingDfStore: DynamicFeedStore = dfS
     upMid: snap.upMid,
     groupId: snap.selectedGroupId,
 
-    // 搜索
-    searchText: snap.searchText,
+    // 过滤
+    filterText: snap.filterText,
 
     // 类型
     dynamicFeedVideoType: snap.dynamicFeedVideoType,
@@ -70,8 +70,8 @@ export function getDynamicFeedServiceConfig(usingDfStore: DynamicFeedStore = dfS
     whenViewAllEnableHideSomeContents: settings.dynamicFeed.whenViewAll.enableHideSomeContents,
     whenViewAllHideIds: new Set(settings.dynamicFeed.whenViewAll.hideIds),
 
-    advancedSearch: settings.dynamicFeed.advancedSearch,
-    searchCacheEnabled:
+    advancedFilter: settings.dynamicFeed.advancedFilter,
+    filterCacheEnabled:
       !!snap.upMid &&
       settings.dynamicFeed.__internal.cacheAllItemsEntry && // the main switch
       settings.dynamicFeed.__internal.cacheAllItemsUpMids.includes(snap.upMid.toString()), // the switch for this up
@@ -129,7 +129,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
 
     // 过滤结果可能较少
     if (
-      this.searchText ||
+      this.filterText ||
       this.dynamicFeedVideoType === DynamicFeedVideoType.DynamicOnly ||
       this.filterMinDuration !== DynamicFeedVideoMinDuration.All
     ) {
@@ -151,7 +151,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
       const filterEmpty =
         !this.upMid &&
         this.groupId === undefined &&
-        !this.searchText &&
+        !this.filterText &&
         this.dynamicFeedVideoType === DynamicFeedVideoType.All &&
         this.filterMinDuration === DynamicFeedVideoMinDuration.All
       if (filterEmpty) {
@@ -175,8 +175,8 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
   get groupId() {
     return this.config.groupId
   }
-  get searchText() {
-    return this.config.searchText
+  get filterText() {
+    return this.config.filterText
   }
   get dynamicFeedVideoType() {
     return this.config.dynamicFeedVideoType
@@ -260,7 +260,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
     return this.handleAddSeparators(items)
   }
 
-  private _queueForSearchCache: QueueStrategy<DynamicFeedItem> | undefined
+  private _queueForFilterCache: QueueStrategy<DynamicFeedItem> | undefined
   async _fetchMore(abortSignal: AbortSignal) {
     // live
     if (this.liveRecService?.hasMore) {
@@ -280,37 +280,37 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
       debug('viewingAll: hide-mids = %o', this.whenViewAllHideMids)
     }
 
-    // use search cache
-    const useSearchCache = !!(
+    // use filter cache
+    const useFilterCache = !!(
       this.upMid &&
-      this.searchText &&
-      this.config.searchCacheEnabled &&
+      this.filterText &&
+      this.config.filterCacheEnabled &&
       (await hasLocalDynamicFeedCache(this.upMid))
     )
-    const useAdvancedSearch = useSearchCache && this.config.advancedSearch
-    const useAdvancedSearchParsed = useAdvancedSearch
-      ? parseSearchInput((this.searchText || '').toLowerCase())
+    const useAdvancedFilter = useFilterCache && this.config.advancedFilter
+    const useAdvancedFilterParsed = useAdvancedFilter
+      ? parseFilterInput((this.filterText || '').toLowerCase())
       : undefined
 
-    if (useSearchCache) {
+    if (useFilterCache) {
       // fill queue with pre-filtered cached-items
-      if (!this._queueForSearchCache) {
+      if (!this._queueForFilterCache) {
         await performIncrementalUpdateIfNeed(this.upMid)
-        this._queueForSearchCache = new QueueStrategy<DynamicFeedItem>(20)
-        this._queueForSearchCache.bufferQueue = ((await localDynamicFeedCache.get(this.upMid)) || []).filter((x) => {
+        this._queueForFilterCache = new QueueStrategy<DynamicFeedItem>(20)
+        this._queueForFilterCache.bufferQueue = ((await localDynamicFeedCache.get(this.upMid)) || []).filter((x) => {
           const title = x?.modules?.module_dynamic?.major?.archive?.title || ''
-          return filterBySearchText({
-            searchText: this.searchText!,
+          return filterByFilterText({
+            filterText: this.filterText!,
             title,
-            useAdvancedSearch,
-            useAdvancedSearchParsed,
+            useAdvancedFilter,
+            useAdvancedFilterParsed,
           })
         })
       }
       // slice
-      rawItems = this._queueForSearchCache.sliceFromQueue(this.page + 1) || []
+      rawItems = this._queueForFilterCache.sliceFromQueue(this.page + 1) || []
       this.page++
-      this.hasMoreExceptQueue = !!this._queueForSearchCache.bufferQueue.length
+      this.hasMoreExceptQueue = !!this._queueForFilterCache.bufferQueue.length
       // offset not needed
     }
 
@@ -396,15 +396,15 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
         return duration >= this.filterMinDurationValue
       })
 
-      // by 关键字搜索
+      // by 关键字过滤
       .filter((x) => {
-        if (!this.searchText) return true
+        if (!this.filterText) return true
         const title = x?.modules?.module_dynamic?.major?.archive?.title || ''
-        return filterBySearchText({
-          searchText: this.searchText,
+        return filterByFilterText({
+          filterText: this.filterText,
           title,
-          useAdvancedSearch,
-          useAdvancedSearchParsed,
+          useAdvancedFilter,
+          useAdvancedFilterParsed,
         })
       })
 
@@ -429,32 +429,32 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
     /**
      * filter functions
      */
-    function filterBySearchText({
+    function filterByFilterText({
       title,
-      searchText,
-      useAdvancedSearch,
-      useAdvancedSearchParsed,
+      filterText,
+      useAdvancedFilter,
+      useAdvancedFilterParsed,
     }: {
       title: string
-      searchText: string
-      useAdvancedSearch: boolean
-      useAdvancedSearchParsed?: ReturnType<typeof parseSearchInput>
+      filterText: string
+      useAdvancedFilter: boolean
+      useAdvancedFilterParsed?: ReturnType<typeof parseFilterInput>
     }) {
       title = title.toLowerCase()
-      searchText = searchText.toLowerCase()
+      filterText = filterText.toLowerCase()
 
-      // 简单搜索
-      const simpleSearch = () => title.includes(searchText)
+      // 简单过滤
+      const simpleFilter = () => title.includes(filterText)
 
-      // 高级搜索
-      const advancedSearch = () => {
+      // 高级过滤
+      const advancedFilter = () => {
         return (
-          (useAdvancedSearchParsed?.includes ?? []).every((x) => title.includes(x)) &&
-          (useAdvancedSearchParsed?.excludes ?? []).every((x) => !title.includes(x))
+          (useAdvancedFilterParsed?.includes ?? []).every((x) => title.includes(x)) &&
+          (useAdvancedFilterParsed?.excludes ?? []).every((x) => !title.includes(x))
         )
       }
 
-      return useAdvancedSearch ? advancedSearch() : simpleSearch()
+      return useAdvancedFilter ? advancedFilter() : simpleFilter()
     }
 
     /**

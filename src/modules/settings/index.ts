@@ -120,11 +120,11 @@ export const initialSettings = {
       hideIds: [] as string[], // `up:${mid}` | `follow-group:${id}`
     },
 
-    advancedSearch: false,
+    advancedFilter: false,
     __internal: {
       cacheAllItemsEntry: false,
       cacheAllItemsUpMids: [] as string[], // enable for these up
-      externalSearchInput: false, // more convenient
+      externalFilterInput: false, // more convenient
     },
   },
 
@@ -385,7 +385,7 @@ export function runSettingsMigration(val: object | undefined) {
     ['dynamicFeed.followGroup.forceUseMergeTimelineIds', 'dynamicFeedFollowGroupForceUseMergeTimelineIds'],
     ['dynamicFeed.whenViewAll.enableHideSomeContents', 'dynamicFeedWhenViewAllEnableHideSomeContents'],
     ['dynamicFeed.whenViewAll.hideIds', 'dynamicFeedWhenViewAllHideIds'],
-    ['dynamicFeed.advancedSearch', 'dynamicFeedAdvancedSearch'],
+    // ['dynamicFeed.advancedSearch', 'dynamicFeedAdvancedSearch'],
 
     // ['fav.useShuffle', 'favUseShuffle'],
     ['fav.addSeparator', 'favAddSeparator'],
@@ -425,6 +425,10 @@ export function runSettingsMigration(val: object | undefined) {
 
     // 2025-12-23: fix typo
     ['grid.enableForceColumn', 'grid.enableForceCoumn'],
+
+    // 2026-01-06: unify term to `filter` for client side (filter / search etc)
+    ['dynamicFeed.advancedFilter', 'dynamicFeedAdvancedSearch'],
+    ['dynamicFeed.advancedFilter', 'dynamicFeed.advancedSearch'],
   ]
   // 伪代码: savedConfig[newName] = savedConfig[legacyName]
   for (const [configPath, legacyConfigPath] of config) {
