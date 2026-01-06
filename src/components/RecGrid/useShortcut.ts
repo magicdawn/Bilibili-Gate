@@ -1,7 +1,7 @@
 import { useMemoizedFn } from 'ahooks'
 import useKeyPress, { type KeyFilter, type KeyType } from 'ahooks/lib/useKeyPress'
 import { useState, type RefObject } from 'react'
-import { APP_CLS_CARD, APP_CLS_CARD_ACTIVE } from '$common'
+import { APP_CLS_CARD, APP_CLS_CARD_ACTIVE, appWarn } from '$common'
 import { EGridDisplayMode } from '$enums'
 import { settings } from '$modules/settings'
 import { shouldDisableShortcut } from '$utility/dom'
@@ -15,7 +15,7 @@ interface IOptions {
   maxIndex: number
 
   /** 用于获取 cards, 获取 col count */
-  containerRef: RefObject<HTMLElement>
+  gridRef: RefObject<HTMLElement>
 
   /** 判断 active card 与 scroller 关系, 判定 activeIndex 是否有效 */
   getScrollerRect: () => DOMRect | null | undefined
@@ -35,7 +35,7 @@ export function useShortcut({
   refresh,
   minIndex = 0,
   maxIndex,
-  containerRef,
+  gridRef,
   getScrollerRect,
   changeScrollY,
   videoCardEmitters,
@@ -51,10 +51,10 @@ export function useShortcut({
 
   const activeIndexIsValid = useMemoizedFn(() => {
     if (typeof activeIndex !== 'number') return false
-    if (!containerRef.current) return false
+    if (!gridRef.current) return false
 
     const scrollerRect = getScrollerRect()
-    const rect = containerRef.current
+    const rect = gridRef.current
       .querySelector<HTMLDivElement>(`.${APP_CLS_CARD}.${APP_CLS_CARD_ACTIVE}`)
       ?.getBoundingClientRect()
     if (!scrollerRect || !rect) return false
@@ -80,7 +80,7 @@ export function useShortcut({
      * quick try +- col-count
      */
     {
-      const col = getColumnCount(containerRef.current)
+      const col = getColumnCount(gridRef.current)
       const step = direction === 'down' ? col : -col
       const newCard = getCardAt(activeIndex! + step)
       if (newCard) {
@@ -214,7 +214,7 @@ export function useShortcut({
 
   const CARDS_SELECTOR = `.${APP_CLS_CARD}`
   function getCards() {
-    return [...(containerRef.current?.querySelectorAll<HTMLDivElement>(CARDS_SELECTOR) || [])]
+    return [...(gridRef.current?.querySelectorAll<HTMLDivElement>(CARDS_SELECTOR) || [])]
   }
   function getCardAt(index: number) {
     return getCards()[index]
@@ -264,16 +264,22 @@ const countCache2 = new Map<string, number>()
 
 // SectionRecommend 没有 narrow-mode
 // RecGrid 有 narrow mode
-export function getColumnCount(container?: HTMLElement | null, mayHaveNarrowMode = true) {
+export function getColumnCount(gridEl?: HTMLElement | null, mayHaveNarrowMode = true) {
   const { gridDisplayMode, useCustomGrid, enableForceColumn, forceColumnCount, cardMinWidth } = settings.grid
 
   if (gridDisplayMode === EGridDisplayMode.List) return 1
   if (mayHaveNarrowMode && gridDisplayMode === EGridDisplayMode.TwoColumnGrid) return 2
   if (useCustomGrid && enableForceColumn && forceColumnCount) return forceColumnCount
 
+  gridEl ||= document.querySelector<HTMLElement>(`.${videoGrid}`)
+  if (!gridEl) {
+    appWarn('getColumnCount(): gridEl not found')
+    return 0
+  }
+
   const countCache = useCustomGrid ? countCache1 : countCache2
   const cacheKey = new URLSearchParams({
-    windowWidth: Math.trunc(window.innerWidth).toString(),
+    width: Math.round(gridEl.clientWidth).toString(),
     cardMinWidth: useCustomGrid ? cardMinWidth.toString() : '',
   }).toString()
   {
@@ -281,12 +287,11 @@ export function getColumnCount(container?: HTMLElement | null, mayHaveNarrowMode
     if (count) return count
   }
 
-  const gridEl =
-    container?.querySelector<HTMLElement>(`.${videoGrid}`) ?? document.querySelector<HTMLElement>(`.${videoGrid}`)
-  if (!gridEl) return 0
-
   const style = window.getComputedStyle(gridEl)
-  if (style.display !== 'grid') return 0
+  if (style.display !== 'grid') {
+    appWarn('getColumnCount(): gridEl.style.display !== "grid"')
+    return 0
+  }
 
   const count = style.gridTemplateColumns.split(' ').length
   countCache.set(cacheKey, count)

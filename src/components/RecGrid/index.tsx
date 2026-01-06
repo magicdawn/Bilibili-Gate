@@ -263,8 +263,8 @@ export const RecGrid = memo(
     const fullList = items
     const videoList = useMemo(() => fullList.filter((x) => x.api !== EApiType.Separator), [fullList])
 
-    // .video-grid
-    const containerRef = useRef<HTMLDivElement | null>(null)
+    // the grid: `.video-grid`
+    const gridRef = useRef<HTMLDivElement | null>(null)
 
     const getScrollerRect = useMemoizedFn(() => {
       // use window
@@ -307,7 +307,7 @@ export const RecGrid = memo(
       enabled: shortcutEnabled,
       refresh,
       maxIndex: videoList.length - 1,
-      containerRef,
+      gridRef,
       getScrollerRect,
       videoCardEmitters,
       activeLargePreviewItemIndex,
@@ -479,16 +479,16 @@ export const RecGrid = memo(
     const virtuosoGridContext: CustomGridContext = useMemo(() => {
       return {
         footerContent: footer,
-        containerRef,
+        gridRef,
         gridClassName,
       }
-    }, [footer, containerRef, gridClassName])
+    }, [footer, gridRef, gridClassName])
 
     // 总是 render grid, getColumnCount 依赖 grid columns
     const render = ({ gridChildren, gridSiblings }: { gridChildren?: ReactNode; gridSiblings?: ReactNode } = {}) => {
       return (
-        <div data-tab={tab} ref={containerRef} className={containerClassName}>
-          <div data-tab={tab} className={gridClassName} style={gridStyle}>
+        <div data-tab={tab} className={containerClassName}>
+          <div data-tab={tab} ref={gridRef} className={gridClassName} style={gridStyle}>
             {gridChildren}
           </div>
           {gridSiblings}

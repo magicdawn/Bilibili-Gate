@@ -18,7 +18,7 @@ if (ENABLE_VIRTUAL_GRID) {
 
 export type CustomGridContext = {
   footerContent: ReactNode
-  containerRef: MutableRefObject<HTMLDivElement | null>
+  gridRef: MutableRefObject<HTMLDivElement | null>
   gridClassName: string
 }
 
@@ -47,7 +47,7 @@ export const gridComponents: CustomGridComponentsContextRequired = {
       <div
         ref={(el) => {
           setForwardedRef(el)
-          ctx!.containerRef.current = el
+          ctx!.gridRef.current = el
         }}
         {...props}
         className={ctx.gridClassName}
