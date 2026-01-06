@@ -127,7 +127,7 @@ export function VideoSourceTab() {
       buttonStyle='solid'
       size='middle'
       value={tab}
-      className='inline-flex items-center overflow-hidden'
+      className='inline-flex items-center'
       onFocus={(e) => {
         // 不移除 focus, refresh `r` 无法响应
         const target = e.target as HTMLElement

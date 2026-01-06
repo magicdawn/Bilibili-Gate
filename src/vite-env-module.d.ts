@@ -7,6 +7,6 @@ declare module 'valtio' {
 
 declare module 'react' {
   interface CSSProperties {
-    [key: `--${string}`]: string | number
+    [key: `--${string}`]: string | number | undefined
   }
 }

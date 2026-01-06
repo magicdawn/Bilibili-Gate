@@ -259,23 +259,25 @@ export function useShortcut({
 }
 
 // use window.innerHeight as cache key
-const countCache1 = new Map<number, number>()
-const countCache2 = new Map<number, number>()
+const countCache1 = new Map<string, number>()
+const countCache2 = new Map<string, number>()
 
 // SectionRecommend 没有 narrow-mode
 // RecGrid 有 narrow mode
 export function getColumnCount(container?: HTMLElement | null, mayHaveNarrowMode = true) {
-  const { gridDisplayMode, useCustomGrid, enableForceColumn, forceColumnCount } = settings.grid
+  const { gridDisplayMode, useCustomGrid, enableForceColumn, forceColumnCount, cardMinWidth } = settings.grid
 
   if (gridDisplayMode === EGridDisplayMode.List) return 1
-
   if (mayHaveNarrowMode && gridDisplayMode === EGridDisplayMode.TwoColumnGrid) return 2
-
   if (useCustomGrid && enableForceColumn && forceColumnCount) return forceColumnCount
 
   const countCache = useCustomGrid ? countCache1 : countCache2
+  const cacheKey = new URLSearchParams({
+    windowWidth: Math.trunc(window.innerWidth).toString(),
+    cardMinWidth: cardMinWidth.toString(),
+  }).toString()
   {
-    const count = countCache.get(Math.trunc(window.innerWidth))
+    const count = countCache.get(cacheKey)
     if (count) return count
   }
 
@@ -285,7 +287,6 @@ export function getColumnCount(container?: HTMLElement | null, mayHaveNarrowMode
   const style = globalThis.getComputedStyle(container)
   if (style.display !== 'grid') return 0
   const count = style.gridTemplateColumns.split(' ').length
-
-  countCache.set(window.innerWidth, count)
+  countCache.set(cacheKey, count)
   return count
 }

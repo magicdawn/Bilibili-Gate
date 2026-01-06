@@ -4,7 +4,7 @@
 
 import { useCreation, useEventListener, useLatest, useMemoizedFn, useMount, useUnmountedRef } from 'ahooks'
 import { Divider } from 'antd'
-import clsx from 'clsx'
+import clsx, { type ClassValue } from 'clsx'
 import Emittery from 'emittery'
 import { delay } from 'es-toolkit'
 import ms from 'ms'
@@ -46,7 +46,7 @@ import { useSetupGridState } from './rec-grid-state'
 import { setGlobalGridItems } from './unsafe-window-export'
 import { useRefresh } from './useRefresh'
 import { useShortcut } from './useShortcut'
-import * as scssClassNames from './video-grid.module.scss'
+import * as clsFromScss from './video-grid.module.scss'
 import {
   ENABLE_VIRTUAL_GRID,
   gridComponents,
@@ -127,7 +127,9 @@ export const RecGrid = memo(
     ref: ForwardedRef<RecGridRef>,
   ) {
     const self = useCreation(() => new RecGridSelf(), [])
-    const { useCustomGrid, gridDisplayMode, enableForceColumn, forceColumnCount } = useSnapshot(settings.grid)
+    const { useCustomGrid, gridDisplayMode, enableForceColumn, forceColumnCount, cardMinWidth } = useSnapshot(
+      settings.grid,
+    )
     const { multiSelecting } = useSnapshot(multiSelectStore)
     const recSelf = useRecSelfContext()
     const { servicesRegistry } = recSelf
@@ -417,36 +419,48 @@ export const RecGrid = memo(
     )
 
     const containerClassName = useMemo(
-      () => clsx('min-h-100vh', scssClassNames.videoGridContainer, propContainerClassName),
+      () => clsx('min-h-100vh', clsFromScss.videoGridContainer, propContainerClassName),
       [propContainerClassName],
     )
 
     const gridClassName = useMemo(() => {
+      let clsForDisplayMode: ClassValue
+      switch (gridDisplayMode) {
+        case EGridDisplayMode.TwoColumnGrid: // 双列
+          clsForDisplayMode = clsFromScss.narrowMode
+          break
+        case EGridDisplayMode.CenterEmptyGrid: // 中空
+          clsForDisplayMode = clsx(useCustomGrid && clsFromScss.usingCardMinWidth, clsFromScss.videoGridCenterEmpty)
+          break
+        case EGridDisplayMode.List:
+          break
+        case EGridDisplayMode.NormalGrid:
+          clsForDisplayMode = useCustomGrid && clsFromScss.usingCardMinWidth
+          break
+        default:
+          break
+      }
+
       return clsx(
-        // base
         APP_CLS_GRID, // for customize css
-        scssClassNames.videoGrid,
-        // variants
-        useCustomGrid ? scssClassNames.videoGridCustom : scssClassNames.videoGridBiliFeed4,
-        gridDisplayMode === EGridDisplayMode.TwoColumnGrid
-          ? scssClassNames.narrowMode // 双列
-          : gridDisplayMode === EGridDisplayMode.CenterEmptyGrid
-            ? scssClassNames.videoGridCenterEmpty // 中空
-            : undefined,
-        // from props
+        clsFromScss.videoGrid,
+        useCustomGrid ? clsFromScss.videoGridCustom : clsFromScss.videoGridBiliFeed4,
+        clsForDisplayMode,
         propClassName,
       )
     }, [gridDisplayMode, useCustomGrid, propClassName])
-    const gridStyle = useMemo(() => {
-      if (
-        gridDisplayMode !== EGridDisplayMode.TwoColumnGrid &&
-        useCustomGrid &&
-        enableForceColumn &&
-        forceColumnCount
-      ) {
-        return { '--col': forceColumnCount.toString() } as CSSProperties
+
+    const gridStyle: CSSProperties | undefined = useMemo(() => {
+      if (!useCustomGrid) return
+
+      if (gridDisplayMode !== EGridDisplayMode.TwoColumnGrid && enableForceColumn && forceColumnCount) {
+        return { '--col': forceColumnCount.toString() }
       }
-    }, [gridDisplayMode, useCustomGrid, enableForceColumn, forceColumnCount])
+
+      if (useCustomGrid && cardMinWidth) {
+        return { '--card-min-width': `${cardMinWidth}px` }
+      }
+    }, [gridDisplayMode, useCustomGrid, enableForceColumn, forceColumnCount, cardMinWidth])
 
     const cardBorderCss = useCardBorderCss()
 
@@ -455,7 +469,6 @@ export const RecGrid = memo(
         footerContent: footer,
         containerRef,
         gridClassName,
-        // renderItem,
       }
     }, [footer, containerRef, gridClassName])
 
@@ -527,7 +540,7 @@ export const RecGrid = memo(
     // virtual grid
     if (ENABLE_VIRTUAL_GRID) {
       return (
-        <div className={clsx(scssClassNames.videoGridContainer, scssClassNames.virtualGridEnabled)}>
+        <div className={clsx(clsFromScss.videoGridContainer, clsFromScss.virtualGridEnabled)}>
           <VirtuosoGrid
             useWindowScroll
             data={fullList}

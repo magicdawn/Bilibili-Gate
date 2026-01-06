@@ -14,9 +14,8 @@ import type { Get, PartialDeep, ReadonlyDeep } from 'type-fest'
 
 const debug = baseDebug.extend('settings')
 
-/**
- * 命名: 模块/tab + 场景 + 功能
- */
+/* #region initialSettings */
+// 命名: 模块/tab + 场景 + 功能
 export const initialSettings = {
   accessKey: '',
   accessKeyExpireAt: 0,
@@ -56,6 +55,9 @@ export const initialSettings = {
     // 手动指定
     enableForceColumn: false,
     forceColumnCount: 4,
+
+    // 卡片最小宽度, 虽然是卡片, 但其实是网格布局
+    cardMinWidth: 320,
   },
 
   /**
@@ -289,6 +291,7 @@ export const initialSettings = {
   __internalHotSubUseDropdown: false,
   __internalRecTabRenderAsSegments: false,
 }
+/* #endregion */
 
 export type Settings = typeof initialSettings
 export const settings = proxy(cloneDeep(initialSettings))

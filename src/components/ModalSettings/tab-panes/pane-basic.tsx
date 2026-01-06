@@ -11,8 +11,8 @@ import { ETab } from '$components/RecHeader/tab-enum'
 import { EVideoLinkOpenMode, VideoLinkOpenModeConfig } from '$components/VideoCard/index.shared'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
-import { IconForCopy } from '$modules/icon'
-import { settings, updateSettings, useSettingsSnapshot } from '$modules/settings'
+import { IconForCopy, IconForReset } from '$modules/icon'
+import { initialSettings, settings, updateSettings, useSettingsSnapshot } from '$modules/settings'
 import { explainForFlag, toastAndReload } from '../index.shared'
 import { ResetPartialSettingsButton, SettingsGroup, sharedClassNames } from './shared'
 
@@ -22,7 +22,7 @@ export function TabPaneBasic() {
       actions: { showLargePreview, openInPipWindow },
       imgPreview: { enabled: imgPreviewEnabled },
     },
-    grid: { useCustomGrid, enableForceColumn, forceColumnCount },
+    grid: { useCustomGrid, enableForceColumn, forceColumnCount, cardMinWidth },
     videoLinkOpenMode,
   } = useSettingsSnapshot()
 
@@ -113,15 +113,51 @@ export function TabPaneBasic() {
             tooltip={
               <>
                 网格配置指: 网格宽度, 间距, 列数等. <br />
-                自定义网格配置: 宽度为90%; 可跟随 Bilibili-Evolved 自定义顶栏配置; 列数: 4 - 10列; 由 {
-                  APP_NAME
-                } 自定义; <br />
+                自定义网格配置: 宽度为90%; 可跟随 Bilibili-Evolved 自定义顶栏配置; 由 {APP_NAME} 自定义; <br />
                 默认网格配置: bili-feed4 版本B站首页默认的网格配置; 在 Safari 中使用建议取消勾选此项.
               </>
             }
           />
 
-          <div className='flex items-center gap-x-4px'>
+          <div className='flex items-center gap-x-1'>
+            <AntdTooltip
+              title={
+                <>
+                  如果期望显示更多的列, 可以调小这个值; <br />
+                  如果期望显示更少的列, 可以调大这个值; <br />
+                  手动设置列数时, 这个值不起作用.
+                </>
+              }
+            >
+              <span>视频卡片最小宽度</span>
+            </AntdTooltip>
+            <InputNumber
+              disabled={!useCustomGrid || enableForceColumn}
+              value={cardMinWidth}
+              onChange={(val) => {
+                if (val) settings.grid.cardMinWidth = val
+              }}
+              min={150}
+              max={450}
+              step={10}
+              size='small'
+              className='w-75px'
+            />
+            <AntdTooltip title='重置'>
+              <Button
+                disabled={!useCustomGrid || enableForceColumn}
+                size='small'
+                className='icon-only-round-button size-24px'
+                onClick={() => {
+                  settings.grid.cardMinWidth = initialSettings.grid.cardMinWidth
+                }}
+              >
+                <IconForReset className='size-14px' />
+              </Button>
+            </AntdTooltip>
+          </div>
+
+          <div className='flex items-center'>
             <CheckboxSettingItem
               disabled={!useCustomGrid}
               configPath='grid.enableForceColumn'
@@ -140,7 +176,7 @@ export function TabPaneBasic() {
                 max={10}
                 step={1}
                 size='small'
-                style={{ width: 50 }}
+                className='w-50px'
               />
             )}
           </div>
