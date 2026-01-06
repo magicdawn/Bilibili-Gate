@@ -424,31 +424,43 @@ export const RecGrid = memo(
     )
 
     const gridClassName = useMemo(() => {
-      let clsForDisplayMode: ClassValue
-      switch (gridDisplayMode) {
-        case EGridDisplayMode.TwoColumnGrid: // 双列
-          clsForDisplayMode = clsFromScss.narrowMode
-          break
-        case EGridDisplayMode.CenterEmptyGrid: // 中空
-          clsForDisplayMode = clsx(useCustomGrid && clsFromScss.usingCardMinWidth, clsFromScss.videoGridCenterEmpty)
-          break
-        case EGridDisplayMode.List:
-          break
-        case EGridDisplayMode.NormalGrid:
-          clsForDisplayMode = useCustomGrid && clsFromScss.usingCardMinWidth
-          break
-        default:
-          break
-      }
+      function getExtraClass() {
+        // 双列
+        if (gridDisplayMode === EGridDisplayMode.TwoColumnGrid) {
+          return clsFromScss.narrowMode
+        }
 
+        const ret: ClassValue = []
+
+        // 中空
+        if (gridDisplayMode === EGridDisplayMode.CenterEmptyGrid) {
+          ret.push(clsFromScss.videoGridCenterEmpty)
+        }
+
+        if (gridDisplayMode === EGridDisplayMode.List) {
+          // noop
+        }
+
+        if (gridDisplayMode === EGridDisplayMode.NormalGrid && useCustomGrid) {
+          const usingForceColumn = !!(enableForceColumn && forceColumnCount)
+          if (usingForceColumn) {
+            // noop, only need set `--col`
+          } else {
+            // use `auto-fill`
+            ret.push(clsFromScss.usingCardMinWidth)
+          }
+        }
+
+        return ret
+      }
       return clsx(
         APP_CLS_GRID, // for customize css
         clsFromScss.videoGrid,
         useCustomGrid ? clsFromScss.videoGridCustom : clsFromScss.videoGridBiliFeed4,
-        clsForDisplayMode,
+        getExtraClass(),
         propClassName,
       )
-    }, [gridDisplayMode, useCustomGrid, propClassName])
+    }, [clsFromScss, useCustomGrid, gridDisplayMode, enableForceColumn, forceColumnCount, propClassName])
 
     const gridStyle: CSSProperties | undefined = useMemo(() => {
       if (!useCustomGrid) return

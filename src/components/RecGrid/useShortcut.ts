@@ -274,18 +274,20 @@ export function getColumnCount(container?: HTMLElement | null, mayHaveNarrowMode
   const countCache = useCustomGrid ? countCache1 : countCache2
   const cacheKey = new URLSearchParams({
     windowWidth: Math.trunc(window.innerWidth).toString(),
-    cardMinWidth: cardMinWidth.toString(),
+    cardMinWidth: useCustomGrid ? cardMinWidth.toString() : '',
   }).toString()
   {
     const count = countCache.get(cacheKey)
     if (count) return count
   }
 
-  container ||= document.querySelector<HTMLElement>(`.${videoGrid}`)
-  if (!container) return 0
+  const gridEl =
+    container?.querySelector<HTMLElement>(`.${videoGrid}`) ?? document.querySelector<HTMLElement>(`.${videoGrid}`)
+  if (!gridEl) return 0
 
-  const style = globalThis.getComputedStyle(container)
+  const style = window.getComputedStyle(gridEl)
   if (style.display !== 'grid') return 0
+
   const count = style.gridTemplateColumns.split(' ').length
   countCache.set(cacheKey, count)
   return count
