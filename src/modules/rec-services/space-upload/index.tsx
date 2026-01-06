@@ -12,7 +12,7 @@ import { getUserNickname } from '$modules/bilibili/user/nickname'
 import { getSpaceAccInfo } from '$modules/bilibili/user/space-acc-info'
 import { checkLoginStatus } from '$utility/cookie'
 import { setPageTitle } from '$utility/dom'
-import { parseFilterInput } from '$utility/local-filter'
+import { parseAdvancedFilter } from '$utility/local-filter'
 import { BaseTabService, type IService } from '../_base'
 import { SpaceUploadOrder, tryGetSpaceUpload } from './api'
 import { QUERY_SPACE_UPLOAD_INITIAL_PAGE, spaceUploadStore } from './store'
@@ -82,11 +82,11 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
   override tabbarView: ReactNode = (<SpaceUploadTabbarView />)
 
   override get hasMoreExceptQueue(): boolean {
-    if (this.isAnonymous) return false
     if (!this.service) return true
     return this.service.hasMore
   }
 
+  /* #region side effects */
   private async fetchAvatars(mids: number[]) {
     await Promise.all(
       mids.map(async (mid) => {
@@ -96,14 +96,9 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
       }),
     )
   }
-
   private async fetchFollowState(mids: number[]) {
     await pmap(mids, trySetFollowedMidSet, 3)
   }
-
-  /**
-   * side effects
-   */
   private pageTitleSet = false
   private async setPageTitle() {
     if (this.pageTitleSet) return
@@ -134,6 +129,7 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
     setPageTitle(title)
     this.pageTitleSet = true
   }
+  /* #endregion */
 
   singleUpService: SingleUpService | undefined
   mergeTimelineService: MergeTimelineService | undefined
@@ -167,22 +163,17 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
     return this.singleUpService || this.mergeTimelineService
   }
 
-  isAnonymous = false
-  warnNeedLoginOnce = once(() => {
-    toastNeedLogin()
-  })
+  warnNeedLoginOnce = once(toastNeedLogin)
 
   override async fetchMore(abortSignal: AbortSignal): Promise<SpaceUploadItemExtend[] | undefined> {
     if (!checkLoginStatus()) {
-      this.isAnonymous = true
       this.warnNeedLoginOnce()
       throw new ShowMessageError(NEED_LOGIN_MESSAGE)
     }
 
     this.setPageTitle()
-
     await this.setupServices()
-    assert(this.service, 'no service available after setupServices')
+    assert(this.service, 'this.service should exist after setupServices')
 
     const items = (await this.service.loadMore(abortSignal)) || []
     const endVol = this.singleUpService
@@ -193,6 +184,7 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
         ...item,
         api: EApiType.SpaceUpload,
         uniqId: `${EApiType.SpaceUpload}-${item.bvid}`,
+        groupId: this.groupId,
         vol: endVol - index,
         page: this.singleUpService ? this.singleUpService.page - 1 : undefined,
       }
@@ -202,7 +194,7 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
     list = list.filter((item) => !isSpaceUploadItemChargeOnly(item))
 
     if (this.filterText) {
-      const { includes, excludes } = parseFilterInput(this.filterText)
+      const { includes, excludes } = parseAdvancedFilter(this.filterText)
       list = list.filter((item) => {
         return (
           includes.every((include) => item.title.includes(include)) &&

@@ -5,7 +5,7 @@ import { baseDebug } from '$common'
 import { EApiType } from '$define/index.shared'
 import { getFollowGroupContent } from '$modules/bilibili/me/follow-group'
 import { settings } from '$modules/settings'
-import { parseFilterInput } from '$utility/local-filter'
+import { parseAdvancedFilter } from '$utility/local-filter'
 import { parseDuration } from '$utility/video'
 import { BaseTabService, QueueStrategy } from '../_base'
 import { LiveRecService } from '../live'
@@ -139,11 +139,6 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
     return false
   }
 
-  offset: string = ''
-  page = 0 // pages loaded
-
-  liveRecService: LiveRecService | undefined
-
   constructor(public config: DynamicFeedServiceConfig) {
     super(DynamicFeedRecService.PAGE_SIZE)
     // config live
@@ -165,9 +160,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
     }
   }
 
-  /**
-   * shortcuts for ServiceConfig(this.config)
-   */
+  /* #region shortcuts for ServiceConfig(this.config) */
   get upMid() {
     return this.config.upMid
   }
@@ -193,10 +186,9 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
   get viewingSomeUp() {
     return this.config.viewingSomeUp
   }
+  /* #endregion */
 
-  /**
-   * 查看分组
-   */
+  /* #region 查看分组 */
   get viewingSomeGroup() {
     return this.config.viewingSomeGroup
   }
@@ -222,22 +214,21 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
       this.groupMidsLoaded = true
     }
   }
+  /* #endregion */
 
-  /**
-   * 查看全部
-   */
+  /* #region 查看全部 */
   get viewingAll() {
     return this.config.viewingAll
   }
-  private whenViewAllHideMids = new Set<string>()
-  private whenViewAllHideMidsLoaded = false
-  private async loadWhenViewAllHideMids() {
+  private viewingAllHideMids = new Set<string>()
+  private viewingAllHideMidsLoaded = false
+  private async loadViewingAllHideMids() {
     // no need
     if (!this.viewingAll) return
     if (!this.config.whenViewAllEnableHideSomeContents) return
     if (!this.config.whenViewAllHideIds.size) return
     // loaded
-    if (this.whenViewAllHideMidsLoaded) return
+    if (this.viewingAllHideMidsLoaded) return
 
     const mids = Array.from(this.config.whenViewAllHideIds)
       .filter((x) => x.startsWith(DF_SELECTED_KEY_PREFIX_UP))
@@ -246,21 +237,26 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
       .filter((x) => x.startsWith(DF_SELECTED_KEY_PREFIX_GROUP))
       .map((x) => x.slice(DF_SELECTED_KEY_PREFIX_GROUP.length))
 
-    const set = this.whenViewAllHideMids
+    const set = this.viewingAllHideMids
     mids.forEach((x) => set.add(x))
 
     const midsInGroup = (await pmap(groupIds, (id) => getFollowGroupContent(id), 3)).flat()
     midsInGroup.forEach((x) => set.add(x.toString()))
-
-    this.whenViewAllHideMidsLoaded = true
+    this.viewingAllHideMidsLoaded = true
   }
+  /* #endregion */
 
   override async fetchMore(abortSignal: AbortSignal) {
     const items = await this._fetchMore(abortSignal)
     return this.handleAddSeparators(items)
   }
 
+  private liveRecService: LiveRecService | undefined
   private _queueForFilterCache: QueueStrategy<DynamicFeedItem> | undefined
+
+  offset: string = ''
+  page = 0 // pages loaded
+
   async _fetchMore(abortSignal: AbortSignal) {
     // live
     if (this.liveRecService?.hasMore) {
@@ -276,8 +272,8 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
     }
     // viewingAll: ensure hide contents from these mids loaded
     if (this.viewingAll) {
-      await this.loadWhenViewAllHideMids()
-      debug('viewingAll: hide-mids = %o', this.whenViewAllHideMids)
+      await this.loadViewingAllHideMids()
+      debug('viewingAll: hide-mids = %o', this.viewingAllHideMids)
     }
 
     // use filter cache
@@ -289,9 +285,8 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
     )
     const useAdvancedFilter = useFilterCache && this.config.advancedFilter
     const useAdvancedFilterParsed = useAdvancedFilter
-      ? parseFilterInput((this.filterText || '').toLowerCase())
+      ? parseAdvancedFilter((this.filterText || '').toLowerCase())
       : undefined
-
     if (useFilterCache) {
       // fill queue with pre-filtered cached-items
       if (!this._queueForFilterCache) {
@@ -359,6 +354,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
       // by 关注分组
       .filter((x) => {
         if (!this.viewingSomeGroup) return true
+        if (this.groupMergeTimelineService) return true // skip group-filter when loaded via groupMergeTimelineService
         if (!this.groupMids.size) return true
         const mid = x?.modules?.module_author?.mid
         if (!mid) return true
@@ -411,7 +407,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
       // 在「全部」动态中隐藏 UP 的动态
       .filter((x) => {
         if (this.config.selectedKey !== DF_SELECTED_KEY_ALL) return true
-        const set = this.whenViewAllHideMids
+        const set = this.viewingAllHideMids
         if (!set.size) return true
         const mid = x?.modules?.module_author?.mid
         if (!mid) return true
@@ -423,6 +419,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
           ...item,
           api: EApiType.DynamicFeed,
           uniqId: `${EApiType.DynamicFeed}-${item.id_str || crypto.randomUUID()}`,
+          groupId: this.viewingSomeGroup ? this.groupId : undefined,
         }
       })
 
@@ -438,7 +435,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
       title: string
       filterText: string
       useAdvancedFilter: boolean
-      useAdvancedFilterParsed?: ReturnType<typeof parseFilterInput>
+      useAdvancedFilterParsed?: ReturnType<typeof parseAdvancedFilter>
     }) {
       title = title.toLowerCase()
       filterText = filterText.toLowerCase()
@@ -500,7 +497,6 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
       },
     }
   })()
-
   handleAddSeparators(items: AllowedItemType[]) {
     if (!this.config.addSeparators) return items
     const ret = items

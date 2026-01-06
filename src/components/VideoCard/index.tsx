@@ -450,7 +450,6 @@ const VideoCardInner = memo(function VideoCardInner({
     cardData,
     tab,
     isNormalVideo,
-    refresh,
     watchlaterContext,
     favContext,
     onMoveToFirst,

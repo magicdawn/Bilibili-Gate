@@ -66,6 +66,7 @@ export type PcRecItemExtend = PcRecItem & {
 export type DynamicFeedItemExtend = DynamicFeedItem & {
   uniqId: string
   api: EApiType.DynamicFeed
+  groupId?: number // from some follow-group
 }
 
 export type WatchlaterItemExtend = WatchlaterItem & {
@@ -102,6 +103,7 @@ export type LiveItemExtend = LiveItem & {
 export type SpaceUploadItemExtend = SpaceUploadItem & {
   uniqId: string
   api: EApiType.SpaceUpload
+  groupId?: number // from some follow-group ?
   vol: number
   page?: number
 }

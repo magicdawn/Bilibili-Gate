@@ -13,7 +13,7 @@ import {
   getCurrentGridItems,
 } from '$components/RecGrid/rec-grid-state'
 import { ETab } from '$components/RecHeader/tab-enum'
-import { useRecSelfContext, type RefreshFn } from '$components/Recommends/rec.shared'
+import { useRecSelfContext } from '$components/Recommends/rec.shared'
 import { isDynamicFeed, isLive, isSpaceUpload, type DynamicFeedItemExtend, type RecItemType } from '$define'
 import { EApiType } from '$define/index.shared'
 import { antMessage, antModal, defineAntMenus, type AntMenuItem } from '$modules/antd'
@@ -51,33 +51,12 @@ import type { WatchlaterRelatedContext } from './use/useWatchlaterRelated'
 
 const clsMenuIcon = 'size-16px' // icon 可能看起来不一样大, 但文字对不齐的体验更差, 所以还是优先文字对齐
 
-export function useContextMenus({
-  item,
-  cardData,
-  tab,
-
-  isNormalVideo,
-  refresh,
-
-  favContext,
-  watchlaterContext,
-  hasDislikeEntry,
-  onTriggerDislike,
-
-  onMoveToFirst,
-  onRemoveCurrent,
-
-  consistentOpenMenus,
-  conditionalOpenMenus,
-
-  multiSelecting,
-}: {
+type UseContextMenuOptions = {
   item: RecItemType
   cardData: IVideoCardData
   tab: ETab
-
   isNormalVideo: boolean
-  refresh: RefreshFn | undefined
+  multiSelecting?: boolean
 
   watchlaterContext: WatchlaterRelatedContext
   favContext: FavContext
@@ -89,9 +68,29 @@ export function useContextMenus({
 
   consistentOpenMenus: AntMenuItem[]
   conditionalOpenMenus: AntMenuItem[]
+}
 
-  multiSelecting?: boolean
-}): AntMenuItem[] {
+export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
+  const {
+    item,
+    cardData,
+    tab,
+    isNormalVideo,
+
+    favContext,
+    watchlaterContext,
+    hasDislikeEntry,
+    onTriggerDislike,
+
+    onMoveToFirst,
+    onRemoveCurrent,
+
+    consistentOpenMenus,
+    conditionalOpenMenus,
+
+    multiSelecting,
+  } = options
+
   const {
     avid,
     bvid,
@@ -262,6 +261,9 @@ export function useContextMenus({
     [SHOW_SPACE_UPLOAD_ONLY, item],
   )
 
+  const viewingGroupId = isDynamicFeed(item) || isSpaceUpload(item) ? item.groupId : undefined
+  const viewingSomeGroup = viewingGroupId !== undefined
+
   return useMemo(() => {
     const { watchlaterAdded, hasWatchlaterEntry, onToggleWatchlater } = watchlaterContext
     const divider: AntMenuItem = { type: 'divider' }
@@ -321,10 +323,20 @@ export function useContextMenus({
 
     // I'm interested in this video or the author
     const interestedMenus = defineAntMenus([
-      // 投稿
+      // [投稿,动态]
       {
         test: hasViewUpVideoListEntry,
-        key: 'view-up-space-upload',
+        key: `查看「投稿」与「动态」的区别`,
+        label: `查看「投稿」与「动态」的区别`,
+        icon: <IconForOpenExternalLink className={clsMenuIcon} />,
+        onClick: () =>
+          openNewTab(
+            'https://github.com/magicdawn/Bilibili-Gate?tab=readme-ov-file#%E5%8F%B3%E9%94%AE%E8%8F%9C%E5%8D%95-%E6%9F%A5%E7%9C%8B-up-%E7%9A%84%E6%8A%95%E7%A8%BF--%E6%9F%A5%E7%9C%8B-up-%E7%9A%84%E5%8A%A8%E6%80%81',
+          ),
+      },
+      {
+        test: hasViewUpVideoListEntry,
+        key: '查看 UP 的投稿',
         label: `查看 UP 的投稿`,
         icon: <IconForSpaceUpload className={clsMenuIcon} />,
         onClick: onViewUpSpaceUpload,
@@ -334,13 +346,34 @@ export function useContextMenus({
       // 动态
       {
         test: hasViewUpVideoListEntry && followed,
-        key: 'view-up-dyn',
+        key: '查看 UP 的动态',
         label: `查看 UP 的动态`,
         icon: <IconForDynamicFeed className={clsMenuIcon} />,
         onClick: onViewUpDyn,
       },
       dynamicViewUpdateSinceThis,
       dynamicViewStartFromHere,
+
+      ...(hasViewUpVideoListEntry && viewingSomeGroup
+        ? defineAntMenus([
+            { type: 'divider' },
+            {
+              test: hasViewUpVideoListEntry && viewingSomeGroup,
+              key: '查看分组的投稿',
+              label: `查看分组的投稿`,
+              icon: <IconForSpaceUpload className={clsMenuIcon} />,
+              onClick: () => openNewTab(`/?${SpaceUploadQueryKey.GroupId}=${viewingGroupId}`),
+            },
+            {
+              test: hasViewUpVideoListEntry && viewingSomeGroup,
+              key: '查看分组的动态',
+              label: `查看分组的动态`,
+              icon: <IconForDynamicFeed className={clsMenuIcon} />,
+              onClick: () => openNewTab(`/?${DynamicFeedQueryKey.GroupId}=${viewingGroupId}`),
+            },
+            { type: 'divider' },
+          ])
+        : []),
 
       // 稍后再看
       {
@@ -424,7 +457,7 @@ export function useContextMenus({
       recSharedEmitter,
     })
 
-    return defineAntMenus([
+    const menus = defineAntMenus([
       ...consistentOpenMenus,
 
       !!copyMenus.length && divider,
@@ -442,6 +475,8 @@ export function useContextMenus({
       !!conditionalOpenMenus.length && divider,
       ...conditionalOpenMenus,
     ])
+
+    return menus
   }, [
     item,
     cardData,

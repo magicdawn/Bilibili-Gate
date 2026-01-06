@@ -10,7 +10,7 @@ export const advancedFilterHelpInfo = (
   </>
 )
 
-export function parseFilterInput(input: string): { includes: string[]; excludes: string[] } {
+export function parseAdvancedFilter(input: string): { includes: string[]; excludes: string[] } {
   const includes: string[] = []
   const excludes: string[] = []
 
