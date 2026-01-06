@@ -263,6 +263,10 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
 
   const viewingGroupId = isDynamicFeed(item) || isSpaceUpload(item) ? item.groupId : undefined
   const viewingSomeGroup = viewingGroupId !== undefined
+  const followGroups = useSnapshot(dfStore.groups)
+  const viewingGroup = viewingGroupId !== undefined ? followGroups.find((x) => x.tagid === viewingGroupId) : undefined
+  const viewingGroupName = viewingGroup?.name
+  const viewingGroupCount = viewingGroup?.count
 
   return useMemo(() => {
     const { watchlaterAdded, hasWatchlaterEntry, onToggleWatchlater } = watchlaterContext
@@ -358,7 +362,10 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
         ? defineAntMenus([
             { type: 'divider' },
             {
-              test: hasViewUpVideoListEntry && viewingSomeGroup,
+              test:
+                hasViewUpVideoListEntry &&
+                viewingSomeGroup &&
+                (viewingGroupCount === undefined || viewingGroupCount <= 30),
               key: '查看分组的投稿',
               label: `查看分组的投稿`,
               icon: <IconForSpaceUpload className={clsMenuIcon} />,
@@ -495,6 +502,10 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
     conditionalOpenMenus,
     // others
     multiSelecting,
+    viewingGroupId,
+    viewingSomeGroup,
+    viewingGroupName,
+    viewingGroupCount,
   ])
 }
 
