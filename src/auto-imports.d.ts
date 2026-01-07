@@ -27,6 +27,7 @@ declare global {
   const IconMaterialSymbolsAlignHorizontalLeft: typeof import('~icons/material-symbols/align-horizontal-left.jsx').default
   const IconMaterialSymbolsAlignHorizontalRight: typeof import('~icons/material-symbols/align-horizontal-right.jsx').default
   const IconMaterialSymbolsBarChart: typeof import('~icons/material-symbols/bar-chart.jsx').default
+  const IconMaterialSymbolsCloseRounded: typeof import('~icons/material-symbols/close-rounded.jsx').default
   const IconMaterialSymbolsDeleteOutlineRounded: typeof import('~icons/material-symbols/delete-outline-rounded.jsx').default
   const IconMaterialSymbolsLightOpenInNew: typeof import('~icons/material-symbols-light/open-in-new.jsx').default
   const IconMaterialSymbolsLightOpenInNewOff: typeof import('~icons/material-symbols-light/open-in-new-off.jsx').default

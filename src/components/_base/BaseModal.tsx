@@ -109,6 +109,9 @@ export function BaseModal({
 }
 
 export const ModalClose = ({ className, ...props }: ComponentProps<'svg'>) => {
-  const _className = useUnoMerge('ml-10px size-18px cursor-pointer', className)
-  return <IconParkOutlineClose {...props} className={_className} />
+  const _className = useUnoMerge(
+    'ml-10px size-24px cursor-pointer transition-duration-150 transition-ease transition-property-transform hover:(rotate-90 scale-110%)',
+    className,
+  )
+  return <IconMaterialSymbolsCloseRounded {...props} className={_className} />
 }
