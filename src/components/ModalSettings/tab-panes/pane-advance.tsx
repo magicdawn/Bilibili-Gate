@@ -1,4 +1,4 @@
-import { Button, Popconfirm, Slider, Space } from 'antd'
+import { Button, Popconfirm, Space } from 'antd'
 import clsx from 'clsx'
 import { startCase } from 'es-toolkit'
 import { useState, type ReactNode } from 'react'
@@ -16,9 +16,7 @@ import {
   pickSettings,
   resetSettings,
   runSettingsMigration,
-  settings,
   updateSettings,
-  useSettingsSnapshot,
   type BooleanSettingsPath,
 } from '$modules/settings'
 import { exportSettings, importSettings } from '$modules/settings/file-backup'
@@ -46,8 +44,6 @@ async function onRestoreSettings() {
 }
 
 export function TabPaneAdvance() {
-  const { autoPreviewUpdateInterval } = useSettingsSnapshot()
-
   const [internalKeysExpanded, setInternalKeysExpanded] = useState<boolean>(false)
 
   return (
@@ -109,29 +105,6 @@ export function TabPaneAdvance() {
               从专栏草稿箱中恢复
             </Button>
           </Popconfirm>
-        </div>
-      </SettingsGroup>
-
-      <SettingsGroup
-        titleClassName='justify-between'
-        title={
-          <>
-            预览
-            <ResetPartialSettingsButton paths={['autoPreviewUpdateInterval']} />
-          </>
-        }
-      >
-        <div className='flex-v-center'>
-          自动预览更新间隔
-          <Slider
-            style={{ flex: 1, margin: '0 15px' }}
-            min={0}
-            max={1000}
-            keyboard
-            onChange={(val) => (settings.autoPreviewUpdateInterval = val)}
-            value={autoPreviewUpdateInterval}
-          />
-          <span style={{ width: '65px' }}>({autoPreviewUpdateInterval}ms)</span>
         </div>
       </SettingsGroup>
 

@@ -9,7 +9,8 @@ export const sharedClassNames = {
   tabPane: 'max-h-[max(362px,calc(90vh-50px-56px-15px))] min-h-362px overflow-y-auto pr-12px',
   settingsGroup: 'mb-10px',
   settingsGroupTitle: 'flex items-center text-2em',
-  settingsGroupSubTitle: 'mt-15px flex items-center text-1.3em',
+  settingsGroupSubTitle: 'flex items-center text-1.25em',
+  settingsLine: 'flex flex-row flex-wrap items-center gap-x-10px gap-y-1',
 } as const
 
 export function SettingsGroup({
@@ -17,26 +18,35 @@ export function SettingsGroup({
   title,
   titleClassName,
   contentClassName,
+  resetSettingPaths,
   ...rest
 }: Merge<
   ComponentProps<'div'>,
   {
     children?: ReactNode
     title: ReactNode
+    resetSettingPaths?: LeafSettingsPath[]
     titleClassName?: string
     contentClassName?: string
   }
 >) {
+  const hasResetButton = !!resetSettingPaths?.length
   return (
     <div className={sharedClassNames.settingsGroup} data-role='settings-group' {...rest}>
+      {/* the header */}
       <div
         data-role='settings-group-title'
-        className={useUnoMerge(sharedClassNames.settingsGroupTitle, titleClassName)}
+        className={useUnoMerge(
+          sharedClassNames.settingsGroupTitle,
+          hasResetButton && 'justify-between',
+          titleClassName,
+        )}
       >
-        {title}
+        {hasResetButton ? <div className='flex items-center'>{title}</div> : title}
+        {resetSettingPaths && <ResetPartialSettingsButton paths={resetSettingPaths} />}
       </div>
       {/* the content */}
-      <div data-role='settings-group-content' className={useUnoMerge('flex flex-col gap-y-5px', contentClassName)}>
+      <div data-role='settings-group-content' className={useUnoMerge('flex flex-col gap-y-1', contentClassName)}>
         {children}
       </div>
     </div>

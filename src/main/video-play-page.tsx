@@ -54,6 +54,7 @@ function registerOpenInIinaCommand() {
 
 async function handleFullscreen() {
   const targetMode = new URL(location.href).searchParams.get(EQueryKey.PlayerScreenMode)
+  debug('targetMode=%s', targetMode)
   const next = targetMode === EPlayerScreenMode.WebFullscreen || targetMode === EPlayerScreenMode.Fullscreen
   if (!next) return
 

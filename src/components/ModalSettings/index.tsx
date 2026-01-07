@@ -11,10 +11,10 @@ import { settings, type BooleanSettingsPath } from '$modules/settings'
 import { shouldDisableShortcut } from '$utility/dom'
 import { TabPaneAdvance } from './tab-panes/pane-advance'
 import { TabPaneBasic } from './tab-panes/pane-basic'
-import { TabPaneCustomUI, useHotkeyForConfigBorder } from './tab-panes/pane-custom-ui'
 import { TabPaneFilter } from './tab-panes/pane-filter'
 import { TabPaneOtherPages } from './tab-panes/pane-other-pages'
 import { TabPaneRecTabsConfig } from './tab-panes/pane-rec-tab-config'
+import { TabPaneVideoCard, useHotkeyForConfigBorder } from './tab-panes/pane-video-card'
 import { sharedClassNames } from './tab-panes/shared'
 import { ThemesSelect } from './theme'
 
@@ -34,8 +34,8 @@ function useHotkeyForConfig(hotkey: string | string[], configPath: BooleanSettin
 
 const enum TabPaneKey {
   Basic = 'basic',
+  VideoCard = 'video-card',
   Filter = 'filter',
-  CustomUi = 'custom-ui',
   ThemeSelect = 'theme-select',
   VideoSourceTabConfig = 'video-source-tab-config',
   OtherPages = 'other-pages',
@@ -45,7 +45,7 @@ const enum TabPaneKey {
 const tab = __PROD__
   ? TabPaneKey.Basic
   : // for debug, free to change this
-    TabPaneKey.Basic
+    TabPaneKey.VideoCard
 const modalSettingsStore = proxy({ tab })
 
 // empty component for conditional render
@@ -105,6 +105,11 @@ export function ModalSettings({ show, onHide }: { show: boolean; onHide: () => v
               children: <TabPaneBasic />,
             },
             {
+              label: '视频卡片',
+              key: TabPaneKey.VideoCard,
+              children: <TabPaneVideoCard />,
+            },
+            {
               label: '内容过滤',
               key: TabPaneKey.Filter,
               children: <TabPaneFilter />,
@@ -117,11 +122,6 @@ export function ModalSettings({ show, onHide }: { show: boolean; onHide: () => v
                   <ThemesSelect />
                 </div>
               ),
-            },
-            {
-              label: '样式自定',
-              key: TabPaneKey.CustomUi,
-              children: <TabPaneCustomUI />,
             },
             {
               label: 'Tab 设置',

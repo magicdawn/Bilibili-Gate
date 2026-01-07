@@ -32,7 +32,7 @@ import { FollowGroupMechanismNote } from '$modules/rec-services/dynamic-feed/vie
 import { settings, updateSettings, updateSettingsInnerArray, useSettingsSnapshot } from '$modules/settings'
 import { TagItemDisplay } from '../EditableListSettingItem'
 import { explainForFlag } from '../index.shared'
-import { ResetPartialSettingsButton, SettingsGroup, sharedClassNames } from './shared'
+import { SettingsGroup, sharedClassNames } from './shared'
 import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 
 export function TabPaneRecTabsConfig() {
@@ -51,10 +51,9 @@ export function TabPaneRecTabsConfig() {
             <>
               Tab 设置
               <HelpInfo className='ml-5px'>勾选显示, 拖动排序</HelpInfo>
-              <span className='flex-1' />
-              <ResetPartialSettingsButton paths={['hidingTabKeys', 'customTabKeysOrder']} />
             </>
           }
+          resetSettingPaths={['hidingTabKeys', 'customTabKeysOrder']}
         >
           <VideoSourceTabOrder />
         </SettingsGroup>

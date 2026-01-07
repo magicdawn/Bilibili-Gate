@@ -68,10 +68,10 @@ export function TabPaneFilter() {
           </>
         }
       >
-        <div className='grid grid-cols-2 gap-x-15px'>
+        <div className='grid grid-cols-2 gap-15px'>
           <div className='col'>
             <div className={sharedClassNames.settingsGroupSubTitle}>视频</div>
-            <div className='flex flex-col gap-y-5px'>
+            <div className='flex flex-col gap-y-1'>
               <div className='flex items-center'>
                 <CheckboxSettingItem
                   configPath='filter.minDuration.enabled'
@@ -159,7 +159,7 @@ export function TabPaneFilter() {
               {...getExemptFollowedTooltipProps('图文')}
             />
 
-            <div className={sharedClassNames.settingsGroupSubTitle}>影视</div>
+            <div className={clsx(sharedClassNames.settingsGroupSubTitle, 'mt-2')}>影视</div>
             <CheckboxSettingItem
               configPath='filter.hideGotoTypeBangumi'
               label='过滤影视类型推荐'

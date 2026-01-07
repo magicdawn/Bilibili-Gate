@@ -1,48 +1,24 @@
 import { useMemoizedFn } from 'ahooks'
-import { Button, Divider, InputNumber, Select, Space, Tag } from 'antd'
-import { useMemo } from 'react'
+import { Button, InputNumber, Tag } from 'antd'
 import { APP_NAME } from '$common'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { AccessKeyManage } from '$components/AccessKeyManage'
-import { CheckboxSettingItem, SwitchSettingItem } from '$components/ModalSettings/setting-item'
+import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { GridDisplayModeSwitcher } from '$components/RecGrid/display-mode'
 import { TabIcon } from '$components/RecHeader/tab-config'
 import { ETab } from '$components/RecHeader/tab-enum'
-import { EVideoLinkOpenMode, VideoLinkOpenModeConfig } from '$components/VideoCard/index.shared'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconForCopy } from '$modules/icon'
-import { settings, updateSettings, useSettingsSnapshot } from '$modules/settings'
+import { settings, useSettingsSnapshot } from '$modules/settings'
 import { explainForFlag, toastAndReload } from '../index.shared'
-import { ResetPartialSettingsButton, SettingsGroup, sharedClassNames } from './shared'
+import { SettingsGroup, sharedClassNames } from './shared'
 
 export function TabPaneBasic() {
   const {
-    videoCard: {
-      actions: { showLargePreview, openInPipWindow },
-      imgPreview: { enabled: imgPreviewEnabled },
-    },
     grid: { useCustomGrid, enableForceColumn, forceColumnCount, cardMinWidth },
-    videoLinkOpenMode,
+    style,
   } = useSettingsSnapshot()
-
-  const openModeOptions = useMemo(() => {
-    return Object.values(EVideoLinkOpenMode)
-      .filter((mode) => VideoLinkOpenModeConfig[mode].enabled ?? true)
-      .map((mode) => {
-        const config = VideoLinkOpenModeConfig[mode]
-        return {
-          config,
-          value: mode,
-          label: (
-            <span className='flex-v-center gap-x-8px'>
-              {config.icon}
-              <span>{config.label}</span>
-            </span>
-          ),
-        }
-      })
-  }, [])
 
   const handleCopyScriptVersion = useMemoizedFn(() => {
     const content = `v${__SCRIPT_VERSION__}`
@@ -87,16 +63,8 @@ export function TabPaneBasic() {
         <AccessKeyManage />
       </SettingsGroup>
 
-      <SettingsGroup
-        titleClassName='justify-between'
-        title={
-          <>
-            开关
-            <ResetPartialSettingsButton paths={['pureRecommend', 'multiSelect.showIcon']} />
-          </>
-        }
-      >
-        <Space size={10} wrap>
+      <SettingsGroup title='开关' resetSettingPaths={['pureRecommend', 'multiSelect.showIcon']}>
+        <div className={sharedClassNames.settingsLine}>
           <CheckboxSettingItem
             configPath='pureRecommend'
             label='覆盖默认推荐'
@@ -111,34 +79,26 @@ export function TabPaneBasic() {
             }
             extraAction={() => toastAndReload()}
           />
-
           <CheckboxSettingItem
             configPath={'multiSelect.showIcon'}
             label='「多选」按钮'
             tooltip='是否显示「多选」按钮'
           />
-        </Space>
+        </div>
       </SettingsGroup>
 
       <SettingsGroup
-        titleClassName='justify-between'
-        title={
-          <>
-            布局
-            <ResetPartialSettingsButton
-              paths={[
-                'grid.useCustomGrid',
-                'grid.cardMinWidth',
-                'grid.enableForceColumn',
-                'grid.forceColumnCount',
-                'grid.gridDisplayMode',
-                'grid.twoColumnModeAlign',
-              ]}
-            />
-          </>
-        }
+        title='布局'
+        resetSettingPaths={[
+          'grid.useCustomGrid',
+          'grid.cardMinWidth',
+          'grid.enableForceColumn',
+          'grid.forceColumnCount',
+          'grid.gridDisplayMode',
+          'grid.twoColumnModeAlign',
+        ]}
       >
-        <div className='flex items-center gap-x-15px'>
+        <div className={sharedClassNames.settingsLine}>
           <CheckboxSettingItem
             configPath='grid.useCustomGrid'
             label='使用自定义网格配置'
@@ -153,7 +113,7 @@ export function TabPaneBasic() {
             }
           />
 
-          <div className='flex items-center gap-x-1'>
+          <div className='flex items-center gap-x-1 px-6px'>
             <AntdTooltip
               title={
                 <>
@@ -180,7 +140,7 @@ export function TabPaneBasic() {
             />
           </div>
 
-          <div className='flex items-center'>
+          <div className='flex items-center px-6px'>
             <CheckboxSettingItem
               disabled={!useCustomGrid}
               configPath='grid.enableForceColumn'
@@ -207,204 +167,51 @@ export function TabPaneBasic() {
 
         <div className='flex items-center'>
           网格显示模式
-          <GridDisplayModeSwitcher className='ml-30px' />
+          <GridDisplayModeSwitcher className='ml-xl' />
         </div>
       </SettingsGroup>
 
+      {/* 样式 */}
       <SettingsGroup
-        titleClassName='justify-between'
-        title={
-          <>
-            视频链接
-            <ResetPartialSettingsButton paths={['videoLinkOpenMode']} />
-          </>
-        }
+        title='样式'
+        resetSettingPaths={[
+          'style.general.popoverBorderColorUseColorPrimary',
+          'style.pureRecommend.useStickyTabbar',
+          'style.pureRecommend.stickyTabbarShadow',
+          'grid.useCustomGrid',
+          'style.pureRecommend.useWhiteBackground',
+          'style.pureRecommend.hideTopChannel',
+        ]}
       >
-        <Space size={20}>
-          <div className='flex-v-center'>
-            默认打开模式
-            <HelpInfo useBlackBg>
-              选择点击视频(封面图片 或 标题)时打开的模式 <br />
-              {openModeOptions.map(({ value, config }) => {
-                return (
-                  !!config.desc && (
-                    <div key={value} className='mt-10px flex items-start first:mt-0'>
-                      <span className='inline-flex items-center'>
-                        {config.icon}
-                        <span className='ml-4px mr-10px min-w-95px'>{config.label}</span>
-                      </span>
-                      <span className='desc'>{config.desc}</span>
-                    </div>
-                  )
-                )
-              })}
-            </HelpInfo>
-            <Select
-              className='ml-8px w-160px'
-              options={openModeOptions}
-              value={videoLinkOpenMode}
-              onChange={(v) => {
-                updateSettings({ videoLinkOpenMode: v })
-              }}
-            />
-          </div>
-        </Space>
-      </SettingsGroup>
+        <div className={sharedClassNames.settingsLine}>
+          <CheckboxSettingItem
+            configPath='style.general.popoverBorderColorUseColorPrimary'
+            label='下拉面板使用主题色边框'
+          />
+        </div>
 
-      <SettingsGroup
-        titleClassName='justify-between'
-        title={
-          <>
-            <span className='flex items-center'>
-              视频卡片操作
-              <HelpInfo>
-                视频卡片右上角「稍后再看」按钮旁 <br />
-                「稍后再看」因其通用性不提供关闭选项
-              </HelpInfo>
-            </span>
-            <ResetPartialSettingsButton
-              paths={[
-                'videoCard.actions.showLargePreview',
-                'videoCard.actions.openInPipWindow',
-                'videoCard.videoPreview.useMp4',
-                'videoCard.videoPreview.usePreferredCdn',
-                'videoCard.videoPreview.useScale',
-                'videoCard.videoPreview.useVideoCardAsTrigger',
-                'pipWindow.defaultLocked',
-                'pipWindow.autoWebFullscreen',
-              ]}
-            />
-          </>
-        }
-      >
-        <div className='grid grid-cols-[repeat(2,max-content)_1fr] items-start gap-x-20px'>
-          <CheckboxSettingItem
-            configPath='videoCard.actions.showLargePreview'
-            label={'浮动预览'}
-            tooltip={
-              <>
-                创意来源「浮图秀」, 但使用视频预览 <br />
-                操作说明: <br />
-                1. 鼠标悬浮打开 「浮动预览」, 离开关闭 <br />
-                2. 点击固定「浮动预览」, 固定指: 不再随鼠标移出关闭预览 <br />
-                3. 可使用以下方式关闭固定的「浮动预览」
-                <ul className='ml-30px list-circle'>
-                  <li>再次点击视频卡片按钮</li>
-                  <li>点击预览视频右上方的「关闭」按钮</li>
-                  <li>触发其他卡片的「浮动预览」</li>
-                  <li>Esc键</li>
-                  <li>点击页面空白处</li>
-                </ul>
-              </>
-            }
-          />
-          <CheckboxSettingItem
-            configPath='videoCard.actions.openInPipWindow'
-            label={'小窗打开'}
-            tooltip={<>仅当「文档画中画」API 可用时, 勾选生效</>}
-          />
-          <Divider className='grid-col-span-full my-2px py-0' />
-          <div className='flex flex-col'>
+        <div>
+          <div className='flex items-center text-1.2em'>全屏推荐</div>
+          <div className={sharedClassNames.settingsLine}>
             <CheckboxSettingItem
-              configPath='videoCard.videoPreview.useMp4'
-              disabled={!showLargePreview}
-              label='浮动预览: 使用 mp4'
-              tooltip={explainForFlag('使用 mp4, 最高 720p, 有声音', '使用 dash, 最高 1080p, 无声音, 理论上更快')}
+              configPath='style.pureRecommend.useStickyTabbar'
+              label='固定 Tab 栏'
+              tooltip={explainForFlag('Tab 栏会吸附在顶栏下方', 'Tab 栏会随页面一起滚动')}
             />
             <CheckboxSettingItem
-              configPath='videoCard.videoPreview.usePreferredCdn'
-              disabled={!showLargePreview}
-              label='浮动预览: 使用优选 CDN'
-              tooltip={explainForFlag('使用优选 CDN (降低 MCDN & PCDN 优先级)', '使用默认 CDN')}
+              disabled={!style.pureRecommend.useStickyTabbar}
+              configPath='style.pureRecommend.stickyTabbarShadow'
+              label='固定 Tab 栏时添加边框 & 阴影'
+              tooltip={explainForFlag('Tab 栏在吸附状态下: 加宽, 添加边框 & 阴影', '不改变')}
             />
             <CheckboxSettingItem
-              configPath='videoCard.videoPreview.useScale'
-              disabled={!showLargePreview}
-              label='浮动预览: 使用放大效果'
-              tooltip={explainForFlag('浮动预览面板: 放大展开 (类似浮图秀)', '浮动预览面板: 滑动展开')}
+              configPath='style.pureRecommend.useWhiteBackground'
+              label='使用纯白背景'
+              tooltip={explainForFlag('纯白背景', '浅灰色背景')}
             />
-            <CheckboxSettingItem
-              configPath='videoCard.videoPreview.useVideoCardAsTrigger'
-              label='浮动预览: 使用视频卡片作为触发器'
-              tooltip={
-                <>
-                  {explainForFlag(
-                    '使用「视频卡片」作为触发器',
-                    '使用「视频卡片右上角按钮」作为触发器, 悬浮视频卡片 1 秒后展开',
-                  )}
-                  <Divider className='my-1' />
-                  <ul className='ml-25px list-circle'>
-                    <li>与上面「浮动预览」开关独立</li>
-                  </ul>
-                </>
-              }
-            />
-          </div>
-          <div className='flex flex-col'>
-            <CheckboxSettingItem
-              configPath='pipWindow.defaultLocked'
-              disabled={!openInPipWindow}
-              label='小窗: 默认锁定'
-              tooltip={explainForFlag('小窗打开时: 默认锁定', '小窗打开时: 不锁定')}
-            />
-            <CheckboxSettingItem
-              configPath='pipWindow.autoWebFullscreen'
-              disabled={!openInPipWindow}
-              label='小窗: 自动网页全屏'
-              tooltip={explainForFlag('自动网页全屏', '不启用')}
-            />
+            <CheckboxSettingItem configPath={'style.pureRecommend.hideTopChannel'} label='隐藏顶部分区和Banner' />
           </div>
         </div>
-      </SettingsGroup>
-
-      <SettingsGroup
-        titleClassName='justify-between'
-        title={
-          <>
-            <div>
-              快照预览
-              <SwitchSettingItem configPath='videoCard.imgPreview.enabled' tooltip='关闭此功能' className='ml-3' />
-            </div>
-            <ResetPartialSettingsButton
-              paths={[
-                'videoCard.imgPreview.enabled',
-                'videoCard.imgPreview.autoPreviewWhenKeyboardSelect',
-                'videoCard.imgPreview.autoPreviewWhenHover',
-                'videoCard.imgPreview.disableWhenMultiSelecting',
-              ]}
-            />
-          </>
-        }
-        contentClassName='flex-row flex-wrap items-center gap-x-10px'
-      >
-        <CheckboxSettingItem
-          disabled={!imgPreviewEnabled}
-          configPath='videoCard.imgPreview.autoPreviewWhenKeyboardSelect'
-          label='键盘选中后自动开始'
-          tooltip={
-            <>
-              手动预览快捷键: <Tag color='green'>.</Tag> or <Tag color='green'>p</Tag> <br />
-              切换设置快捷键: <Tag color='green'>shift+p</Tag>
-            </>
-          }
-        />
-        <CheckboxSettingItem
-          disabled={!imgPreviewEnabled}
-          configPath='videoCard.imgPreview.autoPreviewWhenHover'
-          label='鼠标悬浮后自动开始'
-          tooltip={
-            <>
-              鼠标悬浮后自动开始预览, 预览不再跟随鼠标位置 <br />
-              切换设置快捷键: <Tag color='green'>shift+m</Tag>
-            </>
-          }
-        />
-        <CheckboxSettingItem
-          disabled={!imgPreviewEnabled}
-          configPath='videoCard.imgPreview.disableWhenMultiSelecting'
-          label='多选时禁用'
-          tooltip={explainForFlag('多选开启时, 禁用快照预览', '不禁用')}
-        />
       </SettingsGroup>
 
       <SettingsGroup
@@ -420,30 +227,31 @@ export function TabPaneBasic() {
             </span>
           </>
         }
-        contentClassName='flex-row gap-x-10px'
       >
-        <AntdTooltip title='来个 Star 支持一下'>
-          <Button href='https://github.com/magicdawn/Bilibili-Gate' target='_blank'>
-            GitHub 主页
+        <div className={sharedClassNames.settingsLine}>
+          <AntdTooltip title='来个 Star 支持一下'>
+            <Button href='https://github.com/magicdawn/Bilibili-Gate' target='_blank'>
+              GitHub 主页
+            </Button>
+          </AntdTooltip>
+          <Button href='https://afdian.com/a/magicdawn' target='_blank'>
+            「爱发电」支持
           </Button>
-        </AntdTooltip>
-        <Button href='https://afdian.com/a/magicdawn' target='_blank'>
-          「爱发电」支持
-        </Button>
 
-        <Button href='https://greasyfork.org/zh-CN/scripts/443530-bilibili-gate' target='_blank'>
-          GreasyFork 主页
-        </Button>
+          <Button href='https://greasyfork.org/zh-CN/scripts/443530-bilibili-gate' target='_blank'>
+            GreasyFork 主页
+          </Button>
 
-        <Button
-          href='https://github.com/magicdawn/Bilibili-Gate/#%E5%BF%AB%E6%8D%B7%E9%94%AE%E8%AF%B4%E6%98%8E'
-          target='_blank'
-        >
-          查看可用的快捷键
-        </Button>
-        <Button href='https://github.com/magicdawn/Bilibili-Gate/releases' target='_blank'>
-          更新日志
-        </Button>
+          <Button
+            href='https://github.com/magicdawn/Bilibili-Gate/#%E5%BF%AB%E6%8D%B7%E9%94%AE%E8%AF%B4%E6%98%8E'
+            target='_blank'
+          >
+            查看可用的快捷键
+          </Button>
+          <Button href='https://github.com/magicdawn/Bilibili-Gate/releases' target='_blank'>
+            更新日志
+          </Button>
+        </div>
       </SettingsGroup>
     </div>
   )
