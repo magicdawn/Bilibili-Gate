@@ -203,6 +203,7 @@ export function TabPaneVideoCard() {
         <div className={sharedClassNames.settingsLine}>
           自动预览更新间隔
           <Slider
+            disabled={!imgPreviewEnabled}
             className='w-500px'
             min={0}
             max={1000}
