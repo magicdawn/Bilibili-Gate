@@ -5,8 +5,16 @@
   position: relative;
   width: 100%;
   grid-gap: 20px 12px;
-  grid-template-columns: repeat(var(--col), minmax(0, 1fr));
   #{$app-video-card-border-radius-id}: 15px;
+}
+
+.grid-template-columns-using-var-col {
+  --col: 4;
+  grid-template-columns: repeat(var(--col), minmax(0, 1fr));
+}
+.grid-template-columns-using-card-min-width {
+  --card-min-width: 330px;
+  grid-template-columns: repeat(auto-fill, minmax(var(--card-min-width), 1fr));
 }
 
 //
@@ -15,7 +23,7 @@
 // 4: 2 3
 // 5: 3 3
 // 6: 3 4
-.video-grid-center-empty {
+.video-grid-addon-center-empty {
   &::before {
     content: '';
     grid-column: 3 / -3;
@@ -24,13 +32,22 @@
   }
 }
 
-/**
- * bili-feed4
- * 取自 .battle-feed-area .battle-feed-body
- */
+// bili-feed4: 取自 .battle-feed-area .battle-feed-body
 .video-grid-bili-feed4 {
   // grid-gap: 60px 20px; // original
   grid-gap: 20px 20px;
+
+  @media (width < 1400px) {
+    & {
+      --col: 4;
+    }
+  }
+  @media (width >= 1400px) {
+    & {
+      --col: 5;
+    }
+  }
+
   :global {
     .ant-divider-horizontal.ant-divider-with-text {
       margin-bottom: -15px;
@@ -42,49 +59,13 @@
   }
 }
 
-@media (width < 1400px) {
-  .video-grid-bili-feed4 {
-    --col: 4;
-  }
-}
-@media (width >= 1400px) {
-  .video-grid-bili-feed4 {
-    --col: 5;
-  }
-}
-
-/**
- * @container 容器
- */
-.video-grid-container {
-  container-type: inline-size;
-  &.virtual-grid-enabled {
-    :global {
-      .virtuoso-grid-item {
-        padding-bottom: var(--row-gap);
-        .bili-video-card {
-          margin-bottom: 0;
-          height: 100%;
-        }
-      }
-    }
-  }
-}
-
-$col-gap: clamp(15px, 1.1cqw, 20px); // prevVersion: $col-gap: 20px;
-$row-gap: clamp(20px, 1.4vw, 40px);
-
 .video-grid-custom {
   // gap
+  $col-gap: clamp(15px, 1.1cqw, 20px); // prevVersion: $col-gap: 20px;
+  $row-gap: clamp(20px, 1.4vw, 40px);
+  --row-gap: #{$row-gap};
   column-gap: $col-gap;
   row-gap: 0;
-  --row-gap: #{$row-gap};
-
-  --col: 4; // default col count
-  &.using-card-min-width {
-    --card-min-width: 330px;
-    grid-template-columns: repeat(auto-fill, minmax(var(--card-min-width), 1fr));
-  }
 
   :global {
     .bili-video-card {
@@ -101,18 +82,9 @@ $row-gap: clamp(20px, 1.4vw, 40px);
   }
 }
 
-// $card-base-width: 330px;
-// @for $i from 5 through 7 {
-//   @container (width >= #{$card-base-width * $i + $col-gap * ($i - 1)}) {
-//     .video-grid.video-grid-custom {
-//       --col: #{$i};
-//     }
-//   }
-// }
-
-/**
- * 双列模式
- */
+//
+// 双列模式
+//
 .narrow-mode {
   --col: 2 !important;
 }

@@ -1,36 +1,32 @@
 virtuoso
+// virtual grid
 if (ENABLE_VIRTUAL_GRID) {
   return (
-    <div style={{ minHeight: '100%' }} className={videoGridContainer}>
-      {/* className={gridClassName} */}
-      <div ref={containerRef}>
-        <VirtuosoGrid
-          scrollerRef={(el) => {
-            // @ts-ignore
-            // containerRef.current = el
-          }}
-          useWindowScroll
-          data={items}
-          listClassName={gridClassName}
-          logLevel={LogLevel.DEBUG}
-          // endReached={loadMore}
-          overscan={20}
-          computeItemKey={(index, item) => item.uniqId}
-          components={{
-            Footer() {
-              return null
-              // return <>{footer}</>
-            },
-          }}
-          itemContent={(index, item) => {
-            return renderItem(item)
-          }}
-        />
-        {footer}
-      </div>
+    <div className={clsx(gridClassNames.videoGridContainer, gridClassNames.virtualGridEnabled)}>
+      <VirtuosoGrid
+        useWindowScroll
+        data={fullList}
+        overscan={{ main: 20, reverse: 20 }}
+        listClassName={gridStyleConfig.className}
+        computeItemKey={(index, item) => item.uniqId}
+        components={gridComponents as CustomGridComponents} // 因为我改了 context required
+        context={virtuosoGridContext}
+        itemContent={(index, item) => renderItem(item)}
+        endReached={() => checkShouldLoadMore()}
+      />
+      {!gridComponents.Footer && footer}
     </div>
   )
 }
+
+const virtuosoGridContext: CustomGridContext = useMemo(() => {
+  return {
+    footerContent: footer,
+    gridRef,
+    gridClassName: gridStyleConfig.className,
+  }
+}, [footer, gridRef, gridStyleConfig.className])
+
 
 
 ---------------
@@ -122,3 +118,6 @@ if (ENABLE_VIRTUAL_GRID) {
 // initial={direction ? { opacity: 0, y: -10 } : false}
 // animate={{ opacity: 1, y: 0 }}
 // transition={{ bounce: false, duration: 0.3 }}
+
+
+

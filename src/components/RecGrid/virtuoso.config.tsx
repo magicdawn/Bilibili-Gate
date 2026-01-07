@@ -19,7 +19,7 @@ if (ENABLE_VIRTUAL_GRID) {
 export type CustomGridContext = {
   footerContent: ReactNode
   gridRef: MutableRefObject<HTMLDivElement | null>
-  gridClassName: string
+  gridClassName?: string
 }
 
 // 使用条件类型来提取 ComponentType 中的 Props 类型

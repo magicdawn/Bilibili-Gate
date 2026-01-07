@@ -22,7 +22,6 @@ import {
   type RefObject,
 } from 'react'
 import { useInView } from 'react-intersection-observer'
-import { VirtuosoGrid } from 'react-virtuoso'
 import { proxy, ref, useSnapshot } from 'valtio'
 import { APP_CLS_GRID, baseDebug } from '$common'
 import { useEmitterOn } from '$common/hooks/useEmitter'
@@ -46,13 +45,7 @@ import { useSetupGridState } from './rec-grid-state'
 import { setGlobalGridItems } from './unsafe-window-export'
 import { useRefresh } from './useRefresh'
 import { useShortcut } from './useShortcut'
-import * as clsFromScss from './video-grid.module.scss'
-import {
-  ENABLE_VIRTUAL_GRID,
-  gridComponents,
-  type CustomGridComponents,
-  type CustomGridContext,
-} from './virtuoso.config'
+import * as gridClassNames from './video-grid.module.scss'
 import type { VideoCardEmitter, VideoCardEvents } from '$components/VideoCard/index.shared'
 import type { RecItemType, RecItemTypeOrSeparator } from '$define'
 import type { IVideoCardData } from '$modules/filter/normalize'
@@ -418,77 +411,79 @@ export const RecGrid = memo(
       </div>
     )
 
-    const containerClassName = useMemo(
-      () => clsx('min-h-100vh', clsFromScss.videoGridContainer, propContainerClassName),
-      [propContainerClassName],
-    )
+    // it's a `@container` query root
+    const containerClassName = clsx('min-h-100vh @container-inline-size', propContainerClassName)
 
-    const gridClassName = useMemo(() => {
-      function getExtraClass() {
-        // 双列
-        if (gridDisplayMode === EGridDisplayMode.TwoColumnGrid) {
-          return clsFromScss.narrowMode
-        }
+    type StyleConfig = { className?: string; style?: CSSProperties }
+    const gridStyleConfig: StyleConfig = useMemo(() => {
+      const {
+        videoGrid,
+        videoGridBiliFeed4,
+        videoGridCustom,
+        videoGridAddonCenterEmpty,
+        gridTemplateColumnsUsingVarCol,
+        gridTemplateColumnsUsingCardMinWidth,
+        narrowMode,
+      } = gridClassNames
 
-        const ret: ClassValue = []
+      // 分支
+      // - videoGridBiliFeed4
+      // - videoGridCustom
+      //   - forceColumn
+      //   - cardMinWidth
+      //
+      // displayMode
+      //  - TwoColumn
+      //  - List
+      //  - CenterEmpty: Normal + addonCenterEmpty
+      //  - Normal
 
-        // 中空
-        if (gridDisplayMode === EGridDisplayMode.CenterEmptyGrid) {
-          ret.push(clsFromScss.videoGridCenterEmpty)
-        }
+      const clsGridTemplateColumns =
+        useCustomGrid && !(enableForceColumn && forceColumnCount) && gridDisplayMode !== EGridDisplayMode.TwoColumnGrid
+          ? gridTemplateColumnsUsingCardMinWidth
+          : gridTemplateColumnsUsingVarCol
 
-        if (gridDisplayMode === EGridDisplayMode.List) {
-          // noop
-        }
-
-        if (useCustomGrid) {
-          const usingForceColumn = !!(enableForceColumn && forceColumnCount)
-          if (usingForceColumn) {
-            // noop, only need set `--col`
-          } else {
-            // use `auto-fill`
-            ret.push(clsFromScss.usingCardMinWidth)
-          }
-        }
-
-        return ret
-      }
-      return clsx(
+      const baseClass: ClassValue = [
         APP_CLS_GRID, // for customize css
-        clsFromScss.videoGrid,
-        useCustomGrid ? clsFromScss.videoGridCustom : clsFromScss.videoGridBiliFeed4,
-        getExtraClass(),
-        propClassName,
-      )
-    }, [clsFromScss, useCustomGrid, gridDisplayMode, enableForceColumn, forceColumnCount, propClassName])
+        videoGrid,
+        clsGridTemplateColumns,
+        useCustomGrid ? videoGridCustom : videoGridBiliFeed4,
+      ]
 
-    const gridStyle: CSSProperties | undefined = useMemo(() => {
-      if (!useCustomGrid) return
+      const renderClassName = (...more: ClassValue[]) => clsx(baseClass, ...more, propClassName)
 
-      if (gridDisplayMode !== EGridDisplayMode.TwoColumnGrid && enableForceColumn && forceColumnCount) {
-        return { '--col': forceColumnCount.toString() }
+      // 双列
+      if (gridDisplayMode === EGridDisplayMode.TwoColumnGrid) {
+        return { className: renderClassName(narrowMode) }
       }
 
-      if (useCustomGrid && cardMinWidth) {
-        return { '--card-min-width': `${cardMinWidth}px` }
+      // 中空
+      if (gridDisplayMode === EGridDisplayMode.CenterEmptyGrid) {
+        baseClass.push(videoGridAddonCenterEmpty)
       }
-    }, [gridDisplayMode, useCustomGrid, enableForceColumn, forceColumnCount, cardMinWidth])
+
+      if (enableForceColumn && forceColumnCount) {
+        return { className: renderClassName(), style: { '--col': forceColumnCount.toString() } }
+      } else {
+        return { className: renderClassName(), style: { '--card-min-width': `${cardMinWidth}px` } }
+      }
+    }, [
+      gridClassNames,
+      useCustomGrid,
+      gridDisplayMode,
+      enableForceColumn,
+      forceColumnCount,
+      cardMinWidth,
+      propClassName,
+    ])
 
     const cardBorderCss = useCardBorderCss()
-
-    const virtuosoGridContext: CustomGridContext = useMemo(() => {
-      return {
-        footerContent: footer,
-        gridRef,
-        gridClassName,
-      }
-    }, [footer, gridRef, gridClassName])
 
     // 总是 render grid, getColumnCount 依赖 grid columns
     const render = ({ gridChildren, gridSiblings }: { gridChildren?: ReactNode; gridSiblings?: ReactNode } = {}) => {
       return (
         <div data-tab={tab} className={containerClassName}>
-          <div data-tab={tab} ref={gridRef} className={gridClassName} style={gridStyle}>
+          <div data-tab={tab} ref={gridRef} {...gridStyleConfig}>
             {gridChildren}
           </div>
           {gridSiblings}
@@ -547,26 +542,6 @@ export const RecGrid = memo(
           />
         )
       }
-    }
-
-    // virtual grid
-    if (ENABLE_VIRTUAL_GRID) {
-      return (
-        <div className={clsx(clsFromScss.videoGridContainer, clsFromScss.virtualGridEnabled)}>
-          <VirtuosoGrid
-            useWindowScroll
-            data={fullList}
-            overscan={{ main: 20, reverse: 20 }}
-            listClassName={gridClassName}
-            computeItemKey={(index, item) => item.uniqId}
-            components={gridComponents as CustomGridComponents} // 因为我改了 context required
-            context={virtuosoGridContext}
-            itemContent={(index, item) => renderItem(item)}
-            endReached={() => checkShouldLoadMore()}
-          />
-          {!gridComponents.Footer && footer}
-        </div>
-      )
     }
 
     // plain dom

@@ -60,9 +60,10 @@ const __FlagSettingItem = forwardRef<ElementRef<typeof Checkbox> | ElementRef<ty
       return (
         <Checkbox
           {...checkboxProps}
+          ref={ref as Ref<ElementRef<typeof Checkbox>>}
           checked={checked}
           onChange={checkboxOnChange}
-          ref={ref as Ref<ElementRef<typeof Checkbox>>}
+          styles={{ label: { paddingInline: 6 } }}
         >
           {label}
         </Checkbox>

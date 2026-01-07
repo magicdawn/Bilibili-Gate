@@ -11,8 +11,8 @@ import { ETab } from '$components/RecHeader/tab-enum'
 import { EVideoLinkOpenMode, VideoLinkOpenModeConfig } from '$components/VideoCard/index.shared'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
-import { IconForCopy, IconForReset } from '$modules/icon'
-import { initialSettings, settings, updateSettings, useSettingsSnapshot } from '$modules/settings'
+import { IconForCopy } from '$modules/icon'
+import { settings, updateSettings, useSettingsSnapshot } from '$modules/settings'
 import { explainForFlag, toastAndReload } from '../index.shared'
 import { ResetPartialSettingsButton, SettingsGroup, sharedClassNames } from './shared'
 
@@ -56,15 +56,30 @@ export function TabPaneBasic() {
         title={
           <>
             <TabIcon tabKey={ETab.AppRecommend} className='mr-5px mt-2px size-30px' />
-            推荐 access_key
-            <HelpInfo className='ml-5px mt-6px size-18px' IconComponent={IconParkOutlineHelp}>
-              <span className='inline-flex items-center'>
-                用于「
-                <TabIcon tabKey={ETab.AppRecommend} className='mr-5px' />
-                推荐」Tab
-              </span>
-              <br />
-              用于 获取推荐 / 提交不喜欢等操作
+            access_key
+            <HelpInfo
+              className='ml-5px mt-6px size-18px'
+              IconComponent={IconParkOutlineHelp}
+              tooltipProps={{ classNames: { root: 'text-14px' } }}
+            >
+              App 端登录凭证, 使用情况: <br />
+              <div className='group mt-1 flex items-start b-t-1px b-t-gate-border b-t-dashed pt-1'>
+                <div className='w-55px flex flex-none items-center'>
+                  <TabIcon tabKey={ETab.AppRecommend} className='mr-1' /> 推荐
+                </div>
+                <ul className='flex-1 list-disc pl-20px'>
+                  <li className='w-max'>获取推荐</li>
+                  <li className='w-max'>提交不喜欢</li>
+                </ul>
+              </div>
+              <div className='group mt-1 flex items-start b-t-1px b-t-gate-border b-t-dashed pt-1'>
+                <div className='w-55px flex flex-none items-center'>
+                  <TabIcon tabKey={ETab.Liked} className='mr-1' />赞
+                </div>
+                <ul className='w-max flex-1 list-disc pl-20px'>
+                  <li className='w-max'>获取点赞列表</li>
+                </ul>
+              </div>
             </HelpInfo>
           </>
         }
@@ -105,16 +120,35 @@ export function TabPaneBasic() {
         </Space>
       </SettingsGroup>
 
-      <SettingsGroup title='布局'>
+      <SettingsGroup
+        titleClassName='justify-between'
+        title={
+          <>
+            布局
+            <ResetPartialSettingsButton
+              paths={[
+                'grid.useCustomGrid',
+                'grid.cardMinWidth',
+                'grid.enableForceColumn',
+                'grid.forceColumnCount',
+                'grid.gridDisplayMode',
+                'grid.twoColumnModeAlign',
+              ]}
+            />
+          </>
+        }
+      >
         <div className='flex items-center gap-x-15px'>
           <CheckboxSettingItem
             configPath='grid.useCustomGrid'
-            label='全屏模式: 使用自定义网格配置'
+            label='使用自定义网格配置'
             tooltip={
               <>
                 网格配置指: 网格宽度, 间距, 列数等. <br />
-                自定义网格配置: 宽度为90%; 可跟随 Bilibili-Evolved 自定义顶栏配置; 由 {APP_NAME} 自定义; <br />
-                默认网格配置: bili-feed4 版本B站首页默认的网格配置; 在 Safari 中使用建议取消勾选此项.
+                {explainForFlag(
+                  <>使用 {APP_NAME} 自定义网格配置: 宽度为90%; 可跟随 Bilibili-Evolved 自定义顶栏配置</>,
+                  <>使用 bili-feed4 版本B站首页默认的网格配置</>,
+                )}
               </>
             }
           />
@@ -125,7 +159,8 @@ export function TabPaneBasic() {
                 <>
                   如果期望显示更多的列, 可以调小这个值; <br />
                   如果期望显示更少的列, 可以调大这个值; <br />
-                  手动设置列数时, 这个值不起作用.
+                  手动设置列数时, 这个值不起作用. <br />
+                  <kbd>Alt / Opt</kbd> + 上下键可调整
                 </>
               }
             >
@@ -143,18 +178,6 @@ export function TabPaneBasic() {
               size='small'
               className='w-75px'
             />
-            <AntdTooltip title='重置'>
-              <Button
-                disabled={!useCustomGrid || enableForceColumn}
-                size='small'
-                className='icon-only-round-button size-24px'
-                onClick={() => {
-                  settings.grid.cardMinWidth = initialSettings.grid.cardMinWidth
-                }}
-              >
-                <IconForReset className='size-14px' />
-              </Button>
-            </AntdTooltip>
           </div>
 
           <div className='flex items-center'>

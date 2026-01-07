@@ -72,11 +72,11 @@ export function TabPaneCustomUI() {
         </div>
       </SettingsGroup>
 
-      {/* 全屏模式 */}
+      {/* 全屏推荐 */}
       <SettingsGroup
         title={
           <>
-            全屏模式
+            全屏推荐
             <ResetPartialSettingsButton
               className='ml-10px'
               paths={[
@@ -93,26 +93,23 @@ export function TabPaneCustomUI() {
         <div className={itemsContainerClassName}>
           <CheckboxSettingItem
             configPath='style.pureRecommend.useStickyTabbar'
-            label='全屏模式: 固定 Tab 栏'
+            label='固定 Tab 栏'
             tooltip={explainForFlag('Tab 栏会吸附在顶栏下方', 'Tab 栏会随页面一起滚动')}
           />
           <CheckboxSettingItem
             disabled={!style.pureRecommend.useStickyTabbar}
             configPath='style.pureRecommend.stickyTabbarShadow'
-            label='全屏模式: 固定 Tab 栏时添加边框 & 阴影'
+            label='固定 Tab 栏时添加边框 & 阴影'
             tooltip={explainForFlag('Tab 栏在吸附状态下: 加宽, 添加边框 & 阴影', '不改变')}
           />
 
           <CheckboxSettingItem
             configPath='style.pureRecommend.useWhiteBackground'
-            label='全屏模式: 使用纯白背景'
+            label='使用纯白背景'
             tooltip={explainForFlag('纯白背景', '浅灰色背景')}
           />
 
-          <CheckboxSettingItem
-            configPath={'style.pureRecommend.hideTopChannel'}
-            label='全屏模式: 隐藏顶部分区和Banner'
-          />
+          <CheckboxSettingItem configPath={'style.pureRecommend.hideTopChannel'} label='隐藏顶部分区和Banner' />
         </div>
       </SettingsGroup>
 
@@ -141,10 +138,9 @@ export function TabPaneCustomUI() {
               勾选后, 视频卡片会有边框包裹, 更像是一个卡片~ <br />
               整个卡片区域可点击 / 可触发预览 / 可使用右键菜单 <br />
               否则只是封面区域可以 <br />
-              使用快捷键 <Tag color='green'>shift+b</Tag> 切换状态
-              <br />
+              使用快捷键 <Tag color='green'>shift+b</Tag> 切换状态 <br />
               {borderCycleListLabels.map((label) => (
-                <Tag color='success' key={label}>
+                <Tag color='success' key={label} className='mx-1'>
                   {label}
                 </Tag>
               ))}
