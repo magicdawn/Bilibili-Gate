@@ -1,5 +1,6 @@
 import { Tag } from 'antd'
 import { AntdTooltip } from '$modules/antd/custom'
+import { CopyBvidButtonsTabbarView } from '../_shared/copy-bvid-buttons'
 import type { LikedRecService } from '.'
 
 export function LikedTabbarView({ service }: { service: LikedRecService }) {
@@ -12,6 +13,8 @@ export function LikedTabbarView({ service }: { service: LikedRecService }) {
           {count}
         </Tag>
       </AntdTooltip>
+
+      <CopyBvidButtonsTabbarView />
     </>
   )
 }

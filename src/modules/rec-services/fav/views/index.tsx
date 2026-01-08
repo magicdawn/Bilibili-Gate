@@ -143,7 +143,7 @@ export function FavTabbarView({ extraContent }: { extraContent?: ReactNode }) {
     })()
   }, [fav.addSeparator])
 
-  // !#region scope selection dropdown
+  /* #region scope selection dropdown */
   const [scopeDropdownOpen, setScopeDropdownOpen] = useState(false)
   const { menuItems } = useScopeMenus(() => {
     setScopeDropdownOpen(false)
@@ -182,7 +182,7 @@ export function FavTabbarView({ extraContent }: { extraContent?: ReactNode }) {
       </Button>
     </Dropdown>
   )
-  // #endregion
+  /* #endregion */
 
   return (
     <div ref={ref} className='flex items-center gap-x-10px'>
