@@ -6,7 +6,7 @@ import { useSnapshot } from 'valtio'
 import { __PROD__ } from '$common'
 import { APP_CLS_USE_ANT_LINK_COLOR, buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { HelpInfo } from '$components/_base/HelpInfo'
-import { primaryColorValue } from '$components/css-vars'
+import { appPrimaryColorValue } from '$components/css-vars'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
@@ -116,7 +116,7 @@ export function usePopoverRelated({
       content={popoverContent}
       styles={{ container: { border: `1px solid ${usePopoverBorderColor()}` } }}
     >
-      <Badge dot={showPopoverBadge} color={primaryColorValue} offset={[-5, 5]}>
+      <Badge dot={showPopoverBadge} color={appPrimaryColorValue} offset={[-5, 5]}>
         <Button className='icon-only-round-button' css={popoverOpen && buttonOpenCss}>
           <IconForPopoverTrigger className='ml-1px' />
         </Button>

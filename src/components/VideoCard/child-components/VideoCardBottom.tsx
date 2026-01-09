@@ -12,7 +12,7 @@ import { memo, useMemo, type MouseEventHandler, type ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
 import { APP_CLS_CARD_RECOMMEND_REASON } from '$common'
 import { appClsDarkSelector } from '$common/css-vars-export.module.scss'
-import { primaryColorValue } from '$components/css-vars'
+import { appPrimaryColorValue } from '$components/css-vars'
 import { isDisplayAsList } from '$components/RecGrid/display-mode'
 import { isLive, isPcRecommend, isRank, type RecItemType } from '$define'
 import { EApiType } from '$define/index.shared'
@@ -45,9 +45,9 @@ const S = {
       hue 必须保留品牌色方向，否则背景变成无意义的灰。
       light mode 的目标明度可固定为 0.96–0.98。
       dark mode 目标明度适合在 0.30–0.40 区间。 */
-    background-color: oklch(from ${primaryColorValue} calc(l * 0.1 + 0.9) calc(c * 0.1) h);
+    background-color: oklch(from ${appPrimaryColorValue} calc(l * 0.1 + 0.9) calc(c * 0.1) h);
     ${appClsDarkSelector} & {
-      background-color: oklch(from ${primaryColorValue} calc(l * 0.3 + 0.175) calc(c * 0.08) h);
+      background-color: oklch(from ${appPrimaryColorValue} calc(l * 0.3 + 0.175) calc(c * 0.08) h);
     }
     color: var(--Or5);
 

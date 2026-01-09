@@ -7,6 +7,7 @@ import { $headerWidth, $usingEvolevdHeader, useBackToTopRight } from '$header'
 import { useIsDarkMode } from '$modules/dark-mode'
 import { useSettingsSnapshot } from '$modules/settings'
 import { modalGlobalStyle } from './_base/BaseModal'
+import { appBgValue } from './css-vars'
 import { useColorPrimaryHex } from './ModalSettings/theme.shared'
 
 export function getBgSrcVaribale(dark: boolean, useWhiteBackground: boolean) {
@@ -124,7 +125,7 @@ export function HomePageGlobalStyle() {
         css`
           body {
             // NOTE: #app 版本 body 上有 inline style 'var(--bg3)', 而且屏幕特别宽的时候有 bug (边上是灰的)
-            background-color: var(${getBgSrcVaribale(dark, useWhiteBackground)}) !important;
+            background-color: ${appBgValue} !important;
           }
         `,
         useWhiteBackground

@@ -7,7 +7,7 @@ import { forwardRef, useMemo, useRef, useState, type ComponentProps, type Compon
 import { createPortal } from 'react-dom'
 import { APP_CLS_CARD, APP_CLS_CARD_COVER, baseDebug } from '$common'
 import { useMixedRef } from '$common/hooks/mixed-ref'
-import { primaryColorValue } from '$components/css-vars'
+import { appPrimaryColorValue } from '$components/css-vars'
 import { clsZVideoCardLargePreview } from '$components/fragments'
 import { useSettingsSnapshot } from '$modules/settings'
 import { isSafari } from '$ua'
@@ -307,7 +307,7 @@ export const LargePreview = forwardRef<ComponentRef<'div'>, LargePreviewProps>(
             <div
               className='h-full overflow-hidden rounded-20px bg-white/50% backdrop-blur-10px'
               css={css`
-                box-shadow: 0px 0px 1px 1px ${primaryColorValue};
+                box-shadow: 0px 0px 1px 1px ${appPrimaryColorValue};
               `}
             >
               {children}
@@ -367,7 +367,7 @@ function PopoverArrow({
         `,
         extra,
         _css`
-          border-${direction}-color: ${primaryColorValue};
+          border-${direction}-color: ${appPrimaryColorValue};
         `,
       ]}
     />

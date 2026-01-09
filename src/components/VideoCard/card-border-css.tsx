@@ -11,29 +11,29 @@ import { css as _css, css } from '@emotion/react'
 import { useMemo } from 'react'
 import { useSnapshot } from 'valtio'
 import { APP_NAMESPACE } from '$common'
-import { bgLv1Value, bgLv2Value, borderColorValue, primaryColorValue } from '$components/css-vars'
+import { appBgLv1Value, appBgLv2Value, appBorderColorValue, appPrimaryColorValue } from '$components/css-vars'
 import { useIsDisplayAsList } from '$components/RecGrid/display-mode'
 import { multiSelectStore } from '$modules/multi-select/store'
 import { useSettingsSnapshot } from '$modules/settings'
 import { tweakLightness } from '$utility/css'
-import { bgValue, videoCardBorderRadiusValue } from '../css-vars'
+import { appBgValue, videoCardBorderRadiusValue } from '../css-vars'
 import type { CssProp } from '$utility/type'
 
-const c = tweakLightness(primaryColorValue, 0.1)
+const c = tweakLightness(appPrimaryColorValue, 0.1)
 
 const Styles = {
   normalBorder: css`
-    border-color: ${borderColorValue};
+    border-color: ${appBorderColorValue};
   `,
   activeBorder: css`
-    border-color: ${primaryColorValue};
+    border-color: ${appPrimaryColorValue};
     box-shadow: 0px 0px 9px 4px ${c};
   `,
   rounded: css`
     border-radius: ${videoCardBorderRadiusValue};
   `,
   bgLv1: css`
-    background-color: ${bgLv1Value};
+    background-color: ${appBgLv1Value};
   `,
   // make cover zoom
   coverZoomEffect: css`
@@ -66,11 +66,11 @@ export function useBlockedCardCss(isBlockedCard: boolean): CssProp {
       ${Styles.rounded}
       ${Styles.normalBorder}
 
-      background-color: ${bgValue};
-      ${sepIdentifier}:  ${bgLv1Value};
+      background-color: ${appBgValue};
+      ${sepIdentifier}:  ${appBgLv1Value};
       &:hover {
-        background-color: ${bgLv1Value};
-        ${sepIdentifier}: ${bgLv2Value};
+        background-color: ${appBgLv1Value};
+        ${sepIdentifier}: ${appBgLv2Value};
       }
 
       /* disable padding */

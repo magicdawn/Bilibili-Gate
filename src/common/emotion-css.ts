@@ -3,7 +3,7 @@ import { theme } from 'antd'
 import { useMemo } from 'react'
 import { useSnapshot } from 'valtio'
 import { APP_NAMESPACE } from '$common'
-import { borderColorValue } from '$components/css-vars'
+import { appBorderColorValue } from '$components/css-vars'
 import { settings } from '$modules/settings'
 
 // harmonyos_regular 没法对齐
@@ -38,7 +38,7 @@ export function useButtonOpenColor() {
 export function usePopoverBorderColor() {
   const { popoverBorderColorUseColorPrimary } = useSnapshot(settings.style.general)
   const buttonOpenColor = useButtonOpenColor()
-  return popoverBorderColorUseColorPrimary ? buttonOpenColor : borderColorValue
+  return popoverBorderColorUseColorPrimary ? buttonOpenColor : appBorderColorValue
 }
 
 export function useAntLinkCss() {

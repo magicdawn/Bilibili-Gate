@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { useMemo, type CSSProperties, type ReactNode } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
 import { Picture } from '$components/_base/Picture'
-import { primaryColorValue } from '$components/css-vars'
+import { appPrimaryColorValue } from '$components/css-vars'
 import { isDynamicFeed, isFav, isWatchlater, type RankItemExtend, type RecItemType } from '$define'
 import { EApiType } from '$define/index.shared'
 import { openNewTab } from '$modules/gm'
@@ -50,7 +50,7 @@ export function DynamicFeedBadgeDisplay({ item }: { item: RecItemType }) {
 /* https://color.adobe.com/zh/metals-color-theme-18770781/ */
 function getColor(no: number) {
   const medalColors = ['#FFD700', '#C0C0C0', '#B36700']
-  return medalColors[no - 1] ?? primaryColorValue
+  return medalColors[no - 1] ?? appPrimaryColorValue
 }
 
 export function RankNumMark({ item }: { item: RankItemExtend }) {

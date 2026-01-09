@@ -80,7 +80,8 @@ export function ModalSettings({ show, onHide }: { show: boolean; onHide: () => v
       hideWhenMaskOnClick={true}
       hideWhenEsc={true}
       width={900}
-      clsModal='max-h-unset'
+      clsModalMask='[&:has(svg.peeking)]:bg-black/10'
+      clsModal='max-h-unset [&:has(svg.peeking)]:opacity-10'
     >
       <div className={BaseModalClassNames.modalHeader}>
         <div className={BaseModalClassNames.modalTitle}>

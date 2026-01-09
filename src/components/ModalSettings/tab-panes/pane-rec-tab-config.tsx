@@ -3,7 +3,7 @@ import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifi
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useMemoizedFn, useMount } from 'ahooks'
-import { Checkbox, Collapse, Empty, Radio, Space } from 'antd'
+import { Checkbox, Collapse, Empty, Space } from 'antd'
 import clsx from 'clsx'
 import { useMemo, useState, type CSSProperties } from 'react'
 import { useSnapshot } from 'valtio'
@@ -12,7 +12,6 @@ import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { useSortedTabKeys } from '$components/RecHeader/tab'
 import { TabConfig, TabIcon } from '$components/RecHeader/tab-config'
 import { CONFIGURABLE_TAB_KEYS, ETab } from '$components/RecHeader/tab-enum'
-import { ESidebarAlign } from '$enums'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
 import { getUserNickname } from '$modules/bilibili/user/nickname'
@@ -36,7 +35,7 @@ import { SettingsGroup, sharedClassNames } from './shared'
 import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 
 export function TabPaneRecTabsConfig() {
-  const { dynamicFeed, sidebarAlign, enableSidebar } = useSettingsSnapshot()
+  const { dynamicFeed } = useSettingsSnapshot()
   const sortedTabKeys = useSortedTabKeys()
 
   const getCssOrderStyle = (tab: ETab): CSSProperties => {
@@ -59,36 +58,6 @@ export function TabPaneRecTabsConfig() {
         </SettingsGroup>
 
         <SettingsGroup title='更多设置' contentClassName='gap-y-15px'>
-          {/* generral */}
-          <div className='order--10'>
-            <div className='flex items-center text-size-1.3em'>通用</div>
-            <div className='flex flex-wrap items-center gap-x-10px'>
-              <div className='flex items-center gap-x-4px'>
-                <CheckboxSettingItem
-                  configPath='enableSidebar'
-                  label='使用侧边栏'
-                  tooltip={explainForFlag('使用侧边栏(如动态 分组/UP 选择)', '使用下拉面板')}
-                />
-                <Radio.Group
-                  disabled={!enableSidebar}
-                  buttonStyle='solid'
-                  size='small'
-                  value={sidebarAlign}
-                  onChange={(e) => {
-                    settings.sidebarAlign = e.target.value
-                  }}
-                >
-                  <Radio.Button value={ESidebarAlign.Left} className='inline-flex-center'>
-                    <IconMaterialSymbolsAlignHorizontalLeft className='size-16px' />
-                  </Radio.Button>
-                  <Radio.Button value={ESidebarAlign.Right} className='inline-flex-center'>
-                    <IconMaterialSymbolsAlignHorizontalRight className='size-16px' />
-                  </Radio.Button>
-                </Radio.Group>
-              </div>
-            </div>
-          </div>
-
           {/* watchlater */}
           <div style={getCssOrderStyle(ETab.Watchlater)}>
             <div className='flex items-center text-size-1.3em'>

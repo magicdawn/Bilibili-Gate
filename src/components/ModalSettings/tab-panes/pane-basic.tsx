@@ -1,5 +1,7 @@
-import { useMemoizedFn } from 'ahooks'
-import { Button, InputNumber, Tag } from 'antd'
+import { useHover, useMemoizedFn } from 'ahooks'
+import { Button, InputNumber, Radio, Tag } from 'antd'
+import clsx from 'clsx'
+import { useRef } from 'react'
 import { APP_NAME } from '$common'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { AccessKeyManage } from '$components/AccessKeyManage'
@@ -7,6 +9,7 @@ import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { GridDisplayModeSwitcher } from '$components/RecGrid/display-mode'
 import { TabIcon } from '$components/RecHeader/tab-config'
 import { ETab } from '$components/RecHeader/tab-enum'
+import { ESidebarAlign } from '$enums'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconForCopy } from '$modules/icon'
@@ -18,6 +21,8 @@ export function TabPaneBasic() {
   const {
     grid: { useCustomGrid, enableForceColumn, forceColumnCount, cardMinWidth },
     style,
+    enableSidebar,
+    sidebarAlign,
   } = useSettingsSnapshot()
 
   const handleCopyScriptVersion = useMemoizedFn(() => {
@@ -25,6 +30,9 @@ export function TabPaneBasic() {
     GM.setClipboard(content)
     antMessage.success(`已复制当前版本: ${content}`)
   })
+
+  const peekIconRef = useRef<SVGSVGElement>(null)
+  const peekIconHovering = useHover(peekIconRef)
 
   return (
     <div className={sharedClassNames.tabPane}>
@@ -88,7 +96,19 @@ export function TabPaneBasic() {
       </SettingsGroup>
 
       <SettingsGroup
-        title='布局'
+        title={
+          <>
+            布局
+            <IconTablerEyeSearch
+              ref={peekIconRef}
+              className={clsx(
+                'ml-1.5 size-1em cursor-pointer b-1px b-transparent rounded-full b-solid p-2px hover:b-gate-primary',
+                { peeking: peekIconHovering },
+              )}
+              title='透视'
+            />
+          </>
+        }
         resetSettingPaths={[
           'grid.useCustomGrid',
           'grid.cardMinWidth',
@@ -163,6 +183,30 @@ export function TabPaneBasic() {
               />
             )}
           </div>
+        </div>
+
+        <div className='flex items-center gap-x-4px'>
+          <CheckboxSettingItem
+            configPath='enableSidebar'
+            label='使用侧边栏'
+            tooltip={explainForFlag('使用侧边栏(如动态 分组/UP 选择)', '使用下拉面板')}
+          />
+          <Radio.Group
+            disabled={!enableSidebar}
+            buttonStyle='solid'
+            size='small'
+            value={sidebarAlign}
+            onChange={(e) => {
+              settings.sidebarAlign = e.target.value
+            }}
+          >
+            <Radio.Button value={ESidebarAlign.Left} className='inline-flex-center'>
+              <IconMaterialSymbolsAlignHorizontalLeft className='size-16px' />
+            </Radio.Button>
+            <Radio.Button value={ESidebarAlign.Right} className='inline-flex-center'>
+              <IconMaterialSymbolsAlignHorizontalRight className='size-16px' />
+            </Radio.Button>
+          </Radio.Group>
         </div>
 
         <div className='flex items-center'>

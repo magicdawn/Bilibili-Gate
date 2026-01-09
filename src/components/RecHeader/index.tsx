@@ -95,16 +95,7 @@ export const RecHeader = forwardRef<
       useStickyTabbar && [
         'sticky  mb-10px b-b-1px b-b-transparent b-b-solid',
         clsZRecHeader,
-        sticky && [
-          'b-b-gate-bg-lv1',
-          stickyTabbarShadow
-            ? useWhiteBackground
-              ? 'bg-$bg1_float'
-              : 'bg-$bg2_float'
-            : useWhiteBackground
-              ? 'bg-$bg1'
-              : 'bg-$bg2',
-        ],
+        sticky && ['b-b-gate-bg-lv1', 'bg-gate-bg'],
       ],
     sticky && 'sticky-state-on',
   )

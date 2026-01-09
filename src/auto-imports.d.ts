@@ -72,6 +72,7 @@ declare global {
   const IconRiFullscreenFill: typeof import('~icons/ri/fullscreen-fill.jsx').default
   const IconSvgSpinnersBarsRotateFade: typeof import('~icons/svg-spinners/bars-rotate-fade.jsx').default
   const IconTablerCoinYen: typeof import('~icons/tabler/coin-yen.jsx').default
+  const IconTablerEyeSearch: typeof import('~icons/tabler/eye-search.jsx').default
   const IconTablerFaceIdError: typeof import('~icons/tabler/face-id-error.jsx').default
   const IconTablerFileExport: typeof import('~icons/tabler/file-export.jsx').default
   const IconTablerFileImport: typeof import('~icons/tabler/file-import.jsx').default

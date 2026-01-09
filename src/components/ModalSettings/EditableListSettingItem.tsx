@@ -11,7 +11,7 @@ import {
   type ComponentPropsWithoutRef,
   type ReactNode,
 } from 'react'
-import { borderColorValue } from '$components/css-vars'
+import { appBorderColorValue } from '$components/css-vars'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
 import { getUserNickname } from '$modules/bilibili/user/nickname'
@@ -73,7 +73,7 @@ export function EditableListSettingItem({
           css`
             min-height: 82px;
             border-radius: 6px;
-            border: 1px solid ${borderColorValue};
+            border: 1px solid ${appBorderColorValue};
             margin-top: 3px;
           `,
           disabled &&
