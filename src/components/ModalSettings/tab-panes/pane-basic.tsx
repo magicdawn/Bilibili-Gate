@@ -104,7 +104,7 @@ export function TabPaneBasic() {
                 ref={peekIconRef}
                 title='透视'
                 className={clsx(
-                  'ml-1.5 size-1em cursor-pointer b-1px b-transparent rounded-full b-solid p-2px hover:b-gate-primary',
+                  'ml-1.5 size-1em cursor-pointer b-1px b-transparent rounded-md b-solid p-2px hover:b-gate-primary',
                   { peeking: peekIconHovering },
                 )}
               />
@@ -202,9 +202,7 @@ export function TabPaneBasic() {
             buttonStyle='solid'
             size='small'
             value={sidebarAlign}
-            onChange={(e) => {
-              settings.sidebarAlign = e.target.value
-            }}
+            onChange={(e) => void (settings.sidebarAlign = e.target.value)}
           >
             <Radio.Button value={ESidebarAlign.Left} className='inline-flex-center'>
               <IconMaterialSymbolsAlignHorizontalLeft className='size-16px' />
