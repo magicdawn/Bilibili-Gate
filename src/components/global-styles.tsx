@@ -7,7 +7,7 @@ import { $headerWidth, $usingEvolevdHeader, useBackToTopRight } from '$header'
 import { useIsDarkMode } from '$modules/dark-mode'
 import { useSettingsSnapshot } from '$modules/settings'
 import { modalGlobalStyle } from './_base/BaseModal'
-import { appBgValue } from './css-vars'
+import { appBgLv1Value, appBgValue } from './css-vars'
 import { useColorPrimaryHex } from './ModalSettings/theme.shared'
 
 export function getBgSrcVaribale(dark: boolean, useWhiteBackground: boolean) {
@@ -32,7 +32,7 @@ export function BaseGlobalStyle() {
   const config = useMemo(() => {
     return {
       bgSrc: getBgSrcVaribale(dark, useWhiteBackground),
-      bgFallback: dark ? '#222' : useWhiteBackground ? '#fff' : '#f6f7f8',
+      bgFallback: dark ? '#17181a' : useWhiteBackground ? '#fff' : '#f6f7f8',
       text: dark ? '#fff' : '#333',
     }
   }, [dark, useWhiteBackground])
@@ -127,22 +127,24 @@ export function HomePageGlobalStyle() {
             // NOTE: #app 版本 body 上有 inline style 'var(--bg3)', 而且屏幕特别宽的时候有 bug (边上是灰的)
             background-color: ${appBgValue} !important;
           }
+
+          .large-header,
+          #i_cecream,
+          body > #app,
+          .bili-header.large-header,
+          .bili-header.large-header .bili-header__channel {
+            background-color: ${appBgValue};
+          }
         `,
-        useWhiteBackground
-          ? undefined
-          : css`
-              .large-header,
-              #i_cecream,
-              body > #app,
-              .bili-header.large-header,
-              .bili-header .bili-header__channel {
-                background-color: var(--bg2);
-              }
-              .bili-header .bili-header__channel .channel-entry-more__link,
-              .bili-header .bili-header__channel .channel-link {
-                background-color: var(--bg1);
-              }
-            `,
+        // light-mode, 灰色背景(none #fff): channel bg 与 body bg 一致, 看不清, 需要 fix
+        !dark &&
+          !useWhiteBackground &&
+          css`
+            .bili-header .bili-header__channel .channel-entry-more__link,
+            .bili-header .bili-header__channel .channel-link {
+              background-color: ${appBgLv1Value};
+            }
+          `,
 
         hideTopChannel &&
           css`

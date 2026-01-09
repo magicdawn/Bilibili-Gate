@@ -99,14 +99,16 @@ export function TabPaneBasic() {
         title={
           <>
             布局
-            <IconTablerEyeSearch
-              ref={peekIconRef}
-              className={clsx(
-                'ml-1.5 size-1em cursor-pointer b-1px b-transparent rounded-full b-solid p-2px hover:b-gate-primary',
-                { peeking: peekIconHovering },
-              )}
-              title='透视'
-            />
+            <AntdTooltip title='透视'>
+              <IconTablerEyeSearch
+                ref={peekIconRef}
+                title='透视'
+                className={clsx(
+                  'ml-1.5 size-1em cursor-pointer b-1px b-transparent rounded-full b-solid p-2px hover:b-gate-primary',
+                  { peeking: peekIconHovering },
+                )}
+              />
+            </AntdTooltip>
           </>
         }
         resetSettingPaths={[
@@ -114,6 +116,10 @@ export function TabPaneBasic() {
           'grid.cardMinWidth',
           'grid.enableForceColumn',
           'grid.forceColumnCount',
+
+          'enableSidebar',
+          'sidebarAlign',
+
           'grid.gridDisplayMode',
           'grid.twoColumnModeAlign',
         ]}
@@ -144,7 +150,7 @@ export function TabPaneBasic() {
                 </>
               }
             >
-              <span>视频卡片最小宽度</span>
+              <span className='cursor-pointer'>视频卡片最小宽度</span>
             </AntdTooltip>
             <InputNumber
               disabled={!useCustomGrid || enableForceColumn}
@@ -251,7 +257,12 @@ export function TabPaneBasic() {
             <CheckboxSettingItem
               configPath='style.pureRecommend.useWhiteBackground'
               label='使用纯白背景'
-              tooltip={explainForFlag('纯白背景', '浅灰色背景')}
+              tooltip={
+                <>
+                  {explainForFlag('纯白背景', '浅灰色背景')}
+                  仅影响白色/浅色模式
+                </>
+              }
             />
             <CheckboxSettingItem configPath={'style.pureRecommend.hideTopChannel'} label='隐藏顶部分区和Banner' />
           </div>
