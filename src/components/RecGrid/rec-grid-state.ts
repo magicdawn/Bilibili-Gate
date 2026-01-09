@@ -52,7 +52,7 @@ export function getGenericCardDatas(): IVideoCardData[] {
   let items = multiSelecting ? getMultiSelectedItems() : getCurrentGridItems()
   if (multiSelecting && !items.length) items = getCurrentGridItems() // multi-selecting but no selected, fallback to ALL
   const cardDatas = items.map(normalizeCardData)
-  return cardDatas
+  return cardDatas.toReversed() // gui first -> last
 }
 
 export function copyBvidsSingleLine() {
