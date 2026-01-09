@@ -462,6 +462,12 @@ export const RecGrid = memo(
         baseClass.push(videoGridAddonCenterEmpty)
       }
 
+      // bili-feed4
+      if (!useCustomGrid) {
+        return { className: renderClassName() }
+      }
+
+      // Bilibili-Gate custom
       if (enableForceColumn && forceColumnCount) {
         return { className: renderClassName(), style: { '--col': forceColumnCount.toString() } }
       } else {
