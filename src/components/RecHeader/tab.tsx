@@ -1,6 +1,7 @@
 import { css } from '@emotion/react'
 import { useMemoizedFn, usePrevious } from 'ahooks'
 import { Radio, Segmented } from 'antd'
+import clsx from 'clsx'
 import { Fragment, useDeferredValue, useMemo, type ReactNode } from 'react'
 import { useSnapshot, type UseSnapshotOptions } from 'valtio'
 import { HelpInfo } from '$components/_base/HelpInfo'
@@ -108,7 +109,7 @@ const radioBtnCss = css`
   }
 `
 
-export function VideoSourceTab() {
+export function VideoSourceTab({ className }: { className?: string }) {
   const logined = useHasLogined()
   const tab = useCurrentUsingTab()
   const currentTabConfigList = useCurrentDisplayingTabConfigList()
@@ -127,7 +128,7 @@ export function VideoSourceTab() {
       buttonStyle='solid'
       size='middle'
       value={tab}
-      className='inline-flex items-center'
+      className={clsx('inline-flex items-center', className)}
       onFocus={(e) => {
         // 不移除 focus, refresh `r` 无法响应
         const target = e.target as HTMLElement

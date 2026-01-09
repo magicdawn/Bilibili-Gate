@@ -9,6 +9,10 @@ import { useSettingsSnapshot } from '$modules/settings'
 import { modalGlobalStyle } from './_base/BaseModal'
 import { useColorPrimaryHex } from './ModalSettings/theme.shared'
 
+export function getBgSrcVaribale(dark: boolean, useWhiteBackground: boolean) {
+  return dark ? '--bg1' : useWhiteBackground ? '--bg1' : '--bg2'
+}
+
 /**
  * BaseGlobalStyle: [define-color-primary, bg, text, link]
  * HomePageGlobalStyle: setup for overwrite homepage
@@ -16,16 +20,19 @@ import { useColorPrimaryHex } from './ModalSettings/theme.shared'
 
 export function BaseGlobalStyle() {
   const colorPrimary = useColorPrimaryHex()
-  const { style } = useSettingsSnapshot()
   const dark = useIsDarkMode()
   const antLinkColorGlobalStyle = useAntLinkColorGlobalStyle()
+  const {
+    style: {
+      pureRecommend: { useWhiteBackground },
+    },
+  } = useSettingsSnapshot()
 
-  const { useWhiteBackground } = style.pureRecommend
   const config = useMemo(() => {
     return {
-      text: dark ? '#fff' : '#333',
-      bgSrc: dark ? '--bg1' : useWhiteBackground ? '--bg1' : '--bg2',
+      bgSrc: getBgSrcVaribale(dark, useWhiteBackground),
       bgFallback: dark ? '#222' : useWhiteBackground ? '#fff' : '#f6f7f8',
+      text: dark ? '#fff' : '#333',
     }
   }, [dark, useWhiteBackground])
 
@@ -47,7 +54,12 @@ export function BaseGlobalStyle() {
 }
 
 export function HomePageGlobalStyle() {
-  const { grid, style } = useSettingsSnapshot()
+  const {
+    grid: { useCustomGrid },
+    style: {
+      pureRecommend: { useWhiteBackground, hideTopChannel },
+    },
+  } = useSettingsSnapshot()
   const dark = useIsDarkMode()
   const backToTopRight = useBackToTopRight()
   const usingEvolevdHeader = $usingEvolevdHeader.use()
@@ -81,7 +93,7 @@ export function HomePageGlobalStyle() {
           }
         `,
 
-        grid.useCustomGrid &&
+        useCustomGrid &&
           css`
             /* enlarge container width */
             #i_cecream,
@@ -94,12 +106,11 @@ export function HomePageGlobalStyle() {
             .bili-feed4-layout,
             .bili-feed4 .bili-header .bili-header__channel {
               max-width: ${width}%;
-              /* 与 bilibili-evolve 视觉上对齐 */
-              padding: ${padding};
+              padding: ${padding}; // bilibili-evolve custom-header 视觉上对齐
             }
           `,
 
-        grid.useCustomGrid &&
+        useCustomGrid &&
           typeof backToTopRight === 'number' &&
           css`
             .${APP_CLS_ROOT} {
@@ -110,19 +121,19 @@ export function HomePageGlobalStyle() {
         /**
          * extra background-color work for `PureRecommend`
          */
-        style.pureRecommend.useWhiteBackground
-          ? css`
-              body {
-                /* same as #i_cecream */
-                // #app 版本 body 上有 inline style 'var(--bg3)', 而且屏幕特别宽的时候有 bug (边上是灰的)
-                background-color: var(--bg1) !important;
-              }
-            `
+        css`
+          body {
+            // NOTE: #app 版本 body 上有 inline style 'var(--bg3)', 而且屏幕特别宽的时候有 bug (边上是灰的)
+            background-color: var(${getBgSrcVaribale(dark, useWhiteBackground)}) !important;
+          }
+        `,
+        useWhiteBackground
+          ? undefined
           : css`
-              body,
               .large-header,
               #i_cecream,
               body > #app,
+              .bili-header.large-header,
               .bili-header .bili-header__channel {
                 background-color: var(--bg2);
               }
@@ -132,7 +143,7 @@ export function HomePageGlobalStyle() {
               }
             `,
 
-        style.pureRecommend.hideTopChannel &&
+        hideTopChannel &&
           css`
             .bili-header__channel,
             .bili-header__banner {

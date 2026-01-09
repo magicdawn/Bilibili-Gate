@@ -1,4 +1,3 @@
 # Todos
 
-- [ ] TabOrderConfig dnd-kit jumping
-- [ ] copyBvidInfo + live
+- [ ] !纯白背景

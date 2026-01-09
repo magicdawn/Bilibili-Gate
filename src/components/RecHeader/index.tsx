@@ -1,6 +1,7 @@
 import { css } from '@emotion/react'
 import { useKeyPress, useMemoizedFn } from 'ahooks'
 import { Button } from 'antd'
+import clsx from 'clsx'
 import { forwardRef, useImperativeHandle, useMemo, type ReactNode } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
 import { APP_CLS_TAB_BAR, baseDebug } from '$common'
@@ -38,11 +39,10 @@ export const RecHeader = forwardRef<
   }
 >(function RecHeader({ leftSlot, rightSlot, shortcutEnabled }, ref) {
   const {
-    accessKey,
     pureRecommend,
     multiSelect: { showIcon: multiSelectShowIcon },
     style: {
-      pureRecommend: { useStickyTabbar, stickyTabbarShadow },
+      pureRecommend: { useStickyTabbar, stickyTabbarShadow, useWhiteBackground },
     },
   } = useSettingsSnapshot()
 
@@ -90,16 +90,25 @@ export const RecHeader = forwardRef<
     `
   })()
 
-  const _className = useUnoMerge(
+  const wrapperClassName = useUnoMerge(
     pureRecommend &&
       useStickyTabbar && [
         'sticky  mb-10px b-b-1px b-b-transparent b-b-solid',
         clsZRecHeader,
-        sticky && ['b-b-gate-bg-lv1', stickyTabbarShadow ? 'bg-$bg1_float' : 'bg-$bg1'],
+        sticky && [
+          'b-b-gate-bg-lv1',
+          stickyTabbarShadow
+            ? useWhiteBackground
+              ? 'bg-$bg1_float'
+              : 'bg-$bg2_float'
+            : useWhiteBackground
+              ? 'bg-$bg1'
+              : 'bg-$bg2',
+        ],
       ],
     sticky && 'sticky-state-on',
   )
-  const _css: CssProp = useMemo(() => {
+  const wrapperCss: CssProp = useMemo(() => {
     if (!(pureRecommend && useStickyTabbar)) return
     const topCss = css`
       top: ${headerHeight - 1}px; // 有缝隙, 故 -1 px
@@ -110,22 +119,24 @@ export const RecHeader = forwardRef<
   }, [pureRecommend, useStickyTabbar, stickyTabbarShadow, sticky, headerHeight, boxShadowCss, expandToFullWidthCss])
 
   return (
-    <div ref={stickyRef} data-role='tab-bar-wrapper' className={_className} css={_css}>
+    <div ref={stickyRef} data-role='tab-bar-wrapper' className={wrapperClassName} css={wrapperCss}>
       <div
         data-role='tab-bar'
-        className={`${APP_CLS_TAB_BAR} relative mb-0 h-auto flex flex-row items-center justify-between gap-x-15px px-0 py-8px`}
+        className={clsx(
+          APP_CLS_TAB_BAR,
+          'relative mb-0 h-auto flex flex-row items-center justify-between gap-x-15px px-0 py-8px',
+        )}
       >
-        <div data-class-name='left' className='h-full flex flex-shrink-1 flex-wrap items-center gap-x-15px gap-y-8px'>
-          <VideoSourceTab />
+        <div data-class-name='left' className='h-full flex flex-wrap items-center gap-x-15px gap-y-8px'>
+          <VideoSourceTab className='flex-none' />
           {leftSlot}
         </div>
 
-        <div data-class-name='right' className='h-full flex flex-shrink-0 items-center gap-x-8px'>
-          {rightSlot}
-
-          {!accessKey && showAccessKeyManage && <AccessKeyManage style={{ marginLeft: 5 }} />}
-
-          {multiSelectShowIcon && <MultiSelectButton iconOnly addCopyActions />}
+        <div
+          data-class-name='right'
+          className='h-full min-w-180px flex flex-row-reverse flex-wrap items-center justify-right gap-x-8px gap-y-8px'
+        >
+          <RefreshButton refreshHotkeyEnabled={shortcutEnabled} />
 
           <AntdTooltip title='设置' arrow={false}>
             <Button onClick={showModalSettings} className='icon-only-round-button'>
@@ -134,7 +145,11 @@ export const RecHeader = forwardRef<
             </Button>
           </AntdTooltip>
 
-          <RefreshButton refreshHotkeyEnabled={shortcutEnabled} />
+          {multiSelectShowIcon && <MultiSelectButton iconOnly addCopyActions />}
+
+          {showAccessKeyManage && <AccessKeyManage style={{ marginLeft: 5 }} />}
+
+          {rightSlot}
         </div>
       </div>
     </div>
@@ -178,6 +193,7 @@ function useExpandToFullWidthCss() {
 }
 
 function useShouldShowAccessKeyManage() {
+  const { accessKey } = useSettingsSnapshot()
   const tab = useCurrentUsingTab()
-  return tab === ETab.AppRecommend
+  return !accessKey && [ETab.AppRecommend, ETab.Liked].includes(tab)
 }

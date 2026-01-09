@@ -17,7 +17,7 @@ export function valtioFactory<T>(computeValue: () => T) {
   }
 
   function update() {
-    state.value = computeValue()
+    return (state.value = computeValue())
   }
 
   const updateThrottled = throttle(update, 100, { edges: ['leading', 'trailing'] })
