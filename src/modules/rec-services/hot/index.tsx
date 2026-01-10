@@ -123,7 +123,6 @@ function HotTabbarView({ children }: { children?: ReactNode }) {
 
   const dropdownMenu = (
     <Dropdown
-      open
       menu={{ items: menus }}
       getPopupContainer={getPopupContainer}
       rootClassName='![&_\[role=separator\]]:(mx-0 my-2px)'
