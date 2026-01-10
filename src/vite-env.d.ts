@@ -10,6 +10,8 @@ interface Window {
   navigation?: {
     addEventListener?: (event: string, listener: () => void) => void
   }
+
+  console: typeof console
 }
 
 interface Element {

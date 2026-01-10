@@ -1,28 +1,9 @@
 import { useMemoizedFn } from 'ahooks'
 import { Button, Divider, Dropdown, type DropdownProps } from 'antd'
-import {
-  useMemo,
-  useState,
-  type CSSProperties,
-  type ElementRef,
-  type MouseEvent,
-  type ReactNode,
-  type RefObject,
-} from 'react'
-import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
+import { useMemo, useState, type ElementRef, type MouseEvent, type ReactNode, type RefObject } from 'react'
+import { buttonOpenCss, usePopoverBorderStyle } from '$common/emotion-css'
 import { HelpInfo } from '$components/_base/HelpInfo'
-import { styled } from '$libs'
 import { defineAntMenus } from '$modules/antd'
-
-const clsMenuRoot = styled.createClass`
-  .ant-dropdown &.ant-dropdown-menu .ant-dropdown-menu-item {
-    font-size: 13px; // same as Button
-    justify-content: flex-start;
-    .ant-dropdown-menu-title-content {
-      flex-shrink: 0;
-    }
-  }
-`
 
 export type GenericOrderSwitcherProps<T extends string | number> = {
   value: T
@@ -71,16 +52,8 @@ export const GenericOrderSwitcher = function <T extends string | number>({
     )
   }, [list, listDisplayConfig, onChange])
 
-  const popoverBorderColor = usePopoverBorderColor()
-  const dropdownStyle: CSSProperties = useMemo(
-    () => ({
-      overscrollBehavior: 'contain',
-      border: `1px solid ${popoverBorderColor}`,
-    }),
-    [],
-  )
-
   const [open, setOpen] = useState(false)
+  const dropdownBorderStyle = usePopoverBorderStyle()
   return (
     <span className='inline-flex items-center' ref={$ref}>
       <Dropdown
@@ -89,11 +62,15 @@ export const GenericOrderSwitcher = function <T extends string | number>({
         disabled={disabled}
         menu={{
           items: dropdownMenuItems,
-          style: dropdownStyle,
-          className: clsMenuRoot,
           selectedKeys: [value.toString()],
+          styles: { root: dropdownBorderStyle },
         }}
         placement='bottomRight'
+        classNames={{
+          root: 'text-13px',
+          item: 'justify-start',
+          itemContent: 'flex-shrink-0',
+        }}
         {...dropdownProps}
       >
         <Button

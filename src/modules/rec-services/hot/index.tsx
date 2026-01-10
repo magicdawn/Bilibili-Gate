@@ -4,7 +4,6 @@ import { useMemo, type ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
 import { EHotSubTab } from '$components/RecHeader/tab-enum'
 import { useOnRefresh } from '$components/Recommends/rec.shared'
-import { styled } from '$libs'
 import { AntdTooltip } from '$modules/antd/custom'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { proxyWithGmStorage } from '$utility/valtio'
@@ -124,13 +123,10 @@ function HotTabbarView({ children }: { children?: ReactNode }) {
 
   const dropdownMenu = (
     <Dropdown
+      open
       menu={{ items: menus }}
       getPopupContainer={getPopupContainer}
-      rootClassName={styled.createClass`
-        .ant-dropdown-menu-item-divider {
-          margin: 2px 0 !important;
-        }
-      `}
+      rootClassName='![&_\[role=separator\]]:(mx-0 my-2px)'
     >
       <Button ref={ref} className='w-114px flex items-center justify-start gap-0 pl-16px'>
         {icon}

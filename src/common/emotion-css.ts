@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import { theme } from 'antd'
-import { useMemo } from 'react'
+import { useMemo, type CSSProperties } from 'react'
 import { useSnapshot } from 'valtio'
 import { APP_NAMESPACE } from '$common'
 import { appBorderColorValue } from '$components/css-vars'
@@ -32,13 +32,20 @@ export const buttonOpenCss = css`
   border-color: var(--ant-button-default-hover-border-color);
   background: var(--ant-button-default-hover-bg);
 `
+
 export function useButtonOpenColor() {
   return theme.useToken().token.colorPrimaryHover
 }
+
 export function usePopoverBorderColor() {
   const { popoverBorderColorUseColorPrimary } = useSnapshot(settings.style.general)
   const buttonOpenColor = useButtonOpenColor()
   return popoverBorderColorUseColorPrimary ? buttonOpenColor : appBorderColorValue
+}
+
+export function usePopoverBorderStyle(): CSSProperties {
+  const color = usePopoverBorderColor()
+  return useMemo(() => ({ border: `1px solid ${color}` }), [color])
 }
 
 export function useAntLinkCss() {
