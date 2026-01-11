@@ -1,5 +1,5 @@
 import { useModalDislikeVisible } from '$components/ModalDislike'
-import { useModalMoveFavVisible } from '$components/ModalMoveFav'
+import { useModalMoveFavVisible } from '$components/ModalFavManager'
 import { useModalsState } from './modals'
 
 /**

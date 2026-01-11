@@ -1,9 +1,10 @@
 /* eslint-disable require-await */
 import { useKeyPress, useMemoizedFn, useRequest } from 'ahooks'
-import { Button, Empty, Input, Spin } from 'antd'
+import { Button, Empty, Input, Popover, Radio, Slider, Spin } from 'antd'
 import clsx from 'clsx'
 import Emittery from 'emittery'
 import { uniqBy } from 'es-toolkit'
+import { fastOrderBy } from 'fast-sort-lens'
 import PinyinMatch from 'pinyin-match'
 import { useEffect, useMemo, useState } from 'react'
 import { useSnapshot } from 'valtio'
@@ -11,16 +12,28 @@ import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/Ba
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { antSpinIndicator, kbdClassName } from '$components/fragments'
 import { antMessage } from '$modules/antd'
-import { IconForOpenExternalLink } from '$modules/icon'
-import { IconAnimatedChecked } from '$modules/icon/animated-checked'
+import { IconAnimatedChecked, IconForConfig, IconForOpenExternalLink, IconForReset } from '$modules/icon'
+import { isFavFolderDefault } from '$modules/rec-services/fav/fav-util'
 import { favStore, updateFavFolderList } from '$modules/rec-services/fav/store'
 import { getUid } from '$utility/cookie'
 import { shouldDisableShortcut } from '$utility/dom'
 import { wrapComponent } from '$utility/global-component'
+import { mapNameForSort, zhLocaleComparer } from '$utility/sort'
+import { proxyWithLocalStorage } from '$utility/valtio'
 import type { FavFolder } from '$modules/rec-services/fav/types/folders/list-all-folders'
 
+type FavFolderOrder = 'default' | 'name'
+
+const localStoreInitial = {
+  modalWidth: 60, // percent
+  favFolderOrder: 'default' as FavFolderOrder,
+}
+
+const localStore = proxyWithLocalStorage({ ...localStoreInitial }, 'modal-fav-manager')
+
 type Result = Pick<FavFolder, 'id' | 'title'>
-type OkAction = (result: Result) => boolean | undefined | void | Promise<boolean | undefined | void>
+type OkActionReturn = boolean | undefined | void
+type OkAction = (result: Result) => OkActionReturn | Promise<OkActionReturn>
 type IProps = typeof defaultProps
 
 const defaultProps = {
@@ -31,8 +44,8 @@ const defaultProps = {
 }
 
 const { proxyProps, updateProps } = wrapComponent<IProps>({
-  Component: ModalMoveFav,
-  containerClassName: 'ModalMoveFav',
+  Component: ModalFavManager,
+  containerClassName: 'ModalFavManager',
   defaultProps,
 })
 
@@ -46,12 +59,66 @@ function onHide() {
   emitter.emit('modal-close')
 }
 
-export async function pickFavFolder(srcFavFolderId: number | undefined, okAction: OkAction) {
+export async function moveFavItemToFolder(srcFavFolderId: number | undefined, okAction: OkAction) {
   updateProps({ show: true, srcFavFolderId, okAction })
   await emitter.once('modal-close')
 }
 
-export function ModalMoveFav({ show, onHide, srcFavFolderId, okAction }: IProps) {
+function mapFavFolderTitleForSort(title: string) {
+  title = title.replace(/^[\s\p{RGI_Emoji}]+/v, '') // rm leading space & emoji
+  title = mapNameForSort(title)
+  return title
+}
+
+function ConfigPopoverContent() {
+  const { modalWidth, favFolderOrder } = useSnapshot(localStore)
+
+  const clsTitle = 'text-1.5em'
+  const clsSubTitle = 'text-1.2em'
+
+  return (
+    <div className='flex flex-col gap-y-10px'>
+      <div className='flex items-center justify-between'>
+        <div className={clsTitle}>窗口设置</div>
+        <Button
+          className='icon-only-round-button size-24px'
+          onClick={() => Object.assign(localStore, localStoreInitial)}
+        >
+          <IconForReset />
+        </Button>
+      </div>
+
+      <div>
+        <div className={clsSubTitle}>窗口宽度 {modalWidth}%</div>
+        <Slider
+          className='mt-0'
+          value={modalWidth}
+          min={30}
+          max={90}
+          onChange={(v) => {
+            localStore.modalWidth = v
+          }}
+        />
+      </div>
+
+      <div>
+        <div className={clsSubTitle}>收藏夹排序</div>
+        <Radio.Group
+          value={favFolderOrder}
+          onChange={(e) => {
+            localStore.favFolderOrder = e.target.value
+          }}
+        >
+          <Radio value='default'>默认顺序</Radio>
+          <Radio value='name'>按名称</Radio>
+        </Radio.Group>
+      </div>
+    </div>
+  )
+}
+
+export function ModalFavManager({ show, onHide, srcFavFolderId, okAction }: IProps) {
+  const { modalWidth, favFolderOrder } = useSnapshot(localStore)
   const $updateFoldersReq = useRequest(updateFavFolderList, { manual: true })
   const $okActionReq = useRequest(async (result: Result) => okAction?.(result), { manual: true })
   const [selectedFolder, setSelectedFolder] = useState<Result | undefined>(undefined)
@@ -77,7 +144,8 @@ export function ModalMoveFav({ show, onHide, srcFavFolderId, okAction }: IProps)
   )
 
   const { folders } = useSnapshot(favStore)
-  const filteredFolders = useMemo(() => {
+  // filter
+  const foldersAfterFilter = useMemo(() => {
     const mapped = folders.map((folder, index) => ({ ...folder, vol: index + 1 }))
     if (!filterText) return mapped
 
@@ -87,6 +155,19 @@ export function ModalMoveFav({ show, onHide, srcFavFolderId, okAction }: IProps)
 
     return uniqBy([...included, ...includedIgnoreCase, ...pinyinMatched], (x) => x.id)
   }, [folders, filterText])
+  // order
+  const foldersAfterSort = useMemo(() => {
+    if (favFolderOrder === 'name') {
+      return fastOrderBy(
+        foldersAfterFilter,
+        [(f) => (isFavFolderDefault(f.attr) ? 1 : 0), (f) => mapFavFolderTitleForSort(f.title)],
+        ['desc', zhLocaleComparer],
+      )
+    }
+    return foldersAfterFilter
+  }, [foldersAfterFilter, favFolderOrder])
+
+  const foldersForRender = foldersAfterSort
 
   const onOk = useMemoizedFn(async () => {
     if (!selectedFolder) return antMessage.error('请选择一个收藏夹')
@@ -100,47 +181,51 @@ export function ModalMoveFav({ show, onHide, srcFavFolderId, okAction }: IProps)
       onHide={onHide}
       hideWhenMaskOnClick={true}
       hideWhenEsc={true}
-      width={920}
+      width={`${modalWidth}vw`}
       clsModal='rounded-15px'
     >
       <div className={BaseModalClassNames.modalHeader}>
-        <div className='flex shrink-0 items-center'>
+        <div className='flex flex-wrap items-center gap-x-10px gap-y-1'>
           <div className={BaseModalClassNames.modalTitle}>
             <IconParkOutlineTransferData className='size-25px' />
             <span className='ml-5px'>选择目标收藏夹</span>
           </div>
 
           <Input
-            className='ml-15px'
-            style={{ width: 200 }}
+            className='w-200px'
             allowClear
-            placeholder='过滤: 支持拼音 / 首字母'
+            placeholder='过滤: 支持拼音 / 拼音首字母'
             value={filterText}
             onChange={(e) => setFilterText(e.target.value)}
+            spellCheck={false}
           />
           {!!filterText && (
             <span className='ml-5px'>
-              <span className={clsx({ 'text-red': folders.length && !filteredFolders.length })}>
-                {filteredFolders.length}
+              <span className={clsx({ 'text-red': folders.length && !foldersForRender.length })}>
+                {foldersForRender.length}
               </span>{' '}
               / <span>{folders.length}</span>
             </span>
           )}
 
-          <HelpInfo className='ml-5px'>
-            1. 使用 <kbd className={kbdClassName}>r</kbd> 刷新收藏夹 <br />
-            2. 使用 <kbd className={kbdClassName}>esc</kbd> 取消操作, 关闭窗口 <br />
-            3. 使用 拼音 / 首字母 过滤收藏夹标题 <br />
+          <HelpInfo className='ml-5px size-1.3em'>
+            1. 使用 <kbd className={clsx(kbdClassName, 'mx-2px')}>r</kbd> 刷新收藏夹 <br />
+            2. 使用 <kbd className={clsx(kbdClassName, 'mx-2px')}>esc</kbd> 取消操作, 关闭窗口 <br />
+            3. 使用 拼音 / 拼音首字母 过滤收藏夹标题 <br />
           </HelpInfo>
+
+          <Popover trigger={'click'} title={<ConfigPopoverContent />}>
+            <IconForConfig className='size-1.3em cursor-pointer' />
+          </Popover>
         </div>
         <ModalClose onClick={onHide} />
       </div>
 
       <div className={clsx(BaseModalClassNames.modalBody)}>
         <Spin spinning={$updateFoldersReq.loading || $okActionReq.loading} indicator={antSpinIndicator}>
-          <div className='grid grid-cols-4 mb-10px min-h-100px items-start gap-10px pr-15px'>
-            {filteredFolders.length ? (
-              filteredFolders.map((f) => {
+          <div className='grid grid-cols-[repeat(auto-fill,minmax(225px,1fr))] mb-10px min-h-100px content-start items-center gap-10px pr-15px'>
+            {foldersForRender.length ? (
+              foldersForRender.map((f) => {
                 const disabled = f.id === srcFavFolderId
                 const active = !disabled && f.id === selectedFolder?.id
                 return (
@@ -149,7 +234,7 @@ export function ModalMoveFav({ show, onHide, srcFavFolderId, okAction }: IProps)
                     data-id={f.id}
                     className={clsx(
                       { active },
-                      'relative flex items-center b-2px b-gate-border rounded-6px b-solid bg-transparent px-4px py-12px',
+                      'relative min-h-40px flex items-center b-2px b-gate-border rounded-20px b-solid bg-transparent px-4px line-height-[1.2]',
                       !disabled && 'hover:bg-gate-bg-lv1',
                       disabled ? 'cursor-not-allowed' : 'cursor-pointer',
                       active && 'b-gate-primary color-white bg-gate-primary!',
@@ -159,14 +244,11 @@ export function ModalMoveFav({ show, onHide, srcFavFolderId, okAction }: IProps)
                       setSelectedFolder({ id: f.id, title: f.title })
                     }}
                   >
-                    <span className='size-24px flex-center flex-none rounded-full bg-gate-bg-lv-2 text-center text-13px color-gate-text'>
-                      {f.vol}
-                    </span>
-                    {/* text-12px for limited space */}
-                    <span className='flex-1 px-4px text-12px'>
+                    {/* small font-size for limited space */}
+                    <span className='flex-1 px-4px text-14px'>
                       {f.title} ({f.media_count})
                     </span>
-                    <span className='size-20px flex-none'>
+                    <span className='mr-2px size-20px flex-none'>
                       {active && <IconAnimatedChecked className='h-100% w-100% color-white' useAnimation />}
                     </span>
                   </button>

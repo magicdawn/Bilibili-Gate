@@ -13,7 +13,7 @@ import { IconForReset } from '$modules/icon'
 import { CopyBvidButtonsTabbarView } from '$modules/rec-services/_shared/copy-bvid-buttons'
 import { useSettingsSnapshot } from '$modules/settings'
 import { getAvatarSrc } from '$utility/image'
-import { localeComparer, mapNameForSort } from '$utility/sort'
+import { mapNameForSort, zhLocaleComparer } from '$utility/sort'
 import { usePopupContainer } from '../../_base'
 import { dropdownMenuStyle } from '../../_shared'
 import { IconForGroup, IconForUp } from '../shared'
@@ -94,7 +94,7 @@ function useScopeMenus(form: 'dropdown' | 'sidebar') {
     if (form === 'dropdown') {
       usingUpList = fastSortWithOrders(upList, [
         { prop: (item) => (item.has_update ? 1 : 0), order: 'desc' },
-        { prop: (item) => mapNameForSort(item.uname), order: localeComparer },
+        { prop: (item) => mapNameForSort(item.uname), order: zhLocaleComparer },
       ])
     }
 

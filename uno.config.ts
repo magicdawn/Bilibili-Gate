@@ -45,15 +45,22 @@ export default defineConfig({
   theme: {
     colors: {
       gate: {
-        primary: 'var(--bilibili-gate--primary-color)',
+        primary: {
+          DEFAULT: 'var(--bilibili-gate--primary-color)',
+          lv: {
+            1: 'var(--bilibili-gate--primary-color--lv1)',
+            2: 'var(--bilibili-gate--primary-color--lv2)',
+            3: 'var(--bilibili-gate--primary-color--lv3)',
+          },
+        },
         border: 'var(--bilibili-gate--border-color)',
         text: 'var(--bilibili-gate--text-color)',
         bg: {
           DEFAULT: 'var(--bilibili-gate--bg)',
           lv: {
-            1: 'var(--bilibili-gate--bg-lv1)',
-            2: 'var(--bilibili-gate--bg-lv2)',
-            3: 'var(--bilibili-gate--bg-lv3)',
+            1: 'var(--bilibili-gate--bg--lv1)',
+            2: 'var(--bilibili-gate--bg--lv2)',
+            3: 'var(--bilibili-gate--bg--lv3)',
           },
         },
       },

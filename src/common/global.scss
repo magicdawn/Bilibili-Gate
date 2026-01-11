@@ -5,13 +5,17 @@
   #{$app-custom-font-id}: #{meta.inspect($app-custom-font-value)};
 }
 
-// colors
+// implement color css variables
 :root {
+  #{$app-primary-color-lv1-id}: oklch(from var($app-primary-color-id) calc(l - 0.04) c h);
+  #{$app-primary-color-lv2-id}: oklch(from var($app-primary-color-id) calc(l - 0.08) c h);
+  #{$app-primary-color-lv3-id}: oklch(from var($app-primary-color-id) calc(l - 0.12) c h);
+
+  // bg related
   #{$app-border-color-id}: oklch(from var($app-bg-id) calc(l - 0.05) c h); // #fff -> #eee
   #{$app-bg-lv1-id}: oklch(from var($app-bg-id) calc(l - 0.04) c h);
   #{$app-bg-lv2-id}: oklch(from var($app-bg-id) calc(l - 0.08) c h);
   #{$app-bg-lv3-id}: oklch(from var($app-bg-id) calc(l - 0.12) c h);
-
   &.#{$app-cls-dark} {
     #{$app-border-color-id}: oklch(from var($app-bg-id) calc(l + 0.07) c h); // #222 -> #333
     #{$app-bg-lv1-id}: oklch(from var($app-bg-id) calc(l + 0.03) c h);

@@ -10,7 +10,7 @@ export function mapNameForSort(name: string) {
   )
 }
 
-export function localeComparer(a: string, b: string) {
+export function zhLocaleComparer(a: string, b: string) {
   return a.localeCompare(b, 'zh-CN')
 }
 
@@ -24,7 +24,7 @@ export function sortListByName<T extends object>(
         const val = typeof prop === 'function' ? prop(item) : (item[prop] as string)
         return mapNameForSort(val)
       },
-      order: localeComparer,
+      order: zhLocaleComparer,
     },
   ])
 }

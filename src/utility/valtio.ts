@@ -1,7 +1,8 @@
-import { isEqual, isNil, pick, throttle, toMerged } from 'es-toolkit'
+import { attempt, isEqual, isNil, pick, throttle, toMerged } from 'es-toolkit'
 import { pLimit } from 'promise.map'
 import { proxy, ref, snapshot, subscribe, useSnapshot } from 'valtio'
 import { proxyMap, proxySet } from 'valtio/utils'
+import { APP_NAME, APP_NAMESPACE, appWarn } from '$common'
 import { reciveGmValueUpdatesFromOtherTab } from '$modules/gm'
 import type { ReactNode } from 'react'
 
@@ -39,8 +40,18 @@ export function subscribeOnKeys<T extends object>(state: T, keys: (keyof T)[], c
 }
 
 export function proxyWithLocalStorage<T extends object>(initialVaue: T, storageKey: string) {
+  if (!storageKey.startsWith(APP_NAME)) storageKey = `${APP_NAMESPACE}:${storageKey}`
   const allowedKeys = Object.keys(initialVaue)
-  const savedValue = pick(JSON.parse(localStorage.getItem(storageKey) || '{}') as any, allowedKeys)
+
+  const [loadErr, savedValue] = attempt(() => {
+    const str = localStorage.getItem(storageKey)
+    if (!str) return
+    const obj = JSON.parse(str) as any
+    return pick(obj, allowedKeys)
+  })
+  if (loadErr) {
+    appWarn('failed to load from localStorage key=', storageKey, 'error=', loadErr)
+  }
 
   const p = proxy<T>({
     ...initialVaue,

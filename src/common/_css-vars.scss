@@ -1,11 +1,12 @@
 //
 // 修改此文件注意同步修改 uno.config.ts shortcuts
+// all id with `app-` prefix means it's scoped
+// `--` 表示层级
 //
 
 @use 'sass:string';
 
 $app-name: bilibili-gate;
-// all id with `app-` prefix means it's scoped
 
 // cls
 $app-cls-root: #{$app-name}-root;
@@ -15,15 +16,20 @@ $app-cls-dark-selector: 'html.#{$app-cls-dark}';
 // color
 $bili-pink: #ff6699;
 
+//
 // app general
+//
 $app-primary-color-id: --#{$app-name}--primary-color;
 $app-border-color-id: --#{$app-name}--border-color;
-$app-text-color-id: --#{$app-name}--text-color;
-
 $app-bg-id: --#{$app-name}--bg;
-$app-bg-lv1-id: --#{$app-name}--bg-lv1;
-$app-bg-lv2-id: --#{$app-name}--bg-lv2;
-$app-bg-lv3-id: --#{$app-name}--bg-lv3;
+$app-text-color-id: --#{$app-name}--text-color;
+// evevated
+$app-primary-color-lv1-id: --#{$app-name}--primary-color--lv1;
+$app-primary-color-lv2-id: --#{$app-name}--primary-color--lv2;
+$app-primary-color-lv3-id: --#{$app-name}--primary-color--lv3;
+$app-bg-lv1-id: --#{$app-name}--bg--lv1;
+$app-bg-lv2-id: --#{$app-name}--bg--lv2;
+$app-bg-lv3-id: --#{$app-name}--bg--lv3;
 
 //
 // font
@@ -55,6 +61,9 @@ $use-export: false !default;
     app-border-color-id: $app-border-color-id;
     app-text-color-id: $app-text-color-id;
     app-bg-id: $app-bg-id;
+    app-primary-color-lv1-id: $app-primary-color-lv1-id;
+    app-primary-color-lv2-id: $app-primary-color-lv2-id;
+    app-primary-color-lv3-id: $app-primary-color-lv3-id;
     app-bg-lv1-id: $app-bg-lv1-id;
     app-bg-lv2-id: $app-bg-lv2-id;
     app-bg-lv3-id: $app-bg-lv3-id;

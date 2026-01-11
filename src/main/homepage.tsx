@@ -4,6 +4,7 @@ import { createRoot, type Root } from 'react-dom/client'
 import { APP_CLS_ROOT, appWarn } from '$common'
 import { AppRoot, SetupForPage } from '$components/AppRoot'
 import { GateFloatEntry } from '$components/GateFloatEntry'
+import { moveFavItemToFolder } from '$components/ModalFavManager'
 import { registerSettingsGmCommand } from '$components/RecHeader/modals'
 import { PureRecommend } from '$components/Recommends/PureRecommend'
 import { settings } from '$modules/settings'
@@ -95,3 +96,11 @@ async function initHomepagePureRecommend() {
     </AppRoot>,
   )
 }
+
+// FIXME: dev only
+;(async () => {
+  await delay(100)
+  moveFavItemToFolder(undefined, () => {
+    //
+  })
+})()

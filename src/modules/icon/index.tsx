@@ -14,6 +14,7 @@ export const IconForAsc = IconTablerSortAscending2
 export const IconForDesc = IconTablerSortDescending2
 export const IconForInfo = IconParkOutlineInfo
 export const IconForDelete = IconMaterialSymbolsDeleteOutlineRounded
+export { IconAnimatedChecked } from './animated-checked'
 
 // orders
 export const IconForDefaultOrder = IconMdiShuffleDisabled

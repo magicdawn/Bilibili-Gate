@@ -23,7 +23,7 @@ const floatEntryStore = proxyWithLocalStorage(
     align: 'right' as InlineAlign,
     top: 100, // px
   },
-  'bilibili-gate:float-entry',
+  'float-entry',
 )
 
 const C = {

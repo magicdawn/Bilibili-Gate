@@ -1,6 +1,6 @@
 import { useMemoizedFn } from 'ahooks'
 import { useMemo, useState } from 'react'
-import { pickFavFolder } from '$components/ModalMoveFav'
+import { moveFavItemToFolder } from '$components/ModalFavManager'
 import { getMultiSelectedItems } from '$components/RecGrid/rec-grid-state'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { isFav, isWatchlater, type RecItemType } from '$define'
@@ -80,7 +80,7 @@ export function getWatchlaterTabFavMenus(ctx: FavContext, item: RecItemType, avi
           }
         }
 
-        await pickFavFolder(srcFavFolderId, async (targetFolder) => {
+        await moveFavItemToFolder(srcFavFolderId, async (targetFolder) => {
           const success = await UserFavService.moveFavs(resource, srcFavFolderId, targetFolder.id)
           if (!success) return
           clearFavFolderAllItemsCache(srcFavFolderId)
@@ -111,7 +111,7 @@ export function getWatchlaterTabFavMenus(ctx: FavContext, item: RecItemType, avi
       icon: <IconForFav className='size-15px' />,
       label: '收藏到',
       async onClick() {
-        await pickFavFolder(undefined, async (targetFolder) => {
+        await moveFavItemToFolder(undefined, async (targetFolder) => {
           const success = await UserFavService.addFav(avid, targetFolder.id)
           if (success) antMessage.success(`已加入收藏夹「${targetFolder.title}」`)
           return success
@@ -186,7 +186,7 @@ export function getFavTabMenus({
             titles = [item.title]
           }
 
-          await pickFavFolder(item.folder.id, async (targetFolder) => {
+          await moveFavItemToFolder(item.folder.id, async (targetFolder) => {
             const success = await UserFavService.moveFavs(resources, srcFavFolderId, targetFolder.id)
             if (!success) return
             clearFavFolderAllItemsCache(item.folder.id)
