@@ -1,7 +1,9 @@
-import { useHover, useMemoizedFn } from 'ahooks'
+import { useHover, useMemoizedFn, useMount } from 'ahooks'
 import { Button, InputNumber, Radio, Tag } from 'antd'
 import clsx from 'clsx'
+import { delay } from 'es-toolkit'
 import { useRef } from 'react'
+import { subscribeKey } from 'valtio/utils'
 import { APP_NAME } from '$common'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { AccessKeyManage } from '$components/AccessKeyManage'
@@ -24,6 +26,13 @@ export function TabPaneBasic() {
     enableSidebar,
     sidebarAlign,
   } = useSettingsSnapshot()
+
+  useMount(() => {
+    return subscribeKey(settings, 'pureRecommend', async (v) => {
+      await delay(0)
+      toastAndReload()
+    })
+  })
 
   const handleCopyScriptVersion = useMemoizedFn(() => {
     const content = `v${__SCRIPT_VERSION__}`
@@ -85,7 +94,6 @@ export function TabPaneBasic() {
                 P.S 需要刷新网页
               </>
             }
-            extraAction={() => toastAndReload()}
           />
           <CheckboxSettingItem
             configPath={'multiSelect.showIcon'}
@@ -95,6 +103,7 @@ export function TabPaneBasic() {
         </div>
       </SettingsGroup>
 
+      {/* 布局 */}
       <SettingsGroup
         title={
           <>

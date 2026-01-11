@@ -79,7 +79,10 @@ export const RefreshButton = forwardRef<RefreshButtonActions, RefreshButtonProps
     <Button
       ref={btn}
       style={style}
-      className={clsx('flex items-center gap-x-4px [&.ant-btn:not(:disabled):focus-visible]:outline-0', className)}
+      className={clsx(
+        'flex items-center gap-x-4px [&:disabled]:cursor-wait [&.ant-btn:not(:disabled):focus-visible]:outline-0',
+        className,
+      )}
       disabled={refreshing}
       onClick={onClick}
     >
