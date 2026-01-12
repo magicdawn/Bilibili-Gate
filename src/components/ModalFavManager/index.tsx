@@ -1,4 +1,5 @@
 import Emittery from 'emittery'
+import { isEqual } from 'es-toolkit'
 import { useSnapshot } from 'valtio'
 import { antMessage } from '$modules/antd'
 import { UserFavApi } from '$modules/rec-services/fav/api'
@@ -62,7 +63,7 @@ export async function handleModifyFavItemToFolder(
   targetFolder: ModalFavTypes.Result | undefined,
 ): Promise<boolean> {
   // unchange
-  if (targetFolder && sourceFolderIds?.length === 1 && sourceFolderIds[0] === targetFolder.id) {
+  if (isEqual(sourceFolderIds, [targetFolder?.id])) {
     antMessage.warning('请选择不同的收藏夹!')
     return false
   }

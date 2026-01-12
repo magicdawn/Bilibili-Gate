@@ -2,7 +2,7 @@
 import { useKeyPress, useMemoizedFn, useRequest, useUpdateEffect } from 'ahooks'
 import { Button, Empty, Input, Popover, Radio, Slider, Spin } from 'antd'
 import clsx from 'clsx'
-import { assert, uniqBy } from 'es-toolkit'
+import { assert, isEqual, uniqBy } from 'es-toolkit'
 import { fastOrderBy } from 'fast-sort-lens'
 import PinyinMatch from 'pinyin-match'
 import { useEffect, useMemo, useState } from 'react'
@@ -159,6 +159,13 @@ export function ModalFavManager({
   const srcFavFolderBgClassName = useSrcFavFolderBgClassName()
 
   const allowEmptyResult = mode === 'modify' && modifyAllowEmpty
+
+  const okButtonDisabled = useMemo(() => {
+    return (
+      (!allowEmptyResult && !selectedFolderId) || // do not allow empty, but empty
+      (mode === 'modify' && isEqual(Array.from(modifyInitialSelectedIdsSet), [selectedFolderId])) // same as input
+    )
+  }, [allowEmptyResult, selectedFolderId, mode, modifyInitialSelectedIdsSet])
   /* #endregion */
 
   /* #region callbacks & shortcuts */
@@ -229,8 +236,12 @@ export function ModalFavManager({
       <div className={BaseModalClassNames.modalHeader}>
         <div className='flex flex-wrap items-center gap-x-10px gap-y-1'>
           <div className={BaseModalClassNames.modalTitle}>
-            <IconParkOutlineTransferData className='size-25px' />
-            <span className='ml-5px'>选择目标收藏夹</span>
+            {mode === 'pick' ? (
+              <IconParkOutlineTransferData className='size-25px' />
+            ) : (
+              <IconParkOutlineWrite className='size-25px' />
+            )}
+            <span className='ml-5px'>{mode === 'pick' ? '选择目标收藏夹' : '修改收藏'}</span>
           </div>
 
           <Input
@@ -271,7 +282,7 @@ export function ModalFavManager({
           <div className='grid grid-cols-[repeat(auto-fill,minmax(225px,1fr))] mb-10px min-h-100px content-start items-center gap-10px pr-15px'>
             {foldersForRender.length ? (
               foldersForRender.map((f) => {
-                const initialSelected = mode === 'modify' && modifyInitialSelectedIdsSet.has(f.id)
+                const isSourceFolder = mode === 'modify' && modifyInitialSelectedIdsSet.has(f.id)
                 const active = f.id === selectedFolderId
                 return (
                   <button
@@ -289,8 +300,8 @@ export function ModalFavManager({
                       setSelectedFolderId(f.id)
                     }}
                   >
-                    {/* initialSelected marker */}
-                    {initialSelected && (
+                    {/* source folder marker */}
+                    {isSourceFolder && (
                       <AntdTooltip title='源收藏夹' placement='left'>
                         <span
                           className={clsx(
@@ -333,7 +344,7 @@ export function ModalFavManager({
             type='primary'
             onClick={onOk}
             loading={$pickOkActionReq.loading || $modifyOkActionReq.loading}
-            disabled={!allowEmptyResult && !selectedFolderId}
+            disabled={okButtonDisabled}
           >
             确定
           </Button>

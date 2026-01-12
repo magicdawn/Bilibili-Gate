@@ -61,6 +61,7 @@ declare global {
   const IconParkOutlineTips: typeof import('~icons/icon-park-outline/tips.jsx').default
   const IconParkOutlineTransferData: typeof import('~icons/icon-park-outline/transfer-data.jsx').default
   const IconParkOutlineVideoTwo: typeof import('~icons/icon-park-outline/video-two.jsx').default
+  const IconParkOutlineWrite: typeof import('~icons/icon-park-outline/write.jsx').default
   const IconPhCrownFill: typeof import('~icons/ph/crown-fill.jsx').default
   const IconPhThumbsDownDuotone: typeof import('~icons/ph/thumbs-down-duotone.jsx').default
   const IconPhThumbsUpDuotone: typeof import('~icons/ph/thumbs-up-duotone.jsx').default
