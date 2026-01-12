@@ -1,8 +1,10 @@
 import { useMemoizedFn } from 'ahooks'
 import { Button, Divider, Dropdown, type DropdownProps } from 'antd'
+import clsx from 'clsx'
 import { useMemo, useState, type ElementRef, type MouseEvent, type ReactNode, type RefObject } from 'react'
 import { buttonOpenCss, usePopoverBorderStyle } from '$common/emotion-css'
 import { HelpInfo } from '$components/_base/HelpInfo'
+import { clsAntdButton } from '$components/fragments'
 import { defineAntMenus } from '$modules/antd'
 
 export type GenericOrderSwitcherProps<T extends string | number> = {
@@ -74,12 +76,12 @@ export const GenericOrderSwitcher = function <T extends string | number>({
         {...dropdownProps}
       >
         <Button
-          onClick={onToggle}
+          className={clsx(clsAntdButton, 'px-3')}
           css={[open && buttonOpenCss]}
-          icon={icon}
-          className='gap-8px px-16px'
           disabled={disabled}
+          onClick={onToggle}
         >
+          {icon}
           {label}
         </Button>
       </Dropdown>

@@ -10,8 +10,13 @@ export const IconForPlayer = IconParkOutlinePlayTwo
 export const IconForOpenExternalLink = IconMaterialSymbolsLightOpenInNew
 
 // general
-export const IconForAsc = IconTablerSortAscending2
-export const IconForDesc = IconTablerSortDescending2
+export const IconForTimeAsc = IconMdiSortClockDescending
+export const IconForTimeDesc = IconMdiSortClockAscending
+// https://github.com/tabler/tabler-icons/issues/1457
+// export const IconForAsc = IconTablerSortAscending2
+// export const IconForDesc = IconTablerSortDescending2
+export const IconForAsc = IconOcticonSortAsc16
+export const IconForDesc = IconOcticonSortDesc16
 export const IconForInfo = IconParkOutlineInfo
 export const IconForDelete = IconMaterialSymbolsDeleteOutlineRounded
 export { IconAnimatedChecked } from './animated-checked'

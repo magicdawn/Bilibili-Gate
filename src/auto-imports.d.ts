@@ -32,9 +32,14 @@ declare global {
   const IconMaterialSymbolsLightOpenInNew: typeof import('~icons/material-symbols-light/open-in-new.jsx').default
   const IconMaterialSymbolsLightOpenInNewOff: typeof import('~icons/material-symbols-light/open-in-new-off.jsx').default
   const IconMdiShuffleDisabled: typeof import('~icons/mdi/shuffle-disabled.jsx').default
+  const IconMdiSortClockAscending: typeof import('~icons/mdi/sort-clock-ascending.jsx').default
+  const IconMdiSortClockAscendingOutline: typeof import('~icons/mdi/sort-clock-ascending-outline.jsx').default
+  const IconMdiSortClockDescending: typeof import('~icons/mdi/sort-clock-descending.jsx').default
+  const IconMdiSortClockDescendingOutline: typeof import('~icons/mdi/sort-clock-descending-outline.jsx').default
   const IconMynauiUsersGroup: typeof import('~icons/mynaui/users-group.jsx').default
+  const IconOcticonSortAsc16: typeof import('~icons/octicon/sort-asc16.jsx').default
+  const IconOcticonSortDesc16: typeof import('~icons/octicon/sort-desc16.jsx').default
   const IconParkOutlineAddTwo: typeof import('~icons/icon-park-outline/add-two.jsx').default
-  const IconParkOutlineClose: typeof import('~icons/icon-park-outline/close.jsx').default
   const IconParkOutlineCloseSmall: typeof import('~icons/icon-park-outline/close-small.jsx').default
   const IconParkOutlineComputer: typeof import('~icons/icon-park-outline/computer.jsx').default
   const IconParkOutlineConcern: typeof import('~icons/icon-park-outline/concern.jsx').default
@@ -65,6 +70,8 @@ declare global {
   const IconPhCrownFill: typeof import('~icons/ph/crown-fill.jsx').default
   const IconPhThumbsDownDuotone: typeof import('~icons/ph/thumbs-down-duotone.jsx').default
   const IconPhThumbsUpDuotone: typeof import('~icons/ph/thumbs-up-duotone.jsx').default
+  const IconQlementineIconsSortTimeAsc24: typeof import('~icons/qlementine-icons/sort-time-asc24.jsx').default
+  const IconQlementineIconsSortTimeDesc24: typeof import('~icons/qlementine-icons/sort-time-desc24.jsx').default
   const IconRadixIconsCross2: typeof import('~icons/radix-icons/cross2.jsx').default
   const IconRadixIconsLockClosed: typeof import('~icons/radix-icons/lock-closed.jsx').default
   const IconRadixIconsLockOpen1: typeof import('~icons/radix-icons/lock-open1.jsx').default

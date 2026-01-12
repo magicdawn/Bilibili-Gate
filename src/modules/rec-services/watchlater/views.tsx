@@ -4,7 +4,7 @@ import { delay } from 'es-toolkit'
 import { useSnapshot } from 'valtio'
 import { useOnRefresh, useRecSelfContext } from '$components/Recommends/rec.shared'
 import { AntdTooltip } from '$modules/antd/custom'
-import { IconForRemove, IconForShuffle, IconForTimestamp, withAscIcon, withDescIcon } from '$modules/icon'
+import { IconForRemove, IconForShuffle, IconForTimeAsc, IconForTimeDesc } from '$modules/icon'
 import { useMultiSelecting } from '$modules/multi-select/store'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import toast from '$utility/toast'
@@ -89,13 +89,13 @@ const WatchlaterItemsOrderConfig: Record<
   { icon?: ReactNode; label?: ReactNode; helpInfo?: ReactNode }
 > = {
   [WatchlaterItemsOrder.AddTimeDesc]: {
-    icon: <IconForTimestamp />,
-    label: withDescIcon('最近添加'),
+    icon: <IconForTimeDesc />,
+    label: '最近添加',
     helpInfo: '按添加时间倒序',
   },
   [WatchlaterItemsOrder.AddTimeAsc]: {
-    icon: <IconForTimestamp />,
-    label: withAscIcon('最早添加'),
+    icon: <IconForTimeAsc />,
+    label: '最早添加',
     helpInfo: '按添加时间增序',
   },
   [WatchlaterItemsOrder.Shuffle]: {

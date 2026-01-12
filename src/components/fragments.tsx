@@ -4,6 +4,9 @@ export const antSpinIndicator = (
   <IconSvgSpinnersBarsRotateFade className='text-gate-primary [.ant-spin_.ant-spin-dot&]:size-25px' />
 )
 
+export const clsAntdButton =
+  'flex items-center gap-x-1 [&>span]:line-height-[1] [&.ant-btn:not(:disabled):focus-visible]:outline-0'
+
 // z-index
 export function parseZ(className: `z-${string}`) {
   if (!/^z-\d+$/.test(className)) return undefined

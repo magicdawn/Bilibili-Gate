@@ -8,9 +8,8 @@ import {
   IconForFav,
   IconForPlayer,
   IconForShuffle,
-  IconForTimestamp,
-  withAscIcon,
-  withDescIcon,
+  IconForTimeAsc,
+  IconForTimeDesc,
 } from '$modules/icon'
 import { usePopupContainer } from '$modules/rec-services/_base'
 import { GenericOrderSwitcher } from '$modules/rec-services/_shared/generic-order-switcher'
@@ -30,28 +29,28 @@ export const FavItemsOrderConfig: Record<FavItemsOrder, { icon: ReactNode; label
     label: '随机顺序',
   },
   [FavItemsOrder.PubTimeDesc]: {
-    icon: <IconForTimestamp className={clsIconSize} />,
-    label: withDescIcon('最新投稿'),
+    icon: <IconForTimeDesc className={clsIconSize} />,
+    label: '最新投稿',
   },
   [FavItemsOrder.PubTimeAsc]: {
-    icon: <IconForTimestamp className={clsIconSize} />,
-    label: withAscIcon('最早投稿'),
+    icon: <IconForTimeAsc className={clsIconSize} />,
+    label: '最早投稿',
   },
   [FavItemsOrder.PlayCountDesc]: {
     icon: <IconForPlayer className={clsIconSize} />,
-    label: withDescIcon('最多播放'),
+    label: '最多播放',
   },
   [FavItemsOrder.CollectCountDesc]: {
-    icon: <IconForFav className={clsx(clsIconSize, 'mt--1px')} />,
-    label: withDescIcon('最多收藏'),
+    icon: <IconForFav className={clsx(clsIconSize)} />,
+    label: '最多收藏',
   },
   [FavItemsOrder.FavTimeDesc]: {
-    icon: <IconForFav className={clsx(clsIconSize, 'mt--1px')} />,
-    label: withDescIcon('最近收藏'),
+    icon: <IconForTimeDesc className={clsx(clsIconSize)} />,
+    label: '最近收藏',
   },
   [FavItemsOrder.FavTimeAsc]: {
-    icon: <IconForFav className={clsx(clsIconSize, 'mt--1px')} />,
-    label: withAscIcon('最早收藏'),
+    icon: <IconForTimeAsc className={clsx(clsIconSize)} />,
+    label: '最早收藏',
   },
 }
 

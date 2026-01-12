@@ -11,6 +11,7 @@ import {
   type MouseEventHandler,
 } from 'react'
 import { useSnapshot } from 'valtio'
+import { clsAntdButton } from '$components/fragments'
 import { useOnRefresh, useRecSelfContext } from '$components/Recommends/rec.shared'
 import { IconForRoll } from '$modules/icon/stat-icons'
 import { favStore } from '$modules/rec-services/fav/store'
@@ -79,10 +80,7 @@ export const RefreshButton = forwardRef<RefreshButtonActions, RefreshButtonProps
     <Button
       ref={btn}
       style={style}
-      className={clsx(
-        'flex items-center gap-x-4px [&:disabled]:cursor-wait [&.ant-btn:not(:disabled):focus-visible]:outline-0',
-        className,
-      )}
+      className={clsx(clsAntdButton, '[&:disabled]:cursor-wait', className)}
       disabled={refreshing}
       onClick={onClick}
     >
