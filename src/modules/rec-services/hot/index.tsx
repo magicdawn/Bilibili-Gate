@@ -125,7 +125,7 @@ function HotTabbarView({ children }: { children?: ReactNode }) {
     <Dropdown
       menu={{ items: menus }}
       getPopupContainer={getPopupContainer}
-      rootClassName='![&_\[role=separator\]]:(mx-0 my-2px)'
+      rootClassName='![&_[role="separator"]]:(mx-0 my-2px)'
     >
       <Button ref={ref} className='w-114px flex items-center justify-start gap-0 pl-16px'>
         {icon}
