@@ -151,7 +151,7 @@ export function getFavTabMenus({
           let uniqIds: string[]
           let titles: string[]
           if (multiSelectStore.multiSelecting) {
-            const selectedFavItems = getMultiSelectedItems().filter((x) => isFav(x) && x.from === 'fav-folder')
+            let selectedFavItems = getMultiSelectedItems().filter((x) => isFav(x) && x.from === 'fav-folder')
             const folderIds = new Set(selectedFavItems.map((i) => i.folder.id))
             if (!folderIds.size) {
               return toast('至少选择一项视频')
@@ -159,6 +159,7 @@ export function getFavTabMenus({
             if (folderIds.size > 1) {
               return toast('多选移动: 只能批量移动同一源收藏夹下的视频')
             }
+            selectedFavItems = selectedFavItems.toReversed() // gui first item as queue last, keep first in target folder
             srcFavFolderId = selectedFavItems[0].folder.id
             resources = selectedFavItems.map((x) => `${x.id}:${x.type}`)
             uniqIds = selectedFavItems.map((x) => x.uniqId)
