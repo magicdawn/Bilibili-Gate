@@ -329,7 +329,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
     const interestedMenus = defineAntMenus([
       // [投稿,动态]
       {
-        test: hasViewUpVideoListEntry,
+        test: hasViewUpVideoListEntry && followed, // has both entry
         key: `查看「投稿」与「动态」的区别`,
         label: `查看「投稿」与「动态」的区别`,
         icon: <IconForOpenExternalLink className={clsMenuIcon} />,
