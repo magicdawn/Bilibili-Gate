@@ -1,16 +1,21 @@
 import { useMemoizedFn } from 'ahooks'
+import { assert } from 'es-toolkit'
 import { useMemo, useState } from 'react'
-import { moveFavItemToFolder } from '$components/ModalFavManager'
+import {
+  handleModifyFavItemToFolder,
+  startModifyFavItemToFolder,
+  startPickFavFolder,
+} from '$components/ModalFavManager'
 import { getMultiSelectedItems } from '$components/RecGrid/rec-grid-state'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { isFav, isWatchlater, type RecItemType } from '$define'
 import { antMessage, antModal, defineAntMenus } from '$modules/antd'
 import { IconForFav, IconForFaved, IconForOpenExternalLink } from '$modules/icon'
 import { multiSelectStore } from '$modules/multi-select/store'
+import { defaultFavFolderTitle, UserFavApi } from '$modules/rec-services/fav/api'
 import { formatFavCollectionUrl, formatFavFolderUrl } from '$modules/rec-services/fav/fav-url'
 import { clearFavFolderAllItemsCache } from '$modules/rec-services/fav/service/fav-folder'
 import { FavQueryKey, favStore } from '$modules/rec-services/fav/store'
-import { defaultFavFolderTitle, UserFavService } from '$modules/rec-services/fav/user-fav-service'
 import toast from '$utility/toast'
 import { getLinkTarget } from './useOpenRelated'
 import type { RecSharedEmitter } from '$components/Recommends/rec.shared'
@@ -27,7 +32,7 @@ export function useInitFavContext(item: RecItemType, avid: string | undefined) {
     // 只在「稍后再看」提供收藏状态
     if (item.api !== 'watchlater') return
     if (!avid) return
-    const result = await UserFavService.getVideoFavState(avid)
+    const result = await UserFavApi.getVideoFavState(avid)
     if (result) {
       setFolderNames(result.favFolderNames)
       setFolderUrls(result.favFolderUrls)
@@ -60,33 +65,14 @@ export function getWatchlaterTabFavMenus(ctx: FavContext, item: RecItemType, avi
       },
     },
     {
-      // 浏览收藏夹
-      key: 'watchlater-faved:move-fav',
+      // 修改收藏夹
+      key: 'watchlater-faved:modify-fav',
       icon: <IconParkOutlineTransferData className='size-13px' />,
-      label: '移动到其他收藏夹',
+      label: '修改收藏夹',
       async onClick() {
-        const resource = `${avid}:2`
-        const srcFavFolderId = folderIds[0]
-
-        if (folderIds.length > 1) {
-          const otherFolderIds = folderIds.slice(1)
-          const otherFolderNames = folderNames.slice(1)
-          for (const [index, fid] of otherFolderIds.entries()) {
-            const success = await UserFavService.removeFavs(fid, resource)
-            if (!success) {
-              const fname = otherFolderNames[index]
-              antMessage.warning(`从收藏夹「${fname}」移除失败!`)
-            }
-          }
-        }
-
-        await moveFavItemToFolder(srcFavFolderId, async (targetFolder) => {
-          const success = await UserFavService.moveFavs(resource, srcFavFolderId, targetFolder.id)
-          if (!success) return
-          clearFavFolderAllItemsCache(srcFavFolderId)
-          clearFavFolderAllItemsCache(targetFolder.id)
-          antMessage.success(`已移动到「${targetFolder.title}」收藏夹`)
-          return success
+        assert(folderIds.length, 'folderIds.length should not be empty')
+        await startModifyFavItemToFolder(folderIds, (targetFolder) => {
+          return handleModifyFavItemToFolder(avid, folderIds, targetFolder)
         })
       },
     },
@@ -99,10 +85,8 @@ export function getWatchlaterTabFavMenus(ctx: FavContext, item: RecItemType, avi
       icon: <IconForFav className='size-15px' />,
       label: '收藏到「默认收藏夹」',
       async onClick() {
-        const success = await UserFavService.addFav(avid)
-        if (success) {
-          antMessage.success(`已加入收藏夹「${defaultFavFolderTitle}」`)
-        }
+        const success = await UserFavApi.addFav(avid)
+        if (success) antMessage.success(`已加入收藏夹「${defaultFavFolderTitle}」`)
       },
     },
     {
@@ -111,8 +95,8 @@ export function getWatchlaterTabFavMenus(ctx: FavContext, item: RecItemType, avi
       icon: <IconForFav className='size-15px' />,
       label: '收藏到',
       async onClick() {
-        await moveFavItemToFolder(undefined, async (targetFolder) => {
-          const success = await UserFavService.addFav(avid, targetFolder.id)
+        await startPickFavFolder(async (targetFolder) => {
+          const success = await UserFavApi.addFav(avid, targetFolder.id)
           if (success) antMessage.success(`已加入收藏夹「${targetFolder.title}」`)
           return success
         })
@@ -186,15 +170,20 @@ export function getFavTabMenus({
             titles = [item.title]
           }
 
-          await moveFavItemToFolder(item.folder.id, async (targetFolder) => {
-            const success = await UserFavService.moveFavs(resources, srcFavFolderId, targetFolder.id)
-            if (!success) return
-            clearFavFolderAllItemsCache(item.folder.id)
-            clearFavFolderAllItemsCache(targetFolder.id)
-            recSharedEmitter.emit('remove-cards', [uniqIds, titles, true])
-            antMessage.success(`已移动 ${uniqIds.length} 个视频到「${targetFolder.title}」收藏夹`)
-            return success
-          })
+          await startModifyFavItemToFolder(
+            item.folder.id,
+            async (targetFolder) => {
+              assert(targetFolder, 'targetFolder should not be empty')
+              const success = await UserFavApi.moveFavs(resources, srcFavFolderId, targetFolder.id)
+              if (!success) return
+              clearFavFolderAllItemsCache(item.folder.id)
+              clearFavFolderAllItemsCache(targetFolder.id)
+              recSharedEmitter.emit('remove-cards', [uniqIds, titles, true])
+              antMessage.success(`已移动 ${uniqIds.length} 个视频到「${targetFolder.title}」收藏夹`)
+              return success
+            },
+            false,
+          )
         },
       },
       {
@@ -216,7 +205,7 @@ export function getFavTabMenus({
           if (!confirm) return
 
           const resource = `${item.id}:${item.type}`
-          const success = await UserFavService.removeFavs(item.folder.id, resource)
+          const success = await UserFavApi.removeFavs(item.folder.id, resource)
           if (!success) return
 
           clearFavFolderAllItemsCache(item.folder.id)

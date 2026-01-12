@@ -5,20 +5,56 @@
  * https://socialsisteryi.github.io/bilibili-API-collect/docs/video/action.html#%E6%94%B6%E8%97%8F%E8%A7%86%E9%A2%91-%E5%8F%8C%E7%AB%AF
  */
 
+import { difference } from 'es-toolkit'
 import { OPERATION_FAIL_MSG } from '$common'
 import { isWebApiSuccess, request } from '$request'
 import { getCsrfToken, getHasLogined, getUid } from '$utility/cookie'
 import toast from '$utility/toast'
-import { formatFavFolderUrl } from './fav-url'
-import { isFavFolderDefault } from './fav-util'
-import { favStore, updateFavFolderList } from './store'
-import type { FavFolderListAllJson } from './types/folders/list-all-folders'
+import { formatFavFolderUrl } from '../fav-url'
+import { isFavFolderDefault } from '../fav-util'
+import { favStore, updateFavFolderList } from '../store'
+import type { FavFolderListAllJson } from '../types/folders/list-all-folders'
 
-export const UserFavService = {
+/* #region base */
+// media_ids: 收藏夹 id, 逗号分割
+async function favDeal({
+  avid,
+  add_media_ids = '',
+  del_media_ids = '',
+}: {
+  avid: string | number
+  add_media_ids?: string
+  del_media_ids?: string
+}) {
+  const form = new URLSearchParams({
+    rid: avid.toString(),
+    type: '2',
+    add_media_ids,
+    del_media_ids,
+    platform: 'web',
+    eab_x: '2',
+    ramval: '0',
+    ga: '1',
+    gaia_source: 'web_normal',
+    csrf: getCsrfToken(),
+  })
+
+  const res = await request.post('/x/v3/fav/resource/deal', form)
+  const json = res.data
+  const success = isWebApiSuccess(json)
+  if (!success) {
+    toast(json?.message || 'fav deal api fail')
+  }
+  return success
+}
+/* #endregion */
+
+export const UserFavApi = {
   getVideoFavState,
-  removeFavs,
-  moveFavs,
   addFav,
+  removeFavs,
+  moveFavs, // 移动 1-to-1
+  modifyFav,
 }
 
 /* #region 批量操作 */
@@ -63,7 +99,7 @@ export async function moveFavs(resources: string | string[], src: string | numbe
  * 获取视频所在收藏夹
  * @see https://github.com/the1812/Bilibili-Evolved/blob/master/registry/lib/components/video/quick-favorite/QuickFavorite.vue
  */
-export async function getVideoFavState(avid: string) {
+export async function getVideoFavState(avid: number | string) {
   if (!getHasLogined()) return
   const res = await request.get('/x/v3/fav/folder/created/list-all', {
     params: {
@@ -80,38 +116,6 @@ export async function getVideoFavState(avid: string) {
   const favFolderIds = favFolders.map((f) => f.id)
 
   return { favFolders, favFolderNames, favFolderUrls, favFolderIds }
-}
-
-// media_ids: 收藏夹 id, 逗号分割
-export async function favDeal({
-  avid,
-  add_media_ids = '',
-  del_media_ids = '',
-}: {
-  avid: string | number
-  add_media_ids?: string
-  del_media_ids?: string
-}) {
-  const form = new URLSearchParams({
-    rid: avid.toString(),
-    type: '2',
-    add_media_ids,
-    del_media_ids,
-    platform: 'web',
-    eab_x: '2',
-    ramval: '0',
-    ga: '1',
-    gaia_source: 'web_normal',
-    csrf: getCsrfToken(),
-  })
-
-  const res = await request.post('/x/v3/fav/resource/deal', form)
-  const json = res.data
-  const success = isWebApiSuccess(json)
-  if (!success) {
-    toast(json?.message || 'fav deal api fail')
-  }
-  return success
 }
 
 export let defaultFavFolderId: number | undefined
@@ -141,4 +145,21 @@ export async function fetchAllFavFolders() {
   const json = res.data as FavFolderListAllJson
   const folders = json.data.list
   return folders
+}
+
+async function modifyFav(
+  avid: string | number,
+  sourceFolderIds: number[] | undefined,
+  targetFolderId: number | undefined,
+): Promise<boolean> {
+  const source = (sourceFolderIds ?? []).filter((x) => x !== undefined)
+  const target = [targetFolderId].filter((x) => x !== undefined)
+  const delArr = difference(source, target)
+  const addArr = difference(target, source)
+  const success = await favDeal({
+    avid,
+    del_media_ids: delArr.length ? delArr.join(',') : undefined,
+    add_media_ids: addArr.length ? addArr.join(',') : undefined,
+  })
+  return success
 }

@@ -95,11 +95,3 @@ async function initHomepagePureRecommend() {
     </AppRoot>,
   )
 }
-
-// FIXME: dev only
-// ;(async () => {
-//   await delay(100)
-//   moveFavItemToFolder(undefined, () => {
-//     //
-//   })
-// })()

@@ -2,14 +2,14 @@ import { bv2av } from '@mgdn/bvid'
 import { delay } from 'es-toolkit'
 import ms from 'ms'
 import { baseDebug } from '$common'
-import { moveFavItemToFolder } from '$components/ModalFavManager'
+import { handleModifyFavItemToFolder, startModifyFavItemToFolder } from '$components/ModalFavManager'
 import { EForceAutoPlay, EPlayerScreenMode, EQueryKey } from '$components/VideoCard/index.shared'
 import { hasDocumentPictureInPicture, openInPipOrPopup } from '$components/VideoCard/use/useOpenRelated'
 import { antMessage } from '$modules/antd'
 import { getBiliPlayer } from '$modules/bilibili/player'
 import { getBiliPlayerConfigAutoPlay } from '$modules/bilibili/player-config'
 import { getCurrentPageBvid } from '$modules/pages/video-play-page'
-import { UserFavService } from '$modules/rec-services/fav/user-fav-service'
+import { UserFavApi } from '$modules/rec-services/fav/api'
 import { settings } from '$modules/settings'
 import { isMac } from '$ua'
 import { poll, shouldDisableShortcut } from '$utility/dom'
@@ -126,7 +126,7 @@ function openInIina() {
 }
 
 function registerAddToFavCommand() {
-  GM.registerMenuCommand?.('⭐️ 加入收藏', addToFav)
+  GM.registerMenuCommand?.('⭐️ 加入收藏', () => addToFav())
 }
 async function setupCustomFavPicker() {
   if (!settings.fav.useCustomFavPicker.onPlayPage) return
@@ -159,14 +159,28 @@ async function setupCustomFavPicker() {
   )
 }
 
-async function addToFav() {
+async function addToFav(sourceFavFolderIds?: number[] | undefined) {
   const bvid = getCurrentPageBvid()
   if (!bvid) return antMessage.error('无法解析视频 BVID !')
   const avid = bv2av(bvid)
-  await moveFavItemToFolder(undefined, async (targetFolder) => {
-    const success = await UserFavService.addFav(avid, targetFolder.id)
-    if (success) antMessage.success(`已加入收藏夹「${targetFolder.title}」`)
-    return success
+
+  // TODO: optimize this
+  if (sourceFavFolderIds === undefined) {
+    const result = await UserFavApi.getVideoFavState(avid)
+    if (result) {
+      sourceFavFolderIds = result.favFolderIds
+    }
+  }
+
+  await startModifyFavItemToFolder(sourceFavFolderIds, async (targetFolder) => {
+    const success = await handleModifyFavItemToFolder(avid, sourceFavFolderIds, targetFolder)
+    if (!success) return
+
+    const nextState = !!targetFolder
+    const el = document.querySelector<HTMLDivElement>('.video-fav.video-toolbar-left-item')
+    el?.classList.toggle('on', nextState)
+
+    return true
   })
 }
 
