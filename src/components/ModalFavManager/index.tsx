@@ -42,14 +42,14 @@ export async function startPickFavFolder(pickOkAction: ModalFavTypes.PickOkActio
 }
 
 export async function startModifyFavItemToFolder(
-  srcFavFolderId: number | number[] | undefined,
+  srcFolderIds: number[] | undefined,
   modifyOkAction: ModalFavTypes.ModifyOkAction,
   modifyAllowEmpty: boolean | undefined = true,
 ) {
   updateProps({
     show: true,
     mode: 'modify',
-    modifyInitialSelectedIds: srcFavFolderId,
+    modifyInitialSelectedIds: srcFolderIds,
     modifyOkAction,
     modifyAllowEmpty,
   })

@@ -171,7 +171,7 @@ export function getFavTabMenus({
           }
 
           await startModifyFavItemToFolder(
-            item.folder.id,
+            [item.folder.id],
             async (targetFolder) => {
               assert(targetFolder, 'targetFolder should not be empty')
               const success = await UserFavApi.moveFavs(resources, srcFavFolderId, targetFolder.id)

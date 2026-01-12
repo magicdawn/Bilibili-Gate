@@ -271,7 +271,7 @@ export function ModalFavManager({
           <div className='grid grid-cols-[repeat(auto-fill,minmax(225px,1fr))] mb-10px min-h-100px content-start items-center gap-10px pr-15px'>
             {foldersForRender.length ? (
               foldersForRender.map((f) => {
-                const initialSelected = modifyInitialSelectedIdsSet.has(f.id)
+                const initialSelected = mode === 'modify' && modifyInitialSelectedIdsSet.has(f.id)
                 const active = f.id === selectedFolderId
                 return (
                   <button
@@ -329,7 +329,12 @@ export function ModalFavManager({
 
         <div className='flex-v-center gap-x-10px'>
           <Button onClick={onHide}>取消</Button>
-          <Button type='primary' onClick={onOk} loading={$pickOkActionReq.loading || $modifyOkActionReq.loading}>
+          <Button
+            type='primary'
+            onClick={onOk}
+            loading={$pickOkActionReq.loading || $modifyOkActionReq.loading}
+            disabled={!allowEmptyResult && !selectedFolderId}
+          >
             确定
           </Button>
         </div>
