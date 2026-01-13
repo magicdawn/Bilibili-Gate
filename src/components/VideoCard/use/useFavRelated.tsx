@@ -8,7 +8,7 @@ import {
 } from '$components/ModalFavManager'
 import { getMultiSelectedItems } from '$components/RecGrid/rec-grid-state'
 import { ETab } from '$components/RecHeader/tab-enum'
-import { isFav, isWatchlater, type RecItemType } from '$define'
+import { isFav, isLiked, isWatchlater, type RecItemType } from '$define'
 import { antMessage, antModal, defineAntMenus } from '$modules/antd'
 import { IconForFav, IconForFaved, IconForOpenExternalLink } from '$modules/icon'
 import { multiSelectStore } from '$modules/multi-select/store'
@@ -29,8 +29,8 @@ export function useInitFavContext(item: RecItemType, avid: string | undefined) {
   const [folderIds, setFolderIds] = useState<number[] | undefined>(undefined)
 
   const updateFavFolderNames = useMemoizedFn(async () => {
-    // 只在「稍后再看」提供收藏状态
-    if (item.api !== 'watchlater') return
+    // 只在「稍后再看」|「赞」提供收藏状态
+    if (!isWatchlater(item) && !isLiked(item)) return
     if (!avid) return
     const result = await UserFavApi.getVideoFavState(avid)
     if (result) {
