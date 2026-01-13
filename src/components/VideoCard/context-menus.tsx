@@ -23,8 +23,10 @@ import { setNicknameCache } from '$modules/bilibili/user/nickname'
 import { getFollowedStatus, isApiRecLike } from '$modules/filter'
 import { openNewTab } from '$modules/gm'
 import {
+  IconForAsc,
   IconForBlacklist,
   IconForCopy,
+  IconForDesc,
   IconForDislike,
   IconForDynamicFeed,
   IconForOpenExternalLink,
@@ -210,7 +212,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
       hasEntry_dynamicFeed_offsetAndMinId && {
         label: '动态: 从此项开始查看',
         key: '动态: 从此项开始查看',
-        icon: <IconTablerSortDescending2 className={clsMenuIcon} />,
+        icon: <IconForDesc className={clsMenuIcon} />,
         onClick() {
           const u = new URL('/', location.href)
           u.searchParams.set(DynamicFeedQueryKey.Mid, authorMid)
@@ -228,7 +230,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
   const dynamicViewUpdateSinceThis: AntMenuItem | false = useMemo(
     () =>
       hasEntry_dynamicFeed_offsetAndMinId && {
-        icon: <IconTablerSortAscending2 className={clsMenuIcon} />,
+        icon: <IconForAsc className={clsMenuIcon} />,
         label: '动态: 从此项开始截止',
         key: '动态: 从此项开始截止',
         onClick() {
@@ -251,7 +253,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
       !!item.page && {
         key: 'space-upload-view-start-from-here',
         label: `投稿: 从此页开始查看 (当前第${item.page}页)`,
-        icon: <IconTablerSortDescending2 className={clsMenuIcon} />,
+        icon: <IconForDesc className={clsMenuIcon} />,
         onClick() {
           const u = new URL(location.href)
           u.searchParams.set(SpaceUploadQueryKey.InitialPage, item.page!.toString())

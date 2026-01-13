@@ -89,6 +89,8 @@ declare global {
   const IconTablerListDetails: typeof import('~icons/tabler/list-details.jsx').default
   const IconTablerPlus: typeof import('~icons/tabler/plus.jsx').default
   const IconTablerRestore: typeof import('~icons/tabler/restore.jsx').default
+  const IconTablerSortAscending: typeof import('~icons/tabler/sort-ascending.jsx').default
   const IconTablerSortAscending2: typeof import('~icons/tabler/sort-ascending2.jsx').default
+  const IconTablerSortDescending: typeof import('~icons/tabler/sort-descending.jsx').default
   const IconTablerSortDescending2: typeof import('~icons/tabler/sort-descending2.jsx').default
 }

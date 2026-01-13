@@ -19,13 +19,14 @@ import { isEmptyFragment } from '$common/hooks/useIsEmptyFragment'
 import { useLessFrequentFn } from '$common/hooks/useLessFrequentFn'
 import { useRefStateBox } from '$common/hooks/useRefState'
 import { Picture } from '$components/_base/Picture'
-import { clsZVideoCardContextMenu, parseZ } from '$components/fragments'
+import { clsZVideoCardContextMenu } from '$components/fragments'
 import { useDislikedReason } from '$components/ModalDislike'
 import { isDisplayAsList } from '$components/RecGrid/display-mode'
 import { getBvidInfo } from '$components/RecGrid/rec-grid-state'
 import { setGlobalValue } from '$components/RecGrid/unsafe-window-export'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { defaultRecSharedEmitter, type RecSharedEmitter, type RefreshFn } from '$components/Recommends/rec.shared'
+import { clsGateVideoCardContextMenuRoot } from '$components/shared.module.scss'
 import {
   isAppRecommend,
   isFav,
@@ -675,23 +676,18 @@ const VideoCardInner = memo(function VideoCardInner({
   function wrapDropdown(c: ReactNode) {
     return (
       <Dropdown
+        trigger={['contextMenu']}
+        onOpenChange={onContextMenuOpenChange}
         getPopupContainer={() => {
           // safari z-index issue: context-menu 在 rec-header 下
           if (isSafari) return document.body
           return cardRef.current || document.body
         }}
-        styles={{
-          root: { zIndex: parseZ(clsZVideoCardContextMenu) },
-        }}
+        rootClassName={clsx(clsZVideoCardContextMenu, clsGateVideoCardContextMenuRoot)}
         menu={{
           items: contextMenus,
-          style: {
-            // 需要设置宽度, 否则闪屏
-            width: 'max-content',
-          },
+          className: 'w-max', // 需要设置宽度, 否则闪屏
         }}
-        trigger={['contextMenu']}
-        onOpenChange={onContextMenuOpenChange}
       >
         {c}
       </Dropdown>

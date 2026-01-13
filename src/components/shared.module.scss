@@ -1,4 +1,4 @@
-.cls-gate-video-grid-divider {
+.cls--gate-video-grid--divider {
   :global {
     .ant-divider-inner-text {
       display: inline-flex;
@@ -9,6 +9,19 @@
         &:hover {
           color: var(--ant-color-primary);
         }
+      }
+    }
+  }
+}
+
+// 卡片-右键菜单, 默认间距过大 (padding-block: 5px)
+.cls--gate-video-card--context-menu--root {
+  :global {
+    .ant-dropdown-menu {
+      --ant-dropdown-padding-block: 3px;
+      // too much menu items
+      &:has(:nth-child(12)) {
+        --ant-dropdown-padding-block: 2px;
       }
     }
   }

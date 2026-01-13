@@ -74,6 +74,9 @@ export function AppRoot({
               defaultShadow: 'none',
               primaryShadow: 'none',
             },
+            Dropdown: {
+              // paddingBlock: 3, // default 5 (px)
+            },
           },
         }}
       >
