@@ -35,7 +35,7 @@ const clsRecommendReason = clsx(
   'max-w-[calc(100%-6px)] w-max cursor-default overflow-hidden text-ellipsis whitespace-nowrap b-1px b-gate-border rounded-9px b-solid px-8px py-0 text-12px color-gate-primary line-height-17px',
 )
 
-const clsRecommendReasonInList = clsx('line-clamp-2 mt-10px h-auto whitespace-normal line-height-17px')
+const clsRecommendReasonInList = clsx('line-clamp-2 mt-10px h-auto whitespace-normal')
 
 /*
   如果你已经有一个 brand color（OKLCH），要生成一个 不突兀、带品牌调性的 Label 背景色，核心原则其实只有一个：
