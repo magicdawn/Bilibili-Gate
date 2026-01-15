@@ -9,6 +9,7 @@ import { Avatar } from 'antd'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
 import { memo, useMemo, type MouseEventHandler, type ReactNode } from 'react'
+import { useUnoMerge } from 'unocss-merge/react'
 import { useSnapshot } from 'valtio'
 import { APP_CLS_CARD_RECOMMEND_REASON } from '$common'
 import { appClsDarkSelector } from '$common/css-vars-export.module.scss'
@@ -29,64 +30,42 @@ import { useLinkTarget } from '../use/useOpenRelated'
 import { UnixTsDisplay } from './UnixTsDisplay'
 import type { EGridDisplayMode } from '$enums'
 
-const S = {
-  recommendReason: css`
-    display: inline-block;
-    cursor: default;
+const clsRecommendReason = clsx(
+  APP_CLS_CARD_RECOMMEND_REASON,
+  'max-w-[calc(100%-6px)] w-max cursor-default overflow-hidden text-ellipsis whitespace-nowrap b-1px b-gate-border rounded-9px b-solid px-8px py-0 text-12px color-gate-primary line-height-17px',
+)
 
-    /* background-color: var(--Or1); */
-    /* color: var(--Or5); */
+const clsRecommendReasonInList = clsx('line-clamp-2 mt-10px h-auto whitespace-normal line-height-17px')
 
-    /*
-      如果你已经有一个 brand color（OKLCH），要生成一个 不突兀、带品牌调性的 Label 背景色，核心原则其实只有一个：
-      把品牌色往「背景色」方向移动，但保持一点点 hue，不让它灰掉。
+/*
+  如果你已经有一个 brand color（OKLCH），要生成一个 不突兀、带品牌调性的 Label 背景色，核心原则其实只有一个：
+  把品牌色往「背景色」方向移动，但保持一点点 hue，不让它灰掉。
 
-      C 不要 >0.02，不然立刻变成「彩色 badge」，太吵。
-      hue 必须保留品牌色方向，否则背景变成无意义的灰。
-      light mode 的目标明度可固定为 0.96–0.98。
-      dark mode 目标明度适合在 0.30–0.40 区间。 */
-    background-color: oklch(from ${appPrimaryColorValue} calc(l * 0.1 + 0.9) calc(c * 0.1) h);
-    ${appClsDarkSelector} & {
-      background-color: oklch(from ${appPrimaryColorValue} calc(l * 0.3 + 0.175) calc(c * 0.08) h);
-    }
-    color: var(--Or5);
+  C 不要 >0.02，不然立刻变成「彩色 badge」，太吵。
+  hue 必须保留品牌色方向，否则背景变成无意义的灰。
+  light mode 的目标明度可固定为 0.96–0.98。
+  dark mode 目标明度适合在 0.30–0.40 区间。
 
-    border-radius: 8px;
-    font-size: var(--follow-icon-font-size); // 12px
-    line-height: var(--follow-icon-line-height); // 17px
-    height: var(--follow-icon-line-height); // 17px
+  // original colors
+  background-color: var(--Or1);
+  color: var(--Or5);
+*/
+const cssRecommendReason = css`
+  background-color: oklch(from ${appPrimaryColorValue} calc(l * 0.1 + 0.88) calc(c * 0.25) h);
+  ${appClsDarkSelector} & {
+    background-color: oklch(from ${appPrimaryColorValue} calc(l * 0.3 + 0.175) calc(c * 0.25) h);
+  }
+`
 
-    width: max-content;
-    max-width: calc(100% - 6px);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-
-    padding-inline: 8px;
-    padding-block: 0;
-  `,
-
-  recommendReasonInList: css`
-    margin-top: 10px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    height: auto;
-    white-space: normal;
-  `,
-
-  appBadge: css`
-    color: #fa6a9d;
-    border-radius: 2px;
-    border: 1px #fa6a9d solid;
-    line-height: 20px;
-    padding: 0 10px;
-    transform: scale(0.8);
-    transform-origin: center left;
-  `,
-}
+const appBadgeCss = css`
+  color: ${appPrimaryColorValue};
+  border-radius: 2px;
+  border: 1px ${appPrimaryColorValue} solid;
+  line-height: 20px;
+  padding: 0 10px;
+  transform: scale(0.8);
+  transform-origin: center left;
+`
 
 // .bili-video-card__info--owner
 const descOwnerCss = css`
@@ -177,6 +156,8 @@ export const VideoCardBottom = memo(function ({
     }
   }, [isNormalVideo, authorName, pubts, pubtsFromApi, pubdateDisplay, pubdateDisplayForTitleAttr])
 
+  const _recommendReasonClassName = useUnoMerge(clsRecommendReason, displayingAsList && clsRecommendReasonInList)
+
   /**
    * 带头像, 更分散(recommend-reason 单独一行)
    */
@@ -254,13 +235,13 @@ export const VideoCardBottom = memo(function ({
 
   function renderDesc() {
     const recommendReasonEl: ReactNode = !!recommendReason && (
-      <span
-        className={APP_CLS_CARD_RECOMMEND_REASON}
-        css={[S.recommendReason, displayingAsList && S.recommendReasonInList]}
+      <div
         title={recommendReason}
+        css={cssRecommendReason} // background-color
+        className={_recommendReasonClassName}
       >
         {recommendReason}
-      </span>
+      </div>
     )
 
     if (isNormalVideo) {
@@ -305,7 +286,7 @@ export const VideoCardBottom = memo(function ({
           target={target}
           onContextMenu={showNativeContextMenuWhenAltKeyPressed}
         >
-          {!!appBadge && <span css={S.appBadge}>{appBadge}</span>}
+          {!!appBadge && <span css={appBadgeCss}>{appBadge}</span>}
           {!!appBadgeDesc && <span>{appBadgeDesc}</span>}
         </a>
       )
