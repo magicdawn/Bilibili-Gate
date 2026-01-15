@@ -90,8 +90,3 @@ async function darkModeTriggerClickHandler(e: MouseEvent) {
   await delay(0)
   $darkMode.updateThrottled()
 }
-
-window.addEventListener('unload', () => {
-  ob.disconnect()
-  document.removeEventListener('click', darkModeTriggerClickHandler)
-})

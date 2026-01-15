@@ -17,6 +17,9 @@ declare global {
   const IconIonExitOutline: typeof import('~icons/ion/exit-outline.jsx').default
   const IconIonLayersOutline: typeof import('~icons/ion/layers-outline.jsx').default
   const IconLetsIconsViewHide: typeof import('~icons/lets-icons/view-hide.jsx').default
+  const IconLineMdArrowDown: typeof import('~icons/line-md/arrow-down.jsx').default
+  const IconLineMdArrowSmallDown: typeof import('~icons/line-md/arrow-small-down.jsx').default
+  const IconLineMdDownloadOutlineLoop: typeof import('~icons/line-md/download-outline-loop.jsx').default
   const IconLineMdUploadingLoop: typeof import('~icons/line-md/uploading-loop.jsx').default
   const IconLucideCircle: typeof import('~icons/lucide/circle.jsx').default
   const IconLucideCircleCheck: typeof import('~icons/lucide/circle-check.jsx').default
@@ -46,6 +49,7 @@ declare global {
   const IconParkOutlineConfig: typeof import('~icons/icon-park-outline/config.jsx').default
   const IconParkOutlineCopy: typeof import('~icons/icon-park-outline/copy.jsx').default
   const IconParkOutlineDistraughtFace: typeof import('~icons/icon-park-outline/distraught-face.jsx').default
+  const IconParkOutlineDown: typeof import('~icons/icon-park-outline/down.jsx').default
   const IconParkOutlineDownC: typeof import('~icons/icon-park-outline/down-c.jsx').default
   const IconParkOutlineDrag: typeof import('~icons/icon-park-outline/drag.jsx').default
   const IconParkOutlineFire: typeof import('~icons/icon-park-outline/fire.jsx').default

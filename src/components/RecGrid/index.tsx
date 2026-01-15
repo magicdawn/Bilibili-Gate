@@ -1,7 +1,3 @@
-/**
- * 推荐内容, 无限滚动
- */
-
 import { useCreation, useEventListener, useLatest, useMemoizedFn, useMount, useUnmountedRef } from 'ahooks'
 import { Divider } from 'antd'
 import clsx, { type ClassValue } from 'clsx'
@@ -37,6 +33,7 @@ import { antMessage, antNotification } from '$modules/antd'
 import { filterRecItems } from '$modules/filter'
 import { multiSelectStore } from '$modules/multi-select/store'
 import { concatRecItems, getGridRefreshCount, refreshForGrid } from '$modules/rec-services'
+import { querySupportsLoadToEnd } from '$modules/rec-services/_shared/copy-bvid-buttons'
 import { getServiceFromRegistry } from '$modules/rec-services/service-map.ts'
 import { settings } from '$modules/settings'
 import { isSafari } from '$ua'
@@ -46,6 +43,7 @@ import { setGlobalGridItems } from './unsafe-window-export'
 import { useRefresh } from './useRefresh'
 import { useShortcut } from './useShortcut'
 import * as gridClassNames from './video-grid.module.scss'
+import type { ArgsProps } from 'antd/es/notification'
 import type { VideoCardEmitter, VideoCardEvents } from '$components/VideoCard/index.shared'
 import type { RecItemType, RecItemTypeOrSeparator } from '$define'
 import type { IVideoCardData } from '$modules/filter/normalize'
@@ -119,14 +117,16 @@ export const RecGrid = memo(
     }: RecGridProps,
     ref: ForwardedRef<RecGridRef>,
   ) {
+    // rec-shared
+    const recSelf = useRecSelfContext()
+    const { servicesRegistry, recSharedEmitter } = recSelf
+    const { refreshing } = recSelf.useStore()
+    // rec-grid
     const self = useCreation(() => new RecGridSelf(), [])
     const { useCustomGrid, gridDisplayMode, enableForceColumn, forceColumnCount, cardMinWidth } = useSnapshot(
       settings.grid,
     )
     const { multiSelecting } = useSnapshot(multiSelectStore)
-    const recSelf = useRecSelfContext()
-    const { servicesRegistry } = recSelf
-    const { refreshing } = recSelf.useStore()
     const unmountedRef = useUnmountedRef()
     useSetupGridState()
 
@@ -196,18 +196,24 @@ export const RecGrid = memo(
       }
     })
 
-    const loadMore = useMemoizedFn(async () => {
+    const loadMorePrecheck = useMemoizedFn(() => {
       if (
         unmountedRef.current ||
+        // rec-shared
         recSelf.refreshing ||
-        self.loadMoreRunning ||
-        self.store.refreshError ||
+        // rec-grid
         self.abortController.signal.aborted ||
+        self.loadMoreRunning ||
         self.store.refreshTs < 0 || // refresh not started yet
+        self.store.refreshError ||
         !self.store.hasMore
       ) {
-        return
+        return false
       }
+      return true
+    })
+    const loadMore = useMemoizedFn(async () => {
+      if (!loadMorePrecheck()) return
 
       const startingRefreshTs = self.store.refreshTs
       self.lock(startingRefreshTs)
@@ -252,6 +258,30 @@ export const RecGrid = memo(
       checkShouldLoadMore()
     })
 
+    const loadToEnd = useMemoizedFn(async () => {
+      /* #region precheck */
+      const notifyKey = 'RecGrid:loadToEnd'
+      const notifyErrorArgs: Partial<ArgsProps> = { key: notifyKey + ':error', title: '加载全部', duration: 15 }
+      const notifySuccessArgs: Partial<ArgsProps> = { title: '加载全部' }
+      const error = (description: ReactNode) => {
+        antNotification.error({ ...notifyErrorArgs, description })
+        throw new Error('loadToEnd error', { cause: description })
+      }
+
+      if (!querySupportsLoadToEnd()) return error('当前 Tab 不支持加载全部')
+      if (self.store.refreshError) return error('预检查失败: 先前错误')
+      // consider `!hasMore` as a success case
+      if (!self.store.hasMore) {
+        return antNotification.success({ ...notifySuccessArgs, description: '没有更多了' })
+      }
+      /* #endregion */
+
+      while (!loadMorePrecheck()) await delay(500) // wait refresh + loadMore  complete
+      while (loadMorePrecheck()) await loadMore()
+      antNotification.success({ ...notifySuccessArgs, description: '已完成' })
+    })
+    useEmitterOn(recSharedEmitter, 'load-to-end', loadToEnd)
+
     // fullList = videoList + separators
     const fullList = items
     const videoList = useMemo(() => fullList.filter((x) => x.api !== EApiType.Separator), [fullList])
@@ -272,22 +302,21 @@ export const RecGrid = memo(
     })
 
     // emitters
-    const emitterCache = useMemo(() => new Map<string, VideoCardEmitter>(), [refreshTs])
+    const videoCardEmitterCache = useMemo(() => new Map<string, VideoCardEmitter>(), [refreshTs])
     const videoCardEmitters = useMemo(() => {
       return videoList.map(({ uniqId }) => {
         const cacheKey = uniqId
         return (
-          emitterCache.get(cacheKey) ||
+          videoCardEmitterCache.get(cacheKey) ||
           (() => {
             const instance = new Emittery<VideoCardEvents>()
-            emitterCache.set(cacheKey, instance)
+            videoCardEmitterCache.set(cacheKey, instance)
             return instance
           })()
         )
       })
     }, [videoList])
 
-    const { recSharedEmitter } = useRecSelfContext()
     const [activeLargePreviewUniqId, setActiveLargePreviewUniqId] = useState<string | undefined>(undefined)
     useEmitterOn(recSharedEmitter, 'show-large-preview', setActiveLargePreviewUniqId)
     const activeLargePreviewItemIndex = useMemo(() => {

@@ -86,9 +86,6 @@ ob.observe(document.body, {
   attributes: true,
   attributeFilter: ['class'],
 })
-window.addEventListener('unload', () => {
-  ob.disconnect()
-})
 
 document.body.addEventListener(
   'click',

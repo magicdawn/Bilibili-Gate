@@ -2,7 +2,7 @@ import { useMemoizedFn, useMount } from 'ahooks'
 import { Input } from 'antd'
 import { useSnapshot } from 'valtio'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
-import { useOnRefresh } from '$components/Recommends/rec.shared'
+import { useOnRefresh, useRecSelfContext } from '$components/Recommends/rec.shared'
 import { AntdTooltip } from '$modules/antd/custom'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { CopyBvidButtonsTabbarView } from '../_shared/copy-bvid-buttons'
@@ -17,6 +17,7 @@ export function SpaceUploadTabbarView() {
     spaceUpload: { useSyncFilterTextFromSearchText },
   } = useSettingsSnapshot()
   const onRefresh = useOnRefresh()
+  const { recSharedEmitter } = useRecSelfContext()
 
   const onSyncStoreToUrl = useMemoizedFn(() => {
     syncFilterTextFromSearchText()

@@ -14,5 +14,5 @@ export function useEmitterOn<EventData, Event extends keyof EventData>(
     return () => {
       emitter.off(type, fn)
     }
-  }, [emitter, type])
+  }, [emitter, type, fn])
 }
