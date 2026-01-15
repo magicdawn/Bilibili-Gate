@@ -35,12 +35,13 @@ $app-bg-lv3-id: --#{$app-name}--bg--lv3;
 // font
 //
 // bilibili.com default: PingFang SC,HarmonyOS_Regular,Helvetica Neue,Microsoft YaHei,sans-serif
+// HarmonyOS_Regular 使用的是 web font
 //
 // 由于 B站 默认 css, 加上了 !important, 这里如果需要自定义也需要加上
 // 优先使用 Bilibili-Evolved 的自定义字体
 $app-custom-font-id: --#{$app-name}--font;
 $app-custom-font-value:
-  'Alibaba PuHuiTi 3.0', 'PingFang SC', HarmonyOS_Regular, 'Helvetica Neue', 'Microsoft YaHei', sans-serif;
+  'Alibaba PuHuiTi 3.0', 'PingFang SC', 'HarmonyOS_Regular', 'Helvetica Neue', 'Microsoft YaHei', sans-serif;
 $app-using-font: var(--custom-font-family--options--font-family, var(#{$app-custom-font-id})) !important;
 
 // video card
