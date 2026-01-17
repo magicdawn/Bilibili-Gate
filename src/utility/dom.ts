@@ -157,5 +157,9 @@ export function domReady() {
 }
 
 export function classListToSelector(...classNames: string[]) {
-  return classNames.map((x) => (x.startsWith('.') ? x : `.${x}`)).join(',')
+  return classNames
+    .map((x) => x.trim())
+    .filter(Boolean)
+    .map((x) => (x.startsWith('.') ? x : `.${x}`))
+    .join(',')
 }

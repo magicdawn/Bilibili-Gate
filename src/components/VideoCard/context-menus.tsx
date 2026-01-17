@@ -26,11 +26,11 @@ import {
   IconForAsc,
   IconForBlacklist,
   IconForCopy,
+  IconForDelete,
   IconForDesc,
   IconForDislike,
   IconForDynamicFeed,
   IconForOpenExternalLink,
-  IconForRemove,
   IconForSpaceUpload,
   IconForWatchlater,
 } from '$modules/icon'
@@ -51,7 +51,7 @@ import { getFavTabMenus, getWatchlaterTabFavMenus, type FavContext } from './use
 import type { IVideoCardData } from '$modules/filter/normalize'
 import type { WatchlaterRelatedContext } from './use/useWatchlaterRelated'
 
-const clsMenuIcon = 'size-16px' // icon 可能看起来不一样大, 但文字对不齐的体验更差, 所以还是优先文字对齐
+export const clsContextMenuIcon = 'size-16px' // icon 可能看起来不一样大, 但文字对不齐的体验更差, 所以还是优先文字对齐
 
 type UseContextMenuOptions = {
   item: RecItemType
@@ -212,7 +212,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
       hasEntry_dynamicFeed_offsetAndMinId && {
         label: '动态: 从此项开始查看',
         key: '动态: 从此项开始查看',
-        icon: <IconForDesc className={clsMenuIcon} />,
+        icon: <IconForDesc className={clsContextMenuIcon} />,
         onClick() {
           const u = new URL('/', location.href)
           u.searchParams.set(DynamicFeedQueryKey.Mid, authorMid)
@@ -230,7 +230,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
   const dynamicViewUpdateSinceThis: AntMenuItem | false = useMemo(
     () =>
       hasEntry_dynamicFeed_offsetAndMinId && {
-        icon: <IconForAsc className={clsMenuIcon} />,
+        icon: <IconForAsc className={clsContextMenuIcon} />,
         label: '动态: 从此项开始截止',
         key: '动态: 从此项开始截止',
         onClick() {
@@ -253,7 +253,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
       !!item.page && {
         key: 'space-upload-view-start-from-here',
         label: `投稿: 从此页开始查看 (当前第${item.page}页)`,
-        icon: <IconForDesc className={clsMenuIcon} />,
+        icon: <IconForDesc className={clsContextMenuIcon} />,
         onClick() {
           const u = new URL(location.href)
           u.searchParams.set(SpaceUploadQueryKey.InitialPage, item.page!.toString())
@@ -279,7 +279,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
       {
         key: 'copy-link',
         label: `复制视频链接${multiSelectingAppendix}`,
-        icon: <IconForCopy className={clsMenuIcon} />,
+        icon: <IconForCopy className={clsContextMenuIcon} />,
         onClick() {
           if (multiSelectStore.multiSelecting) {
             copyVideoLinks()
@@ -292,7 +292,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
         test: !!bvid,
         key: 'copy-bvid',
         label: `复制 BVID${multiSelectingAppendix}`,
-        icon: <IconForCopy className={clsMenuIcon} />,
+        icon: <IconForCopy className={clsContextMenuIcon} />,
         onClick() {
           if (multiSelectStore.multiSelecting) {
             copyBvidsSingleLine()
@@ -305,7 +305,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
         test: !!bvid && settings.__internalEnableCopyBvidInfo,
         key: 'copy-bvid-info',
         label: `复制 BVID 信息${multiSelectingAppendix}`,
-        icon: <IconForCopy className={clsMenuIcon} />,
+        icon: <IconForCopy className={clsContextMenuIcon} />,
         onClick() {
           if (multiSelectStore.multiSelecting) {
             copyBvidInfos()
@@ -318,7 +318,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
         test: !!cover,
         key: 'view-cover',
         label: '查看封面',
-        icon: <IconForOpenExternalLink className={clsMenuIcon} />,
+        icon: <IconForOpenExternalLink className={clsContextMenuIcon} />,
         onClick() {
           if (!cover) return
           const url = cover
@@ -334,7 +334,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
         test: hasViewUpVideoListEntry && followed, // has both entry
         key: `查看「投稿」与「动态」的区别`,
         label: `查看「投稿」与「动态」的区别`,
-        icon: <IconForOpenExternalLink className={clsMenuIcon} />,
+        icon: <IconForOpenExternalLink className={clsContextMenuIcon} />,
         onClick: () =>
           openNewTab(
             'https://github.com/magicdawn/Bilibili-Gate?tab=readme-ov-file#%E5%8F%B3%E9%94%AE%E8%8F%9C%E5%8D%95-%E6%9F%A5%E7%9C%8B-up-%E7%9A%84%E6%8A%95%E7%A8%BF--%E6%9F%A5%E7%9C%8B-up-%E7%9A%84%E5%8A%A8%E6%80%81',
@@ -344,7 +344,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
         test: hasViewUpVideoListEntry,
         key: '查看 UP 的投稿',
         label: `查看 UP 的投稿`,
-        icon: <IconForSpaceUpload className={clsMenuIcon} />,
+        icon: <IconForSpaceUpload className={clsContextMenuIcon} />,
         onClick: onViewUpSpaceUpload,
       },
       spaceUploadViewStartFromHere,
@@ -354,7 +354,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
         test: hasViewUpVideoListEntry && followed,
         key: '查看 UP 的动态',
         label: `查看 UP 的动态`,
-        icon: <IconForDynamicFeed className={clsMenuIcon} />,
+        icon: <IconForDynamicFeed className={clsContextMenuIcon} />,
         onClick: onViewUpDyn,
       },
       dynamicViewUpdateSinceThis,
@@ -370,14 +370,14 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
                 (viewingGroupCount === undefined || viewingGroupCount <= 30),
               key: '查看分组的投稿',
               label: `查看分组的投稿`,
-              icon: <IconForSpaceUpload className={clsMenuIcon} />,
+              icon: <IconForSpaceUpload className={clsContextMenuIcon} />,
               onClick: () => openNewTab(`/?${SpaceUploadQueryKey.GroupId}=${viewingGroupId}`),
             },
             {
               test: hasViewUpVideoListEntry && viewingSomeGroup,
               key: '查看分组的动态',
               label: `查看分组的动态`,
-              icon: <IconForDynamicFeed className={clsMenuIcon} />,
+              icon: <IconForDynamicFeed className={clsContextMenuIcon} />,
               onClick: () => openNewTab(`/?${DynamicFeedQueryKey.GroupId}=${viewingGroupId}`),
             },
             { type: 'divider' },
@@ -390,9 +390,9 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
         key: 'watchlater',
         label: watchlaterAdded ? '移除稍后再看' : '稍后再看',
         icon: watchlaterAdded ? (
-          <IconForRemove className={clsMenuIcon} />
+          <IconForDelete className={clsContextMenuIcon} />
         ) : (
-          <IconForWatchlater className={clsMenuIcon} />
+          <IconForWatchlater className={clsContextMenuIcon} />
         ),
         onClick() {
           onToggleWatchlater()
@@ -402,7 +402,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
         test: hasWatchlaterEntry && watchlaterAdded,
         key: 'watchlater-readd',
         label: `重新添加稍候再看${tab === ETab.Watchlater ? ' (移到最前)' : ''}`,
-        icon: <IconParkOutlineAddTwo className={clsMenuIcon} />,
+        icon: <IconParkOutlineAddTwo className={clsContextMenuIcon} />,
         async onClick() {
           const { success } = await onToggleWatchlater(undefined, watchlaterAdd)
           if (!success) return
@@ -431,36 +431,38 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
         test: hasUnfollowEntry,
         key: 'unfollow-up',
         label: '取消关注',
-        icon: <IconParkOutlinePeopleMinus className={clsMenuIcon} />,
+        icon: <IconParkOutlinePeopleMinus className={clsContextMenuIcon} />,
         onClick: onUnfollowUp,
       },
       {
         test: hasEntry_addMidTo_dynamicFeedWhenViewAllHideIds,
         key: 'hasEntry_addMidTo_dynamicFeedWhenViewAllHideIds',
         label: '在「全部」动态中隐藏 UP 的动态',
-        icon: <IconLetsIconsViewHide className={clsMenuIcon} />,
+        icon: <IconLetsIconsViewHide className={clsContextMenuIcon} />,
         onClick: onAddMidTo_dynamicFeedWhenViewAllHideIds,
       },
       {
         test: hasBlacklistEntry,
         key: 'blacklist-up',
         label: '将 UP 加入黑名单',
-        icon: <IconForBlacklist className={clsMenuIcon} />,
+        icon: <IconForBlacklist className={clsContextMenuIcon} />,
         onClick: onBlacklistUp,
       },
       {
         test: hasBlacklistEntry,
         key: 'add-up-to-filterlist',
         label: '将 UP 加入过滤列表',
-        icon: <IconForBlacklist className={clsMenuIcon} />,
+        icon: <IconForBlacklist className={clsContextMenuIcon} />,
         onClick: onAddUpToFilterList,
       },
     ])
 
     const favTabMenus = getFavTabMenus({
+      ctx: favContext,
       item,
       cardData,
       tab,
+      multiSelecting,
       multiSelectingAppendix,
       onRemoveCurrent,
       recSharedEmitter,

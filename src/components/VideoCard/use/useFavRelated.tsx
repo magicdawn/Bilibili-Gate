@@ -1,4 +1,5 @@
 import { useMemoizedFn } from 'ahooks'
+import clsx from 'clsx'
 import { assert } from 'es-toolkit'
 import { useMemo, useState } from 'react'
 import {
@@ -10,13 +11,14 @@ import { getMultiSelectedItems } from '$components/RecGrid/rec-grid-state'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { isFav, isLiked, isWatchlater, type RecItemType } from '$define'
 import { antMessage, antModal, defineAntMenus } from '$modules/antd'
-import { IconForFav, IconForFaved, IconForOpenExternalLink } from '$modules/icon'
+import { IconForDelete, IconForEdit, IconForFav, IconForFaved, IconForOpenExternalLink } from '$modules/icon'
 import { multiSelectStore } from '$modules/multi-select/store'
 import { defaultFavFolderTitle, UserFavApi } from '$modules/rec-services/fav/api'
 import { formatFavCollectionUrl, formatFavFolderUrl } from '$modules/rec-services/fav/fav-url'
 import { clearFavFolderAllItemsCache } from '$modules/rec-services/fav/service/fav-folder'
 import { FavQueryKey, favStore } from '$modules/rec-services/fav/store'
 import toast from '$utility/toast'
+import { clsContextMenuIcon } from '../context-menus'
 import { getLinkTarget } from './useOpenRelated'
 import type { RecSharedEmitter } from '$components/Recommends/rec.shared'
 import type { IVideoCardData } from '$modules/filter/normalize'
@@ -29,8 +31,8 @@ export function useInitFavContext(item: RecItemType, avid: string | undefined) {
   const [folderIds, setFolderIds] = useState<number[] | undefined>(undefined)
 
   const updateFavFolderNames = useMemoizedFn(async () => {
-    // 只在「稍后再看」|「赞」提供收藏状态
-    if (!isWatchlater(item) && !isLiked(item)) return
+    // 只在「稍后再看」|「赞」|「收藏」提供收藏状态
+    if (!(isWatchlater(item) || isLiked(item) || (isFav(item) && item.from === 'fav-folder'))) return
     if (!avid) return
     const result = await UserFavApi.getVideoFavState(avid)
     if (result) {
@@ -56,7 +58,7 @@ export function getWatchlaterTabFavMenus(ctx: FavContext, item: RecItemType, avi
     {
       // 浏览收藏夹
       key: 'watchlater-faved:browse-fav-folder',
-      icon: <IconForFaved className='size-15px color-gate-primary' />,
+      icon: <IconForFaved className={clsx(clsContextMenuIcon, 'color-gate-primary')} />,
       label: `已收藏在 ${(folderNames || []).map((n) => `「${n}」`).join('')}`,
       onClick() {
         folderUrls.forEach((u) => {
@@ -67,8 +69,8 @@ export function getWatchlaterTabFavMenus(ctx: FavContext, item: RecItemType, avi
     {
       // 修改收藏夹
       key: 'watchlater-faved:modify-fav',
-      icon: <IconParkOutlineTransferData className='size-13px' />,
-      label: '修改收藏夹',
+      icon: <IconForEdit className={clsContextMenuIcon} />,
+      label: '编辑收藏',
       async onClick() {
         assert(folderIds.length, 'folderIds.length should not be empty')
         await startModifyFavItemToFolder(folderIds, (targetFolder) => {
@@ -82,7 +84,7 @@ export function getWatchlaterTabFavMenus(ctx: FavContext, item: RecItemType, avi
     {
       // 快速收藏
       key: 'watchlater:add-quick-fav',
-      icon: <IconForFav className='size-15px' />,
+      icon: <IconForFav className={clsContextMenuIcon} />,
       label: '收藏到「默认收藏夹」',
       async onClick() {
         const success = await UserFavApi.addFav(avid)
@@ -92,7 +94,7 @@ export function getWatchlaterTabFavMenus(ctx: FavContext, item: RecItemType, avi
     {
       // 收藏
       key: 'watchlater:add-fav',
-      icon: <IconForFav className='size-15px' />,
+      icon: <IconForFav className={clsContextMenuIcon} />,
       label: '收藏到',
       async onClick() {
         await startPickFavFolder(async (targetFolder) => {
@@ -109,29 +111,79 @@ export function getWatchlaterTabFavMenus(ctx: FavContext, item: RecItemType, avi
 }
 
 export function getFavTabMenus({
+  ctx,
   item,
   cardData,
   tab,
+  multiSelecting,
   multiSelectingAppendix,
   onRemoveCurrent,
   recSharedEmitter,
 }: {
+  ctx: FavContext
   item: RecItemType
   cardData: IVideoCardData
   tab: ETab
+  multiSelecting: boolean | undefined
   multiSelectingAppendix: string
   onRemoveCurrent: ((item: RecItemType, data: IVideoCardData, silent?: boolean) => void | Promise<void>) | undefined
   recSharedEmitter: RecSharedEmitter
 }) {
   if (!isFav(item)) return []
 
+  const { avid } = cardData
+  const folderNames = ctx.folderNames ?? []
+  const folderUrls = ctx.folderUrls ?? []
+  const folderIds = ctx.folderIds ?? []
+
   // 收藏夹
   if (item.from === 'fav-folder') {
+    const batchMenus = multiSelecting
+      ? [
+          {
+            key: 'fav:batch-move-fav',
+            label: `移动到其他收藏夹${multiSelectingAppendix}`,
+            icon: <IconParkOutlineTransferData className={clsContextMenuIcon} />,
+            async onClick() {
+              if (!multiSelectStore.multiSelecting) return
+
+              const selectedFavItems = getMultiSelectedItems()
+                .filter((x) => isFav(x) && x.from === 'fav-folder')
+                .toReversed() // gui first item as queue last, keep first in target folder
+              const folderIds = new Set(selectedFavItems.map((i) => i.folder.id))
+              if (!folderIds.size) return toast('至少选择一项视频')
+              if (folderIds.size > 1) return toast('多选移动: 只能批量移动同一源收藏夹下的视频')
+
+              const srcFavFolderId = selectedFavItems[0].folder.id
+              const resources = selectedFavItems.map((x) => `${x.id}:${x.type}`)
+              const uniqIds = selectedFavItems.map((x) => x.uniqId)
+              const titles = selectedFavItems.map((x) => x.title)
+
+              await startModifyFavItemToFolder(
+                [item.folder.id],
+                async (targetFolder) => {
+                  assert(targetFolder, 'targetFolder should not be empty')
+                  const success = await UserFavApi.moveFavs(resources, srcFavFolderId, targetFolder.id)
+                  if (!success) return
+
+                  clearFavFolderAllItemsCache(item.folder.id)
+                  clearFavFolderAllItemsCache(targetFolder.id)
+                  recSharedEmitter.emit('remove-cards', [uniqIds, titles, true])
+                  antMessage.success(`已移动 ${uniqIds.length} 个视频到「${targetFolder.title}」收藏夹`)
+                  return success
+                },
+                false,
+              )
+            },
+          },
+        ]
+      : []
+
     return defineAntMenus([
       {
         key: 'open-fav-folder',
         label: '浏览收藏夹',
-        icon: <IconForOpenExternalLink className='size-15px' />,
+        icon: <IconForOpenExternalLink className={clsContextMenuIcon} />,
         onClick() {
           const { id } = item.folder
           const url =
@@ -142,45 +194,16 @@ export function getFavTabMenus({
         },
       },
       {
-        key: 'move-fav',
-        label: `移动到其他收藏夹${multiSelectingAppendix}`,
-        icon: <IconParkOutlineTransferData className='size-13px' />,
+        test: !!avid,
+        key: 'modify-fav',
+        icon: <IconForEdit className={clsContextMenuIcon} />,
+        label: '编辑收藏',
         async onClick() {
-          let resources: string | string[]
-          let srcFavFolderId: number
-          let uniqIds: string[]
-          let titles: string[]
-          if (multiSelectStore.multiSelecting) {
-            let selectedFavItems = getMultiSelectedItems().filter((x) => isFav(x) && x.from === 'fav-folder')
-            const folderIds = new Set(selectedFavItems.map((i) => i.folder.id))
-            if (!folderIds.size) {
-              return toast('至少选择一项视频')
-            }
-            if (folderIds.size > 1) {
-              return toast('多选移动: 只能批量移动同一源收藏夹下的视频')
-            }
-            selectedFavItems = selectedFavItems.toReversed() // gui first item as queue last, keep first in target folder
-            srcFavFolderId = selectedFavItems[0].folder.id
-            resources = selectedFavItems.map((x) => `${x.id}:${x.type}`)
-            uniqIds = selectedFavItems.map((x) => x.uniqId)
-            titles = selectedFavItems.map((x) => x.title)
-          } else {
-            resources = `${item.id}:${item.type}`
-            srcFavFolderId = item.folder.id
-            uniqIds = [item.uniqId]
-            titles = [item.title]
-          }
-
           await startModifyFavItemToFolder(
-            [item.folder.id],
+            folderIds,
             async (targetFolder) => {
-              assert(targetFolder, 'targetFolder should not be empty')
-              const success = await UserFavApi.moveFavs(resources, srcFavFolderId, targetFolder.id)
-              if (!success) return
-              clearFavFolderAllItemsCache(item.folder.id)
-              clearFavFolderAllItemsCache(targetFolder.id)
-              recSharedEmitter.emit('remove-cards', [uniqIds, titles, true])
-              antMessage.success(`已移动 ${uniqIds.length} 个视频到「${targetFolder.title}」收藏夹`)
+              const success = await handleModifyFavItemToFolder(avid!, folderIds, targetFolder)
+              if (success && targetFolder?.id !== item.folder.id) onRemoveCurrent?.(item, cardData, true)
               return success
             },
             false,
@@ -190,7 +213,7 @@ export function getFavTabMenus({
       {
         key: 'remove-fav',
         label: '移除收藏',
-        icon: <IconMaterialSymbolsDeleteOutlineRounded className='size-15px' />,
+        icon: <IconForDelete className={clsContextMenuIcon} />,
         async onClick() {
           // 经常误操作, 点到这项, 直接移除了...
           const confirm = await antModal.confirm({
@@ -213,6 +236,7 @@ export function getFavTabMenus({
           onRemoveCurrent?.(item, cardData)
         },
       },
+      ...batchMenus,
     ])
   }
 
@@ -222,7 +246,7 @@ export function getFavTabMenus({
       {
         key: 'open-fav-collection',
         label: '浏览合集',
-        icon: <IconForOpenExternalLink className='size-15px' />,
+        icon: <IconForOpenExternalLink className={clsContextMenuIcon} />,
         onClick() {
           const { id } = item.collection
           const url =

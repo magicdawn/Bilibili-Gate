@@ -13,7 +13,14 @@ import { antSpinIndicator, kbdClassName } from '$components/fragments'
 import { DEFAULT_BILI_PINK_THEME } from '$components/ModalSettings/theme.shared'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
-import { IconAnimatedChecked, IconForConfig, IconForOpenExternalLink, IconForReset } from '$modules/icon'
+import {
+  IconAnimatedChecked,
+  IconForConfig,
+  IconForEdit,
+  IconForMove,
+  IconForOpenExternalLink,
+  IconForReset,
+} from '$modules/icon'
 import { isFavFolderDefault } from '$modules/rec-services/fav/fav-util'
 import { favStore, updateFavFolderList } from '$modules/rec-services/fav/store'
 import { useSettingsSnapshot } from '$modules/settings'
@@ -236,11 +243,7 @@ export function ModalFavManager({
       <div className={BaseModalClassNames.modalHeader}>
         <div className='flex flex-wrap items-center gap-x-10px gap-y-1'>
           <div className={BaseModalClassNames.modalTitle}>
-            {mode === 'pick' ? (
-              <IconParkOutlineTransferData className='size-25px' />
-            ) : (
-              <IconParkOutlineWrite className='size-25px' />
-            )}
+            {mode === 'pick' ? <IconForMove className='size-25px' /> : <IconForEdit className='size-25px' />}
             <span className='ml-5px'>{mode === 'pick' ? '选择目标收藏夹' : '修改收藏'}</span>
           </div>
 

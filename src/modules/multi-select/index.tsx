@@ -7,6 +7,7 @@ import { usePopoverBorderColor } from '$common/emotion-css'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { getCurrentGridItems } from '$components/RecGrid/rec-grid-state'
 import { AntdTooltip } from '$modules/antd/custom'
+import { IconForDelete } from '$modules/icon'
 import { CopyBvidButtons } from '$modules/rec-services/_shared/copy-bvid-buttons'
 import { settings } from '$modules/settings'
 import { multiSelectStore } from './store'
@@ -54,7 +55,7 @@ export function MultiSelectButton({
           <div className='max-w-288px'>
             <div className='flex flex-wrap items-center gap-x-15px gap-y-2px'>
               <Button className='inline-flex items-center' onClick={() => multiSelectStore.selectedIdSet.clear()}>
-                <IconMaterialSymbolsDeleteOutlineRounded className='size-18px' />
+                <IconForDelete className='size-18px' />
                 清空
               </Button>
               <Button

@@ -4,7 +4,7 @@ import { delay } from 'es-toolkit'
 import { useSnapshot } from 'valtio'
 import { useOnRefresh, useRecSelfContext } from '$components/Recommends/rec.shared'
 import { AntdTooltip } from '$modules/antd/custom'
-import { IconForRemove, IconForShuffle, IconForTimeAsc, IconForTimeDesc } from '$modules/icon'
+import { IconForDelete, IconForShuffle, IconForTimeAsc, IconForTimeDesc } from '$modules/icon'
 import { useMultiSelecting } from '$modules/multi-select/store'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import toast from '$utility/toast'
@@ -74,7 +74,7 @@ export function WatchlaterTabbarView({ service }: { service: WatchlaterRecServic
             className='icon-only-round-button'
             onClick={() => removeMultiSelectedWatchlaterItems(recSharedEmitter)}
           >
-            <IconForRemove />
+            <IconForDelete />
           </Button>
         </AntdTooltip>
       )}
