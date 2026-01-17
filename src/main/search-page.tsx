@@ -80,6 +80,7 @@ function LargePreviewSetup({ el }: { el: HTMLDivElement }) {
     cid: undefined,
     uniqId: bvid,
     recSharedEmitter: defaultRecSharedEmitter,
+    cardTarget: cardEl,
     // optional
     cover,
     videoCardAsTriggerRef,

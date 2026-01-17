@@ -377,10 +377,10 @@ const VideoCardInner = memo(function VideoCardInner({
     cid,
     uniqId: item.uniqId,
     recSharedEmitter,
+    cardTarget: cardRef,
     // optional
     aspectRatioFromItem,
     cover,
-    cardRef,
     videoCardAsTriggerRef: videoPreviewWrapperRef, // use cardRef | coverRef
   })
 
@@ -698,7 +698,7 @@ const VideoCardInner = memo(function VideoCardInner({
     return (
       <div
         className='bili-video-card__wrap'
-        ref={(el) => (cardRef.current = el)}
+        ref={cardRef}
         css={[
           css`
             background-color: unset;

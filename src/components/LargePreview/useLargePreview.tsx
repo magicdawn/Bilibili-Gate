@@ -7,7 +7,16 @@ import {
   useRequest,
   useUpdateEffect,
 } from 'ahooks'
-import { useMemo, useRef, useState, type ComponentProps, type ComponentRef, type MutableRefObject } from 'react'
+import { getTargetElement } from 'ahooks/lib/utils/domTarget'
+import {
+  useMemo,
+  useRef,
+  useState,
+  type ComponentProps,
+  type ComponentRef,
+  type MutableRefObject,
+  type RefObject,
+} from 'react'
 import { useSnapshot } from 'valtio'
 import { __PROD__, APP_CLS_CARD, appLog, BiliDomain } from '$common'
 import { useEmitterOn } from '$common/hooks/useEmitter'
@@ -15,7 +24,7 @@ import { useRefBox, useRefStateBox } from '$common/hooks/useRefState'
 import { openNewTab } from '$modules/gm'
 import { IconForLoading } from '$modules/icon'
 import { settings } from '$modules/settings'
-import { shouldDisableShortcut } from '$utility/dom'
+import { classListToSelector, shouldDisableShortcut } from '$utility/dom'
 import { VideoCardActionButton } from '../VideoCard/child-components/VideoCardActions'
 import { fetchVideoPreviewData, isVideoPreviewDataValid, type VideoPreviewData } from '../VideoCard/services'
 import { getRecItemDimension } from '../VideoCard/use/useOpenRelated'
@@ -47,10 +56,10 @@ type UseLargePreviewOptions = {
   cid?: number
   uniqId: string
   recSharedEmitter: RecSharedEmitter
+  cardTarget: RefObject<HTMLElement> | HTMLElement
   // optional
   aspectRatioFromItem?: number
   cover?: string
-  cardRef?: MutableRefObject<ComponentRef<'div'> | null>
   videoCardAsTriggerRef?: MutableRefObject<HTMLElement | null>
 }
 
@@ -67,10 +76,10 @@ export function useLargePreviewRelated({
   cid,
   uniqId,
   recSharedEmitter,
+  cardTarget,
   // optional
   aspectRatioFromItem,
   cover,
-  cardRef,
   videoCardAsTriggerRef,
 }: UseLargePreviewOptions) {
   const { useMp4, useVideoCardAsTrigger, usePreferredCdn } = useSnapshot(settings.videoCard.videoPreview)
@@ -230,6 +239,7 @@ export function useLargePreviewRelated({
       aspectRatio={usingAspectRatio}
       onMouseEnter={(e) => onMouseEnter('popover')}
       onMouseLeave={(e) => onMouseLeave('popover')}
+      cardDescendantTarget={cardTarget}
     >
       <RecoverableVideo
         ref={videoRef}
@@ -317,9 +327,9 @@ export function useLargePreviewRelated({
   useClickAway(
     () => hide(),
     [
-      cardRef ? () => cardRef?.current?.closest(`.${APP_CLS_CARD}`) : undefined, // click from card
-      largePreviewRef, // click from `LargePreview`, safari 中使用 createPortal 不再是 card descendant
-    ].filter(Boolean),
+      largePreviewRef, // click inside `LargePreview`, safari 中使用 createPortal 不再是 card descendant
+      () => getTargetElement(cardTarget)?.closest(classListToSelector(APP_CLS_CARD, 'bili-video-card')), // click inside `bigger` card
+    ],
   )
 
   /**

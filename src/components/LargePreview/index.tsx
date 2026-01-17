@@ -1,9 +1,10 @@
 import { css as _css, css } from '@emotion/react'
 import { useEventListener, useMemoizedFn, useMount } from 'ahooks'
+import { getTargetElement, type BasicTarget } from 'ahooks/lib/utils/domTarget'
 import clsx from 'clsx'
 import { orderBy, throttle } from 'es-toolkit'
 import { motion } from 'framer-motion'
-import { forwardRef, useMemo, useRef, useState, type ComponentProps, type ComponentRef, type ReactNode } from 'react'
+import { forwardRef, useMemo, useState, type ComponentProps, type ComponentRef, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { APP_CLS_CARD, APP_CLS_CARD_COVER, baseDebug } from '$common'
 import { useMixedRef } from '$common/hooks/mixed-ref'
@@ -11,6 +12,7 @@ import { appPrimaryColorValue } from '$components/css-vars'
 import { clsZVideoCardLargePreview } from '$components/fragments'
 import { useSettingsSnapshot } from '$modules/settings'
 import { isSafari } from '$ua'
+import { classListToSelector } from '$utility/dom'
 
 const debug = baseDebug.extend('VideoCard:LargePreview')
 
@@ -35,32 +37,21 @@ const VisualPadding = {
   card: 10,
 }
 
-function getCoverRectDefaultImpl(placeholder: HTMLDivElement) {
-  return (
-    // Bilibili-Gate card
-    placeholder
-      .closest<HTMLElement>(`.${APP_CLS_CARD}`)
-      ?.querySelector<HTMLElement>(`.${APP_CLS_CARD_COVER}`)
-      ?.getBoundingClientRect() ??
-    // bilibili.com default card
-    placeholder
-      .closest<HTMLElement>('.bili-video-card')
-      ?.querySelector<HTMLElement>('.bili-video-card__image')
-      ?.getBoundingClientRect()
-  )
+function getCoverRect(anchorElement: HTMLElement | undefined) {
+  return anchorElement
+    ?.closest<HTMLElement>(classListToSelector(APP_CLS_CARD, 'bili-video-card'))
+    ?.querySelector<HTMLElement>(classListToSelector(APP_CLS_CARD_COVER, 'bili-video-card__image'))
+    ?.getBoundingClientRect()
 }
 
-type LargePreviewProps = {
+interface LargePreviewProps extends ComponentProps<'div'> {
   children?: ReactNode
   aspectRatio?: number
-  getCoverRect?: (placeholder: HTMLDivElement) => DOMRect | undefined
-} & ComponentProps<'div'>
+  cardDescendantTarget: BasicTarget<HTMLElement> // 卡片后代元素
+}
+
 export const LargePreview = forwardRef<ComponentRef<'div'>, LargePreviewProps>(
-  (
-    { children, aspectRatio = AspectRatioPreset.Horizontal, getCoverRect = getCoverRectDefaultImpl, ...restProps },
-    forwardedRef,
-  ) => {
-    const placeholderRef = useRef<ComponentRef<'div'> | null>(null)
+  ({ children, aspectRatio = AspectRatioPreset.Horizontal, cardDescendantTarget, ...restProps }, forwardedRef) => {
     const popoverRef = useMixedRef(forwardedRef)
 
     const [visible, setVisible] = useState(false)
@@ -83,13 +74,13 @@ export const LargePreview = forwardRef<ComponentRef<'div'>, LargePreviewProps>(
     })
 
     const calculatePostion = useMemoizedFn(() => {
-      const placeholder = placeholderRef.current
-      if (!placeholder) return hide()
-      const cardCoverRect = getCoverRect(placeholder)
+      const cardCoverRect = getCoverRect(getTargetElement(cardDescendantTarget) ?? undefined)
       if (!cardCoverRect) return hide()
 
-      const viewportWidth = document.documentElement.clientWidth
-      const viewportHeight = document.documentElement.clientHeight
+      const [viewportWidth, viewportHeight] = [
+        document.documentElement.clientWidth,
+        document.documentElement.clientHeight,
+      ]
 
       // invisible
       const tolerance = 40
@@ -271,9 +262,6 @@ export const LargePreview = forwardRef<ComponentRef<'div'>, LargePreviewProps>(
       }
     }, [position, useScale])
 
-    // as videoCardDescendant, to get cardRect
-    const placeholderEl = <div ref={placeholderRef} data-role='video-card-descendant' />
-
     const popoverEl = (
       <div
         {...restProps}
@@ -319,7 +307,6 @@ export const LargePreview = forwardRef<ComponentRef<'div'>, LargePreviewProps>(
 
     return (
       <>
-        {placeholderEl}
         {/* safari container-type still use layout containment */}
         {/* https://stackoverflow.com/a/74606435/2822866 */}
         {isSafari ? createPortal(popoverEl, document.body) : popoverEl}

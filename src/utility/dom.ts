@@ -155,3 +155,7 @@ export function domReady() {
     })
   }
 }
+
+export function classListToSelector(...classNames: string[]) {
+  return classNames.map((x) => (x.startsWith('.') ? x : `.${x}`)).join(',')
+}
