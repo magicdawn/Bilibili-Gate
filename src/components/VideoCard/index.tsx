@@ -51,7 +51,7 @@ import { ELiveStatus } from '$modules/rec-services/live/live-enum'
 import { useWatchlaterState } from '$modules/rec-services/watchlater'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { isWebApiSuccess } from '$request'
-import { isFirefox, isSafari } from '$ua'
+import { isFirefox } from '$ua'
 import { videoCardBorderRadiusValue } from '../css-vars'
 import { useLargePreviewRelated } from '../LargePreview/useLargePreview'
 import { multiSelectedCss, useBlockedCardCss } from './card-border-css'
@@ -549,28 +549,39 @@ const VideoCardInner = memo(function VideoCardInner({
     ) : undefined
 
   // 一堆 selector 增加权重
-  const prefixCls = `.${APP_CLS_ROOT} .${APP_CLS_CARD}` // .${APP_CLS_GRID}
+  const clsVideoCardPrefix = `.${APP_CLS_ROOT} .${APP_CLS_CARD}`
 
   // 封面圆角
   const coverRoundCss: CssProp = useMemo(() => {
     return [
       css`
-        ${prefixCls} & {
+        ${clsVideoCardPrefix} & {
           overflow: hidden;
           border-radius: ${videoCardBorderRadiusValue};
-          transition: border-radius 0.2s ease-in-out;
+          transition: border-radius 0.2s ease;
         }
       `,
-      !displayingAsList &&
-        (isHovering || active || multiSelecting || (cardUseBorder && !cardUseBorderOnlyOnHover)) &&
-        css`
-          ${prefixCls} & {
-            border-bottom-left-radius: 0;
-            border-bottom-right-radius: 0;
-          }
-        `,
+      !displayingAsList && [
+        // 常驻: 下边界不显示圆角
+        (active || multiSelecting || (cardUseBorder && !cardUseBorderOnlyOnHover)) &&
+          css`
+            ${clsVideoCardPrefix} & {
+              border-bottom-left-radius: 0;
+              border-bottom-right-radius: 0;
+            }
+          `,
+
+        // hover variant: 不显示圆角
+        cardUseBorder &&
+          css`
+            ${clsVideoCardPrefix}:hover & {
+              border-bottom-left-radius: 0;
+              border-bottom-right-radius: 0;
+            }
+          `,
+      ],
     ]
-  }, [displayingAsList, isHovering, active, multiSelecting, cardUseBorder, cardUseBorderOnlyOnHover])
+  }, [displayingAsList, active, multiSelecting, cardUseBorder, cardUseBorderOnlyOnHover])
 
   // 防止看不清封面边界: (封面与背景色接近)
   const shouldMakeCoverClear = useMemo(() => {
@@ -628,7 +639,7 @@ const VideoCardInner = memo(function VideoCardInner({
         className='bili-video-card__stats'
         css={[
           css`
-            ${prefixCls} & {
+            ${clsVideoCardPrefix} & {
               pointer-events: none;
               border-radius: 0;
             }
@@ -679,9 +690,7 @@ const VideoCardInner = memo(function VideoCardInner({
         trigger={['contextMenu']}
         onOpenChange={onContextMenuOpenChange}
         getPopupContainer={() => {
-          // safari z-index issue: context-menu 在 rec-header 下
-          if (isSafari) return document.body
-          return cardRef.current || document.body
+          return cardRef.current?.closest<HTMLElement>(`.${APP_CLS_CARD}`) ?? document.body
         }}
         rootClassName={clsx(clsZVideoCardContextMenu, clsGateVideoCardContextMenuRoot)}
         menu={{

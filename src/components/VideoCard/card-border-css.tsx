@@ -59,7 +59,7 @@ export const multiSelectedCss = css`
  * - hover highlight separator
  */
 export function useBlockedCardCss(isBlockedCard: boolean): CssProp {
-  const sepIdentifier = `--${APP_NAMESPACE}-separator-color`
+  const sepIdentifier = `--${APP_NAMESPACE}--separator-color`
   return useMemo(() => {
     if (!isBlockedCard) return
     return _css`
@@ -82,6 +82,9 @@ export function useBlockedCardCss(isBlockedCard: boolean): CssProp {
   }, [isBlockedCard])
 }
 
+/**
+ * designed add to {APP_CLS_CARD}
+ */
 export function useCardBorderCss(): CssProp {
   const {
     useDelayForHover,

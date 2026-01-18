@@ -49,7 +49,7 @@ const blockedCardClassNames = {
   dislikeDesc: 'text-center text-16px',
   action: 'relative flex-1',
   actionInner:
-    'absolute left-0 top-0 h-full w-full flex items-center justify-center b-t-1px b-t-[var(--bilibili-gate-separator-color)] b-t-solid transition-duration-300 transition-property-[border-color]',
+    'absolute left-0 top-0 h-full w-full flex items-center justify-center b-t-1px b-t-$bilibili-gate--separator-color b-t-solid transition-duration-300 transition-property-[border-color]',
   actionButton: 'flex cursor-pointer items-center rounded-lg bg-transparent p-15px text-16px color-inherit',
 } as const
 

@@ -5,13 +5,11 @@ import clsx from 'clsx'
 import { orderBy, throttle } from 'es-toolkit'
 import { motion } from 'framer-motion'
 import { forwardRef, useMemo, useState, type ComponentProps, type ComponentRef, type ReactNode } from 'react'
-import { createPortal } from 'react-dom'
 import { APP_CLS_CARD, APP_CLS_CARD_COVER, baseDebug } from '$common'
 import { useMixedRef } from '$common/hooks/mixed-ref'
 import { appPrimaryColorValue } from '$components/css-vars'
 import { clsZVideoCardLargePreview } from '$components/fragments'
 import { useSettingsSnapshot } from '$modules/settings'
-import { isSafari } from '$ua'
 import { classListToSelector } from '$utility/dom'
 
 const debug = baseDebug.extend('VideoCard:LargePreview')
@@ -305,13 +303,7 @@ export const LargePreview = forwardRef<ComponentRef<'div'>, LargePreviewProps>(
       </div>
     )
 
-    return (
-      <>
-        {/* safari container-type still use layout containment */}
-        {/* https://stackoverflow.com/a/74606435/2822866 */}
-        {isSafari ? createPortal(popoverEl, document.body) : popoverEl}
-      </>
-    )
+    return popoverEl
   },
 )
 
