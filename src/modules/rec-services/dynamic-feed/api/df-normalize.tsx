@@ -14,8 +14,9 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
     authorName: author.name,
     authorFace: author.face,
     authorMid: author.mid.toString(),
-    pubts: author.pub_ts,
     followed: author.following,
+    pubts: author.pub_ts,
+
     // 动态自身的 stat
     statItems: defineStatItems([
       { field: 'like', value: item.modules.module_stat.like.count },
