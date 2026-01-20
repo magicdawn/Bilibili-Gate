@@ -41,7 +41,7 @@ export function useWatchlaterRelated({
     if (item.api === EApiType.Live) {
       return false
     }
-    return true
+    return !!bvid
   }, [item, cardData])
 
   type UsingAction = typeof watchlaterAdd | typeof watchlaterDel

@@ -1,15 +1,35 @@
-import { REQUEST_FAIL_MSG } from '$common'
+import { baseDebug, REQUEST_FAIL_MSG } from '$common'
 import { isWebApiSuccess, request } from '$request'
 import toast from '$utility/toast'
+import { normalizeDynamicFeedItem } from './df-normalize'
 import type { DynamicFeedJson } from '$define'
-import type { UpMidType } from './store'
+import type { UpMidType } from '../store'
+
+const dfTypes = new Set<string>()
+const majorTypes = new Set<string>()
+const arr: any[] = []
+function collectData(data: DynamicFeedJson['data']) {
+  data.items.forEach((x) => {
+    const majorType = x.modules.module_dynamic.major?.type
+    if (!dfTypes.has(x.type) || (majorType && !majorTypes.has(majorType))) {
+      dfTypes.add(x.type)
+      majorType && majorTypes.add(majorType)
+      arr.push(x)
+      console.log('df-collected-data', { dfTypes, majorTypes, arr })
+    }
+  })
+}
+
+const debug = baseDebug.extend('modules:rec-services:dynamic-feed:api')
 
 export async function fetchVideoDynamicFeeds({
+  videoOnly,
   offset,
   page,
   upMid,
   abortSignal,
 }: {
+  videoOnly: boolean
   offset?: string
   page: number
   upMid?: UpMidType
@@ -17,7 +37,7 @@ export async function fetchVideoDynamicFeeds({
 }) {
   const params: Record<string, number | string> = {
     'timezone_offset': '-480',
-    'type': 'video',
+    'type': videoOnly ? 'video' : 'all',
     'platform': 'web',
     'features': 'itemOpusStyle',
     'web_location': '0.0',
@@ -52,7 +72,14 @@ export async function fetchVideoDynamicFeeds({
 
   const data = json.data
   if (data?.items?.length) {
-    data.items = data.items.filter((x) => x.type === 'DYNAMIC_TYPE_AV') // 处理不了别的类型
+    collectData(data) // FIXME: remove this
+    data.items = data.items.filter((x) => {
+      const valid = !!normalizeDynamicFeedItem(x)
+      if (!valid) {
+        debug('dynamic-feed filter out: type=%s major.type=%s item=%o', x.type, x.modules.module_dynamic.major?.type, x)
+      }
+      return valid
+    })
   }
 
   return data

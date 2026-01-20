@@ -15,6 +15,7 @@ export const fetchVideoDynamicFeedsWithCache = wrapWithIdbCache({
 export class FollowGroupUpService {
   constructor(
     public upMid: UpMidType,
+    public videoOnly: boolean,
     public enableHeadCache = false,
   ) {}
 
@@ -31,6 +32,7 @@ export class FollowGroupUpService {
     const enableCache = this.page === 1 && !this.offset && this.enableHeadCache
     const fn = enableCache ? fetchVideoDynamicFeedsWithCache : fetchVideoDynamicFeeds
     const data = await fn({
+      videoOnly: this.videoOnly,
       upMid: this.upMid,
       page: this.page,
       offset: this.offset,
@@ -64,9 +66,12 @@ export class FollowGroupMergeTimelineService {
   static ENABLE_HEAD_CACHE_UPMID_COUNT_THRESHOLD = 10
 
   upServices: FollowGroupUpService[] = []
-  constructor(public upMids: UpMidType[]) {
+  constructor(
+    public upMids: UpMidType[],
+    public videoOnly: boolean,
+  ) {
     const enableHeadCache = upMids.length > FollowGroupMergeTimelineService.ENABLE_HEAD_CACHE_UPMID_COUNT_THRESHOLD
-    this.upServices = upMids.map((upMid) => new FollowGroupUpService(upMid, enableHeadCache))
+    this.upServices = upMids.map((upMid) => new FollowGroupUpService(upMid, videoOnly, enableHeadCache))
   }
 
   get hasMore() {

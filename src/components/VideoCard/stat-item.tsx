@@ -9,10 +9,12 @@ export const AllowedStatItemFields = [
   'play',
   'danmaku',
   'like',
-  'bangumi:follow',
   'favorite',
   'coin',
+  'bangumi:follow',
   'live:viewed-by', // 直播: 多少人看过
+  'dynamic-feed:comment', // 动态: 评论
+  'dynamic-feed:forward', // 动态: 转发
 ] as const
 
 export type StatItemField = (typeof AllowedStatItemFields)[number]
@@ -41,6 +43,8 @@ export const StatFieldIconConfig: Record<StatItemField, ReactNode> = {
   'favorite': <IconForFav className={clsForThirdPartyIcon} />,
   'coin': <IconTablerCoinYen className={clsForThirdPartyIcon} />,
   'live:viewed-by': <IconParkOutlinePreviewOpen className={clsForThirdPartyIcon} />,
+  'dynamic-feed:comment': <IconTablerMessageCircle className={clsForThirdPartyIcon} />,
+  'dynamic-feed:forward': <IconTablerArrowForwardUp className={clsForThirdPartyIcon} />,
 }
 
 /**

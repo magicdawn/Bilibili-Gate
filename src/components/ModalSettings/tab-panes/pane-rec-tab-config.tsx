@@ -3,7 +3,7 @@ import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifi
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useMemoizedFn, useMount } from 'ahooks'
-import { Checkbox, Collapse, Empty, Space } from 'antd'
+import { Checkbox, Collapse, Empty } from 'antd'
 import clsx from 'clsx'
 import { useMemo, useState, type CSSProperties } from 'react'
 import { useSnapshot } from 'valtio'
@@ -64,7 +64,7 @@ export function TabPaneRecTabsConfig() {
               <TabIcon tabKey={ETab.Watchlater} className='mr-5px mt--1px' />
               稍后再看
             </div>
-            <Space size={10}>
+            <div className={sharedClassNames.settingsLine}>
               <CheckboxSettingItem
                 configPath='watchlaterAddSeparator'
                 label='添加分割线'
@@ -75,7 +75,7 @@ export function TabPaneRecTabsConfig() {
                 label='使用普通视频链接'
                 tooltip={explainForFlag('使用普通视频链接', '使用「稍后再看」自动列表链接')}
               />
-            </Space>
+            </div>
           </div>
 
           {/* fav */}
@@ -84,13 +84,13 @@ export function TabPaneRecTabsConfig() {
               <TabIcon tabKey={ETab.Fav} className='mr-5px mt--2px' />
               收藏
             </div>
-            <Space size={10}>
+            <div className={sharedClassNames.settingsLine}>
               <CheckboxSettingItem
                 configPath='fav.addSeparator'
                 label='添加分割线'
                 tooltip='顺序显示时, 按收藏夹添加分割线'
               />
-            </Space>
+            </div>
           </div>
 
           {/* dynamic-feed */}
@@ -99,7 +99,7 @@ export function TabPaneRecTabsConfig() {
               <TabIcon tabKey={ETab.DynamicFeed} className='mr-5px mt--2px' />
               动态
             </div>
-            <div className='flex flex-wrap gap-x-10px gap-y-10px'>
+            <div className={sharedClassNames.settingsLine}>
               <CheckboxSettingItem
                 configPath='dynamicFeed.followGroup.enabled'
                 label='启用分组筛选'
@@ -122,6 +122,14 @@ export function TabPaneRecTabsConfig() {
                 }
               />
               <CheckboxSettingItem
+                configPath='dynamicFeed.videoOnly'
+                label='只显示视频'
+                tooltip={explainForFlag(
+                  '只获取视频动态: 投稿视频 / 动态视频',
+                  '获取全部动态: 包含视频 / 图片 / 文章等',
+                )}
+              />
+              <CheckboxSettingItem
                 configPath='dynamicFeed.whenViewAll.enableHideSomeContents'
                 label='「全部」动态过滤'
                 tooltip={
@@ -131,7 +139,6 @@ export function TabPaneRecTabsConfig() {
                   </>
                 }
               />
-
               {dynamicFeed.whenViewAll.enableHideSomeContents && (
                 <Collapse
                   size='small'
@@ -154,7 +161,7 @@ export function TabPaneRecTabsConfig() {
               <TabIcon tabKey={ETab.AppRecommend} className='mr-5px' />
               App 推荐
             </div>
-            <div className='flex flex-col gap-y-5px'>
+            <div className={sharedClassNames.settingsLine}>
               <div className='flex items-center'>{appRecShowContentFromOtherTabEl()}</div>
             </div>
           </div>

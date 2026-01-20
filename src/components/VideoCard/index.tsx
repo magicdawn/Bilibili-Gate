@@ -69,14 +69,7 @@ import {
 } from './index.shared'
 import { fetchImagePreviewData, isImagePreviewDataValid, type ImagePreviewData } from './services'
 import { StatItemDisplay } from './stat-item'
-import {
-  ApiTypeTag,
-  DynamicFeedBadgeDisplay,
-  LiveBadge,
-  RankNumMark,
-  shouldShowDynamicFeedBadge,
-  VolMark,
-} from './top-marks'
+import { ApiTypeTag, GeneralTopMark, hasGeneralTopMark, LiveBadge, RankNumMark, VolMark } from './top-marks'
 import { useDislikeRelated } from './use/useDislikeRelated'
 import { useInitFavContext } from './use/useFavRelated'
 import { useMultiSelectRelated } from './use/useMultiSelect'
@@ -253,7 +246,7 @@ const VideoCardInner = memo(function VideoCardInner({
 
   const authed = !!accessKey
   const isNormalVideo = goto === 'av'
-  const allowed = ['av', 'bangumi', 'picture', 'live']
+  const allowed = ['av', 'bangumi', 'picture', 'live', 'opus']
   if (!allowed.includes(goto)) {
     appWarn(`none (${allowed.join(',')}) goto type %s`, goto, item)
   }
@@ -469,7 +462,7 @@ const VideoCardInner = memo(function VideoCardInner({
   /**
    * top marks
    */
-  const hasDynmaicFeedBadge = shouldShowDynamicFeedBadge(item)
+  const _hasGeneralTopMark = hasGeneralTopMark(cardData)
   const _isRank = isRank(item)
   const _isStreaming = // 直播中
     (isLive(item) && item.live_status === ELiveStatus.Streaming) ||
@@ -500,7 +493,7 @@ const VideoCardInner = memo(function VideoCardInner({
       {dislikeButtonEl}
 
       {/* 动态: 充电专属 | 其他  */}
-      {hasDynmaicFeedBadge && <DynamicFeedBadgeDisplay item={item} />}
+      {_hasGeneralTopMark && <GeneralTopMark cardData={cardData} />}
 
       {/* 热门: 排行榜 */}
       {_isRank && <RankNumMark item={item} />}

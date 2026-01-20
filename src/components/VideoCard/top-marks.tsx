@@ -5,13 +5,12 @@ import { useUnoMerge } from 'unocss-merge/react'
 import { Picture } from '$components/_base/Picture'
 import { appPrimaryColorValue } from '$components/css-vars'
 import { isDynamicFeed, isFav, isWatchlater, type RankItemExtend, type RecItemType } from '$define'
-import { EApiType } from '$define/index.shared'
 import { openNewTab } from '$modules/gm'
 import { IconForLive } from '$modules/icon'
-import { DynamicFeedBadgeText } from '$modules/rec-services/dynamic-feed/store'
 import { isNormalRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { useTooltip } from './child-components/VideoCardActions'
 import { useLinkNewTab } from './use/useOpenRelated'
+import type { IVideoCardData } from '$modules/filter/normalize'
 import type { NormalRankItem } from '$modules/rec-services/hot/rank/types'
 
 export const clsBadgeContainer =
@@ -21,19 +20,15 @@ export function SomeBadge({ children, className }: { children?: ReactNode; class
   return <span className={useUnoMerge(clsBadgeContainer, className)}>{children}</span>
 }
 
-export function shouldShowDynamicFeedBadge(item: RecItemType) {
-  if (item.api !== EApiType.DynamicFeed) return false
-  const badge = item.modules?.module_dynamic?.major?.archive?.badge
-  if (!badge || !badge.text) return false
-  if (badge.text === DynamicFeedBadgeText.Upload) return false
-  return true
+export function hasGeneralTopMark(cardData: IVideoCardData) {
+  const { topMarkIcon, topMarkText } = cardData
+  return !!(topMarkIcon || topMarkText)
 }
 
-export function DynamicFeedBadgeDisplay({ item }: { item: RecItemType }) {
-  if (!shouldShowDynamicFeedBadge(item)) return null
-  if (item.api !== EApiType.DynamicFeed) return null
-  const badge = item.modules?.module_dynamic?.major?.archive?.badge
-  const hasIcon = !!badge.icon_url
+export function GeneralTopMark({ cardData }: { cardData: IVideoCardData }) {
+  if (!hasGeneralTopMark(cardData)) return
+  const { topMarkIcon: icon, topMarkText: text } = cardData
+  const hasIcon = !!icon
   return (
     <SomeBadge
       className={clsx(
@@ -41,8 +36,8 @@ export function DynamicFeedBadgeDisplay({ item }: { item: RecItemType }) {
         hasIcon ? 'pl-4px pr-6px' : 'px-4px', // 有图标左边更显空旷
       )}
     >
-      {hasIcon && <Picture src={`${badge.icon_url}@!web-dynamic`} className='h-16px w-16px' />}
-      {badge.text}
+      {hasIcon && <Picture src={`${icon}@!web-dynamic`} className='h-16px w-16px' />}
+      {text}
     </SomeBadge>
   )
 }

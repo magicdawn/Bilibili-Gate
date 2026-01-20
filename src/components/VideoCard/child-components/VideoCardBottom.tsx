@@ -244,7 +244,7 @@ export const VideoCardBottom = memo(function ({
       </div>
     )
 
-    if (isNormalVideo) {
+    const defaultRender = () => {
       let date: ReactNode
       if (pubts || pubtsFromApi) {
         date = <UnixTsDisplay ts={pubts || pubtsFromApi} />
@@ -273,6 +273,8 @@ export const VideoCardBottom = memo(function ({
         </>
       )
     }
+
+    if (isNormalVideo) defaultRender()
 
     /**
      * 其他歪瓜
@@ -322,5 +324,7 @@ export const VideoCardBottom = memo(function ({
         </>
       )
     }
+
+    return defaultRender()
   }
 })

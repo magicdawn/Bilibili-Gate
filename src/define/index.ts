@@ -6,11 +6,11 @@ import type { RankItem } from '$modules/rec-services/hot/rank/types'
 import type { LikedItem } from '$modules/rec-services/liked/api/liked.api'
 import type { LiveItem } from '$modules/rec-services/live/types/list-live'
 import type { SpaceUploadItem } from '$modules/rec-services/space-upload/types/space-upload'
+import type { DynamicFeedItem } from '../modules/rec-services/dynamic-feed/api/types'
 import type { FavItemExtend } from '../modules/rec-services/fav/types'
 import type { WatchlaterItem } from '../modules/rec-services/watchlater/types'
 import type { ipad } from './app-recommend.ipad'
 import type { DmJson } from './dm'
-import type { DynamicFeedItem } from './pc-dynamic-feed'
 import type { PcRecItem } from './pc-recommend'
 import type { PopularGeneralItem } from './popular-general'
 import type { PopularWeeklyItem } from './popular-weekly'
@@ -18,8 +18,8 @@ import type { PvideoJson } from './pvideo'
 
 export type { FavItem, FavItemExtend } from '$modules/rec-services/fav/types'
 export type { SpaceUploadItem, SpaceUploadJson } from '$modules/rec-services/space-upload/types/space-upload'
+export type { DynamicFeedItem, DynamicFeedJson } from '../modules/rec-services/dynamic-feed/api/types'
 export type { WatchlaterItem, WatchlaterJson } from '../modules/rec-services/watchlater/types'
-export type { DynamicFeedItem, DynamicFeedJson } from './pc-dynamic-feed'
 export type { DmJson, PvideoJson }
 export type PvideoData = PvideoJson['data']
 export type DmData = DmJson['data']

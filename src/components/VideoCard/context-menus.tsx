@@ -14,7 +14,15 @@ import {
 } from '$components/RecGrid/rec-grid-state'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { useRecSelfContext } from '$components/Recommends/rec.shared'
-import { isDynamicFeed, isLive, isSpaceUpload, type DynamicFeedItemExtend, type RecItemType } from '$define'
+import {
+  isAppRecommend,
+  isDynamicFeed,
+  isLive,
+  isPcRecommend,
+  isSpaceUpload,
+  type DynamicFeedItemExtend,
+  type RecItemType,
+} from '$define'
 import { EApiType } from '$define/index.shared'
 import { antMessage, antModal, defineAntMenus, type AntMenuItem } from '$modules/antd'
 import { UserBlacklistService } from '$modules/bilibili/me/relations/blacklist'
@@ -148,8 +156,10 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
    */
   const followed =
     cardData.followed ??
-    (item.api === EApiType.DynamicFeed ||
-      ((item.api === EApiType.AppRecommend || item.api === EApiType.PcRecommend) && getFollowedStatus(recommendReason)))
+    (() => {
+      if (isAppRecommend(item) || isPcRecommend(item)) return getFollowedStatus(recommendReason)
+      return false
+    })()
   const hasUnfollowEntry = followed
   const onUnfollowUp = useMemoizedFn(async () => {
     if (!authorMid) return

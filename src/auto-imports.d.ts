@@ -25,7 +25,9 @@ declare global {
   const IconLucideCircleCheck: typeof import('~icons/lucide/circle-check.jsx').default
   const IconLucideFolder: typeof import('~icons/lucide/folder.jsx').default
   const IconLucideFolderLock: typeof import('~icons/lucide/folder-lock.jsx').default
+  const IconLucideForward: typeof import('~icons/lucide/forward.jsx').default
   const IconLucideList: typeof import('~icons/lucide/list.jsx').default
+  const IconLucideMessageCircle: typeof import('~icons/lucide/message-circle.jsx').default
   const IconMaterialSymbolsAlignHorizontalCenter: typeof import('~icons/material-symbols/align-horizontal-center.jsx').default
   const IconMaterialSymbolsAlignHorizontalLeft: typeof import('~icons/material-symbols/align-horizontal-left.jsx').default
   const IconMaterialSymbolsAlignHorizontalRight: typeof import('~icons/material-symbols/align-horizontal-right.jsx').default
@@ -83,6 +85,7 @@ declare global {
   const IconRadixIconsPerson: typeof import('~icons/radix-icons/person.jsx').default
   const IconRiFullscreenFill: typeof import('~icons/ri/fullscreen-fill.jsx').default
   const IconSvgSpinnersBarsRotateFade: typeof import('~icons/svg-spinners/bars-rotate-fade.jsx').default
+  const IconTablerArrowForwardUp: typeof import('~icons/tabler/arrow-forward-up.jsx').default
   const IconTablerCoinYen: typeof import('~icons/tabler/coin-yen.jsx').default
   const IconTablerEyeSearch: typeof import('~icons/tabler/eye-search.jsx').default
   const IconTablerFaceIdError: typeof import('~icons/tabler/face-id-error.jsx').default
@@ -91,6 +94,7 @@ declare global {
   const IconTablerHeartFilled: typeof import('~icons/tabler/heart-filled.jsx').default
   const IconTablerLayoutGrid: typeof import('~icons/tabler/layout-grid.jsx').default
   const IconTablerListDetails: typeof import('~icons/tabler/list-details.jsx').default
+  const IconTablerMessageCircle: typeof import('~icons/tabler/message-circle.jsx').default
   const IconTablerPlus: typeof import('~icons/tabler/plus.jsx').default
   const IconTablerRestore: typeof import('~icons/tabler/restore.jsx').default
   const IconTablerSortAscending: typeof import('~icons/tabler/sort-ascending.jsx').default

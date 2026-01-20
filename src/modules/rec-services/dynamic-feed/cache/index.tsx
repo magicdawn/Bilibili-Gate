@@ -1,5 +1,6 @@
 import { throttle, uniqBy } from 'es-toolkit'
 import { antNotification } from '$modules/antd'
+import { settings } from '$modules/settings'
 import { getIdbCache } from '$utility/idb'
 import { fetchVideoDynamicFeeds } from '../api'
 import type { DynamicFeedItem } from '$define'
@@ -77,7 +78,7 @@ async function performIncrementalUpdate(upMid: UpMidType) {
   let newItems: DynamicFeedItem[] = []
 
   while (hasMore) {
-    const data = await fetchVideoDynamicFeeds({ upMid, page, offset })
+    const data = await fetchVideoDynamicFeeds({ upMid, page, offset, videoOnly: settings.dynamicFeed.videoOnly }) // TODO: check this logic
     const items = data.items
     newItems = [...newItems, ...items]
     offset = data.offset
@@ -113,7 +114,7 @@ async function performFullUpdate(upMid: UpMidType, skipCache = false, onProgress
   let hasMore = true
 
   while (hasMore) {
-    const data = await fetchVideoDynamicFeeds({ upMid, page, offset })
+    const data = await fetchVideoDynamicFeeds({ upMid, page, offset, videoOnly: settings.dynamicFeed.videoOnly }) // TODO: check this logic
     const items = data.items
     allItems = [...allItems, ...items]
     offset = data.offset
