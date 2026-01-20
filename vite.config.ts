@@ -234,7 +234,7 @@ export default defineConfig(({ command, mode }) => ({
           // '@emotion/css': cdn.npmmirror('emotion', 'dist/emotion-css.umd.min.js'),
           // '@emotion/react': cdn.npmmirror('emotionReact', 'dist/emotion-react.umd.min.js'),
 
-          // FIXME when https://github.com/magicdawn/Bilibili-Gate/issues/204 resolved
+          // !TODO when https://github.com/magicdawn/Bilibili-Gate/issues/204 resolved
           // oxlint-disable-next-line no-constant-binary-expression no-constant-condition
           ...(true || minify
             ? {}

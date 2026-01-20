@@ -5,6 +5,7 @@
     "no-unused-vars": "off",
     "no-unused-expressions": "off",
     "no-debugger": "off",
+    "no-warning-comments": "error",
     "react/jsx-no-undef": "off",
     "react/jsx-no-target-blank": "off",
     "react/exhaustive-deps": "off",

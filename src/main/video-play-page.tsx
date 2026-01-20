@@ -164,7 +164,7 @@ async function addToFav(sourceFavFolderIds?: number[] | undefined) {
   if (!bvid) return antMessage.error('无法解析视频 BVID !')
   const avid = bv2av(bvid)
 
-  // TODO: optimize this
+  // !TODO: optimize this
   if (sourceFavFolderIds === undefined) {
     const result = await UserFavApi.getVideoFavState(avid)
     if (result) {

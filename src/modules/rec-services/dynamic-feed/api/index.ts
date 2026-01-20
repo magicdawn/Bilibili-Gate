@@ -72,7 +72,7 @@ export async function fetchVideoDynamicFeeds({
 
   const data = json.data
   if (data?.items?.length) {
-    collectData(data) // FIXME: remove this
+    // collectData(data) // FIXME: remove this
     data.items = data.items.filter((x) => {
       const valid = !!normalizeDynamicFeedItem(x)
       if (!valid) {
