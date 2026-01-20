@@ -26,8 +26,9 @@ const sidebarViewWrapperCss = css`
 
 function useTabExtraClassName(tab: ETab | undefined): string | undefined {
   const hotSubTab = useSnapshot(hotStore).subtab
-  if (tab === ETab.Fav) return 'w-300px'
-  if (tab === ETab.Hot && hotSubTab === EHotSubTab.Rank) return 'w-200px'
+  if (tab === ETab.Fav) return 'max-w-300px'
+  if (tab === ETab.DynamicFeed) return 'min-w-200px'
+  if (tab === ETab.Hot && hotSubTab === EHotSubTab.Rank) return 'min-w-130px'
 }
 
 export function RecSidebar({
@@ -44,7 +45,7 @@ export function RecSidebar({
   const visible = useSidebarVisible(tab)
 
   const usingClassName = useUnoMerge(
-    'h-fit w-250px flex-none overflow-x-hidden overflow-y-auto b-1px b-gate-border rounded-15px b-solid',
+    'h-fit max-w-250px w-max flex-none overflow-x-hidden overflow-y-auto b-1px b-gate-border rounded-15px b-solid',
     useTabExtraClassName(tab),
     propClassName,
   )
