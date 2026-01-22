@@ -6,10 +6,12 @@ import type { IVideoCardData } from '$modules/filter/normalize'
 import type { DynamicFeedItem } from './types'
 
 export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData | undefined {
-  const author = item.modules.module_author
   const major = item.modules.module_dynamic.major
+  if (!major) return
+
+  const author = item.modules.module_author
   const additional = item.modules.module_dynamic.additional
-  const majorType = major?.type
+  const majorType = major.type
 
   const sharedCardData = {
     authorName: author.name,
@@ -28,7 +30,7 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
     recommendReason: author.pub_action,
   } as const satisfies Partial<IVideoCardData>
 
-  if (majorType === DynamicFeedEnums.MajorType.Archive && major?.archive) {
+  if (majorType === DynamicFeedEnums.MajorType.Archive && major.archive) {
     const v = major.archive
     return {
       ...sharedCardData,
@@ -59,14 +61,21 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
     }
   }
 
-  if (majorType === DynamicFeedEnums.MajorType.Opus && major?.opus) {
-    if (additional?.type === DynamicFeedEnums.AdditionalType.Goods) return // block ads
+  if (majorType === DynamicFeedEnums.MajorType.Opus && major.opus) {
+    if (additional?.type === DynamicFeedEnums.AdditionalType.Goods) return // block "UP主的推荐"
     const { opus } = major
-    let topMarkText: string | undefined
+
     const hasPic = !!opus.pics.length
-    // 我也不知道有啥区别?
-    if (item.type === DynamicFeedEnums.ItemType.Draw) topMarkText = hasPic ? '图片' : '文字动态'
-    if (item.type === DynamicFeedEnums.ItemType.Article) topMarkText = '文章'
+    const isReserve = additional?.type === DynamicFeedEnums.AdditionalType.Reserve
+    const isLiveReserve = isReserve && /直播预告/.test(additional.reserve.title)
+    const topMarkText: string | undefined = (() => {
+      if (isLiveReserve) return '直播预告'
+      if (isReserve) return additional.reserve.title?.split('：')[0] || '预约'
+      // 我也不知道有啥区别?
+      if (item.type === DynamicFeedEnums.ItemType.Draw) return hasPic ? '图片' : '文字动态'
+      if (item.type === DynamicFeedEnums.ItemType.Article) return '文章'
+    })()
+
     return {
       ...sharedCardData,
       goto: 'opus',
@@ -77,7 +86,7 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
     }
   }
 
-  if (majorType === DynamicFeedEnums.MajorType.Pgc && major?.pgc) {
+  if (majorType === DynamicFeedEnums.MajorType.Pgc && major.pgc) {
     const { pgc } = major
     return {
       ...sharedCardData,
@@ -95,7 +104,7 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
     }
   }
 
-  if (majorType === DynamicFeedEnums.MajorType.UgcSeason && major?.ugc_season) {
+  if (majorType === DynamicFeedEnums.MajorType.UgcSeason && major.ugc_season) {
     const { ugc_season } = major
     return {
       ...sharedCardData,

@@ -12,17 +12,26 @@ export namespace DynamicFeedEnums {
     LiveRcmd = 'DYNAMIC_TYPE_LIVE_RCMD',
   }
 
-  // for `.modules.module_dynamic.major`
+  // for `.modules.module_author.type`
+  export enum AuthorType {
+    Normal = 'AUTHOR_TYPE_NORMAL',
+    Pgc = 'AUTHOR_TYPE_PGC',
+    UgcSeason = 'AUTHOR_TYPE_UGC_SEASON',
+  }
+
+  // for `.modules.module_dynamic.major.type`
   export enum MajorType {
     Archive = 'MAJOR_TYPE_ARCHIVE',
     Opus = 'MAJOR_TYPE_OPUS',
     Pgc = 'MAJOR_TYPE_PGC',
     UgcSeason = 'MAJOR_TYPE_UGC_SEASON',
+    LiveRcmd = 'MAJOR_TYPE_LIVE_RCMD',
   }
 
-  // for `.modules.module_dynamic.additional`
+  // for `.modules.module_dynamic.additional.type`
   export enum AdditionalType {
     Goods = 'ADDITIONAL_TYPE_GOODS',
+    Reserve = 'ADDITIONAL_TYPE_RESERVE',
   }
 }
 

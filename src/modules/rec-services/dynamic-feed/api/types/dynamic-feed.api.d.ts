@@ -4,6 +4,10 @@
 //
 //   "Set quicktype target language"
 
+import type { ModuleAuthor } from './module_author'
+import type { ModuleDynamic__Additional } from './module_dynamic.additional'
+import type { ModuleDynamic__Major } from './module_dynamic.major'
+
 export interface DynamicFeedJson {
   code: number
   message: string
@@ -25,7 +29,7 @@ export interface DynamicFeedItem {
   modules: DynamicFeedItemModules
   type: string
   visible: boolean
-  orig?: Orig
+  orig?: DynamicFeedItem
 }
 
 export interface Basic {
@@ -44,36 +48,10 @@ export interface LikeIcon {
 }
 
 export interface DynamicFeedItemModules {
-  module_author: PurpleModuleAuthor
+  module_author: ModuleAuthor
   module_dynamic: PurpleModuleDynamic
   module_more: ModuleMore
   module_stat: ModuleStat
-}
-
-export interface PurpleModuleAuthor {
-  avatar?: PurpleAvatar
-  decorate?: Decorate
-  face: string
-  face_nft: boolean
-  following: boolean
-  jump_url: string
-  label: string
-  mid: number
-  name: string
-  official_verify?: OfficialVerify
-  pendant?: Pendant
-  pub_action: string
-  pub_location_text?: string
-  pub_time: string
-  pub_ts: number
-  type: string
-  vip?: Vip
-}
-
-export interface PurpleAvatar {
-  container_size: ContainerSize
-  fallback_layers: PurpleFallbackLayers
-  mid: string
 }
 
 export interface ContainerSize {
@@ -227,32 +205,10 @@ export interface LabelClass {
 }
 
 export interface PurpleModuleDynamic {
-  additional: Additional | null
-  desc: Desc | null
-  major: PurpleMajor | null
-  topic: Topic | null
-}
-
-export interface Additional {
-  goods: Goods
-  type: string
-}
-
-export interface Goods {
-  head_icon: string
-  head_text: string
-  items: GoodsItem[]
-  jump_url: string
-}
-
-export interface GoodsItem {
-  brief: string
-  cover: string
-  id: number
-  jump_desc: string
-  jump_url: string
-  name: string
-  price: string
+  major?: ModuleDynamic__Major
+  additional?: ModuleDynamic__Additional
+  desc?: Desc
+  topic?: Topic
 }
 
 export interface Desc {
@@ -270,15 +226,6 @@ export interface Rich {
 export enum RichTextNodeType {
   RichTextNodeTypeText = 'RICH_TEXT_NODE_TYPE_TEXT',
   RichTextNodeTypeTopic = 'RICH_TEXT_NODE_TYPE_TOPIC',
-}
-
-export interface PurpleMajor {
-  archive?: Archive
-  type: string
-  opus?: Opus
-  pgc?: Pgc
-  ugc_season?: UgcSeason
-  live_rcmd?: LiveRcmd
 }
 
 export interface Archive {
@@ -305,95 +252,6 @@ export interface Badge {
 export interface Stat {
   danmaku: string
   play: string
-}
-
-export interface LiveRcmd {
-  content: string
-  reserve_type: number
-}
-
-export interface Opus {
-  fold_action: string[]
-  jump_url: string
-  pics: Pic[]
-  summary: Summary
-  title: null | string
-}
-
-export interface Pic {
-  aigc: null
-  height: number
-  live_url: null
-  size: number
-  url: string
-  width: number
-}
-
-export interface Summary {
-  rich_text_nodes: Rich[]
-  text: string
-  has_more?: boolean
-  paragraphs?: Paragraph[]
-}
-
-export interface Paragraph {
-  align: number
-  format: Format
-  para_type: number
-  text: Text
-}
-
-export interface Format {
-  align: number
-  indent: null
-}
-
-export interface Text {
-  nodes: Node[]
-}
-
-export interface Node {
-  type: string
-  word?: Word
-  rich?: Rich
-}
-
-export interface Word {
-  bg_style: BgStyle
-  color: null
-  font_level: string
-  style: AvatarLayer
-  words: string
-}
-
-export interface BgStyle {
-  color: AvatarLayer
-}
-
-export interface Pgc {
-  badge: Badge
-  cover: string
-  epid: number
-  jump_url: string
-  season_id: number
-  stat: Stat
-  sub_type: number
-  title: string
-  type: number
-}
-
-export interface UgcSeason {
-  aid: number
-  badge: Badge
-  bvid: string
-  cover: string
-  desc: string
-  disable_preview: number
-  duration_text: string
-  jump_url: string
-  stat: Stat
-  title: string
-  type: number
 }
 
 export interface Topic {
@@ -442,88 +300,4 @@ export interface Like {
   count: number
   forbidden: boolean
   status: boolean
-}
-
-export interface Orig {
-  basic: Basic
-  id_str: string
-  modules: OrigModules
-  type: string
-  visible: boolean
-}
-
-export interface OrigModules {
-  module_author: FluffyModuleAuthor
-  module_dynamic: FluffyModuleDynamic
-}
-
-export interface FluffyModuleAuthor {
-  avatar: FluffyAvatar
-  face: string
-  face_nft: boolean
-  following: boolean
-  jump_url: string
-  label: string
-  mid: number
-  name: string
-  official_verify: OfficialVerify
-  pendant: Pendant
-  pub_action: string
-  pub_time: string
-  pub_ts: number
-  type: string
-  vip: Vip
-}
-
-export interface FluffyAvatar {
-  container_size: ContainerSize
-  fallback_layers: FluffyFallbackLayers
-  mid: string
-}
-
-export interface FluffyFallbackLayers {
-  is_critical_group: boolean
-  layers: FluffyLayer[]
-}
-
-export interface FluffyLayer {
-  general_spec: GeneralSpec
-  layer_config: FluffyLayerConfig
-  resource: Resource
-  visible: boolean
-}
-
-export interface FluffyLayerConfig {
-  is_critical: boolean
-  tags: FluffyTags
-}
-
-export interface FluffyTags {
-  AVATAR_LAYER: AvatarLayer
-  GENERAL_CFG: FluffyGENERALCFG
-}
-
-export interface FluffyGENERALCFG {
-  config_type: number
-  general_config: FluffyGeneralConfig
-}
-
-export interface FluffyGeneralConfig {
-  web_css_style: FluffyWebCSSStyle
-}
-
-export interface FluffyWebCSSStyle {
-  borderRadius: string
-}
-
-export interface FluffyModuleDynamic {
-  additional: null
-  desc: Desc
-  major: FluffyMajor
-  topic: null
-}
-
-export interface FluffyMajor {
-  archive: Archive
-  type: string
 }

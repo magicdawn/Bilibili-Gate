@@ -11,7 +11,7 @@ import { BaseTabService, QueueStrategy } from '../_base'
 import { LiveRecService } from '../live'
 import { ELiveStatus } from '../live/live-enum'
 import { fetchVideoDynamicFeeds } from './api'
-import { isDynamicAv } from './api/enums'
+import { DynamicFeedEnums } from './api/enums'
 import { hasLocalDynamicFeedCache, localDynamicFeedCache, performIncrementalUpdateIfNeed } from './cache'
 import { FollowGroupMergeTimelineService } from './group/merge-timeline-service'
 import {
@@ -298,7 +298,9 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
         await performIncrementalUpdateIfNeed(this.upMid)
         this._queueForFilterCache = new QueueStrategy<DynamicFeedItem>(20)
         this._queueForFilterCache.bufferQueue = ((await localDynamicFeedCache.get(this.upMid)) || []).filter((x) => {
-          const title = x?.modules?.module_dynamic?.major?.archive?.title || ''
+          const major = x.modules.module_dynamic.major
+          if (major?.type !== DynamicFeedEnums.MajorType.Archive) return false
+          const title = major.archive.title
           return filterByFilterText({
             filterText: this.filterText!,
             title,
@@ -372,8 +374,9 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
         // all
         if (this.dynamicFeedVideoType === DynamicFeedVideoType.All) return true
         // type only
-        if (!isDynamicAv(x)) return false
-        const currentLabel = x.modules.module_dynamic?.major?.archive?.badge.text
+        const major = x.modules.module_dynamic.major
+        if (major?.type !== DynamicFeedEnums.MajorType.Archive) return false
+        const currentLabel = major.archive.badge.text
         if (this.dynamicFeedVideoType === DynamicFeedVideoType.DynamicOnly) {
           return currentLabel === DynamicFeedBadgeText.Dynamic
         }
@@ -386,15 +389,18 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
       // by 充电专属
       .filter((x) => {
         if (!this.hideChargeOnlyVideos) return true
-        const chargeOnly =
-          (x.modules?.module_dynamic?.major?.archive?.badge?.text as string) === DynamicFeedBadgeText.ChargeOnly
+        const major = x.modules.module_dynamic.major
+        if (major?.type !== DynamicFeedEnums.MajorType.Archive) return false
+        const chargeOnly = major.archive.badge.text === DynamicFeedBadgeText.ChargeOnly
         return !chargeOnly
       })
 
       // by 最短时长
       .filter((x) => {
         if (this.filterMinDuration === DynamicFeedVideoMinDuration.All) return true
-        const v = x.modules.module_dynamic.major?.archive
+        const major = x.modules.module_dynamic.major
+        if (major?.type !== DynamicFeedEnums.MajorType.Archive) return false
+        const v = major.archive
         if (!v) return false
         const duration = parseDuration(v.duration_text)
         return duration >= this.filterMinDurationValue
@@ -403,7 +409,9 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
       // by 关键字过滤
       .filter((x) => {
         if (!this.filterText) return true
-        const title = x?.modules?.module_dynamic?.major?.archive?.title || ''
+        const major = x.modules.module_dynamic.major
+        if (major?.type !== DynamicFeedEnums.MajorType.Archive) return false
+        const title = major.archive.title || ''
         return filterByFilterText({
           filterText: this.filterText,
           title,
