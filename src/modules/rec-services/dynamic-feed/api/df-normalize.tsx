@@ -1,13 +1,14 @@
 import { defineStatItems } from '$components/VideoCard/stat-item'
 import { parseCount, parseDuration } from '$utility/video'
 import { DynamicFeedBadgeText } from '../store'
-import { EDynamicFeedItemType, EDynamicFeedMajorType } from './enums'
+import { DynamicFeedEnums } from './enums'
 import type { IVideoCardData } from '$modules/filter/normalize'
 import type { DynamicFeedItem } from './types'
 
 export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData | undefined {
   const author = item.modules.module_author
   const major = item.modules.module_dynamic.major
+  const additional = item.modules.module_dynamic.additional
   const majorType = major?.type
 
   const sharedCardData = {
@@ -27,7 +28,7 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
     recommendReason: author.pub_action,
   } as const satisfies Partial<IVideoCardData>
 
-  if (majorType === EDynamicFeedMajorType.Archive && major?.archive) {
+  if (majorType === DynamicFeedEnums.MajorType.Archive && major?.archive) {
     const v = major.archive
     return {
       ...sharedCardData,
@@ -58,12 +59,14 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
     }
   }
 
-  if (majorType === EDynamicFeedMajorType.Opus && major?.opus) {
+  if (majorType === DynamicFeedEnums.MajorType.Opus && major?.opus) {
+    if (additional?.type === DynamicFeedEnums.AdditionalType.Goods) return // block ads
     const { opus } = major
     let topMarkText: string | undefined
+    const hasPic = !!opus.pics.length
     // 我也不知道有啥区别?
-    if (item.type === EDynamicFeedItemType.Draw) topMarkText = '图片'
-    if (item.type === EDynamicFeedItemType.Article) topMarkText = '文章'
+    if (item.type === DynamicFeedEnums.ItemType.Draw) topMarkText = hasPic ? '图片' : '文字动态'
+    if (item.type === DynamicFeedEnums.ItemType.Article) topMarkText = '文章'
     return {
       ...sharedCardData,
       goto: 'opus',
@@ -74,7 +77,7 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
     }
   }
 
-  if (majorType === EDynamicFeedMajorType.Pgc && major?.pgc) {
+  if (majorType === DynamicFeedEnums.MajorType.Pgc && major?.pgc) {
     const { pgc } = major
     return {
       ...sharedCardData,
@@ -92,7 +95,7 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
     }
   }
 
-  if (majorType === EDynamicFeedMajorType.UgcSeason && major?.ugc_season) {
+  if (majorType === DynamicFeedEnums.MajorType.UgcSeason && major?.ugc_season) {
     const { ugc_season } = major
     return {
       ...sharedCardData,

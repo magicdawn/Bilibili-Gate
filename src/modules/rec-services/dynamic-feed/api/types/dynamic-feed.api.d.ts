@@ -227,10 +227,32 @@ export interface LabelClass {
 }
 
 export interface PurpleModuleDynamic {
-  additional: null
+  additional: Additional | null
   desc: Desc | null
   major: PurpleMajor | null
   topic: Topic | null
+}
+
+export interface Additional {
+  goods: Goods
+  type: string
+}
+
+export interface Goods {
+  head_icon: string
+  head_text: string
+  items: GoodsItem[]
+  jump_url: string
+}
+
+export interface GoodsItem {
+  brief: string
+  cover: string
+  id: number
+  jump_desc: string
+  jump_url: string
+  name: string
+  price: string
 }
 
 export interface Desc {
