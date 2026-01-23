@@ -126,6 +126,9 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
 
       recommendReason: author.pub_action,
       topMarkText: '合集',
+
+      // AuthorTypeUgcSeason 里 mid 其实是 avid .... 不知道咋整
+      authorMid: undefined,
     }
   }
 
