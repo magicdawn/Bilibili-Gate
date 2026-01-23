@@ -228,20 +228,6 @@ export enum RichTextNodeType {
   RichTextNodeTypeTopic = 'RICH_TEXT_NODE_TYPE_TOPIC',
 }
 
-export interface Archive {
-  aid: string
-  badge: Badge
-  bvid: string
-  cover: string
-  desc: string
-  disable_preview: number
-  duration_text: string
-  jump_url: string
-  stat: Stat
-  title: string
-  type: number
-}
-
 export interface Badge {
   bg_color: string
   color: string

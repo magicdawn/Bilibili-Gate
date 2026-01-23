@@ -28,12 +28,7 @@ export async function getFollowGroupContent(tagid: number | string) {
 
   const singleRequest = async (page: number) => {
     const res = await request.get('/x/relation/tag', {
-      params: {
-        mid: getUid(),
-        tagid,
-        pn: page,
-        ps,
-      },
+      params: { mid: getUid(), tagid, pn: page, ps },
     })
     const json = res.data as FollowGroupContentJson
     return json.data || []
@@ -43,9 +38,10 @@ export async function getFollowGroupContent(tagid: number | string) {
   let items: FollowGroupContent[] = []
   let currentPageItems: FollowGroupContent[] = []
   do {
-    currentPageItems = await singleRequest(pn++)
+    currentPageItems = await singleRequest(pn)
     items = items.concat(currentPageItems)
-  } while (currentPageItems.length > 0)
+    pn++
+  } while (currentPageItems.length === ps) // = ps, may have more
 
   const mids = uniq(items.map((x) => x.mid))
   return mids

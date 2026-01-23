@@ -22,7 +22,7 @@ function collectData(data: DynamicFeedJson['data']) {
 
 const debug = baseDebug.extend('modules:rec-services:dynamic-feed:api')
 
-export async function fetchVideoDynamicFeeds({
+export async function fetchDynamicFeeds({
   videoOnly,
   offset,
   page,
@@ -73,10 +73,15 @@ export async function fetchVideoDynamicFeeds({
   const data = json.data
   if (data?.items?.length) {
     // collectData(data) // FIXME: remove this
-    data.items = data.items.filter((x) => {
-      const valid = !!normalizeDynamicFeedItem(x)
+    data.items = data.items.filter((item) => {
+      const valid = !!normalizeDynamicFeedItem(item)
       if (!valid) {
-        debug('dynamic-feed filter out: type=%s major.type=%s item=%o', x.type, x.modules.module_dynamic.major?.type, x)
+        debug('dynamic-feed filter out: %o', {
+          type: item.type,
+          majorType: item.modules.module_dynamic.major?.type,
+          additionalType: item.modules.module_dynamic.additional?.type,
+          item,
+        })
       }
       return valid
     })

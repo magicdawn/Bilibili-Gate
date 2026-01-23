@@ -1,4 +1,5 @@
 import type { DynamicFeedItem } from './types'
+import type { MajorTypeArchive } from './types/module_dynamic.major/archive'
 
 export namespace DynamicFeedEnums {
   // for `.type`
@@ -35,10 +36,8 @@ export namespace DynamicFeedEnums {
   }
 }
 
-export const DynamicFeedAllowedItemTypes =
-  // Object.values(EDynamicFeedItemType)
-  [DynamicFeedEnums.ItemType.Av, DynamicFeedEnums.ItemType.Draw]
-
-export function isDynamicAv(item: DynamicFeedItem) {
-  return item.type === DynamicFeedEnums.ItemType.Av
+export function getArchive(item: DynamicFeedItem): MajorTypeArchive['archive'] | undefined {
+  const major = item.modules.module_dynamic.major
+  if (major?.type !== DynamicFeedEnums.MajorType.Archive) return
+  return major.archive
 }

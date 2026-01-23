@@ -6,6 +6,7 @@ import { EApiType } from '$define/index.shared'
 import { anyFilterEnabled, filterRecItems } from '$modules/filter'
 import { lookinto } from '$modules/filter/normalize'
 import { AppRecService } from './app'
+import { getArchive } from './dynamic-feed/api/enums'
 import { PcRecService } from './pc'
 import { getServiceFromRegistry, REC_TABS, type FetcherOptions } from './service-map'
 import type { Key } from 'react'
@@ -19,7 +20,7 @@ export const recItemUniqer = (item: RecItemTypeOrSeparator): Key =>
     : lookinto<string | number>(item, {
         [EApiType.AppRecommend]: (item) => item.param,
         [EApiType.PcRecommend]: (item) => item.bvid,
-        [EApiType.DynamicFeed]: (item) => item.id_str, // item.modules.module_dynamic.major.archive.bvid
+        [EApiType.DynamicFeed]: (item) => getArchive(item)?.bvid ?? item.id_str, // item.modules.module_dynamic.major.archive.bvid
         [EApiType.Watchlater]: (item) => item.bvid,
         [EApiType.Fav]: (item) => item.bvid,
         [EApiType.PopularGeneral]: (item) => item.bvid,

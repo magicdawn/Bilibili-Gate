@@ -1,13 +1,13 @@
 import { isEqual, orderBy } from 'es-toolkit'
 import pmap from 'promise.map'
 import { wrapWithIdbCache } from '$utility/idb'
-import { fetchVideoDynamicFeeds } from '../api'
+import { fetchDynamicFeeds } from '../api'
 import type { DynamicFeedItem } from '$define'
 import type { UpMidType } from '../store'
 
-export const fetchVideoDynamicFeedsWithCache = wrapWithIdbCache({
-  fn: fetchVideoDynamicFeeds,
-  generateKey: ({ upMid }) => `${upMid}`,
+export const fetchDynamicFeedsWithCache = wrapWithIdbCache({
+  fn: fetchDynamicFeeds,
+  generateKey: ({ upMid, videoOnly }) => `upMid=${upMid}&videoOnly=${videoOnly}`,
   tableName: 'dynamic-feed-newest-items', // only head
   ttl: 5 * 60 * 1000, // 5 minutes
 })
@@ -30,7 +30,7 @@ export class FollowGroupUpService {
 
   async loadMore() {
     const enableCache = this.page === 1 && !this.offset && this.enableHeadCache
-    const fn = enableCache ? fetchVideoDynamicFeedsWithCache : fetchVideoDynamicFeeds
+    const fn = enableCache ? fetchDynamicFeedsWithCache : fetchDynamicFeeds
     const data = await fn({
       videoOnly: this.videoOnly,
       upMid: this.upMid,
@@ -42,7 +42,7 @@ export class FollowGroupUpService {
     this.hasMoreForApi = data.has_more
     this.page++
 
-    // special empty case but `has_more = true`
+    // special empty case with `has_more = true` present but should be treated as `has_more = false`
     if (isEqual(data, { has_more: true, items: [], offset: '', update_baseline: '', update_num: 0 })) {
       this.hasMoreForApi = false
     }

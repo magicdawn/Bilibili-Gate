@@ -10,8 +10,8 @@ import { parseDuration } from '$utility/video'
 import { BaseTabService, QueueStrategy } from '../_base'
 import { LiveRecService } from '../live'
 import { ELiveStatus } from '../live/live-enum'
-import { fetchVideoDynamicFeeds } from './api'
-import { DynamicFeedEnums } from './api/enums'
+import { fetchDynamicFeeds } from './api'
+import { getArchive } from './api/enums'
 import { hasLocalDynamicFeedCache, localDynamicFeedCache, performIncrementalUpdateIfNeed } from './cache'
 import { FollowGroupMergeTimelineService } from './group/merge-timeline-service'
 import {
@@ -298,9 +298,9 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
         await performIncrementalUpdateIfNeed(this.upMid)
         this._queueForFilterCache = new QueueStrategy<DynamicFeedItem>(20)
         this._queueForFilterCache.bufferQueue = ((await localDynamicFeedCache.get(this.upMid)) || []).filter((x) => {
-          const major = x.modules.module_dynamic.major
-          if (major?.type !== DynamicFeedEnums.MajorType.Archive) return false
-          const title = major.archive.title
+          const v = getArchive(x)
+          if (!v) return false
+          const title = v.title
           return filterByFilterText({
             filterText: this.filterText!,
             title,
@@ -324,7 +324,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
     // normal
     else {
       // 未登录会直接 throw err
-      const data = await fetchVideoDynamicFeeds({
+      const data = await fetchDynamicFeeds({
         videoOnly: this.config.videoOnly,
         abortSignal,
         page: this.page + 1, // ++this.page, starts from 1, 实测 page 没啥用, 分页基于 offset
@@ -364,8 +364,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
         if (!this.viewingSomeGroup) return true
         if (this.groupMergeTimelineService) return true // skip group-filter when loaded via groupMergeTimelineService
         if (!this.groupMids.size) return true
-        const mid = x?.modules?.module_author?.mid
-        if (!mid) return true
+        const mid = x.modules.module_author.mid
         return this.groupMids.has(mid)
       })
 
@@ -374,9 +373,9 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
         // all
         if (this.dynamicFeedVideoType === DynamicFeedVideoType.All) return true
         // type only
-        const major = x.modules.module_dynamic.major
-        if (major?.type !== DynamicFeedEnums.MajorType.Archive) return false
-        const currentLabel = major.archive.badge.text
+        const v = getArchive(x)
+        if (!v) return false
+        const currentLabel = v.badge.text
         if (this.dynamicFeedVideoType === DynamicFeedVideoType.DynamicOnly) {
           return currentLabel === DynamicFeedBadgeText.Dynamic
         }
@@ -389,18 +388,16 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
       // by 充电专属
       .filter((x) => {
         if (!this.hideChargeOnlyVideos) return true
-        const major = x.modules.module_dynamic.major
-        if (major?.type !== DynamicFeedEnums.MajorType.Archive) return false
-        const chargeOnly = major.archive.badge.text === DynamicFeedBadgeText.ChargeOnly
+        const v = getArchive(x)
+        if (!v) return true // NOTE: none video should pass
+        const chargeOnly = v.badge.text === DynamicFeedBadgeText.ChargeOnly
         return !chargeOnly
       })
 
       // by 最短时长
       .filter((x) => {
         if (this.filterMinDuration === DynamicFeedVideoMinDuration.All) return true
-        const major = x.modules.module_dynamic.major
-        if (major?.type !== DynamicFeedEnums.MajorType.Archive) return false
-        const v = major.archive
+        const v = getArchive(x)
         if (!v) return false
         const duration = parseDuration(v.duration_text)
         return duration >= this.filterMinDurationValue
@@ -409,9 +406,9 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
       // by 关键字过滤
       .filter((x) => {
         if (!this.filterText) return true
-        const major = x.modules.module_dynamic.major
-        if (major?.type !== DynamicFeedEnums.MajorType.Archive) return false
-        const title = major.archive.title || ''
+        const v = getArchive(x)
+        if (!v) return false
+        const title = v.title || ''
         return filterByFilterText({
           filterText: this.filterText,
           title,
@@ -425,8 +422,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
         if (this.config.selectedKey !== DF_SELECTED_KEY_ALL) return true
         const set = this.viewingAllHideMids
         if (!set.size) return true
-        const mid = x?.modules?.module_author?.mid
-        if (!mid) return true
+        const mid = x.modules.module_author.mid
         return !set.has(mid.toString())
       })
 

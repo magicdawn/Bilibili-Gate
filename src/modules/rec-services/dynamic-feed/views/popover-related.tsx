@@ -26,7 +26,7 @@ import {
   localDynamicFeedInfoCache,
   updateLocalDynamicFeedCache,
 } from '../cache'
-import { fetchVideoDynamicFeedsWithCache, FollowGroupMergeTimelineService } from '../group/merge-timeline-service'
+import { fetchDynamicFeedsWithCache, FollowGroupMergeTimelineService } from '../group/merge-timeline-service'
 import { formatFollowGroupUrl, IconForPopoverTrigger } from '../shared'
 import {
   DF_SELECTED_KEY_PREFIX_GROUP,
@@ -494,7 +494,7 @@ function FollowGroupActions({ followGroup, refresh }: { followGroup: FollowGroup
       >
         <Button
           onClick={() => {
-            fetchVideoDynamicFeedsWithCache.cache.db.clear()
+            fetchDynamicFeedsWithCache.cache.db.clear()
             antMessage.success('已清除缓存')
           }}
         >

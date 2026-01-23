@@ -4,7 +4,7 @@
   "rules": {
     "no-unused-vars": "off",
     "no-unused-expressions": "off",
-    "no-debugger": "off",
+    "no-debugger": "warn",
     "no-warning-comments": "error",
     "react/jsx-no-undef": "off",
     "react/jsx-no-target-blank": "off",
