@@ -73,7 +73,7 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
       if (isReserve) return additional.reserve.title?.split('：')[0] || '预约'
       // 我也不知道有啥区别?
       if (item.type === DynamicFeedEnums.ItemType.Draw) return hasPic ? '图片' : '文字动态'
-      if (item.type === DynamicFeedEnums.ItemType.Article) return '文章'
+      if (item.type === DynamicFeedEnums.ItemType.Article) return '专栏'
     })()
 
     return {
@@ -130,6 +130,5 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
   }
 
   // DYNAMIC_TYPE_FORWARD: 这个咋处理?
-
   // DYNAMIC_TYPE_LIVE_RCMD: 动态支持了直播中, 这个没必要了
 }
