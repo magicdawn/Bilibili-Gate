@@ -1,6 +1,6 @@
 import { delay } from 'es-toolkit'
 import { subscribe } from 'valtio'
-import { appClsDark } from '$common/css-vars-export.module.scss'
+import { appClsDark, appClsLight } from '$common/css-vars-export.module.scss'
 import { poll } from '$utility/dom'
 import { valtioFactory } from '$utility/valtio'
 
@@ -56,6 +56,7 @@ export function useIsDarkMode() {
 
 const onDarkModeChange = () => {
   document.documentElement.classList.toggle(appClsDark, $darkMode.get())
+  document.documentElement.classList.toggle(appClsLight, !$darkMode.get())
 }
 onDarkModeChange()
 subscribe($darkMode.state, onDarkModeChange)

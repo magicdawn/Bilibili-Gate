@@ -7,7 +7,7 @@ const usingWind3 = defineConfig({
     presetRemToPx() as any,
     presetWind3({
       preflight: 'on-demand',
-      dark: { dark: '.bilibili-gate-using-dark' },
+      dark: { dark: '.bilibili-gate-using-dark', light: '.bilibili-gate-using-light' },
     }),
   ],
 })

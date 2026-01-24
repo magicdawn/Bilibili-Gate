@@ -40,5 +40,12 @@ export function parseFilterByTitle(keywords: string[] | readonly string[]) {
       titleKeywordList.push(keyword)
     }
   })
-  return { titleKeywordList, titleRegexList }
+
+  function test(title: string) {
+    return (
+      titleKeywordList.some((keyword) => title.includes(keyword)) || titleRegexList.some((regex) => regex.test(title))
+    )
+  }
+
+  return { titleKeywordList, titleRegexList, test }
 }

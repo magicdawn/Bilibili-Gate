@@ -5,7 +5,28 @@ import { DynamicFeedEnums } from './enums'
 import type { IVideoCardData } from '$modules/filter/normalize'
 import type { DynamicFeedItem } from './types'
 
+export function dynamicFeedDetectAd(item: DynamicFeedItem): boolean {
+  const { major, additional } = item.modules.module_dynamic
+
+  // "UP主的推荐" 带货
+  if (additional?.type === DynamicFeedEnums.AdditionalType.Goods) return true
+
+  // 外卖红包: https://www.bilibili.com/opus/1160909044283605014
+  // 可以使用 `setttings.filter.dfByTitle.keywords` 过滤, 但这里还是内置这个
+  if (major?.type === DynamicFeedEnums.MajorType.Opus) {
+    const title = major.opus.title || ''
+    if (['B站密令', '大红包'].some((keyword) => title.includes(keyword))) {
+      return true
+    }
+  }
+
+  return false
+}
+
 export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData | undefined {
+  // ad
+  if (dynamicFeedDetectAd(item)) return
+  // no major
   const major = item.modules.module_dynamic.major
   if (!major) return
 
@@ -62,10 +83,8 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
   }
 
   if (majorType === DynamicFeedEnums.MajorType.Opus && major.opus) {
-    if (additional?.type === DynamicFeedEnums.AdditionalType.Goods) return // block "UP主的推荐"
     const { opus } = major
-
-    const hasPic = !!opus.pics.length
+    const hasPic = !!opus.pics?.length
     const isReserve = additional?.type === DynamicFeedEnums.AdditionalType.Reserve
     const isLiveReserve = isReserve && /直播预告/.test(additional.reserve.title)
     const topMarkText: string | undefined = (() => {
@@ -80,8 +99,8 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
       ...sharedCardData,
       goto: 'opus',
       href: opus.jump_url,
-      cover: opus.pics[0]?.url,
-      title: opus.title || opus.summary.text,
+      cover: opus.pics?.[0]?.url || '',
+      title: opus.title || opus.summary?.text || '',
       topMarkText,
     }
   }

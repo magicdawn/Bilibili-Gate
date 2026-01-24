@@ -8,9 +8,9 @@ export interface MajorTypeOpus {
 export interface Opus {
   fold_action: string[]
   jump_url: string
-  pics: Pic[]
-  summary: Summary
-  title: string
+  pics?: Pic[]
+  summary?: Summary
+  title?: string
 }
 
 export interface Pic {

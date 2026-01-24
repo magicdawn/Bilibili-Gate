@@ -11,7 +11,9 @@ $app-name: bilibili-gate;
 // cls
 $app-cls-root: #{$app-name}-root;
 $app-cls-dark: #{$app-name}-using-dark;
+$app-cls-light: #{$app-name}-using-light;
 $app-cls-dark-selector: 'html.#{$app-cls-dark}';
+$app-cls-light-selector: 'html.#{$app-cls-light}';
 
 // color
 $bili-pink: #ff6699;
@@ -76,6 +78,8 @@ $use-export: false !default;
 
     app-cls-root: $app-cls-root;
     app-cls-dark: $app-cls-dark;
+    app-cls-light: $app-cls-light;
     app-cls-dark-selector: #{string.unquote($app-cls-dark-selector)};
+    app-cls-light-selector: #{string.unquote($app-cls-light-selector)};
   }
 }

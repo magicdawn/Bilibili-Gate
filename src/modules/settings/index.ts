@@ -215,6 +215,12 @@ export const initialSettings = {
       enabled: false,
       keywords: [] as string[],
     },
+
+    // dynamic-feed
+    dfByTitle: {
+      enabled: false,
+      keywords: [] as string[],
+    },
   },
 
   /**

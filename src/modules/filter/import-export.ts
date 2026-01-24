@@ -15,6 +15,12 @@ export function exportFilterByTitle() {
 export function importFilterByTitle() {
   return _importForPath('filter.byTitle.keywords')
 }
+export function exportDfFilterByTitle() {
+  return _exportForPath('filter.dfByTitle.keywords')
+}
+export function importDfFilterByTitle() {
+  return _importForPath('filter.dfByTitle.keywords')
+}
 
 // 一个奇怪的 json key, 减少其他内容的干扰
 function getJsonKey(p: ListSettingsPath) {

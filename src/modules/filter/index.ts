@@ -1,12 +1,13 @@
 import { baseDebug } from '$common'
 import { ETab } from '$components/RecHeader/tab-enum'
+import { isDynamicFeed, type RecItemTypeOrSeparator } from '$define'
 import { EApiType } from '$define/index.shared'
 import { blacklistMids } from '$modules/bilibili/me/relations/blacklist'
+import { DynamicFeedEnums } from '$modules/rec-services/dynamic-feed/api/enums'
 import { isNormalRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { getSettingsSnapshot, settings } from '$modules/settings'
 import { normalizeCardData } from './normalize'
 import { parseFilterByAuthor, parseFilterByTitle } from './parse'
-import type { RecItemTypeOrSeparator } from '$define'
 
 const debug = baseDebug.extend('modules:filter')
 
@@ -18,7 +19,6 @@ export function getFollowedStatus(recommendReason?: string): boolean {
  * 用于快速判断是否应该启用过滤, 避免 normalizeData 等一些列操作
  * 有可能返回 true, 应尽量返回 true
  */
-
 export function anyFilterEnabled(tab: ETab) {
   if (tab === ETab.KeepFollowOnly) {
     return true
@@ -30,14 +30,16 @@ export function anyFilterEnabled(tab: ETab) {
     mayNeedCheck_blacklist_filterByUp_filterByTitle &&
     (blacklistMids.size ||
       (settings.filter.enabled &&
-        ((settings.filter.byAuthor.enabled && !!settings.filter.byAuthor.keywords.length) ||
-          (settings.filter.byTitle.enabled && !!settings.filter.byTitle.keywords.length))))
+        (settings.filter.byAuthor.enabled ||
+          settings.filter.byTitle.enabled ||
+          settings.filter.minDuration.enabled ||
+          settings.filter.minPlayCount.enabled ||
+          settings.filter.minDanmakuCount.enabled)))
   ) {
     return true
   }
 
-  // recommend
-  if ((tab === ETab.AppRecommend || tab === ETab.PcRecommend) && settings.filter.enabled) {
+  if (tab === ETab.DynamicFeed && settings.filter.dfByTitle.enabled) {
     return true
   }
 
@@ -62,9 +64,10 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
   }
 
   const filter = getSettingsSnapshot().filter
-  const { minDuration, minPlayCount, minDanmakuCount, byAuthor, byTitle } = filter
+  const { minDuration, minPlayCount, minDanmakuCount, byAuthor, byTitle, dfByTitle } = filter
   const { blockUpMids, blockUpNames } = parseFilterByAuthor(byAuthor.keywords)
-  const { titleKeywordList, titleRegexList } = parseFilterByTitle(byTitle.keywords)
+  const { test: filterByTitleTest } = parseFilterByTitle(byTitle.keywords)
+  const { test: dfFilterByTitleTest } = parseFilterByTitle(dfByTitle.keywords)
 
   return items.filter((item) => {
     // just keep it
@@ -115,18 +118,19 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
         possibleTitles.push(item.desc)
       }
       possibleTitles = possibleTitles.filter(Boolean)
-      if (filter.enabled && byTitle.enabled && byTitle.keywords.length && possibleTitles.length) {
-        const titleHit = (title: string) =>
-          titleKeywordList.some((keyword) => title.includes(keyword)) ||
-          titleRegexList.some((regex) => regex.test(title))
-        if (possibleTitles.some(titleHit)) {
-          debug('filter out by title-rule: %o', {
-            possibleTitles,
-            rules: byTitle.keywords,
-            bvid,
-          })
-          return false
-        }
+      if (
+        filter.enabled &&
+        byTitle.enabled &&
+        byTitle.keywords.length &&
+        possibleTitles.length &&
+        possibleTitles.some(filterByTitleTest)
+      ) {
+        debug('filter out by title-rule: %o', {
+          possibleTitles,
+          rules: byTitle.keywords,
+          bvid,
+        })
+        return false
       }
     }
 
@@ -144,7 +148,6 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
       if (isPicture) return filterPicture()
       if (isBangumi) return filterBangumi()
     }
-
     function filterVideo() {
       // 不过滤已关注视频
       if (followed && filter.exemptForFollowed.video) return true
@@ -211,6 +214,26 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
         return false
       }
       return true
+    }
+
+    if (tab === ETab.DynamicFeed && settings.filter.dfByTitle.enabled && settings.filter.dfByTitle.keywords.length) {
+      let possibleTitles = [title]
+      if (isDynamicFeed(item)) {
+        const { major } = item.modules.module_dynamic
+        if (major?.type === DynamicFeedEnums.MajorType.Opus) {
+          possibleTitles.push(major.opus.summary?.text || '')
+        }
+      }
+      possibleTitles = possibleTitles.filter(Boolean)
+      if (possibleTitles.some(dfFilterByTitleTest)) {
+        debug('filter out by df-title-rule: %o', {
+          possibleTitles,
+          rules: dfByTitle.keywords,
+          uniqId: item.uniqId,
+          item,
+        })
+        return false
+      }
     }
 
     return true // just keep it

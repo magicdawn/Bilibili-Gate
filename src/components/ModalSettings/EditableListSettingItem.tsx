@@ -1,7 +1,7 @@
 import { css } from '@emotion/react'
 import { Empty, Input } from 'antd'
 import clsx from 'clsx'
-import { uniq } from 'es-toolkit'
+import { identity, uniq } from 'es-toolkit'
 import {
   forwardRef,
   useEffect,
@@ -11,7 +11,7 @@ import {
   type ComponentPropsWithoutRef,
   type ReactNode,
 } from 'react'
-import { appBorderColorValue } from '$components/css-vars'
+import { useUnoMerge } from 'unocss-merge/react'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
 import { getUserNickname } from '$modules/bilibili/user/nickname'
@@ -30,84 +30,100 @@ export function EditableListSettingItem({
   configPath,
   searchProps,
   disabled,
+  className,
+  inputClassName,
+  listClassName,
+  renderHeader = identity,
 }: {
   configPath: ListSettingsPath
   searchProps?: ComponentProps<typeof Search>
   disabled?: boolean
+  className?: string
+  inputClassName?: string
+  listClassName?: string
+  renderHeader?: (input: ReactNode) => ReactNode
 }) {
   const rawList = useSettingsInnerArray(configPath)
   const list = useMemo(() => uniq(rawList).toReversed(), [rawList])
 
+  const input = (
+    <Search
+      className={clsx('my-5px', inputClassName)}
+      enterButton='添加'
+      allowClear
+      disabled={disabled}
+      size='middle'
+      {...searchProps}
+      onSearch={async (val, e) => {
+        if (!val) return
+
+        // exists check
+        const set = new Set(await getNewestValueOfSettingsInnerArray(configPath))
+        if (set.has(val)) {
+          antMessage.warning(`${val} 已存在`)
+          return
+        }
+
+        // add
+        await updateSettingsInnerArray(configPath, { add: [val] })
+
+        // clear: 非受控组件, 有内部状态, 不能简单设置 input.value
+        if (e?.target) {
+          const el = e.target as HTMLElement
+          const clearBtn = el.closest('.ant-input-wrapper')?.querySelector<HTMLElement>('.ant-input-clear-icon')
+          clearBtn?.click()
+        }
+      }}
+    />
+  )
+
+  const hasData = !!list.length
+  const isEmpty = !hasData
+  const _listClassName = useUnoMerge(
+    isEmpty
+      ? 'rounded-lg'
+      : ['max-h-250px flex flex-wrap items-start gap-x-10px gap-y-5px overflow-y-auto pr-10px', listClassName],
+  )
+
   return (
     <>
-      <Search
-        className='my-5px'
-        enterButton='添加'
-        allowClear
-        disabled={disabled}
-        {...searchProps}
-        onSearch={async (val, e) => {
-          if (!val) return
-
-          // exists check
-          const set = new Set(await getNewestValueOfSettingsInnerArray(configPath))
-          if (set.has(val)) {
-            antMessage.warning(`${val} 已存在`)
-            return
-          }
-
-          // add
-          await updateSettingsInnerArray(configPath, { add: [val] })
-
-          // clear: 非受控组件, 有内部状态, 不能简单设置 input.value
-          if (e?.target) {
-            const el = e.target as HTMLElement
-            const clearBtn = el.closest('.ant-input-wrapper')?.querySelector<HTMLElement>('.ant-input-clear-icon')
-            clearBtn?.click()
-          }
-        }}
-      />
-
+      {renderHeader(input)}
       <div
-        css={[
-          css`
-            min-height: 82px;
-            border-radius: 6px;
-            border: 1px solid ${appBorderColorValue};
-            margin-top: 3px;
-          `,
+        className={_listClassName}
+        css={
           disabled &&
-            css`
-              color: var(--ant-color-text-disabled);
-              background-color: var(--ant-color-bg-container-disabled);
-              border-color: var(--ant-color-border);
-              box-shadow: none;
-              opacity: 1;
-              pointer-events: none;
-              cursor: not-allowed;
-            `,
-        ]}
+          css`
+            color: var(--ant-color-text-disabled);
+            background-color: var(--ant-color-bg-container-disabled);
+            box-shadow: none;
+            opacity: 1;
+            pointer-events: none;
+            cursor: not-allowed;
+          `
+        }
       >
-        {list.length ? (
-          <div className='max-h-250px flex flex-wrap items-start gap-x-10px gap-y-5px overflow-y-auto py-5px pl-5px pr-10px'>
-            {list.map((t) => {
-              return (
-                <TagItemDisplay
-                  key={t}
-                  tag={t.toString()}
-                  onDelete={async (tag) => {
-                    await updateSettingsInnerArray(configPath, { remove: [tag] })
-                  }}
-                  renderTag={
-                    configPath === 'filter.byAuthor.keywords' ? (tag) => <UpTagItemDisplay tag={tag} /> : undefined
-                  }
-                />
-              )
-            })}
-          </div>
-        ) : (
-          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description='空空如也' className='[&.ant-empty-normal]:my-5px' />
+        {isEmpty && (
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description='空空如也'
+            className='[&.ant-empty-normal]:(my-1 py-5px)'
+          />
         )}
+        {hasData &&
+          list.map((t) => {
+            return (
+              <TagItemDisplay
+                key={t}
+                tag={t.toString()}
+                onDelete={async (tag) => {
+                  await updateSettingsInnerArray(configPath, { remove: [tag] })
+                }}
+                renderTag={
+                  configPath === 'filter.byAuthor.keywords' ? (tag) => <UpTagItemDisplay tag={tag} /> : undefined
+                }
+              />
+            )
+          })}
       </div>
     </>
   )
