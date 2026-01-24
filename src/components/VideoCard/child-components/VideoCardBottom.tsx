@@ -274,7 +274,7 @@ export const VideoCardBottom = memo(function ({
       )
     }
 
-    if (isNormalVideo) defaultRender()
+    if (isNormalVideo) return defaultRender()
 
     /**
      * 其他歪瓜
