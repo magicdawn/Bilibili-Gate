@@ -632,8 +632,8 @@ const VideoCardInner = memo(function VideoCardInner({
           ${clsVideoCardPrefix} & {
             pointer-events: none;
             border-radius: 0;
-            padding-top: 5px;
-            height: auto;
+            /* padding-top: 5px;
+            height: auto; */
           }
         `}
       >
