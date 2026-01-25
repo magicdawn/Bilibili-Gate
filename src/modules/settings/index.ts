@@ -294,7 +294,7 @@ export const initialSettings = {
    * internal
    */
   __internalEnableCopyBvidInfo: false, // ContextMenu | Button
-  __internalAddCopyBvidButton: false,
+  __internalAddTabbarCopyBvidButton: false,
   __internalHotSubUseDropdown: false,
   __internalRecTabRenderAsSegments: false,
 }

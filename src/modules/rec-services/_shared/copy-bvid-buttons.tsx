@@ -9,14 +9,15 @@ import { MultiSelectButton } from '$modules/multi-select'
 import { useSettingsSnapshot } from '$modules/settings'
 import { getOnlyTab } from '$routes'
 
-export function CopyBvidButtons() {
-  const { __internalEnableCopyBvidInfo: bvidInfo } = useSettingsSnapshot()
+export function CopyBvidButtons({ showCopyBvidInfo }: { showCopyBvidInfo?: boolean }) {
+  const { __internalEnableCopyBvidInfo } = useSettingsSnapshot()
+  const hasCopyBvidInfo = showCopyBvidInfo ?? __internalEnableCopyBvidInfo
   return (
     <>
       <Button onClick={copyBvidsSingleLine} className='inline-flex-center'>
         <IconForCopy /> 复制 BVID
       </Button>
-      {bvidInfo && (
+      {hasCopyBvidInfo && (
         <Button onClick={copyBvidInfos} className='inline-flex-center'>
           <IconForCopy /> 复制 BVID 信息
         </Button>
@@ -26,7 +27,7 @@ export function CopyBvidButtons() {
 }
 
 export function CopyBvidButtonsTabbarView() {
-  const { __internalAddCopyBvidButton: enabled } = useSettingsSnapshot()
+  const { __internalAddTabbarCopyBvidButton: enabled } = useSettingsSnapshot()
   if (!enabled) return null
   return (
     <div className='flex items-center gap-x-2'>

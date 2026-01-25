@@ -4,10 +4,11 @@ import clsx from 'clsx'
 import { useSnapshot } from 'valtio'
 import { proxySet } from 'valtio/utils'
 import { usePopoverBorderColor } from '$common/emotion-css'
+import { kbdClassName } from '$components/fragments'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { getCurrentGridItems } from '$components/RecGrid/rec-grid-state'
 import { AntdTooltip } from '$modules/antd/custom'
-import { IconForDelete } from '$modules/icon'
+import { IconForDelete, IconForInfo } from '$modules/icon'
 import { CopyBvidButtons } from '$modules/rec-services/_shared/copy-bvid-buttons'
 import { settings } from '$modules/settings'
 import { multiSelectStore } from './store'
@@ -47,12 +48,21 @@ export function MultiSelectButton({
     </Button>
   )
 
-  const wrapPopoverActions = (btn: ReactNode) => {
+  const wrapActionsPopover = (btn: ReactNode) => {
     return (
       <Popover
         styles={{ container: { border: `1px solid ${popoverBorderColor}` } }}
         content={
           <div className='max-w-288px'>
+            <div className='flex items-start gap-x-6px'>
+              <IconForInfo className='mt-1 size-14px' />
+              <div className='flex-1 break-all'>
+                使用 <kbd className={clsx(kbdClassName, 'mx-1')}>Shift</kbd> 键扩选: 切换选中状态后, 按住{' '}
+                <kbd className={clsx(kbdClassName, 'mx-1')}>Shift</kbd>键再选择区间终点, 整个区间会与起点选中状态同步.
+              </div>
+            </div>
+
+            <Divider variant='solid' className='my-7px' />
             <div className='flex flex-wrap items-center gap-x-15px gap-y-2px'>
               <Button className='inline-flex items-center' onClick={() => multiSelectStore.selectedIdSet.clear()}>
                 <IconForDelete className='size-18px' />
@@ -99,11 +109,12 @@ export function MultiSelectButton({
                 tooltip='退出多选时, 清空所有已选择项'
               />
             </div>
+
             {addCopyActions && (
               <>
                 <Divider variant='solid' className='my-7px' />
                 <div className='flex flex-wrap gap-x-10px gap-y-5px'>
-                  <CopyBvidButtons />
+                  <CopyBvidButtons showCopyBvidInfo />
                 </div>
               </>
             )}
@@ -116,7 +127,7 @@ export function MultiSelectButton({
   }
 
   if (multiSelecting) {
-    return wrapPopoverActions(btn)
+    return wrapActionsPopover(btn)
   } else {
     return iconOnly ? (
       <AntdTooltip title='多选' arrow={false}>

@@ -58,7 +58,7 @@ export function getGenericCardDatas(): IVideoCardData[] {
 export function copyBvidsSingleLine() {
   const bvids = getGenericCardDatas().map((cardData) => cardData.bvid)
   const content = bvids.join(' ')
-  copyContent(content)
+  copyContent(content, 1)
 }
 
 export function getBvidInfo(cardData: IVideoCardData) {
@@ -70,7 +70,7 @@ export function getBvidInfo(cardData: IVideoCardData) {
 export function copyBvidInfos() {
   const lines = getGenericCardDatas().map(getBvidInfo)
   const content = lines.join('\n')
-  copyContent(content)
+  copyContent(content, 1)
 }
 
 export function copyVideoLinks() {

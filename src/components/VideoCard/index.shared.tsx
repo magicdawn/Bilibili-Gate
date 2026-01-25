@@ -8,9 +8,9 @@ import type { ReactNode } from 'react'
 
 export const STAT_NUMBER_FALLBACK = '0'
 
-export function copyContent(content: string) {
+export function copyContent(content: string, msgDuration?: number) {
   GM.setClipboard(content)
-  antMessage.success(`已复制: ${content}`)
+  antMessage.success(`已复制: ${content}`, msgDuration)
 }
 
 export enum EQueryKey {
