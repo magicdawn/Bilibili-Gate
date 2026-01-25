@@ -77,3 +77,8 @@ function logFactory(logFn: typeof console.log) {
 export const appLog = logFactory(console.log)
 export const appWarn = logFactory(console.warn)
 export const appError = logFactory(console.error)
+
+export enum BiliBrandColor {
+  Pink = '#f69',
+  Blue = '#00aeec',
+}

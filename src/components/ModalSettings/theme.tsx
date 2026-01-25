@@ -11,12 +11,13 @@ import { useMount, usePrevious } from 'ahooks'
 import { ColorPicker } from 'antd'
 import clsx from 'clsx'
 import { Fragment, useMemo, useState, type ReactNode } from 'react'
+import { BiliBrandColor } from '$common'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { $evolvedThemeColor } from '$header'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconAnimatedChecked } from '$modules/icon'
 import { updateSettings, useSettingsSnapshot } from '$modules/settings'
-import { DEFAULT_BILI_PINK_THEME, EXTRA_TOOLTIP, ThemeGroups, useCurrentTheme } from './theme.shared'
+import { EXTRA_TOOLTIP, ThemeGroups, useCurrentTheme } from './theme.shared'
 import type { Color } from 'antd/es/color-picker'
 
 export function ThemesSelect() {
@@ -25,9 +26,7 @@ export function ThemesSelect() {
 
   // color-picker
   const { colorPickerThemeSelectedColor } = useSettingsSnapshot()
-  const [customColor, setCustomColor] = useState<Color | string>(
-    colorPickerThemeSelectedColor || DEFAULT_BILI_PINK_THEME.colorPrimary,
-  )
+  const [customColor, setCustomColor] = useState<Color | string>(colorPickerThemeSelectedColor || BiliBrandColor.Pink)
   const customColorHex = useMemo(() => {
     return typeof customColor === 'string' ? customColor : customColor.toHexString()
   }, [customColor])

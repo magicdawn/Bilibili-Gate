@@ -1,5 +1,6 @@
 import { PURPLE_COLORS } from 'purple-colors'
 import { useMemo, type ReactNode } from 'react'
+import { BiliBrandColor } from '$common'
 import { appPrimaryColorValue } from '$components/css-vars'
 import { $evolvedThemeColor, getEvolvedThemeColorFallback } from '$header'
 import { settings, useSettingsSnapshot } from '$modules/settings'
@@ -27,10 +28,10 @@ export interface LxTheme {
   tooltip?: ReactNode
 }
 
-export const DEFAULT_BILI_PINK_THEME: LxTheme = {
+export const BILI_BRAND_PINK_THEME: LxTheme = {
   id: 'default-bili-pink',
   name: 'B站粉',
-  colorPrimary: '#f69',
+  colorPrimary: BiliBrandColor.Pink,
   tooltip: 'B站品牌色',
 }
 
@@ -38,7 +39,7 @@ export const COLOR_PICKER_THEME: LxTheme = {
   id: 'color-picker',
   name: '自定义',
   isCustom: true,
-  colorPrimary: DEFAULT_BILI_PINK_THEME.colorPrimary,
+  colorPrimary: BiliBrandColor.Pink, // as fallback
 }
 
 function toThemes(groupName: string, definitionStr: string): LxTheme[] {
@@ -90,8 +91,8 @@ export const ThemeGroups: {
   {
     name: '预设',
     themes: [
-      DEFAULT_BILI_PINK_THEME,
-      { id: 'bilibili-blue', name: 'B站蓝', colorPrimary: '#00aeec', tooltip: 'B站品牌色' },
+      BILI_BRAND_PINK_THEME,
+      { id: 'bilibili-blue', name: 'B站蓝', colorPrimary: BiliBrandColor.Blue, tooltip: 'B站品牌色' },
       { id: 'app-custom-高能红', name: '高能红', colorPrimary: '#fd453e' },
       { id: 'app-custom-咸蛋黄', name: '咸蛋黄', colorPrimary: '#ffc034' },
       { id: 'app-custom-早苗绿', name: '早苗绿', colorPrimary: '#85c255' },
@@ -184,8 +185,7 @@ export const EXTRA_TOOLTIP: Record<string, ReactNode> = {
  * use outside React
  */
 export function getCurrentTheme() {
-  const theme =
-    ALL_THEMES.find((t) => t.id === (settings.theme || DEFAULT_BILI_PINK_THEME.id)) || DEFAULT_BILI_PINK_THEME
+  const theme = ALL_THEMES.find((t) => t.id === (settings.theme || BILI_BRAND_PINK_THEME.id)) || BILI_BRAND_PINK_THEME
   if (theme.id === COLOR_PICKER_THEME.id && settings.colorPickerThemeSelectedColor) {
     theme.colorPrimary = settings.colorPickerThemeSelectedColor
   }
@@ -197,9 +197,9 @@ export function getCurrentTheme() {
  */
 export function useCurrentTheme() {
   let { theme: themeId, colorPickerThemeSelectedColor } = useSettingsSnapshot()
-  themeId ||= DEFAULT_BILI_PINK_THEME.id
+  themeId ||= BILI_BRAND_PINK_THEME.id
   return useMemo(() => {
-    const theme = ALL_THEMES.find((t) => t.id === themeId) || DEFAULT_BILI_PINK_THEME
+    const theme = ALL_THEMES.find((t) => t.id === themeId) || BILI_BRAND_PINK_THEME
     if (theme.id === COLOR_PICKER_THEME.id && colorPickerThemeSelectedColor) {
       return { ...theme, colorPrimary: colorPickerThemeSelectedColor }
     }

@@ -5,8 +5,7 @@
  */
 
 import { effect } from 'valtio-reactive'
-import { APP_NAMESPACE } from '$common'
-import { DEFAULT_BILI_PINK_THEME } from '$components/ModalSettings/theme.shared'
+import { APP_NAMESPACE, BiliBrandColor } from '$common'
 import { useSettingsSnapshot } from '$modules/settings'
 import { minmax } from '$utility/num'
 import { valtioFactory } from '$utility/valtio'
@@ -73,7 +72,8 @@ export function useBackToTopRight(): number | undefined {
 export const $evolvedThemeColor = valtioFactory(function calcEvolvedThemeColor() {
   return window.getComputedStyle(document.documentElement).getPropertyValue('--theme-color')
 })
-// persist
+
+// for persist
 export const evolvedThemeColorStorageKey = `${APP_NAMESPACE}:evolved-theme-color-hex`
 effect(() => {
   const hex = $evolvedThemeColor.get()
@@ -81,7 +81,7 @@ effect(() => {
   localStorage.setItem(evolvedThemeColorStorageKey, hex)
 })
 export function getEvolvedThemeColorFallback() {
-  return localStorage.getItem(evolvedThemeColorStorageKey) || DEFAULT_BILI_PINK_THEME.colorPrimary
+  return localStorage.getItem(evolvedThemeColorStorageKey) || BiliBrandColor.Pink
 }
 /* #endregion */
 

@@ -10,7 +10,7 @@ import { useSnapshot } from 'valtio'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { antSpinIndicator, kbdClassName } from '$components/fragments'
-import { DEFAULT_BILI_PINK_THEME } from '$components/ModalSettings/theme.shared'
+import { BILI_BRAND_PINK_THEME } from '$components/ModalSettings/theme.shared'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
 import {
@@ -359,5 +359,5 @@ export function ModalFavManager({
 
 function useSrcFavFolderBgClassName() {
   const { theme } = useSettingsSnapshot()
-  return theme === DEFAULT_BILI_PINK_THEME.id ? 'bg-$brand_blue' : 'bg-$brand_pink'
+  return theme === BILI_BRAND_PINK_THEME.id ? 'bg-$brand_blue' : 'bg-$brand_pink'
 }
