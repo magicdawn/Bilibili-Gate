@@ -119,6 +119,9 @@ importers:
       valtio:
         specifier: ^2.3.0
         version: 2.3.0(@types/react@18.3.27)(react@18.3.1)
+      valtio-reactive:
+        specifier: ^0.2.0
+        version: 0.2.0(valtio@2.3.0(@types/react@18.3.27)(react@18.3.1))
     devDependencies:
       '@babel/plugin-syntax-explicit-resource-management':
         specifier: ^7.28.6
@@ -5094,6 +5097,11 @@ packages:
 
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
+
+  valtio-reactive@0.2.0:
+    resolution: {integrity: sha512-Zl1vr0w2S33QP9wBRX60p1LczyHrX+AWLB3iRl1doCdUTKaCziSj9GZIyrEIMykfjd0b3t27+X44phKOplcyfg==}
+    peerDependencies:
+      valtio: '>=2.0.0'
 
   valtio@2.3.0:
     resolution: {integrity: sha512-1MfKNcmOIdBSatiJsYgw420n6jnD+jeoI0V+RkOQbCB0ElLh6GKUfPr0hc9uq/KBGeghivDEarRsKFFdSQQnKw==}
@@ -10392,6 +10400,10 @@ snapshots:
   user-agent-data-types@0.4.2: {}
 
   util-deprecate@1.0.2: {}
+
+  valtio-reactive@0.2.0(valtio@2.3.0(@types/react@18.3.27)(react@18.3.1)):
+    dependencies:
+      valtio: 2.3.0(@types/react@18.3.27)(react@18.3.1)
 
   valtio@2.3.0(@types/react@18.3.27)(react@18.3.1):
     dependencies:

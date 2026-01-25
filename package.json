@@ -61,7 +61,8 @@
     "spark-md5": "^3.0.2",
     "ua-parser-js": "^1.0.41",
     "unocss-merge": "^0.8.2",
-    "valtio": "^2.3.0"
+    "valtio": "^2.3.0",
+    "valtio-reactive": "^0.2.0"
   },
   "devDependencies": {
     "@babel/plugin-syntax-explicit-resource-management": "^7.28.6",

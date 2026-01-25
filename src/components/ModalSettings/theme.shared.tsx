@@ -1,7 +1,7 @@
 import { PURPLE_COLORS } from 'purple-colors'
 import { useMemo, type ReactNode } from 'react'
 import { appPrimaryColorValue } from '$components/css-vars'
-import { $evolvedThemeColor } from '$header'
+import { $evolvedThemeColor, getEvolvedThemeColorFallback } from '$header'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import LX_THEMES from './lx-themes.json'
 
@@ -100,7 +100,7 @@ export const ThemeGroups: {
       {
         id: BIBIBILI_EVOLVED_SYNC_ID,
         name: 'B-Evolved',
-        colorPrimary: 'var(--theme-color, #f69)',
+        colorPrimary: `var(--theme-color,${getEvolvedThemeColorFallback()})`,
         tooltip: (
           <>
             使用 Bilibili-Evolved 的主题色
@@ -210,24 +210,13 @@ export function useCurrentTheme() {
 /**
  * colorPrimary hex 值, 需传入 antd
  */
-export function getColorPrimaryHex() {
-  const currentTheme = getCurrentTheme()
-  const evolvedThemeColor = $evolvedThemeColor.get()
-
-  let colorPrimary = currentTheme.colorPrimary
-  if (currentTheme.id === BIBIBILI_EVOLVED_SYNC_ID) {
-    colorPrimary = evolvedThemeColor || DEFAULT_BILI_PINK_THEME.colorPrimary
-  }
-
-  return colorPrimary
-}
 export function useColorPrimaryHex() {
   const currentTheme = useCurrentTheme()
   const evolvedThemeColor = $evolvedThemeColor.use()
 
   let colorPrimary = currentTheme.colorPrimary
   if (currentTheme.id === BIBIBILI_EVOLVED_SYNC_ID) {
-    colorPrimary = evolvedThemeColor || DEFAULT_BILI_PINK_THEME.colorPrimary
+    colorPrimary = evolvedThemeColor || getEvolvedThemeColorFallback()
   }
 
   return colorPrimary
