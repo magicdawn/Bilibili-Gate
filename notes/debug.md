@@ -7,5 +7,5 @@
 ## 2. 控制台执行
 
 ```js
-copy(bilibili_app_recommend_activeItem)
+copy(bilibili_gate_activeItem)
 ```

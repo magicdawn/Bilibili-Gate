@@ -51,7 +51,6 @@ import { ELiveStatus } from '$modules/rec-services/live/live-enum'
 import { useWatchlaterState } from '$modules/rec-services/watchlater'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { isWebApiSuccess } from '$request'
-import { isFirefox } from '$ua'
 import { videoCardBorderRadiusValue } from '../css-vars'
 import { useLargePreviewRelated } from '../LargePreview/useLargePreview'
 import { multiSelectedCss, useBlockedCardCss } from './card-border-css'
@@ -587,57 +586,56 @@ const VideoCardInner = memo(function VideoCardInner({
   const target = useLinkTarget()
   const coverContent = (
     <a
-      ref={(el) => (coverRef.current = el)}
+      ref={coverRef}
       href={href}
       target={target}
-      className={clsx(APP_CLS_CARD_COVER, shouldMakeCoverClear && 'ring-1px ring-gate-border')}
-      css={[
-        css`
-          display: block; /* firefox need this */
-          position: relative;
-          overflow: hidden;
-          isolation: isolate; // new stacking context
-        `,
-        coverRoundCss,
-        displayingAsList && displayAsListCss.cover,
-      ]}
+      // display: block; /* firefox need this */
+      className={clsx(
+        APP_CLS_CARD_COVER,
+        'relative isolate block overflow-hidden',
+        shouldMakeCoverClear && 'ring-1px ring-gate-border',
+      )}
+      css={[coverRoundCss, displayingAsList && displayAsListCss.cover]}
       onClick={handleVideoLinkClick}
       onContextMenu={(e) => {
         const handled = showNativeContextMenuWhenAltKeyPressed(e)
         if (handled) return
-
         // try to solve https://github.com/magicdawn/Bilibili-Gate/issues/92
         // can't reproduce on macOS
         e.preventDefault()
       }}
     >
+      {/* cover */}
+      {/* __image--wrap 上有 padding-top: 56.25% = 9/16, 用于保持高度, 在 firefox 中有明显的文字位移 */}
+      {/* picture: absolute, top:0, left: 0  */}
+      {/* 故加上 aspect-ratio: 16/9 */}
       <div className='bili-video-card__image' style={{ aspectRatio: '16 / 9' }}>
-        {/* __image--wrap 上有 padding-top: 56.25% = 9/16, 用于保持高度, 在 firefox 中有明显的文字位移 */}
-        {/* picture: absolute, top:0, left: 0  */}
-        {/* 故加上 aspect-ratio: 16/9 */}
-        <div className='bili-video-card__image--wrap'>
-          <Picture
-            src={`${cover}@672w_378h_1c_!web-home-common-cover`}
-            className='bili-video-card__cover v-img'
-            style={{ borderRadius: 0 }}
-            imgProps={{
-              // in firefox, alt text is visible during loading
-              alt: isFirefox ? '' : title,
-            }}
-          />
-        </div>
+        {cover ? (
+          <div className='bili-video-card__image--wrap'>
+            <Picture
+              src={`${cover}@672w_378h_1c_!web-home-common-cover`}
+              className='bili-video-card__cover v-img'
+              style={{ borderRadius: 0 }}
+              imgProps={{ alt: title }}
+            />
+          </div>
+        ) : (
+          <div className='size-full flex-center'>
+            <div className='line-clamp-4 my-auto p-2 text-center line-height-snug'>{title}</div>
+          </div>
+        )}
       </div>
 
       <div
         className='bili-video-card__stats'
-        css={[
-          css`
-            ${clsVideoCardPrefix} & {
-              pointer-events: none;
-              border-radius: 0;
-            }
-          `,
-        ]}
+        css={css`
+          ${clsVideoCardPrefix} & {
+            pointer-events: none;
+            border-radius: 0;
+            padding-top: 5px;
+            height: auto;
+          }
+        `}
       >
         <div className='bili-video-card__stats--left gap-x-4px xl:gap-x-8px'>
           {statItems.map(({ field, value }) => (
@@ -665,7 +663,7 @@ const VideoCardInner = memo(function VideoCardInner({
     </a>
   )
 
-  /* bottom: after the cover */
+  /* bottom: cover-bottom or cover-right(list mode) */
   const bottomContent = (
     <VideoCardBottom
       item={item}

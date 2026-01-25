@@ -50,6 +50,11 @@
   .ant-btn {
     font-size: 13px;
   }
+
+  // firefox alt text visible during img loading
+  img:-moz-loading {
+    visibility: hidden;
+  }
 }
 
 @media (max-width: 1440px) {

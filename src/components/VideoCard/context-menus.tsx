@@ -17,7 +17,6 @@ import { useRecSelfContext } from '$components/Recommends/rec.shared'
 import {
   isAppRecommend,
   isDynamicFeed,
-  isLive,
   isPcRecommend,
   isSpaceUpload,
   type DynamicFeedItemExtend,
@@ -180,16 +179,15 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
   /**
    * 查看 UP 的动态 或 投稿
    */
-  const hasViewUpVideoListEntry = (isNormalVideo || isLive(item)) && !!authorMid && !!authorName
+  // before 2026-01-25 15:32:51, has a prefix `(isNormalVideo || isLive(item))`
+  const hasViewUpVideoListEntry = !!authorMid && !!authorName
   const onViewUpDyn = useMemoizedFn(() => {
-    if (!hasViewUpVideoListEntry) return
-    const u = `/?${DynamicFeedQueryKey.Mid}=${authorMid}`
-    openNewTab(u)
+    if (!authorMid) return
+    openNewTab(`/?${DynamicFeedQueryKey.Mid}=${authorMid}`)
   })
   const onViewUpSpaceUpload = useMemoizedFn(() => {
-    if (!hasViewUpVideoListEntry) return
-    const u = `/?${SpaceUploadQueryKey.Mid}=${authorMid}`
-    openNewTab(u)
+    if (!authorMid) return
+    openNewTab(`/?${SpaceUploadQueryKey.Mid}=${authorMid}`)
   })
 
   /**

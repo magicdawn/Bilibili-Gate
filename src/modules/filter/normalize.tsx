@@ -58,7 +58,7 @@ export interface IVideoCardData {
   title: string
   titleRender?: ReactNode
 
-  cover: string
+  cover?: string
   pubts?: number // unix timestamp
   pubdateDisplay?: string // for display
   pubdateDisplayForTitleAttr?: string
@@ -143,7 +143,7 @@ export function normalizeCardData(item: RecItemType) {
 
   // handle mixed content
   if (ret.authorFace) ret.authorFace = toHttps(ret.authorFace)
-  ret.cover = toHttps(ret.cover)
+  if (ret.cover) ret.cover = toHttps(ret.cover)
 
   return ret
 }

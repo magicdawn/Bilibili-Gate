@@ -99,7 +99,7 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
       ...sharedCardData,
       goto: 'opus',
       href: opus.jump_url,
-      cover: opus.pics?.[0]?.url || '',
+      cover: opus.pics?.[0]?.url,
       title: opus.title || opus.summary?.text || '',
       topMarkText,
     }
