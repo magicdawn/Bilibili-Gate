@@ -142,8 +142,8 @@ importers:
         specifier: ^11.13.5
         version: 11.13.5
       '@iconify/json':
-        specifier: ^2.2.431
-        version: 2.2.431
+        specifier: ^2.2.432
+        version: 2.2.432
       '@magicdawn/eslint-config':
         specifier: ^1.6.1
         version: 1.6.1(@typescript-eslint/eslint-plugin@8.50.1(@typescript-eslint/parser@8.50.1(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/parser@8.50.1(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(@unocss/eslint-plugin@66.6.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.2(jiti@2.6.1))(prettier@3.8.1)(typescript@5.9.3)
@@ -184,8 +184,8 @@ importers:
         specifier: ^0.7.39
         version: 0.7.39
       '@typescript/native-preview':
-        specifier: 7.0.0-dev.20260123.3
-        version: 7.0.0-dev.20260123.3
+        specifier: 7.0.0-dev.20260126.1
+        version: 7.0.0-dev.20260126.1
       '@unocss/eslint-plugin':
         specifier: ^66.6.0
         version: 66.6.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
@@ -241,8 +241,8 @@ importers:
         specifier: ^1.97.3
         version: 1.97.3
       turbo:
-        specifier: ^2.7.5
-        version: 2.7.5
+        specifier: ^2.7.6
+        version: 2.7.6
       type-fest:
         specifier: ^5.4.1
         version: 5.4.1
@@ -259,11 +259,11 @@ importers:
         specifier: ^66.6.0
         version: 66.6.0(postcss@8.5.6)(vite@7.3.1(@types/node@25.0.10)(jiti@2.6.1)(sass-embedded@1.97.3)(sass@1.97.3)(tsx@4.19.2)(yaml@2.8.2))
       unplugin-auto-import:
-        specifier: ^20.3.0
-        version: 20.3.0
+        specifier: ^21.0.0
+        version: 21.0.0
       unplugin-icons:
-        specifier: ^22.5.0
-        version: 22.5.0(@svgr/core@8.1.0(typescript@5.9.3))(@vue/compiler-sfc@3.5.12)
+        specifier: ^23.0.1
+        version: 23.0.1(@svgr/core@8.1.0(typescript@5.9.3))(@vue/compiler-sfc@3.5.12)
       vite:
         specifier: ^7.3.1
         version: 7.3.1(@types/node@25.0.10)(jiti@2.6.1)(sass-embedded@1.97.3)(sass@1.97.3)(tsx@4.19.2)(yaml@2.8.2)
@@ -1127,8 +1127,8 @@ packages:
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
     engines: {node: '>=18.18'}
 
-  '@iconify/json@2.2.431':
-    resolution: {integrity: sha512-pOJ8ntUspUj6MNpNVdc9r3ezsuP70bhXG6/w3y0id7vqJqXJasjdiWu6SXi9GPleTf2sHdRB6R+gTyCyiKajXg==}
+  '@iconify/json@2.2.432':
+    resolution: {integrity: sha512-W0Qa5ByXfJUEtami6b4Mm4DRfcAWWsKsUhJ2uiaEOE2QabREEcDSa1op9qP12yrhuArEPiCyuO04rHNxArZ4Xw==}
 
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
@@ -2291,43 +2291,43 @@ packages:
     resolution: {integrity: sha512-LZ2NqIHFhvFwxG0qZeLL9DvdNAHPGCY5dIRwBhyYeU+LfLhcStE1ImjsuTG/WaVh3XysGaeLW8Rqq7cGkPCFvw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260123.3':
-    resolution: {integrity: sha512-sIVxtOi5KXcbxyA7zMkB0zw4BQX5muehXciQlGNBuAqupQJgxbUPNuypXcmJKFDDUdEkEARRS/whtG0SA3HTrg==}
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260126.1':
+    resolution: {integrity: sha512-4VgZc/kKQEzPj4QJ7DIq9Wocy4ilpV4Qmy7OV80aPSwzR4mnp8ovyiu1++c3JptthdCNe5KVQguSRn2SseBvDA==}
     cpu: [arm64]
     os: [darwin]
 
-  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260123.3':
-    resolution: {integrity: sha512-1yF90TxZvMa7MmlP7ExifqLOvPl4wNsTB58rE1hK9b6BAB/7/nx+CeYuWIoID4CAG2r1TY1EPqpJkbFyd6w2Rw==}
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260126.1':
+    resolution: {integrity: sha512-mY1nYNE+CFUEIMemKPz4QSsOx3rnNLsmyT2OPcTIHSU7/6P4BPlasJ1jKtO60ydAbEjJEGLnpeSZGWsBQghtYw==}
     cpu: [x64]
     os: [darwin]
 
-  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260123.3':
-    resolution: {integrity: sha512-GiiukbZlzxrigq+52NemzgAleQ2iM9k88KGZnQgy8Y/7Rf73B8YgBrkGipgUZCcAWbvlhDooXMLAuQLXc6wdwQ==}
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260126.1':
+    resolution: {integrity: sha512-V+eVxduCKUsujuRFVbmwUF4ZfGKlaJP5XYml+96TzW+m+bv+K0nCWmWQTFVF8e/UOH+NoW6mkb7p0KUQGQpV7A==}
     cpu: [arm64]
     os: [linux]
 
-  '@typescript/native-preview-linux-arm@7.0.0-dev.20260123.3':
-    resolution: {integrity: sha512-H8y6qC4mJhzJvtq2bXfNcoD86KOIB7bCa571Mv7r5cATzN4BVG7pym6m49N+m5Tnoe1BkazWbMUZlH6yxrqiUQ==}
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20260126.1':
+    resolution: {integrity: sha512-rPGcUjzuDx/t9ZfCkBLn15PQBr7FKd41sKAG3q2auy/0fLhTGzdaDQ3Qai7y5BtIswX5B19YJZAOPx3Z4Jzyew==}
     cpu: [arm]
     os: [linux]
 
-  '@typescript/native-preview-linux-x64@7.0.0-dev.20260123.3':
-    resolution: {integrity: sha512-CsP6Aw7b3XNd293VYBfl6K1PYVLMjxYcyBRUpu9JX8l9X4RbTdJl6O1/Ab5/X6l+C8ukv2w0lR3CavX2K1kxnQ==}
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20260126.1':
+    resolution: {integrity: sha512-8F6WZkVu1O0Ob/weZ2siR8zitBbp7dPzOn3/jaC++FXXD9R1t/ILQ1WcLYUrW/W0U1bwq6Aenrs0xJq32Nn8WQ==}
     cpu: [x64]
     os: [linux]
 
-  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260123.3':
-    resolution: {integrity: sha512-Za3ra9JhTRUakBuxCIa5qJnwlkHUgMjBZ9p/BH3lQp3Wwx0dhav3aA+9is514iSZw8fR/q4hhesFXCrJW8XQzg==}
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260126.1':
+    resolution: {integrity: sha512-UaHT07kICWJXstad3o5LA6PugKxOmmPRtbXrLcwaH6Q+67cJ4RMuWxsxl6KDgcouiooMM/TR2lSclYp+4bsz8g==}
     cpu: [arm64]
     os: [win32]
 
-  '@typescript/native-preview-win32-x64@7.0.0-dev.20260123.3':
-    resolution: {integrity: sha512-H7/PE9vznvc4mQz6Hiuw4tTQq9J0b5QWebYoGXoxOqFF/JI3m920yv8+nRI144cVoBYdonOwanexFfNq4KdwCQ==}
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20260126.1':
+    resolution: {integrity: sha512-NpP2XaMQrQHqP+fl5mM7xJOnUFlRi9IvIqxJ/AyrcforDt+0N5b9Jk8pYWqAyUgdmvPjvPgcVE6KanXUby50OQ==}
     cpu: [x64]
     os: [win32]
 
-  '@typescript/native-preview@7.0.0-dev.20260123.3':
-    resolution: {integrity: sha512-VE8ebP25U8B3XNIe1azQka7ty+lgYse7j8UtKuEbbC2G8JL/QY2iGIFaeR936h6ezPIjSDsHVNlsV5C5VQY5qA==}
+  '@typescript/native-preview@7.0.0-dev.20260126.1':
+    resolution: {integrity: sha512-YlWe5IrAhleaAfGE5m8DQz/KhJyp71pzwXOU/zh1/nWpDAeqMlRzRRLPRMx7AbsIqPB5sClMg20DVw1mn1YWYw==}
     hasBin: true
 
   '@unocss/astro@66.6.0':
@@ -4891,38 +4891,38 @@ packages:
     engines: {node: '>=18.0.0'}
     hasBin: true
 
-  turbo-darwin-64@2.7.5:
-    resolution: {integrity: sha512-nN3wfLLj4OES/7awYyyM7fkU8U8sAFxsXau2bYJwAWi6T09jd87DgHD8N31zXaJ7LcpyppHWPRI2Ov9MuZEwnQ==}
+  turbo-darwin-64@2.7.6:
+    resolution: {integrity: sha512-bYu0qnWju2Ha3EbIkPCk1SMLT3sltKh1P/Jy5FER6BmH++H5z+T5MHh3W1Xoers9rk4N1VdKvog9FO1pxQyjhw==}
     cpu: [x64]
     os: [darwin]
 
-  turbo-darwin-arm64@2.7.5:
-    resolution: {integrity: sha512-wCoDHMiTf3FgLAbZHDDx/unNNonSGhsF5AbbYODbxnpYyoKDpEYacUEPjZD895vDhNvYCH0Nnk24YsP4n/cD6g==}
+  turbo-darwin-arm64@2.7.6:
+    resolution: {integrity: sha512-KCxTf3Y1hgNLYIWRLw8bwH8Zie9RyCGoxAlXYsCBI/YNqBSR+ZZK9KYzFxAqDaVaNvTwLFv3rJRGsXOFWg4+Uw==}
     cpu: [arm64]
     os: [darwin]
 
-  turbo-linux-64@2.7.5:
-    resolution: {integrity: sha512-KKPvhOmJMmzWj/yjeO4LywkQ85vOJyhru7AZk/+c4B6OUh/odQ++SiIJBSbTG2lm1CuV5gV5vXZnf/2AMlu3Zg==}
+  turbo-linux-64@2.7.6:
+    resolution: {integrity: sha512-vjoU8zIfNgvJR3cMitgw7inEoi6bmuVuFawDl5yKtxjAEhDktFdRBpGS3WojD4l3BklBbIK689ssXcGf21LxRA==}
     cpu: [x64]
     os: [linux]
 
-  turbo-linux-arm64@2.7.5:
-    resolution: {integrity: sha512-8PIva4L6BQhiPikUTds9lSFSHXVDAsEvV6QUlgwPsXrtXVQMVi6Sv9p+IxtlWQFvGkdYJUgX9GnK2rC030Xcmw==}
+  turbo-linux-arm64@2.7.6:
+    resolution: {integrity: sha512-TcMpBvTqZf+1DptrVYLbZls7WY1UVNDTGaf0bo7/GCgWYv5eZHCVo4Td7kCJeDU4glbXg67REX0md0S0V6ghMg==}
     cpu: [arm64]
     os: [linux]
 
-  turbo-windows-64@2.7.5:
-    resolution: {integrity: sha512-rupskv/mkIUgQXzX/wUiK00mKMorQcK8yzhGFha/D5lm05FEnLx8dsip6rWzMcVpvh+4GUMA56PgtnOgpel2AA==}
+  turbo-windows-64@2.7.6:
+    resolution: {integrity: sha512-1/MhkYldiihjneY8QnnDMbAkHXn/udTWSVYS94EMlkE9AShozsLTTOT1gDOpX06EfEW5njP09suhMvxbvwuwpQ==}
     cpu: [x64]
     os: [win32]
 
-  turbo-windows-arm64@2.7.5:
-    resolution: {integrity: sha512-G377Gxn6P42RnCzfMyDvsqQV7j69kVHKlhz9J4RhtJOB5+DyY4yYh/w0oTIxZQ4JRMmhjwLu3w9zncMoQ6nNDw==}
+  turbo-windows-arm64@2.7.6:
+    resolution: {integrity: sha512-0wDVnUJLFAWm4ZzOQFDkbyyUqaszorTGf3Rdc22IRIyJTTLd6ajqdb+cWD89UZ1RKr953+PZR1gqgWQY4PDuhA==}
     cpu: [arm64]
     os: [win32]
 
-  turbo@2.7.5:
-    resolution: {integrity: sha512-7Imdmg37joOloTnj+DPrab9hIaQcDdJ5RwSzcauo/wMOSAgO+A/I/8b3hsGGs6PWQz70m/jkPgdqWsfNKtwwDQ==}
+  turbo@2.7.6:
+    resolution: {integrity: sha512-PO9AvJLEsNLO+EYhF4zB+v10hOjsJe5kJW+S6tTbRv+TW7gf1Qer4mfjP9h3/y9h8ZiPvOrenxnEgDtFgaM5zw==}
     hasBin: true
 
   type-check@0.4.0:
@@ -5031,9 +5031,9 @@ packages:
       vite:
         optional: true
 
-  unplugin-auto-import@20.3.0:
-    resolution: {integrity: sha512-RcSEQiVv7g0mLMMXibYVKk8mpteKxvyffGuDKqZZiFr7Oq3PB1HwgHdK5O7H4AzbhzHoVKG0NnMnsk/1HIVYzQ==}
-    engines: {node: '>=14'}
+  unplugin-auto-import@21.0.0:
+    resolution: {integrity: sha512-vWuC8SwqJmxZFYwPojhOhOXDb5xFhNNcEVb9K/RFkyk/3VnfaOjzitWN7v+8DEKpMjSsY2AEGXNgt6I0yQrhRQ==}
+    engines: {node: '>=20.19.0'}
     peerDependencies:
       '@nuxt/kit': ^4.0.0
       '@vueuse/core': '*'
@@ -5043,15 +5043,13 @@ packages:
       '@vueuse/core':
         optional: true
 
-  unplugin-icons@22.5.0:
-    resolution: {integrity: sha512-MBlMtT5RuMYZy4TZgqUL2OTtOdTUVsS1Mhj6G1pEzMlFJlEnq6mhUfoIt45gBWxHcsOdXJDWLg3pRZ+YmvAVWQ==}
+  unplugin-icons@23.0.1:
+    resolution: {integrity: sha512-rv0XEJepajKzDLvRUWASM8K+8+/CCfZn2jtogXqg6RIp7kpatRc/aFrVJn8ANQA09e++lPEEv9yX8cC9enc+QQ==}
     peerDependencies:
       '@svgr/core': '>=7.0.0'
       '@svgx/core': ^1.0.1
-      '@vue/compiler-sfc': ^3.0.2 || ^2.7.0
+      '@vue/compiler-sfc': ^3.0.2
       svelte: ^3.0.0 || ^4.0.0 || ^5.0.0
-      vue-template-compiler: ^2.6.12
-      vue-template-es2015-compiler: ^1.9.0
     peerDependenciesMeta:
       '@svgr/core':
         optional: true
@@ -5060,10 +5058,6 @@ packages:
       '@vue/compiler-sfc':
         optional: true
       svelte:
-        optional: true
-      vue-template-compiler:
-        optional: true
-      vue-template-es2015-compiler:
         optional: true
 
   unplugin-utils@0.3.1:
@@ -6124,7 +6118,7 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.3': {}
 
-  '@iconify/json@2.2.431':
+  '@iconify/json@2.2.432':
     dependencies:
       '@iconify/types': 2.0.0
       pathe: 2.0.3
@@ -7230,36 +7224,36 @@ snapshots:
       '@typescript-eslint/types': 8.53.0
       eslint-visitor-keys: 4.2.1
 
-  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260123.3':
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260126.1':
     optional: true
 
-  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260123.3':
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260126.1':
     optional: true
 
-  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260123.3':
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260126.1':
     optional: true
 
-  '@typescript/native-preview-linux-arm@7.0.0-dev.20260123.3':
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20260126.1':
     optional: true
 
-  '@typescript/native-preview-linux-x64@7.0.0-dev.20260123.3':
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20260126.1':
     optional: true
 
-  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260123.3':
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260126.1':
     optional: true
 
-  '@typescript/native-preview-win32-x64@7.0.0-dev.20260123.3':
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20260126.1':
     optional: true
 
-  '@typescript/native-preview@7.0.0-dev.20260123.3':
+  '@typescript/native-preview@7.0.0-dev.20260126.1':
     optionalDependencies:
-      '@typescript/native-preview-darwin-arm64': 7.0.0-dev.20260123.3
-      '@typescript/native-preview-darwin-x64': 7.0.0-dev.20260123.3
-      '@typescript/native-preview-linux-arm': 7.0.0-dev.20260123.3
-      '@typescript/native-preview-linux-arm64': 7.0.0-dev.20260123.3
-      '@typescript/native-preview-linux-x64': 7.0.0-dev.20260123.3
-      '@typescript/native-preview-win32-arm64': 7.0.0-dev.20260123.3
-      '@typescript/native-preview-win32-x64': 7.0.0-dev.20260123.3
+      '@typescript/native-preview-darwin-arm64': 7.0.0-dev.20260126.1
+      '@typescript/native-preview-darwin-x64': 7.0.0-dev.20260126.1
+      '@typescript/native-preview-linux-arm': 7.0.0-dev.20260126.1
+      '@typescript/native-preview-linux-arm64': 7.0.0-dev.20260126.1
+      '@typescript/native-preview-linux-x64': 7.0.0-dev.20260126.1
+      '@typescript/native-preview-win32-arm64': 7.0.0-dev.20260126.1
+      '@typescript/native-preview-win32-x64': 7.0.0-dev.20260126.1
 
   '@unocss/astro@66.6.0(vite@7.3.1(@types/node@25.0.10)(jiti@2.6.1)(sass-embedded@1.97.3)(sass@1.97.3)(tsx@4.19.2)(yaml@2.8.2))':
     dependencies:
@@ -10173,32 +10167,32 @@ snapshots:
       fsevents: 2.3.3
     optional: true
 
-  turbo-darwin-64@2.7.5:
+  turbo-darwin-64@2.7.6:
     optional: true
 
-  turbo-darwin-arm64@2.7.5:
+  turbo-darwin-arm64@2.7.6:
     optional: true
 
-  turbo-linux-64@2.7.5:
+  turbo-linux-64@2.7.6:
     optional: true
 
-  turbo-linux-arm64@2.7.5:
+  turbo-linux-arm64@2.7.6:
     optional: true
 
-  turbo-windows-64@2.7.5:
+  turbo-windows-64@2.7.6:
     optional: true
 
-  turbo-windows-arm64@2.7.5:
+  turbo-windows-arm64@2.7.6:
     optional: true
 
-  turbo@2.7.5:
+  turbo@2.7.6:
     optionalDependencies:
-      turbo-darwin-64: 2.7.5
-      turbo-darwin-arm64: 2.7.5
-      turbo-linux-64: 2.7.5
-      turbo-linux-arm64: 2.7.5
-      turbo-windows-64: 2.7.5
-      turbo-windows-arm64: 2.7.5
+      turbo-darwin-64: 2.7.6
+      turbo-darwin-arm64: 2.7.6
+      turbo-linux-64: 2.7.6
+      turbo-linux-arm64: 2.7.6
+      turbo-windows-64: 2.7.6
+      turbo-windows-arm64: 2.7.6
 
   type-check@0.4.0:
     dependencies:
@@ -10336,7 +10330,7 @@ snapshots:
       - postcss
       - supports-color
 
-  unplugin-auto-import@20.3.0:
+  unplugin-auto-import@21.0.0:
     dependencies:
       local-pkg: 1.1.2
       magic-string: 0.30.21
@@ -10345,18 +10339,16 @@ snapshots:
       unplugin: 2.3.11
       unplugin-utils: 0.3.1
 
-  unplugin-icons@22.5.0(@svgr/core@8.1.0(typescript@5.9.3))(@vue/compiler-sfc@3.5.12):
+  unplugin-icons@23.0.1(@svgr/core@8.1.0(typescript@5.9.3))(@vue/compiler-sfc@3.5.12):
     dependencies:
       '@antfu/install-pkg': 1.1.0
       '@iconify/utils': 3.1.0
-      debug: 4.4.3
       local-pkg: 1.1.2
+      obug: 2.1.1
       unplugin: 2.3.11
     optionalDependencies:
       '@svgr/core': 8.1.0(typescript@5.9.3)
       '@vue/compiler-sfc': 3.5.12
-    transitivePeerDependencies:
-      - supports-color
 
   unplugin-utils@0.3.1:
     dependencies:
