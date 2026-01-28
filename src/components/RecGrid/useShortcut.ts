@@ -15,7 +15,7 @@ interface IOptions {
   maxIndex: number
 
   /** 用于获取 cards, 获取 col count */
-  gridRef: RefObject<HTMLElement>
+  gridRef: RefObject<HTMLElement | null>
 
   /** 判断 active card 与 scroller 关系, 判定 activeIndex 是否有效 */
   getScrollerRect: () => DOMRect | null | undefined

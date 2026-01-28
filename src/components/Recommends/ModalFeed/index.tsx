@@ -34,7 +34,7 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
   } = useSettingsSnapshot()
   const { usingTwoColumnMode } = gridDisplayModeChecker(gridDisplayMode)
   const useFullScreen = !usingTwoColumnMode && modalFeedFullScreen
-  const scrollerRef = useRef<HTMLDivElement>(null)
+  const scrollerRef = useRef<HTMLDivElement | null>(null)
 
   const modalBorderCls = useMemo(() => {
     const borderWidth = useFullScreen ? 'b-5px' : 'b-1px'

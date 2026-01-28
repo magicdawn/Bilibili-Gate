@@ -3,12 +3,12 @@ import { Button } from 'antd'
 import clsx from 'clsx'
 import { useAnimate } from 'framer-motion'
 import {
-  forwardRef,
   useImperativeHandle,
   useRef,
   type CSSProperties,
   type MouseEvent,
   type MouseEventHandler,
+  type Ref,
 } from 'react'
 import { useSnapshot } from 'valtio'
 import { clsAntdButton } from '$components/fragments'
@@ -27,11 +27,9 @@ export type RefreshButtonProps = {
   style?: CSSProperties
   className?: string
   refreshHotkeyEnabled?: boolean
+  ref?: Ref<RefreshButtonActions>
 }
-export const RefreshButton = forwardRef<RefreshButtonActions, RefreshButtonProps>(function (
-  { className = '', style, refreshHotkeyEnabled },
-  ref,
-) {
+export function RefreshButton({ className = '', style, refreshHotkeyEnabled, ref }: RefreshButtonProps) {
   refreshHotkeyEnabled ??= true
   const { refreshing } = useRecSelfContext().useStore()
   const onRefresh = useOnRefresh()
@@ -88,4 +86,4 @@ export const RefreshButton = forwardRef<RefreshButtonActions, RefreshButtonProps
       {text}
     </Button>
   )
-})
+}

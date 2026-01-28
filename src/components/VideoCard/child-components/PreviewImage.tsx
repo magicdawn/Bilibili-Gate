@@ -1,7 +1,6 @@
 import { useMemoizedFn, useMount } from 'ahooks'
 import clsx from 'clsx'
 import {
-  forwardRef,
   memo,
   useImperativeHandle,
   useMemo,
@@ -10,6 +9,7 @@ import {
   type ComponentProps,
   type ComponentPropsWithoutRef,
   type ComponentRef,
+  type Ref,
 } from 'react'
 import { minmax } from '$utility/num'
 import { clsZPreviewImageWrapper } from '../index.shared'
@@ -31,66 +31,67 @@ const clsPreviewImageWrapper = clsx(
  * previewT 代表将渲染的图片
  * 两个解耦, previewT 可以 fallback 到 `previewProgress * videoDuration`
  */
-interface IProps {
+interface IProps extends ComponentPropsWithoutRef<'div'> {
   videoDuration: number
   pvideo?: PvideoData
   progress?: number
   t?: number
+  ref?: Ref<PreviewImageRef>
 }
 
 export type PreviewImageRef = {
   getT: () => number | undefined
 }
 
-export const PreviewImage = memo(
-  forwardRef<PreviewImageRef, IProps & ComponentPropsWithoutRef<'div'>>(function (
-    { videoDuration, pvideo, progress, t, className, ...restProps },
-    ref,
-  ) {
-    const rootElRef = useRef<ComponentRef<'div'>>(null)
-    const [size, setSize] = useState(() => ({ width: 0, height: 0 }))
+export const PreviewImage = memo(function PreviewImage({
+  videoDuration,
+  pvideo,
+  progress,
+  t,
+  className,
+  ref,
+  ...restProps
+}: IProps) {
+  const rootElRef = useRef<ComponentRef<'div'>>(null)
+  const [size, setSize] = useState(() => ({ width: 0, height: 0 }))
 
-    useMount(() => {
-      const rect = rootElRef.current?.getBoundingClientRect()
-      if (!rect) return
-      setSize({ width: rect.width, height: rect.height })
-    })
+  useMount(() => {
+    const rect = rootElRef.current?.getBoundingClientRect()
+    if (!rect) return
+    setSize({ width: rect.width, height: rect.height })
+  })
 
-    const usingProgress = useMemo(() => {
-      function getProgress(): number | undefined {
-        if (typeof progress === 'number' && !Number.isNaN(progress)) return progress
-        return 0
-      }
-      return minmax(getProgress() ?? 0, 0, 1)
-    }, [progress])
-
-    const usingT = useMemo(
-      () => t ?? Math.floor((videoDuration || 0) * usingProgress),
-      [t, videoDuration, usingProgress],
-    )
-
-    /**
-     * expose ref as imperative handle
-     * 使用 pvideo.index 获取也不是很准确, 缩略图与视频有几秒偏差~
-     */
-    const getT = useMemoizedFn(() => usingT)
-    useImperativeHandle(ref, () => ({ getT }), [getT])
-
-    const innerProps = {
-      progress: usingProgress,
-      t: usingT,
-      pvideo: pvideo!,
-      elWidth: size.width,
-      elHeight: size.height,
+  const usingProgress = useMemo(() => {
+    function getProgress(): number | undefined {
+      if (typeof progress === 'number' && !Number.isNaN(progress)) return progress
+      return 0
     }
+    return minmax(getProgress() ?? 0, 0, 1)
+  }, [progress])
 
-    return (
-      <div {...restProps} ref={rootElRef} className={clsx(clsPreviewImageWrapper, className)}>
-        {!!(pvideo && size.width && size.height && usingProgress) && <PreviewImageInner {...innerProps} />}
-      </div>
-    )
-  }),
-)
+  const usingT = useMemo(() => t ?? Math.floor((videoDuration || 0) * usingProgress), [t, videoDuration, usingProgress])
+
+  /**
+   * expose ref as imperative handle
+   * 使用 pvideo.index 获取也不是很准确, 缩略图与视频有几秒偏差~
+   */
+  const getT = useMemoizedFn(() => usingT)
+  useImperativeHandle(ref, () => ({ getT }), [getT])
+
+  const innerProps = {
+    progress: usingProgress,
+    t: usingT,
+    pvideo: pvideo!,
+    elWidth: size.width,
+    elHeight: size.height,
+  }
+
+  return (
+    <div {...restProps} ref={rootElRef} className={clsx(clsPreviewImageWrapper, className)}>
+      {!!(pvideo && size.width && size.height && usingProgress) && <PreviewImageInner {...innerProps} />}
+    </div>
+  )
+})
 
 const PreviewImageInner = memo(function PreviewImageInner({
   t,

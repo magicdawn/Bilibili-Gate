@@ -1,10 +1,10 @@
 import { useHover } from 'ahooks'
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'framer-motion'
-import { forwardRef, memo, useMemo, useRef, type ComponentProps, type ComponentRef, type ReactNode } from 'react'
+import { memo, useMemo, useRef, type ComponentProps, type ComponentRef, type ReactNode, type Ref } from 'react'
 import { unoMerge } from 'unocss-merge'
 import { useUnoMerge } from 'unocss-merge/react'
-import { setForwardedRef } from '$common/hooks/mixed-ref'
+import { useDelegatedRef } from '$common/hooks/mixed-ref'
 import { clsZLeftMarks, clsZRightActions } from '../index.shared'
 
 export type InlinePosition = 'left' | 'right'
@@ -35,7 +35,7 @@ export { C as VideoCardActionsClassNames }
 
 // div / motion.div props 不兼容的 key
 type InCompatibleDivProps = 'onAnimationStart' | 'onDragStart' | 'onDragEnd' | 'onDrag'
-type VideoCardActionButtonProps = {
+interface VideoCardActionButtonProps extends Omit<ComponentProps<'div'>, InCompatibleDivProps> {
   inlinePosition: InlinePosition
   icon: ReactNode
   tooltip: string
@@ -43,67 +43,60 @@ type VideoCardActionButtonProps = {
   active?: boolean
   useMotion?: boolean
   motionProps?: ComponentProps<typeof motion.div>
-} & Omit<ComponentProps<'div'>, InCompatibleDivProps>
+  ref?: Ref<ComponentRef<'div'>>
+}
 
-export const VideoCardActionButton = memo(
-  forwardRef<ComponentRef<'div'>, VideoCardActionButtonProps>(
-    (
-      {
-        inlinePosition,
-        icon,
-        tooltip,
-        visible = true,
-        active = false,
-        className,
-        useMotion = false,
-        motionProps,
-        ...divProps
-      },
-      forwardedRef,
-    ) => {
-      const { triggerRef, tooltipEl } = useTooltip({ inlinePosition, tooltip })
+export const VideoCardActionButton = memo(function VideoCardActionButton({
+  inlinePosition,
+  icon,
+  tooltip,
+  visible = true,
+  active = false,
+  className,
+  useMotion = false,
+  motionProps,
+  ref: propRef,
+  ...divProps
+}: VideoCardActionButtonProps) {
+  const { triggerRef, tooltipEl } = useTooltip({ inlinePosition, tooltip })
 
-      const _className = useMemo(() => {
-        return unoMerge(
-          'action-button',
-          'relative size-28px cursor-pointer rounded-6px bg-[rgb(33_33_33_/_0.7)] color-white',
-          'b-1px b-solid',
-          active ? 'b-gate-primary' : 'b-#444',
-          'hover:b-gate-primary',
-          useMotion ? 'inline-flex' : visible ? 'inline-flex' : 'hidden',
-          'items-center justify-center',
-          '[&_svg]:(pointer-events-none select-none)',
-          className,
-        )
-      }, [active, className, visible, useMotion])
+  const _className = useMemo(() => {
+    return unoMerge(
+      'action-button',
+      'relative size-28px cursor-pointer rounded-6px bg-[rgb(33_33_33_/_0.7)] color-white',
+      'b-1px b-solid',
+      active ? 'b-gate-primary' : 'b-#444',
+      'hover:b-gate-primary',
+      useMotion ? 'inline-flex' : visible ? 'inline-flex' : 'hidden',
+      'items-center justify-center',
+      '[&_svg]:(pointer-events-none select-none)',
+      className,
+    )
+  }, [active, className, visible, useMotion])
 
-      const sharedProps = {
-        ...divProps,
-        className: _className,
-        ref: (el: HTMLDivElement) => {
-          triggerRef.current = el
-          setForwardedRef(forwardedRef, el)
-        },
-        children: (
-          <>
-            {icon}
-            {tooltipEl}
-          </>
-        ),
-      }
+  const ref = useDelegatedRef(triggerRef, propRef)
+  const sharedProps = {
+    ...divProps,
+    className: _className,
+    ref,
+    children: (
+      <>
+        {icon}
+        {tooltipEl}
+      </>
+    ),
+  }
 
-      if (!useMotion) {
-        return <div {...sharedProps} />
-      } else {
-        return (
-          <AnimatePresence>
-            {visible && <motion.div key={'action-button'} {...sharedProps} {...motionProps} />}
-          </AnimatePresence>
-        )
-      }
-    },
-  ),
-)
+  if (!useMotion) {
+    return <div {...sharedProps} />
+  } else {
+    return (
+      <AnimatePresence>
+        {visible && <motion.div key={'action-button'} {...sharedProps} {...motionProps} />}
+      </AnimatePresence>
+    )
+  }
+})
 
 export function useTooltip({
   inlinePosition,

@@ -1,15 +1,16 @@
-import { useMemo, useRef, type ForwardedRef } from 'react'
+import { isNil } from 'es-toolkit'
+import { useMemo, useRef, type Ref, type RefObject } from 'react'
 
-export function setForwardedRef<T>(forwardedRef: ForwardedRef<T>, value: T) {
-  if (!forwardedRef) return
-  if (typeof forwardedRef === 'function') {
-    forwardedRef(value)
+export function setRefValue<T>(ref: Ref<T> | undefined, value: T) {
+  if (isNil(ref)) return
+  if (typeof ref === 'function') {
+    ref(value)
   } else {
-    forwardedRef.current = value
+    ref.current = value
   }
 }
 
-export function useMixedRef<T>(forwardedRef: ForwardedRef<T>) {
+export function useDelegatedRef<T>(...innerRefs: Array<Ref<T> | undefined>): RefObject<T | null> {
   const ref = useRef<T | null>(null)
   return useMemo(() => {
     return {
@@ -18,8 +19,8 @@ export function useMixedRef<T>(forwardedRef: ForwardedRef<T>) {
       },
       set current(val: T | null) {
         ref.current = val
-        setForwardedRef(forwardedRef, val)
+        innerRefs.forEach((r) => r && setRefValue(r, val))
       },
     }
-  }, [ref])
+  }, [ref, ...innerRefs])
 }

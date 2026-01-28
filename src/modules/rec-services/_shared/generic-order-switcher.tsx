@@ -1,7 +1,7 @@
 import { useMemoizedFn } from 'ahooks'
 import { Button, Divider, Dropdown, type DropdownProps } from 'antd'
 import clsx from 'clsx'
-import { useMemo, useState, type ElementRef, type MouseEvent, type ReactNode, type RefObject } from 'react'
+import { useMemo, useState, type ComponentRef, type MouseEvent, type ReactNode, type RefObject } from 'react'
 import { buttonOpenCss, usePopoverBorderStyle } from '$common/emotion-css'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { clsAntdButton } from '$components/fragments'
@@ -15,7 +15,7 @@ export type GenericOrderSwitcherProps<T extends string | number> = {
   listDisplayConfig: Record<T, { icon?: ReactNode; label?: ReactNode }>
   dropdownProps?: Partial<DropdownProps>
   extraHelpInfo?: ReactNode
-  $ref?: RefObject<ElementRef<'span'>>
+  $ref?: RefObject<ComponentRef<'span'> | null>
 }
 
 export const GenericOrderSwitcher = function <T extends string | number>({

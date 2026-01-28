@@ -297,8 +297,8 @@ const VideoCardInner = memo(function VideoCardInner({
    */
 
   // single ref 与 useEventListener 配合不是很好, 故使用两个 ref
-  const cardRef = useRef<ComponentRef<'div'> | null>(null)
-  const coverRef = useRef<ComponentRef<'a'> | null>(null)
+  const cardRef = useRef<ComponentRef<'div'>>(null)
+  const coverRef = useRef<ComponentRef<'a'>>(null)
   const videoPreviewWrapperRef = cardUseBorder && !displayingAsList ? cardRef : coverRef
 
   const {

@@ -41,7 +41,7 @@ export function usePreviewRelated({
   tryFetchImagePreviewData: () => Promise<void>
   imagePreviewDataBox: RefStateBox<ImagePreviewData | undefined>
   autoPreviewWhenHover: boolean
-  videoPreviewWrapperRef: RefObject<HTMLElement>
+  videoPreviewWrapperRef: RefObject<HTMLElement | null>
 }) {
   const hasVideoData = useMemoizedFn(() => {
     const data = imagePreviewDataBox.val?.videoshotJson?.data

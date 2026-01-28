@@ -111,12 +111,21 @@ type TabIconProps = {
 
 export function TabIcon({ tabKey, active, className }: TabIconProps) {
   const { icon } = TabConfig[tabKey]
-  const newClassName = useUnoMerge(icon.props.className, className)
-  const cloned = cloneElement(icon, {
-    css: icon.props.css,
-    active: tabKey === ETab.Live ? active : undefined, // 否则 warn: svg recived boolean props
+  const iconProps = icon.props as { className?: string; css?: any }
+  const newClassName = useUnoMerge(iconProps.className, className)
+
+  // Create a new object with all original props plus the new ones
+  const newProps = {
+    ...iconProps,
     className: newClassName,
-  })
+  }
+
+  // Conditionally add the active prop only for live tab
+  if (tabKey === ETab.Live) {
+    ;(newProps as any).active = active // 否则 warn: svg recived boolean props
+  }
+
+  const cloned = cloneElement(icon, newProps)
   return cloned
 }
 

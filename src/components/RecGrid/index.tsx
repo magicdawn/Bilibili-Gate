@@ -5,7 +5,6 @@ import Emittery from 'emittery'
 import { delay } from 'es-toolkit'
 import ms from 'ms'
 import {
-  forwardRef,
   memo,
   useEffect,
   useImperativeHandle,
@@ -13,8 +12,8 @@ import {
   useRef,
   useState,
   type CSSProperties,
-  type ForwardedRef,
   type ReactNode,
+  type Ref,
   type RefObject,
 } from 'react'
 import { useInView } from 'react-intersection-observer'
@@ -61,6 +60,7 @@ export type RecGridProps = {
   scrollerRef?: RefObject<HTMLElement | null>
   tab: ETab
   direction?: 'left' | 'right' // how to get to current tab, moved left or right
+  ref?: Ref<RecGridRef>
 }
 
 const clsGridColSpanFull = 'grid-col-span-full'
@@ -104,489 +104,477 @@ export class RecGridSelf {
   }
 }
 
-export const RecGrid = memo(
-  forwardRef<RecGridRef, RecGridProps>(function (
-    {
-      className: propClassName,
-      containerClassName: propContainerClassName,
-      shortcutEnabled,
-      tab,
-      infiniteScrollUseWindow,
-      onScrollToTop,
-      scrollerRef,
-    }: RecGridProps,
-    ref: ForwardedRef<RecGridRef>,
-  ) {
-    // rec-shared
-    const recSelf = useRecSelfContext()
-    const { servicesRegistry, recSharedEmitter } = recSelf
-    const { refreshing } = recSelf.useStore()
-    // rec-grid
-    const self = useCreation(() => new RecGridSelf(), [])
-    const { useCustomGrid, gridDisplayMode, enableForceColumn, forceColumnCount, cardMinWidth } = useSnapshot(
-      settings.grid,
-    )
-    const { multiSelecting } = useSnapshot(multiSelectStore)
-    const unmountedRef = useUnmountedRef()
-    useSetupGridState()
+export const RecGrid = memo(function RecGrid({
+  className: propClassName,
+  containerClassName: propContainerClassName,
+  shortcutEnabled,
+  tab,
+  infiniteScrollUseWindow,
+  onScrollToTop,
+  scrollerRef,
+  ref,
+}: RecGridProps) {
+  // rec-shared
+  const recSelf = useRecSelfContext()
+  const { servicesRegistry, recSharedEmitter } = recSelf
+  const { refreshing } = recSelf.useStore()
+  // rec-grid
+  const self = useCreation(() => new RecGridSelf(), [])
+  const { useCustomGrid, gridDisplayMode, enableForceColumn, forceColumnCount, cardMinWidth } = useSnapshot(
+    settings.grid,
+  )
+  const { multiSelecting } = useSnapshot(multiSelectStore)
+  const unmountedRef = useUnmountedRef()
+  useSetupGridState()
 
-    const updateViewFromService = useMemoizedFn(() => {
-      if (unmountedRef.current) return
-      recSelf.setStore({
-        tabbarView: servicesRegistry[tab]?.tabbarView,
-        sidebarView: servicesRegistry[tab]?.sidebarView,
-      })
+  const updateViewFromService = useMemoizedFn(() => {
+    if (unmountedRef.current) return
+    recSelf.setStore({
+      tabbarView: servicesRegistry[tab]?.tabbarView,
+      sidebarView: servicesRegistry[tab]?.sidebarView,
     })
-    useMount(updateViewFromService)
+  })
+  useMount(updateViewFromService)
 
-    const preAction = useMemoizedFn(() => {
-      clearActiveIndex()
-      updateViewFromService()
-      onScrollToTop?.()
-    })
-    const postAction = useMemoizedFn(() => {
-      clearActiveIndex()
-      updateViewFromService()
-      self.loadedPage = 1
-      checkShouldLoadMore()
-    })
-    const { refresh } = useRefresh({
-      tab,
-      debug,
-      fetcher: refreshForGrid,
-      preAction,
-      postAction,
-      updateViewFromService,
-      self,
-    })
+  const preAction = useMemoizedFn(() => {
+    clearActiveIndex()
+    updateViewFromService()
+    onScrollToTop?.()
+  })
+  const postAction = useMemoizedFn(() => {
+    clearActiveIndex()
+    updateViewFromService()
+    self.loadedPage = 1
+    checkShouldLoadMore()
+  })
+  const { refresh } = useRefresh({
+    tab,
+    debug,
+    fetcher: refreshForGrid,
+    preAction,
+    postAction,
+    updateViewFromService,
+    self,
+  })
 
-    useImperativeHandle(ref, () => ({ refresh }), [refresh])
+  useImperativeHandle(ref, () => ({ refresh }), [refresh])
 
-    const { items, hasMore, refreshError, refreshTs, showSkeleton } = self.useStore()
-    useEffect(() => setGlobalGridItems(items), [items])
+  const { items, hasMore, refreshError, refreshTs, showSkeleton } = self.useStore()
+  useEffect(() => setGlobalGridItems(items), [items])
 
-    const goOutAt = useRef<number | undefined>()
-    useEventListener(
-      'visibilitychange',
-      (_e) => {
-        const visible = document.visibilityState === 'visible'
-        if (!visible) {
-          goOutAt.current = Date.now()
-          return
-        }
-
-        if (recSelf.refreshing) return
-        if (self.loadMoreRunning) return
-
-        // 场景
-        // 当前 Tab: 稍后再看, 点视频进去, 在视频页移除了, 关闭视频页, 回到首页
-        if (tab === ETab.Watchlater && goOutAt.current && Date.now() - goOutAt.current > ms('1h')) {
-          refresh(true)
-        }
-      },
-      { target: document },
-    )
-
-    const checkShouldLoadMore = useMemoizedFn(async () => {
-      // always async, `footerInViewRef` depends on `__footerInView` state
-      await delay(isSafari ? 100 : 0)
-      debug('checkShouldLoadMore(): footerInView = %s', footerInViewRef.current)
-      if (footerInViewRef.current) {
-        loadMore()
-      }
-    })
-
-    const loadMorePrecheck = useMemoizedFn(() => {
-      if (
-        unmountedRef.current ||
-        // rec-shared
-        recSelf.refreshing ||
-        // rec-grid
-        self.abortController.signal.aborted ||
-        self.loadMoreRunning ||
-        self.store.refreshTs < 0 || // refresh not started yet
-        self.store.refreshError ||
-        !self.store.hasMore
-      ) {
-        return false
-      }
-      return true
-    })
-    const loadMore = useMemoizedFn(async () => {
-      if (!loadMorePrecheck()) return
-
-      const startingRefreshTs = self.store.refreshTs
-      self.lock(startingRefreshTs)
-
-      let newItems = self.store.items
-      let newHasMore = true
-      let err: any
-      try {
-        const service = getServiceFromRegistry(servicesRegistry, tab)
-        let more = (await service.loadMore(self.abortController.signal)) || []
-        more = filterRecItems(more, tab)
-        newItems = concatRecItems(newItems, more)
-        newHasMore = service.hasMore
-      } catch (e) {
-        err = e
-      }
-      if (err) {
-        self.unlock(startingRefreshTs)
-        antNotification.error({
-          title: '加载失败',
-          description: err.message || err.stack,
-        })
-        throw err
+  const goOutAt = useRef<number | undefined>(undefined)
+  useEventListener(
+    'visibilitychange',
+    (_e) => {
+      const visible = document.visibilityState === 'visible'
+      if (!visible) {
+        goOutAt.current = Date.now()
+        return
       }
 
-      // loadMore 发出请求了, 但稍候重新刷新了, setItems 以及后续操作应该 abort
-      {
-        const currentRefreshTs = self.store.refreshTs
-        if (startingRefreshTs !== currentRefreshTs) {
-          debug('loadMore: skip update for mismatch refreshTs, %o != %o', startingRefreshTs, currentRefreshTs)
-          self.unlock(startingRefreshTs)
-          return
-        }
+      if (recSelf.refreshing) return
+      if (self.loadMoreRunning) return
+
+      // 场景
+      // 当前 Tab: 稍后再看, 点视频进去, 在视频页移除了, 关闭视频页, 回到首页
+      if (tab === ETab.Watchlater && goOutAt.current && Date.now() - goOutAt.current > ms('1h')) {
+        refresh(true)
       }
+    },
+    { target: document },
+  )
 
-      self.loadedPage++
-      debug('loadMore: loadedPage(%s) len(%s -> %s)', self.loadedPage, self.store.items.length, newItems.length)
-      self.setStore({ hasMore: newHasMore, items: newItems })
-      self.unlock(startingRefreshTs)
-
-      // check
-      checkShouldLoadMore()
-    })
-
-    const loadToEnd = useMemoizedFn(async () => {
-      /* #region precheck */
-      const notifyKey = 'RecGrid:loadToEnd'
-      const notifyErrorArgs: Partial<ArgsProps> = { key: notifyKey + ':error', title: '加载全部', duration: 15 }
-      const notifySuccessArgs: Partial<ArgsProps> = { title: '加载全部' }
-      const error = (description: ReactNode) => {
-        antNotification.error({ ...notifyErrorArgs, description })
-        throw new Error('loadToEnd error', { cause: description })
-      }
-
-      if (!querySupportsLoadToEnd()) return error('当前 Tab 不支持加载全部')
-      if (self.store.refreshError) return error('预检查失败: 先前错误')
-      // consider `!hasMore` as a success case
-      if (!self.store.hasMore) {
-        return antNotification.success({ ...notifySuccessArgs, description: '没有更多了' })
-      }
-      /* #endregion */
-
-      while (!loadMorePrecheck()) await delay(500) // wait refresh + loadMore  complete
-      while (loadMorePrecheck()) await loadMore()
-      antNotification.success({ ...notifySuccessArgs, description: '已完成' })
-    })
-    useEmitterOn(recSharedEmitter, 'load-to-end', loadToEnd)
-
-    // fullList = videoList + separators
-    const fullList = items
-    const videoList = useMemo(() => fullList.filter((x) => x.api !== EApiType.Separator), [fullList])
-
-    // the grid: `.video-grid`
-    const gridRef = useRef<HTMLDivElement | null>(null)
-
-    const getScrollerRect = useMemoizedFn(() => {
-      // use window
-      if (infiniteScrollUseWindow) {
-        const yStart = $headerHeight.get() + 50 // 50 RecHeader height
-        return new DOMRect(0, yStart, window.innerWidth, window.innerHeight - yStart)
-      }
-      // use in a scroller
-      else {
-        return scrollerRef?.current?.getBoundingClientRect()
-      }
-    })
-
-    // emitters
-    const videoCardEmitterCache = useMemo(() => new Map<string, VideoCardEmitter>(), [refreshTs])
-    const videoCardEmitters = useMemo(() => {
-      return videoList.map(({ uniqId }) => {
-        const cacheKey = uniqId
-        return (
-          videoCardEmitterCache.get(cacheKey) ||
-          (() => {
-            const instance = new Emittery<VideoCardEvents>()
-            videoCardEmitterCache.set(cacheKey, instance)
-            return instance
-          })()
-        )
-      })
-    }, [videoList])
-
-    const [activeLargePreviewUniqId, setActiveLargePreviewUniqId] = useState<string | undefined>(undefined)
-    useEmitterOn(recSharedEmitter, 'show-large-preview', setActiveLargePreviewUniqId)
-    const activeLargePreviewItemIndex = useMemo(() => {
-      if (!activeLargePreviewUniqId) return
-      return videoList.findIndex((item) => item.uniqId === activeLargePreviewUniqId)
-    }, [fullList, activeLargePreviewUniqId])
-
-    // 快捷键
-    const { activeIndex, clearActiveIndex } = useShortcut({
-      enabled: shortcutEnabled,
-      refresh,
-      maxIndex: videoList.length - 1,
-      gridRef,
-      getScrollerRect,
-      videoCardEmitters,
-      activeLargePreviewItemIndex,
-      changeScrollY: infiniteScrollUseWindow
-        ? function ({ offset, absolute }) {
-            const scroller = document.documentElement
-            if (typeof offset === 'number') {
-              scroller.scrollTop += offset
-              return
-            }
-            if (typeof absolute === 'number') {
-              scroller.scrollTop = absolute
-              return
-            }
-          }
-        : undefined,
-    })
-
-    /**
-     * card state change
-     */
-    const modifyItems = (fn: (items: RecItemTypeOrSeparator[]) => RecItemTypeOrSeparator[]) => {
-      self.setStore({ items: fn(self.store.items) })
+  const checkShouldLoadMore = useMemoizedFn(async () => {
+    // always async, `footerInViewRef` depends on `__footerInView` state
+    await delay(isSafari ? 100 : 0)
+    debug('checkShouldLoadMore(): footerInView = %s', footerInViewRef.current)
+    if (footerInViewRef.current) {
+      loadMore()
     }
-    const handleRemoveCards = useMemoizedFn((uniqIds: string[], titles?: string[], silent?: boolean) => {
-      modifyItems((items) => {
-        const newItems = items.slice()
-        const removedTitles: string[] = []
+  })
 
-        for (const [i, uniqId] of uniqIds.entries()) {
-          const index = newItems.findIndex((x) => x.uniqId === uniqId)
-          if (index === -1) continue
+  const loadMorePrecheck = useMemoizedFn(() => {
+    if (
+      unmountedRef.current ||
+      // rec-shared
+      recSelf.refreshing ||
+      // rec-grid
+      self.abortController.signal.aborted ||
+      self.loadMoreRunning ||
+      self.store.refreshTs < 0 || // refresh not started yet
+      self.store.refreshError ||
+      !self.store.hasMore
+    ) {
+      return false
+    }
+    return true
+  })
+  const loadMore = useMemoizedFn(async () => {
+    if (!loadMorePrecheck()) return
 
-          newItems.splice(index, 1)
-          const title = titles?.[i]
-          if (title) removedTitles.push(title)
+    const startingRefreshTs = self.store.refreshTs
+    self.lock(startingRefreshTs)
 
-          if (tab === ETab.Watchlater) {
-            servicesRegistry[tab]?.decreaseTotal()
-          }
-          if (tab === ETab.Fav) {
-            servicesRegistry[tab]?.decreaseTotal()
-          }
-        }
-
-        if (!silent && removedTitles.length) {
-          if (removedTitles.length <= 3) {
-            removedTitles.forEach((_t) => antMessage.success(`已移除: ${removedTitles.join(', ')}`))
-          } else {
-            antMessage.success(`已移除: ${removedTitles.length}个视频`)
-          }
-        }
-
-        return newItems
+    let newItems = self.store.items
+    let newHasMore = true
+    let err: any
+    try {
+      const service = getServiceFromRegistry(servicesRegistry, tab)
+      let more = (await service.loadMore(self.abortController.signal)) || []
+      more = filterRecItems(more, tab)
+      newItems = concatRecItems(newItems, more)
+      newHasMore = service.hasMore
+    } catch (e) {
+      err = e
+    }
+    if (err) {
+      self.unlock(startingRefreshTs)
+      antNotification.error({
+        title: '加载失败',
+        description: err.message || err.stack,
       })
-    })
-    const handleMoveCardToFirst = useMemoizedFn((item: RecItemType, _data: IVideoCardData) => {
-      modifyItems((items) => {
-        const currentItem = items.find((x) => x.uniqId === item.uniqId)
-        if (!currentItem) return items
-        const index = items.indexOf(currentItem)
+      throw err
+    }
 
-        const newItems = items.slice()
-        // rm
+    // loadMore 发出请求了, 但稍候重新刷新了, setItems 以及后续操作应该 abort
+    {
+      const currentRefreshTs = self.store.refreshTs
+      if (startingRefreshTs !== currentRefreshTs) {
+        debug('loadMore: skip update for mismatch refreshTs, %o != %o', startingRefreshTs, currentRefreshTs)
+        self.unlock(startingRefreshTs)
+        return
+      }
+    }
+
+    self.loadedPage++
+    debug('loadMore: loadedPage(%s) len(%s -> %s)', self.loadedPage, self.store.items.length, newItems.length)
+    self.setStore({ hasMore: newHasMore, items: newItems })
+    self.unlock(startingRefreshTs)
+
+    // check
+    checkShouldLoadMore()
+  })
+
+  const loadToEnd = useMemoizedFn(async () => {
+    /* #region precheck */
+    const notifyKey = 'RecGrid:loadToEnd'
+    const notifyErrorArgs: Partial<ArgsProps> = { key: notifyKey + ':error', title: '加载全部', duration: 15 }
+    const notifySuccessArgs: Partial<ArgsProps> = { title: '加载全部' }
+    const error = (description: ReactNode) => {
+      antNotification.error({ ...notifyErrorArgs, description })
+      throw new Error('loadToEnd error', { cause: description })
+    }
+
+    if (!querySupportsLoadToEnd()) return error('当前 Tab 不支持加载全部')
+    if (self.store.refreshError) return error('预检查失败: 先前错误')
+    // consider `!hasMore` as a success case
+    if (!self.store.hasMore) {
+      return antNotification.success({ ...notifySuccessArgs, description: '没有更多了' })
+    }
+    /* #endregion */
+
+    while (!loadMorePrecheck()) await delay(500) // wait refresh + loadMore  complete
+    while (loadMorePrecheck()) await loadMore()
+    antNotification.success({ ...notifySuccessArgs, description: '已完成' })
+  })
+  useEmitterOn(recSharedEmitter, 'load-to-end', loadToEnd)
+
+  // fullList = videoList + separators
+  const fullList = items
+  const videoList = useMemo(() => fullList.filter((x) => x.api !== EApiType.Separator), [fullList])
+
+  // the grid: `.video-grid`
+  const gridRef = useRef<HTMLDivElement | null>(null)
+
+  const getScrollerRect = useMemoizedFn(() => {
+    // use window
+    if (infiniteScrollUseWindow) {
+      const yStart = $headerHeight.get() + 50 // 50 RecHeader height
+      return new DOMRect(0, yStart, window.innerWidth, window.innerHeight - yStart)
+    }
+    // use in a scroller
+    else {
+      return scrollerRef?.current?.getBoundingClientRect()
+    }
+  })
+
+  // emitters
+  const videoCardEmitterCache = useMemo(() => new Map<string, VideoCardEmitter>(), [refreshTs])
+  const videoCardEmitters = useMemo(() => {
+    return videoList.map(({ uniqId }) => {
+      const cacheKey = uniqId
+      return (
+        videoCardEmitterCache.get(cacheKey) ||
+        (() => {
+          const instance = new Emittery<VideoCardEvents>()
+          videoCardEmitterCache.set(cacheKey, instance)
+          return instance
+        })()
+      )
+    })
+  }, [videoList])
+
+  const [activeLargePreviewUniqId, setActiveLargePreviewUniqId] = useState<string | undefined>(undefined)
+  useEmitterOn(recSharedEmitter, 'show-large-preview', setActiveLargePreviewUniqId)
+  const activeLargePreviewItemIndex = useMemo(() => {
+    if (!activeLargePreviewUniqId) return
+    return videoList.findIndex((item) => item.uniqId === activeLargePreviewUniqId)
+  }, [fullList, activeLargePreviewUniqId])
+
+  // 快捷键
+  const { activeIndex, clearActiveIndex } = useShortcut({
+    enabled: shortcutEnabled,
+    refresh,
+    maxIndex: videoList.length - 1,
+    gridRef,
+    getScrollerRect,
+    videoCardEmitters,
+    activeLargePreviewItemIndex,
+    changeScrollY: infiniteScrollUseWindow
+      ? function ({ offset, absolute }) {
+          const scroller = document.documentElement
+          if (typeof offset === 'number') {
+            scroller.scrollTop += offset
+            return
+          }
+          if (typeof absolute === 'number') {
+            scroller.scrollTop = absolute
+            return
+          }
+        }
+      : undefined,
+  })
+
+  /**
+   * card state change
+   */
+  const modifyItems = (fn: (items: RecItemTypeOrSeparator[]) => RecItemTypeOrSeparator[]) => {
+    self.setStore({ items: fn(self.store.items) })
+  }
+  const handleRemoveCards = useMemoizedFn((uniqIds: string[], titles?: string[], silent?: boolean) => {
+    modifyItems((items) => {
+      const newItems = items.slice()
+      const removedTitles: string[] = []
+
+      for (const [i, uniqId] of uniqIds.entries()) {
+        const index = newItems.findIndex((x) => x.uniqId === uniqId)
+        if (index === -1) continue
+
         newItems.splice(index, 1)
-        // insert
-        const newIndex = newItems.findIndex((x) => x.api !== EApiType.Separator)
-        newItems.splice(newIndex, 0, currentItem)
+        const title = titles?.[i]
+        if (title) removedTitles.push(title)
 
-        return newItems
-      })
-    })
-    useEmitterOn(recSharedEmitter, 'remove-cards', ([uniqIds, titles, silent]) =>
-      handleRemoveCards(uniqIds, titles, silent),
-    )
-
-    /**
-     * footer for infinite scroll
-     */
-    const { ref: footerRef, inView: __footerInView } = useInView({
-      root: infiniteScrollUseWindow ? null : scrollerRef?.current || null,
-      rootMargin: `0px 0px ${window.innerHeight}px 0px`,
-      onChange(inView) {
-        if (inView) {
-          debug('footerInView change to visible', inView)
-          checkShouldLoadMore()
+        if (tab === ETab.Watchlater) {
+          servicesRegistry[tab]?.decreaseTotal()
         }
-      },
+        if (tab === ETab.Fav) {
+          servicesRegistry[tab]?.decreaseTotal()
+        }
+      }
+
+      if (!silent && removedTitles.length) {
+        if (removedTitles.length <= 3) {
+          removedTitles.forEach((_t) => antMessage.success(`已移除: ${removedTitles.join(', ')}`))
+        } else {
+          antMessage.success(`已移除: ${removedTitles.length}个视频`)
+        }
+      }
+
+      return newItems
     })
-    const footerInViewRef = useLatest(__footerInView)
-    const footer = (
-      <div
-        ref={footerRef}
-        className={clsx(clsGridColSpanFull, 'flex items-center justify-center py-30px text-size-120%')}
-      >
-        {!refreshing && (
-          <>
-            {hasMore ? (
-              <>
-                <IconParkOutlineLoading className='mr-10px size-40px animate-spin color-gate-primary' />
-                加载中~
-              </>
-            ) : (
-              <>没有更多了~</>
-            )}
-          </>
-        )}
+  })
+  const handleMoveCardToFirst = useMemoizedFn((item: RecItemType, _data: IVideoCardData) => {
+    modifyItems((items) => {
+      const currentItem = items.find((x) => x.uniqId === item.uniqId)
+      if (!currentItem) return items
+      const index = items.indexOf(currentItem)
+
+      const newItems = items.slice()
+      // rm
+      newItems.splice(index, 1)
+      // insert
+      const newIndex = newItems.findIndex((x) => x.api !== EApiType.Separator)
+      newItems.splice(newIndex, 0, currentItem)
+
+      return newItems
+    })
+  })
+  useEmitterOn(recSharedEmitter, 'remove-cards', ([uniqIds, titles, silent]) =>
+    handleRemoveCards(uniqIds, titles, silent),
+  )
+
+  /**
+   * footer for infinite scroll
+   */
+  const { ref: footerRef, inView: __footerInView } = useInView({
+    root: infiniteScrollUseWindow ? null : scrollerRef?.current || null,
+    rootMargin: `0px 0px ${window.innerHeight}px 0px`,
+    onChange(inView) {
+      if (inView) {
+        debug('footerInView change to visible', inView)
+        checkShouldLoadMore()
+      }
+    },
+  })
+  const footerInViewRef = useLatest(__footerInView)
+  const footer = (
+    <div
+      ref={footerRef}
+      className={clsx(clsGridColSpanFull, 'flex items-center justify-center py-30px text-size-120%')}
+    >
+      {!refreshing && (
+        <>
+          {hasMore ? (
+            <>
+              <IconParkOutlineLoading className='mr-10px size-40px animate-spin color-gate-primary' />
+              加载中~
+            </>
+          ) : (
+            <>没有更多了~</>
+          )}
+        </>
+      )}
+    </div>
+  )
+
+  // it's a `@container` query root
+  const containerClassName = clsx('min-h-100vh @container-inline-size', propContainerClassName)
+
+  type StyleConfig = { className?: string; style?: CSSProperties }
+  const gridStyleConfig: StyleConfig = useMemo(() => {
+    const {
+      videoGrid,
+      videoGridBiliFeed4,
+      videoGridCustom,
+      videoGridAddonCenterEmpty,
+      gridTemplateColumnsUsingVarCol,
+      gridTemplateColumnsUsingCardMinWidth,
+      narrowMode,
+    } = gridClassNames
+
+    // 分支
+    // - videoGridBiliFeed4
+    // - videoGridCustom
+    //   - forceColumn
+    //   - cardMinWidth
+    //
+    // displayMode
+    //  - TwoColumn
+    //  - List
+    //  - CenterEmpty: Normal + addonCenterEmpty
+    //  - Normal
+
+    const clsGridTemplateColumns =
+      useCustomGrid && !(enableForceColumn && forceColumnCount) && gridDisplayMode !== EGridDisplayMode.TwoColumnGrid
+        ? gridTemplateColumnsUsingCardMinWidth
+        : gridTemplateColumnsUsingVarCol
+
+    const baseClass: ClassValue = [
+      APP_CLS_GRID, // for customize css
+      videoGrid,
+      clsGridTemplateColumns,
+      useCustomGrid ? videoGridCustom : videoGridBiliFeed4,
+    ]
+
+    const renderClassName = (...more: ClassValue[]) => clsx(baseClass, ...more, propClassName)
+
+    // 双列
+    if (gridDisplayMode === EGridDisplayMode.TwoColumnGrid) {
+      return { className: renderClassName(narrowMode) }
+    }
+
+    // 中空
+    if (gridDisplayMode === EGridDisplayMode.CenterEmptyGrid) {
+      baseClass.push(videoGridAddonCenterEmpty)
+    }
+
+    // bili-feed4
+    if (!useCustomGrid) {
+      return { className: renderClassName() }
+    }
+
+    // Bilibili-Gate custom
+    if (enableForceColumn && forceColumnCount) {
+      return { className: renderClassName(), style: { '--col': forceColumnCount.toString() } }
+    } else {
+      return { className: renderClassName(), style: { '--card-min-width': `${cardMinWidth}px` } }
+    }
+  }, [gridClassNames, useCustomGrid, gridDisplayMode, enableForceColumn, forceColumnCount, cardMinWidth, propClassName])
+
+  const cardBorderCss = useCardBorderCss()
+
+  // 总是 render grid, getColumnCount 依赖 grid columns
+  const render = ({ gridChildren, gridSiblings }: { gridChildren?: ReactNode; gridSiblings?: ReactNode } = {}) => {
+    return (
+      <div data-tab={tab} className={containerClassName}>
+        <div data-tab={tab} ref={gridRef} {...gridStyleConfig}>
+          {gridChildren}
+        </div>
+        {gridSiblings}
       </div>
     )
+  }
 
-    // it's a `@container` query root
-    const containerClassName = clsx('min-h-100vh @container-inline-size', propContainerClassName)
+  // Shit happens!
+  if (refreshError) {
+    console.error('RecGrid.refresh error:', refreshError.stack || refreshError)
+    return render({ gridSiblings: <ErrorDetail tab={tab} err={refreshError} /> })
+  }
 
-    type StyleConfig = { className?: string; style?: CSSProperties }
-    const gridStyleConfig: StyleConfig = useMemo(() => {
-      const {
-        videoGrid,
-        videoGridBiliFeed4,
-        videoGridCustom,
-        videoGridAddonCenterEmpty,
-        gridTemplateColumnsUsingVarCol,
-        gridTemplateColumnsUsingCardMinWidth,
-        narrowMode,
-      } = gridClassNames
+  // skeleton loading
+  if (refreshing && showSkeleton) {
+    const cardCount = getGridRefreshCount()
+    return render({
+      gridChildren: Array.from({ length: cardCount })
+        .fill(0)
+        .map((_, index) => {
+          return <VideoCard key={index} loading={true} tab={tab} />
+        }),
+    })
+  }
 
-      // 分支
-      // - videoGridBiliFeed4
-      // - videoGridCustom
-      //   - forceColumn
-      //   - cardMinWidth
-      //
-      // displayMode
-      //  - TwoColumn
-      //  - List
-      //  - CenterEmpty: Normal + addonCenterEmpty
-      //  - Normal
-
-      const clsGridTemplateColumns =
-        useCustomGrid && !(enableForceColumn && forceColumnCount) && gridDisplayMode !== EGridDisplayMode.TwoColumnGrid
-          ? gridTemplateColumnsUsingCardMinWidth
-          : gridTemplateColumnsUsingVarCol
-
-      const baseClass: ClassValue = [
-        APP_CLS_GRID, // for customize css
-        videoGrid,
-        clsGridTemplateColumns,
-        useCustomGrid ? videoGridCustom : videoGridBiliFeed4,
-      ]
-
-      const renderClassName = (...more: ClassValue[]) => clsx(baseClass, ...more, propClassName)
-
-      // 双列
-      if (gridDisplayMode === EGridDisplayMode.TwoColumnGrid) {
-        return { className: renderClassName(narrowMode) }
-      }
-
-      // 中空
-      if (gridDisplayMode === EGridDisplayMode.CenterEmptyGrid) {
-        baseClass.push(videoGridAddonCenterEmpty)
-      }
-
-      // bili-feed4
-      if (!useCustomGrid) {
-        return { className: renderClassName() }
-      }
-
-      // Bilibili-Gate custom
-      if (enableForceColumn && forceColumnCount) {
-        return { className: renderClassName(), style: { '--col': forceColumnCount.toString() } }
-      } else {
-        return { className: renderClassName(), style: { '--card-min-width': `${cardMinWidth}px` } }
-      }
-    }, [
-      gridClassNames,
-      useCustomGrid,
-      gridDisplayMode,
-      enableForceColumn,
-      forceColumnCount,
-      cardMinWidth,
-      propClassName,
-    ])
-
-    const cardBorderCss = useCardBorderCss()
-
-    // 总是 render grid, getColumnCount 依赖 grid columns
-    const render = ({ gridChildren, gridSiblings }: { gridChildren?: ReactNode; gridSiblings?: ReactNode } = {}) => {
+  const renderItem = (item: RecItemTypeOrSeparator) => {
+    if (item.api === EApiType.Separator) {
       return (
-        <div data-tab={tab} className={containerClassName}>
-          <div data-tab={tab} ref={gridRef} {...gridStyleConfig}>
-            {gridChildren}
-          </div>
-          {gridSiblings}
-        </div>
+        <Divider
+          key={item.uniqId}
+          className={clsx(clsGridColSpanFull, clsGateVideoGridDivider)}
+          orientation='horizontal'
+          titlePlacement='left'
+        >
+          {item.content}
+        </Divider>
+      )
+    } else {
+      const index = videoList.findIndex((x) => x.uniqId === item.uniqId)
+      const active = index === activeIndex
+
+      return (
+        <VideoCard
+          key={item.uniqId}
+          baseCss={[cardBorderCss, getActiveCardBorderCss(active)]}
+          tab={tab}
+          item={item}
+          active={active}
+          onRemoveCurrent={(item, data, silent) => handleRemoveCards([item.uniqId], [data.title], silent)}
+          onMoveToFirst={handleMoveCardToFirst}
+          refresh={refresh}
+          emitter={videoCardEmitters[index]}
+          recSharedEmitter={recSharedEmitter}
+          gridDisplayMode={gridDisplayMode}
+          multiSelecting={multiSelecting}
+        />
       )
     }
+  }
 
-    // Shit happens!
-    if (refreshError) {
-      console.error('RecGrid.refresh error:', refreshError.stack || refreshError)
-      return render({ gridSiblings: <ErrorDetail tab={tab} err={refreshError} /> })
-    }
-
-    // skeleton loading
-    if (refreshing && showSkeleton) {
-      const cardCount = getGridRefreshCount()
-      return render({
-        gridChildren: Array.from({ length: cardCount })
-          .fill(0)
-          .map((_, index) => {
-            return <VideoCard key={index} loading={true} tab={tab} />
-          }),
-      })
-    }
-
-    const renderItem = (item: RecItemTypeOrSeparator) => {
-      if (item.api === EApiType.Separator) {
-        return (
-          <Divider
-            key={item.uniqId}
-            className={clsx(clsGridColSpanFull, clsGateVideoGridDivider)}
-            orientation='horizontal'
-            titlePlacement='left'
-          >
-            {item.content}
-          </Divider>
-        )
-      } else {
-        const index = videoList.findIndex((x) => x.uniqId === item.uniqId)
-        const active = index === activeIndex
-
-        return (
-          <VideoCard
-            key={item.uniqId}
-            baseCss={[cardBorderCss, getActiveCardBorderCss(active)]}
-            tab={tab}
-            item={item}
-            active={active}
-            onRemoveCurrent={(item, data, silent) => handleRemoveCards([item.uniqId], [data.title], silent)}
-            onMoveToFirst={handleMoveCardToFirst}
-            refresh={refresh}
-            emitter={videoCardEmitters[index]}
-            recSharedEmitter={recSharedEmitter}
-            gridDisplayMode={gridDisplayMode}
-            multiSelecting={multiSelecting}
-          />
-        )
-      }
-    }
-
-    // plain dom
-    return render({
-      gridChildren: (
-        <>
-          {fullList.map(renderItem)}
-          {footer}
-        </>
-      ),
-    })
-  }),
-)
+  // plain dom
+  return render({
+    gridChildren: (
+      <>
+        {fullList.map(renderItem)}
+        {footer}
+      </>
+    ),
+  })
+})

@@ -92,7 +92,7 @@ export class QueueStrategy<T = RecItemTypeOrSeparator> {
 }
 
 export function usePopupContainer<T extends HTMLElement = HTMLDivElement>() {
-  const ref = useRef<T>(null)
+  const ref = useRef<T | null>(null)
   const getPopupContainer = useCallback(() => {
     return ref.current?.closest<T>(`.${APP_CLS_TAB_BAR}`)?.parentElement || document.body
   }, [])

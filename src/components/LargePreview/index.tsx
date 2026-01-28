@@ -4,9 +4,9 @@ import { getTargetElement, type BasicTarget } from 'ahooks/lib/utils/domTarget'
 import clsx from 'clsx'
 import { orderBy, throttle } from 'es-toolkit'
 import { motion } from 'framer-motion'
-import { forwardRef, useMemo, useState, type ComponentProps, type ComponentRef, type ReactNode } from 'react'
+import { memo, useMemo, useState, type ComponentPropsWithRef, type ReactNode } from 'react'
 import { APP_CLS_CARD, APP_CLS_CARD_COVER, baseDebug } from '$common'
-import { useMixedRef } from '$common/hooks/mixed-ref'
+import { useDelegatedRef } from '$common/hooks/mixed-ref'
 import { appPrimaryColorValue } from '$components/css-vars'
 import { clsZVideoCardLargePreview } from '$components/fragments'
 import { useSettingsSnapshot } from '$modules/settings'
@@ -42,270 +42,274 @@ function getCoverRect(anchorElement: HTMLElement | undefined) {
     ?.getBoundingClientRect()
 }
 
-interface LargePreviewProps extends ComponentProps<'div'> {
+interface LargePreviewProps extends ComponentPropsWithRef<'div'> {
   children?: ReactNode
   aspectRatio?: number
   cardDescendantTarget: BasicTarget<HTMLElement> // 卡片后代元素
 }
 
-export const LargePreview = forwardRef<ComponentRef<'div'>, LargePreviewProps>(
-  ({ children, aspectRatio = AspectRatioPreset.Horizontal, cardDescendantTarget, ...restProps }, forwardedRef) => {
-    const popoverRef = useMixedRef(forwardedRef)
+export const LargePreview = memo(function LargePreview({
+  children,
+  aspectRatio = AspectRatioPreset.Horizontal,
+  cardDescendantTarget,
+  ref: propRef,
+  ...restProps
+}: LargePreviewProps) {
+  const popoverRef = useDelegatedRef(propRef)
 
-    const [visible, setVisible] = useState(false)
-    const [position, setPosition] = useState<
-      | {
-          direction: Direction
-          elWidth: number
-          elHeight: number
-          elPosX: number
-          elPosY: number
-          arrowTop: number
-          arrowLeft: number
-        }
-      | undefined
-    >(undefined)
-
-    const hide = useMemoizedFn(() => {
-      setVisible(false)
-      setPosition(undefined)
-    })
-
-    const calculatePostion = useMemoizedFn(() => {
-      const cardCoverRect = getCoverRect(getTargetElement(cardDescendantTarget) ?? undefined)
-      if (!cardCoverRect) return hide()
-
-      const [viewportWidth, viewportHeight] = [
-        document.documentElement.clientWidth,
-        document.documentElement.clientHeight,
-      ]
-
-      // invisible
-      const tolerance = 40
-      if (
-        cardCoverRect.top > viewportHeight - tolerance ||
-        cardCoverRect.bottom < 0 + tolerance ||
-        cardCoverRect.left > viewportWidth - tolerance ||
-        cardCoverRect.right < 0 + tolerance
-      ) {
-        return hide()
+  const [visible, setVisible] = useState(false)
+  const [position, setPosition] = useState<
+    | {
+        direction: Direction
+        elWidth: number
+        elHeight: number
+        elPosX: number
+        elPosY: number
+        arrowTop: number
+        arrowLeft: number
       }
+    | undefined
+  >(undefined)
 
-      const possibleBoundingBox: Record<Direction, Bbox> = {
-        top: { x: 0, y: 0, width: viewportWidth, height: cardCoverRect.top },
-        bottom: {
-          x: 0,
-          y: cardCoverRect.bottom,
-          width: viewportWidth,
-          height: viewportHeight - cardCoverRect.bottom,
+  const hide = useMemoizedFn(() => {
+    setVisible(false)
+    setPosition(undefined)
+  })
+
+  const calculatePostion = useMemoizedFn(() => {
+    const cardCoverRect = getCoverRect(getTargetElement(cardDescendantTarget) ?? undefined)
+    if (!cardCoverRect) return hide()
+
+    const [viewportWidth, viewportHeight] = [
+      document.documentElement.clientWidth,
+      document.documentElement.clientHeight,
+    ]
+
+    // invisible
+    const tolerance = 40
+    if (
+      cardCoverRect.top > viewportHeight - tolerance ||
+      cardCoverRect.bottom < 0 + tolerance ||
+      cardCoverRect.left > viewportWidth - tolerance ||
+      cardCoverRect.right < 0 + tolerance
+    ) {
+      return hide()
+    }
+
+    const possibleBoundingBox: Record<Direction, Bbox> = {
+      top: { x: 0, y: 0, width: viewportWidth, height: cardCoverRect.top },
+      bottom: {
+        x: 0,
+        y: cardCoverRect.bottom,
+        width: viewportWidth,
+        height: viewportHeight - cardCoverRect.bottom,
+      },
+      left: { x: 0, y: 0, width: cardCoverRect.left, height: viewportHeight },
+      right: {
+        x: cardCoverRect.right,
+        y: 0,
+        width: viewportWidth - cardCoverRect.right,
+        height: viewportHeight,
+      },
+    }
+
+    const getScaleInBox = (bbox: Bbox) => {
+      const w = aspectRatio
+      const h = 1
+
+      const scaleX = bbox.width / w
+      const scaleY = bbox.height / h
+
+      const scale = Math.min(scaleX, scaleY)
+      return { scale, scaleLimit: scaleX > scaleY ? ('height' as const) : ('width' as const) }
+    }
+
+    const picked = orderBy(
+      Object.entries(possibleBoundingBox).map(([direction, bbox]) => ({
+        direction: direction as Direction,
+        bbox,
+        ...getScaleInBox(bbox),
+      })),
+      [
+        'scale',
+        (x) => {
+          // rest space
+          switch (x.direction) {
+            case 'top':
+              return cardCoverRect.top
+            case 'bottom':
+              return viewportHeight - cardCoverRect.bottom
+            case 'left':
+              return cardCoverRect.left
+            case 'right':
+              return viewportWidth - cardCoverRect.right
+          }
         },
-        left: { x: 0, y: 0, width: cardCoverRect.left, height: viewportHeight },
-        right: {
-          x: cardCoverRect.right,
-          y: 0,
-          width: viewportWidth - cardCoverRect.right,
-          height: viewportHeight,
-        },
+      ],
+      ['desc', 'desc'],
+    )[0]
+
+    debug('picked direction', picked)
+    const { direction, bbox, scale, scaleLimit } = picked
+
+    let elWidth: number
+    let elHeight: number
+    if (scaleLimit === 'width') {
+      elWidth = Math.floor(bbox.width - (VisualPadding.card + VisualPadding.border))
+      elHeight = elWidth / aspectRatio
+    } else if (scaleLimit === 'height') {
+      elHeight = Math.floor(bbox.height - (VisualPadding.card + VisualPadding.border))
+      elWidth = elHeight * aspectRatio
+    } else {
+      throw new Error('unexpected scaleLimit')
+    }
+
+    let elPosX = 0
+    let elPosY = 0
+
+    let arrowTop = 0
+    let arrowLeft = 0
+    const setArrowTop = () => {
+      arrowTop = cardCoverRect.y + cardCoverRect.height / 2 - elPosY
+    }
+    const setArrowLeft = () => {
+      arrowLeft = cardCoverRect.x + cardCoverRect.width / 2 - elPosX
+    }
+
+    const fixX = () => {
+      if (elPosX < VisualPadding.border) {
+        elPosX = VisualPadding.border
+        return
       }
-
-      const getScaleInBox = (bbox: Bbox) => {
-        const w = aspectRatio
-        const h = 1
-
-        const scaleX = bbox.width / w
-        const scaleY = bbox.height / h
-
-        const scale = Math.min(scaleX, scaleY)
-        return { scale, scaleLimit: scaleX > scaleY ? ('height' as const) : ('width' as const) }
+      if (elPosX + elWidth > viewportWidth - VisualPadding.border) {
+        elPosX = viewportWidth - VisualPadding.border - elWidth
+        return
       }
+    }
+    const fixY = () => {
+      if (elPosY < VisualPadding.border) {
+        elPosY = VisualPadding.border
+        return
+      }
+      if (elPosY + elHeight > viewportHeight - VisualPadding.border) {
+        elPosY = viewportHeight - VisualPadding.border - elHeight
+        return
+      }
+    }
 
-      const picked = orderBy(
-        Object.entries(possibleBoundingBox).map(([direction, bbox]) => ({
-          direction: direction as Direction,
-          bbox,
-          ...getScaleInBox(bbox),
-        })),
-        [
-          'scale',
-          (x) => {
-            // rest space
-            switch (x.direction) {
-              case 'top':
-                return cardCoverRect.top
-              case 'bottom':
-                return viewportHeight - cardCoverRect.bottom
-              case 'left':
-                return cardCoverRect.left
-              case 'right':
-                return viewportWidth - cardCoverRect.right
-            }
-          },
-        ],
-        ['desc', 'desc'],
-      )[0]
+    switch (direction) {
+      case 'top':
+        elPosX = cardCoverRect.x + cardCoverRect.width / 2 - elWidth / 2
+        elPosY = cardCoverRect.top - VisualPadding.card - elHeight
+        fixX()
+        setArrowLeft()
+        break
+      case 'bottom':
+        elPosX = cardCoverRect.x + cardCoverRect.width / 2 - elWidth / 2
+        elPosY = cardCoverRect.bottom + VisualPadding.card
+        fixX()
+        setArrowLeft()
+        break
+      case 'right':
+        elPosX = cardCoverRect.right + VisualPadding.card
+        elPosY = cardCoverRect.y + cardCoverRect.height / 2 - elHeight / 2
+        fixY()
+        setArrowTop()
+        break
+      case 'left':
+        elPosX = cardCoverRect.left - VisualPadding.card - elWidth
+        elPosY = cardCoverRect.y + cardCoverRect.height / 2 - elHeight / 2
+        fixY()
+        setArrowTop()
+        break
+    }
 
-      debug('picked direction', picked)
-      const { direction, bbox, scale, scaleLimit } = picked
+    elPosX = Math.floor(elPosX)
+    elPosY = Math.floor(elPosY)
+    setVisible(true)
+    setPosition({ direction, elWidth, elHeight, elPosX, elPosY, arrowTop, arrowLeft })
+  })
 
-      let elWidth: number
-      let elHeight: number
-      if (scaleLimit === 'width') {
-        elWidth = Math.floor(bbox.width - (VisualPadding.card + VisualPadding.border))
-        elHeight = elWidth / aspectRatio
-      } else if (scaleLimit === 'height') {
-        elHeight = Math.floor(bbox.height - (VisualPadding.card + VisualPadding.border))
-        elWidth = elHeight * aspectRatio
+  const calculatePostionThrottled = useMemo(() => throttle(calculatePostion, 100), [calculatePostion])
+
+  useMount(calculatePostionThrottled)
+  useEventListener('resize', calculatePostionThrottled, { target: window })
+  useEventListener('scroll', calculatePostionThrottled, { target: window })
+
+  const { useScale } = useSettingsSnapshot().videoCard.videoPreview
+
+  // default duration: 0.3
+  const animationDuration = useScale ? 0.2 : 0.3
+
+  const initial = useMemo(() => {
+    const direction = position?.direction
+    if (!direction) return
+
+    const { axis, multiplier, reverse } = DirectionConfig[direction]
+
+    // no scale
+    if (!useScale) {
+      let animateDistance = 30
+      if (direction === 'top') animateDistance = 20 // 防止闪烁
+      if (axis === 'x') {
+        return { x: -multiplier * animateDistance, y: 0 }
       } else {
-        throw new Error('unexpected scaleLimit')
+        return { x: 0, y: -multiplier * animateDistance }
       }
+    }
+    // scale
+    else if (axis === 'x') {
+      return { scale: 0.5, transformOrigin: `${reverse} ${position.arrowTop}px` }
+    } else {
+      return { scale: 0.5, transformOrigin: `${position.arrowLeft}px ${reverse}` }
+    }
+  }, [position, useScale])
 
-      let elPosX = 0
-      let elPosY = 0
-
-      let arrowTop = 0
-      let arrowLeft = 0
-      const setArrowTop = () => {
-        arrowTop = cardCoverRect.y + cardCoverRect.height / 2 - elPosY
+  const popoverEl = (
+    <div
+      {...restProps}
+      ref={popoverRef}
+      className={clsx('fixed', clsZVideoCardLargePreview, visible ? 'block' : 'hidden')}
+      css={
+        position &&
+        css`
+          width: ${position.elWidth}px;
+          height: ${position.elHeight}px;
+          top: ${position.elPosY}px;
+          left: ${position.elPosX}px;
+        `
       }
-      const setArrowLeft = () => {
-        arrowLeft = cardCoverRect.x + cardCoverRect.width / 2 - elPosX
-      }
-
-      const fixX = () => {
-        if (elPosX < VisualPadding.border) {
-          elPosX = VisualPadding.border
-          return
-        }
-        if (elPosX + elWidth > viewportWidth - VisualPadding.border) {
-          elPosX = viewportWidth - VisualPadding.border - elWidth
-          return
-        }
-      }
-      const fixY = () => {
-        if (elPosY < VisualPadding.border) {
-          elPosY = VisualPadding.border
-          return
-        }
-        if (elPosY + elHeight > viewportHeight - VisualPadding.border) {
-          elPosY = viewportHeight - VisualPadding.border - elHeight
-          return
-        }
-      }
-
-      switch (direction) {
-        case 'top':
-          elPosX = cardCoverRect.x + cardCoverRect.width / 2 - elWidth / 2
-          elPosY = cardCoverRect.top - VisualPadding.card - elHeight
-          fixX()
-          setArrowLeft()
-          break
-        case 'bottom':
-          elPosX = cardCoverRect.x + cardCoverRect.width / 2 - elWidth / 2
-          elPosY = cardCoverRect.bottom + VisualPadding.card
-          fixX()
-          setArrowLeft()
-          break
-        case 'right':
-          elPosX = cardCoverRect.right + VisualPadding.card
-          elPosY = cardCoverRect.y + cardCoverRect.height / 2 - elHeight / 2
-          fixY()
-          setArrowTop()
-          break
-        case 'left':
-          elPosX = cardCoverRect.left - VisualPadding.card - elWidth
-          elPosY = cardCoverRect.y + cardCoverRect.height / 2 - elHeight / 2
-          fixY()
-          setArrowTop()
-          break
-      }
-
-      elPosX = Math.floor(elPosX)
-      elPosY = Math.floor(elPosY)
-      setVisible(true)
-      setPosition({ direction, elWidth, elHeight, elPosX, elPosY, arrowTop, arrowLeft })
-    })
-
-    const calculatePostionThrottled = useMemo(() => throttle(calculatePostion, 100), [calculatePostion])
-
-    useMount(calculatePostionThrottled)
-    useEventListener('resize', calculatePostionThrottled, { target: window })
-    useEventListener('scroll', calculatePostionThrottled, { target: window })
-
-    const { useScale } = useSettingsSnapshot().videoCard.videoPreview
-
-    // default duration: 0.3
-    const animationDuration = useScale ? 0.2 : 0.3
-
-    const initial = useMemo(() => {
-      const direction = position?.direction
-      if (!direction) return
-
-      const { axis, multiplier, reverse } = DirectionConfig[direction]
-
-      // no scale
-      if (!useScale) {
-        let animateDistance = 30
-        if (direction === 'top') animateDistance = 20 // 防止闪烁
-        if (axis === 'x') {
-          return { x: -multiplier * animateDistance, y: 0 }
-        } else {
-          return { x: 0, y: -multiplier * animateDistance }
-        }
-      }
-      // scale
-      else if (axis === 'x') {
-        return { scale: 0.5, transformOrigin: `${reverse} ${position.arrowTop}px` }
-      } else {
-        return { scale: 0.5, transformOrigin: `${position.arrowLeft}px ${reverse}` }
-      }
-    }, [position, useScale])
-
-    const popoverEl = (
-      <div
-        {...restProps}
-        ref={popoverRef}
-        className={clsx('fixed', clsZVideoCardLargePreview, visible ? 'block' : 'hidden')}
-        css={
-          position &&
-          css`
-            width: ${position.elWidth}px;
-            height: ${position.elHeight}px;
-            top: ${position.elPosY}px;
-            left: ${position.elPosX}px;
-          `
-        }
-      >
-        {visible && (
-          <motion.div
-            className='relative h-100%'
-            initial={{ opacity: 0, ...initial }}
-            animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
-            transition={{ bounce: 0, duration: animationDuration }}
+    >
+      {visible && (
+        <motion.div
+          className='relative h-100%'
+          initial={{ opacity: 0, ...initial }}
+          animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+          transition={{ bounce: 0, duration: animationDuration }}
+        >
+          {position?.direction && (
+            <PopoverArrow
+              size={7}
+              direction={position.direction}
+              arrowTop={position.arrowTop}
+              arrowLeft={position.arrowLeft}
+            />
+          )}
+          <div
+            className='h-full overflow-hidden rounded-20px bg-white/50% backdrop-blur-10px'
+            css={css`
+              box-shadow: 0px 0px 1px 1px ${appPrimaryColorValue};
+            `}
           >
-            {position?.direction && (
-              <PopoverArrow
-                size={7}
-                direction={position.direction}
-                arrowTop={position.arrowTop}
-                arrowLeft={position.arrowLeft}
-              />
-            )}
-            <div
-              className='h-full overflow-hidden rounded-20px bg-white/50% backdrop-blur-10px'
-              css={css`
-                box-shadow: 0px 0px 1px 1px ${appPrimaryColorValue};
-              `}
-            >
-              {children}
-            </div>
-          </motion.div>
-        )}
-      </div>
-    )
+            {children}
+          </div>
+        </motion.div>
+      )}
+    </div>
+  )
 
-    return popoverEl
-  },
-)
+  return popoverEl
+})
 
 function PopoverArrow({
   size,

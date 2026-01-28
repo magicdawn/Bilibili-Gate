@@ -3,7 +3,7 @@ import { css, Global } from '@emotion/react'
 import { useHover } from 'ahooks'
 import { App, ConfigProvider, Dropdown } from 'antd'
 import clsx from 'clsx'
-import { useMemo, useState, type ReactNode } from 'react'
+import { useMemo, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react'
 import { createRoot } from 'react-dom/client'
 import { APP_CLS_ROOT, APP_NAMESPACE } from '$common'
 import { useLessFrequentFn } from '$common/hooks/useLessFrequentFn'
@@ -98,7 +98,7 @@ function LockOverlay({
   pipWindow,
 }: {
   locked: boolean
-  setLocked: React.Dispatch<React.SetStateAction<boolean>>
+  setLocked: Dispatch<SetStateAction<boolean>>
   pipWindow: Window
 }) {
   const { message } = App.useApp()
@@ -175,13 +175,7 @@ function CloseButton({ pipWindow }: { pipWindow: Window }) {
   )
 }
 
-function LockButton({
-  locked,
-  setLocked,
-}: {
-  locked: boolean
-  setLocked: React.Dispatch<React.SetStateAction<boolean>>
-}) {
+function LockButton({ locked, setLocked }: { locked: boolean; setLocked: Dispatch<SetStateAction<boolean>> }) {
   const [currentState, targetState] = locked ? ['锁定', '解锁'] : ['解锁', '锁定']
   return (
     <VideoCardActionButton

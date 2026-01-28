@@ -1,20 +1,18 @@
 import { useToggle } from 'ahooks'
 import { Button } from 'antd'
 import clsx from 'clsx'
-import { forwardRef, useImperativeHandle, type ReactNode } from 'react'
+import { useImperativeHandle, type ReactNode, type Ref } from 'react'
 import type { Actions } from 'ahooks/lib/useToggle'
-
-interface IProps {
-  children: ReactNode
-  initialOpen?: boolean
-}
 
 export type CollapseBtnRef = Actions<boolean>
 
-export const CollapseBtn = forwardRef<CollapseBtnRef, IProps>(function CollapseBtn(
-  { children, initialOpen = false }: IProps,
-  ref,
-) {
+interface CollapseBtnProps {
+  children: ReactNode
+  initialOpen?: boolean
+  ref?: Ref<CollapseBtnRef>
+}
+
+export function CollapseBtn({ children, initialOpen = false, ref }: CollapseBtnProps) {
   const [buttonsExpanded, buttonsExpandedActions] = useToggle(initialOpen)
 
   useImperativeHandle(ref, () => buttonsExpandedActions, [buttonsExpandedActions])
@@ -31,4 +29,4 @@ export const CollapseBtn = forwardRef<CollapseBtnRef, IProps>(function CollapseB
       {buttonsExpanded && children}
     </>
   )
-})
+}

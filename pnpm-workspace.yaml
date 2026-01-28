@@ -9,6 +9,10 @@ minimumReleaseAgeExclude:
   - '@magicdawn/*'
   - '@mgdn/*'
   - unocss-merge
+  - antd
+  - react
+  - react-dom
+  - '@types/*'
 
 onlyBuiltDependencies:
   - '@biomejs/biome'

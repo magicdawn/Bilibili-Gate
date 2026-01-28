@@ -6,7 +6,7 @@ import { useMemo, type ComponentProps } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
 import { useSnapshot } from 'valtio'
 import { APP_NAME, appLog } from '$common'
-import { useMixedRef } from '$common/hooks/mixed-ref'
+import { useDelegatedRef } from '$common/hooks/mixed-ref'
 import { $windowSize } from '$common/hooks/useWindowSize'
 import { clsZGateFloatEntry } from '$components/fragments'
 import { toggleModalFeed } from '$components/RecHeader/modals'
@@ -87,7 +87,7 @@ function GateFloatEntryInner() {
     },
   })
 
-  const wrapperRef = useMixedRef<HTMLDivElement>(setNodeRef)
+  const wrapperRef = useDelegatedRef<HTMLDivElement>(setNodeRef)
 
   // width: 48px
   const wrapperClassName = useUnoMerge(

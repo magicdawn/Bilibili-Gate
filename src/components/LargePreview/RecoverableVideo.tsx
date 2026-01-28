@@ -1,6 +1,6 @@
 import { useMemoizedFn, useMount } from 'ahooks'
-import { forwardRef, useRef, type ComponentProps, type ComponentRef, type MutableRefObject } from 'react'
-import { useMixedRef } from '$common/hooks/mixed-ref'
+import { useRef, type ComponentPropsWithRef, type ComponentRef, type RefObject } from 'react'
+import { useDelegatedRef } from '$common/hooks/mixed-ref'
 import { proxyWithGmStorage } from '$utility/valtio'
 
 const store = await proxyWithGmStorage<{
@@ -15,11 +15,14 @@ const store = await proxyWithGmStorage<{
 )
 export { store as largePreviewStore }
 
-export const RecoverableVideo = forwardRef<
-  ComponentRef<'video'>,
-  ComponentProps<'video'> & { currentTimeRef: MutableRefObject<number | undefined> }
->(({ currentTimeRef, ...videoProps }, forwardedRef) => {
-  const ref = useMixedRef<ComponentRef<'video'> | null>(forwardedRef)
+export const RecoverableVideo = function ({
+  currentTimeRef,
+  ref: propRef,
+  ...videoProps
+}: ComponentPropsWithRef<'video'> & {
+  currentTimeRef: RefObject<number | undefined>
+}) {
+  const ref = useDelegatedRef<ComponentRef<'video'>>(propRef)
   const mountedRef = useRef(false)
 
   useMount(() => {
@@ -53,4 +56,4 @@ export const RecoverableVideo = forwardRef<
   })
 
   return <video ref={ref} {...videoProps} onTimeUpdate={onTimeUpdate} onVolumeChange={onVolumeChange} />
-})
+}

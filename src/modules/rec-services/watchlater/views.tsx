@@ -14,7 +14,7 @@ import { GenericOrderSwitcher } from '../_shared/generic-order-switcher'
 import { removeMultiSelectedWatchlaterItems, type WatchlaterRecService } from '.'
 import { watchlaterStore } from './store'
 import { WatchlaterItemsOrder } from './watchlater-enum'
-import type { ElementRef, ReactNode } from 'react'
+import type { ComponentRef, ReactNode } from 'react'
 
 export function WatchlaterTabbarView({ service }: { service: WatchlaterRecService }) {
   const { watchlaterAddSeparator, watchlaterItemsOrder, watchlaterUseNormalVideoUrl } = useSettingsSnapshot()
@@ -122,7 +122,7 @@ const extraHelpInfo = (
 
 function WatchlaterOrderSwitcher() {
   const onRefresh = useOnRefresh()
-  const { ref, getPopupContainer } = usePopupContainer<ElementRef<'span'>>()
+  const { ref, getPopupContainer } = usePopupContainer<ComponentRef<'span'>>()
   const { watchlaterItemsOrder } = useSettingsSnapshot()
   const { searchText } = useSnapshot(watchlaterStore)
   const disabled = !!searchText

@@ -8,15 +8,7 @@ import {
   useUpdateEffect,
 } from 'ahooks'
 import { getTargetElement } from 'ahooks/lib/utils/domTarget'
-import {
-  useMemo,
-  useRef,
-  useState,
-  type ComponentProps,
-  type ComponentRef,
-  type MutableRefObject,
-  type RefObject,
-} from 'react'
+import { useMemo, useRef, useState, type ComponentProps, type ComponentRef, type RefObject } from 'react'
 import { useSnapshot } from 'valtio'
 import { __PROD__, APP_CLS_CARD, appLog, BiliDomain } from '$common'
 import { useEmitterOn } from '$common/hooks/useEmitter'
@@ -34,7 +26,7 @@ import type { RecSharedEmitter } from '$components/Recommends/rec.shared'
 import type { CssProp } from '$utility/type'
 
 type Timer = ReturnType<typeof setTimeout>
-type TimerRef = MutableRefObject<Timer | undefined>
+type TimerRef = RefObject<Timer | undefined>
 function clearTimerRef(timerRef: TimerRef) {
   if (timerRef.current === undefined) return
   clearTimeout(timerRef.current)
@@ -56,11 +48,11 @@ type UseLargePreviewOptions = {
   cid?: number
   uniqId: string
   recSharedEmitter: RecSharedEmitter
-  cardTarget: RefObject<HTMLElement> | HTMLElement
+  cardTarget: RefObject<HTMLElement | null> | HTMLElement
   // optional
   aspectRatioFromItem?: number
   cover?: string
-  videoCardAsTriggerRef?: MutableRefObject<HTMLElement | null>
+  videoCardAsTriggerRef?: RefObject<HTMLElement | null>
 }
 
 export function useLargePreviewRelated({

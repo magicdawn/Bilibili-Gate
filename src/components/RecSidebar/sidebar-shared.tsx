@@ -1,6 +1,6 @@
 import { useMemoizedFn, useMount, useUpdateEffect } from 'ahooks'
 import { Divider, type Menu } from 'antd'
-import { useMemo, useRef, type ElementRef } from 'react'
+import { useMemo, useRef, type ComponentRef } from 'react'
 import { useSnapshot } from 'valtio/react'
 import { useGridDisplayModeChecker } from '$components/RecGrid/display-mode'
 import { EHotSubTab, ETab } from '$components/RecHeader/tab-enum'
@@ -36,7 +36,7 @@ export function useSidebarVisible(tab: ETab | undefined): boolean {
 }
 
 export function useRevealMenuSelectedKey(menuItems: AntMenuItem[], selectedKey: string) {
-  const menuRef = useRef<ElementRef<typeof Menu>>(null)
+  const menuRef = useRef<ComponentRef<typeof Menu>>(null)
 
   const revealSelected = useMemoizedFn((key?: string) => {
     key ||= selectedKey

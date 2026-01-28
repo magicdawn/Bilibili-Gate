@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { delay } from 'es-toolkit'
-import { useMemo, type ElementRef, type ReactNode } from 'react'
+import { useMemo, type ComponentRef, type ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
 import { useOnRefresh } from '$components/Recommends/rec.shared'
 import {
@@ -111,7 +111,7 @@ export function useSavedOrder(selectedKey: string, savedOrderMap: Map<string, Fa
 
 export function FavItemsOrderSwitcher() {
   const onRefresh = useOnRefresh()
-  const { ref, getPopupContainer } = usePopupContainer<ElementRef<'span'>>()
+  const { ref: popupRef, getPopupContainer } = usePopupContainer<ComponentRef<'span'>>()
 
   const { selectedKey, savedOrderMap } = useSnapshot(favStore)
   const value = useSavedOrder(selectedKey, savedOrderMap)
@@ -127,7 +127,7 @@ export function FavItemsOrderSwitcher() {
       }}
       list={menuItems}
       listDisplayConfig={FavItemsOrderConfig}
-      $ref={ref}
+      $ref={popupRef}
       dropdownProps={{ getPopupContainer }}
     />
   )

@@ -2,15 +2,7 @@ import { css } from '@emotion/react'
 import { Empty, Input } from 'antd'
 import clsx from 'clsx'
 import { identity, uniq } from 'es-toolkit'
-import {
-  forwardRef,
-  useEffect,
-  useMemo,
-  useState,
-  type ComponentProps,
-  type ComponentPropsWithoutRef,
-  type ReactNode,
-} from 'react'
+import { memo, useEffect, useMemo, useState, type ComponentProps, type ReactNode } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
@@ -129,34 +121,37 @@ export function EditableListSettingItem({
   )
 }
 
-type TagItemDisplayProps = {
+interface TagItemDisplayProps extends Omit<ComponentProps<'div'>, 'children'> {
   tag: string
   renderTag?: (tag: string) => ReactNode
   onDelete?: (tag: string) => void
-} & Omit<ComponentPropsWithoutRef<'div'>, 'children'>
+}
 
-export const TagItemDisplay = forwardRef<HTMLDivElement, TagItemDisplayProps>(
-  ({ tag, renderTag, onDelete, className, ...restProps }, ref) => {
-    return (
-      <div
-        ref={ref}
-        className={clsx(
-          'relative inline-flex items-center b-1px b-gate-border rounded-5px b-solid px-6px py-2px hover:(b-gate-primary color-gate-primary)',
-          className,
-        )}
-        {...restProps}
-      >
-        {renderTag ? renderTag(tag) : tag}
-        <IconParkOutlineCloseSmall
-          className='ml-2px size-16px cursor-pointer text-size-12px'
-          onClick={() => {
-            onDelete?.(tag)
-          }}
-        />
-      </div>
-    )
-  },
-)
+export const TagItemDisplay = memo(function TagItemDisplay({
+  tag,
+  renderTag,
+  onDelete,
+  className,
+  ...restProps
+}: TagItemDisplayProps) {
+  return (
+    <div
+      {...restProps}
+      className={clsx(
+        'relative inline-flex items-center b-1px b-gate-border rounded-5px b-solid px-6px py-2px hover:(b-gate-primary color-gate-primary)',
+        className,
+      )}
+    >
+      {renderTag ? renderTag(tag) : tag}
+      <IconParkOutlineCloseSmall
+        className='ml-2px size-16px cursor-pointer text-size-12px'
+        onClick={() => {
+          onDelete?.(tag)
+        }}
+      />
+    </div>
+  )
+})
 
 function UpTagItemDisplay({ tag }: { tag: string }) {
   const { mid, remark } = useMemo(() => parseUpRepresent(tag), [tag])

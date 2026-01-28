@@ -3,19 +3,8 @@ const { defineConfig } = require('npm-check-updates')
 module.exports = defineConfig({
   reject: [
     'axios',
-    // react v19
-    'react',
-    'react-dom',
-    '@types/react',
-    '@types/react-dom',
-    // v1 is enough
-    'ua-parser-js',
+    'ua-parser-js', // v1 is enough
   ],
-  dep: [
-    'prod',
-    'dev',
-    'optional',
-    // 'packageManager'
-  ],
+  dep: ['prod', 'dev', 'optional'],
   cooldown: 1, // days
 })

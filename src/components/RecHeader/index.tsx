@@ -2,7 +2,7 @@ import { css } from '@emotion/react'
 import { useKeyPress, useMemoizedFn } from 'ahooks'
 import { Button } from 'antd'
 import clsx from 'clsx'
-import { forwardRef, useImperativeHandle, useMemo, type ReactNode } from 'react'
+import { useImperativeHandle, useMemo, type ReactNode, type Ref } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
 import { APP_CLS_TAB_BAR, baseDebug } from '$common'
 import { useSizeExpression } from '$common/hooks/useResizeObserverExpression'
@@ -30,14 +30,14 @@ export type RecHeaderRef = {
   scrollToTop: () => void
 }
 
-export const RecHeader = forwardRef<
-  RecHeaderRef,
-  {
-    shortcutEnabled: boolean
-    leftSlot?: ReactNode
-    rightSlot?: ReactNode
-  }
->(function RecHeader({ leftSlot, rightSlot, shortcutEnabled }, ref) {
+type RecHeaderProps = {
+  shortcutEnabled: boolean
+  leftSlot?: ReactNode
+  rightSlot?: ReactNode
+  ref?: Ref<RecHeaderRef>
+}
+
+export function RecHeader({ leftSlot, rightSlot, shortcutEnabled, ref }: RecHeaderProps) {
   const {
     pureRecommend,
     multiSelect: { showIcon: multiSelectShowIcon },
@@ -145,7 +145,7 @@ export const RecHeader = forwardRef<
       </div>
     </div>
   )
-})
+}
 
 /**
  * 使用如 margin-inline: -10px; padding-inline: 10px; 来扩展到全屏宽度
