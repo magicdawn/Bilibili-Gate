@@ -2,7 +2,7 @@ import { useCreation, useEventListener, useLatest, useMemoizedFn, useMount, useU
 import { Divider } from 'antd'
 import clsx, { type ClassValue } from 'clsx'
 import Emittery from 'emittery'
-import { delay } from 'es-toolkit'
+import { attempt, delay } from 'es-toolkit'
 import ms from 'ms'
 import {
   memo,
@@ -185,12 +185,9 @@ export const RecGrid = memo(function RecGrid({
   )
 
   const checkShouldLoadMore = useMemoizedFn(async () => {
-    // always async, `footerInViewRef` depends on `__footerInView` state
-    await delay(isSafari ? 100 : 0)
-    debug('checkShouldLoadMore(): footerInView = %s', footerInViewRef.current)
-    if (footerInViewRef.current) {
-      loadMore()
-    }
+    await delay(isSafari ? 100 : 0) // always async
+    debug('checkShouldLoadMore(): footerInViewRef = %s', footerInViewRef.current)
+    if (footerInViewRef.current) return loadMore()
   })
 
   const loadMorePrecheck = useMemoizedFn(() => {
@@ -411,7 +408,8 @@ export const RecGrid = memo(function RecGrid({
     rootMargin: `0px 0px ${window.innerHeight}px 0px`,
     onChange(inView) {
       if (inView) {
-        debug('footerInView change to visible', inView)
+        debug('footerInView change to visible')
+        attempt(() => (footerInViewRef.current = true))
         checkShouldLoadMore()
       }
     },

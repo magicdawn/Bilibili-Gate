@@ -209,30 +209,37 @@ export default defineConfig(({ command, mode }) => ({
         // https://greasyfork.org/zh-CN/scripts/443530-bilibili-gate/discussions/197900
 
         externalGlobals: {
-          // https://caniuse.com/resizeobserver
-          // support starts from Chrome 76
-          // can't resolve
-          // 'resize-observer-polyfill': 'ResizeObserver',
-
           'axios': cdn.npmmirror('axios', 'dist/axios.min.js'),
           // 'axios-userscript-adapter': cdn.npmmirror(
           //   'axiosGmxhrAdapter',
           //   'dist/axiosGmxhrAdapter.min.js',
           // ),
-          'react': cdn.npmmirror('React', 'umd/react.production.min.js'),
-          'react-dom': cdn.npmmirror('ReactDOM', 'umd/react-dom.production.min.js'),
           'ua-parser-js': cdn.npmmirror('UAParser', 'dist/ua-parser.min.js'),
-          'framer-motion': cdn.npmmirror('Motion', 'dist/framer-motion.js'),
           'localforage': cdn.npmmirror('localforage', 'dist/localforage.min.js'),
           'pinyin-match': cdn.npmmirror('PinyinMatch', 'dist/main.js'),
           'spark-md5': cdn.npmmirror('SparkMD5', 'spark-md5.min.js'),
 
-          // size:
-          //  external 944kB + 36kB
-          //  not-external 946kB
-          // antd use @emotion/* too
-          // '@emotion/css': cdn.npmmirror('emotion', 'dist/emotion-css.umd.min.js'),
-          // '@emotion/react': cdn.npmmirror('emotionReact', 'dist/emotion-react.umd.min.js'),
+          // 'react': cdn.npmmirror('React', 'umd/react.production.min.js'),
+          // 'react-dom': cdn.npmmirror('ReactDOM', 'umd/react-dom.production.min.js'),
+          // 'react': [
+          //   'React',
+          //   (version, name, _importName = '', resolveName = '') =>
+          //     // `https://unpkg.com/react-umd@${version}/dist/react.umd.js`,
+          //     `http://localhost:3000/react.umd.js`,
+          // ],
+          // 'react-dom': [
+          //   'ReactDOM',
+          //   (version, name, _importName = '', resolveName = '') =>
+          //     // `https://unpkg.com/react-umd@${version}/dist/react-dom.umd.js`,
+          //     `http://localhost:3000/react-dom.umd.js`,
+          // ],
+          // 'react-dom/client': [
+          //   'ReactDOMClient',
+          //   (version, name, _importName = '', resolveName = '') =>
+          //     // `https://unpkg.com/react-umd@${version}/dist/react-dom.umd.js`,
+          //     `http://localhost:3000/react-dom-client.umd.js`,
+          // ],
+          // 'framer-motion': cdn.npmmirror('Motion', 'dist/framer-motion.js'),
 
           // !TODO when https://github.com/magicdawn/Bilibili-Gate/issues/204 resolved
           // oxlint-disable-next-line no-constant-binary-expression no-constant-condition
@@ -245,7 +252,7 @@ export default defineConfig(({ command, mode }) => ({
                 'dayjs/plugin/duration': cdn.npmmirror('dayjs_plugin_duration', 'plugin/duration.js'),
                 // https://github.com/ant-design/ant-design/issues/45262
                 '@ant-design/cssinjs': cdn.npmmirror('antdCssinjs', 'dist/umd/cssinjs.min.js'),
-                'antd': cdn.npmmirror('antd', 'dist/antd.min.js'),
+                'antd': cdn.npmmirror('antd', 'dist/antd.js'),
               }),
         },
       },
