@@ -9,9 +9,8 @@ import UnoCSS from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 import Icons from 'unplugin-icons/vite'
-import { defineConfig, type ConfigEnv, type PluginOption } from 'vite'
+import { defineConfig, type ConfigEnv } from 'vite'
 import { analyzer } from 'vite-bundle-analyzer'
-import importer from 'vite-plugin-importer'
 import Inspect from 'vite-plugin-inspect'
 import monkey, { cdn } from 'vite-plugin-monkey'
 import tsconfigPaths from 'vite-tsconfig-paths'
@@ -61,6 +60,7 @@ const minify = (() => {
 const miniSuffix = minify ? '.mini' : ''
 const fileName = `${packageName}${miniSuffix}.user.js`
 const metaFileName = `${packageName}${miniSuffix}.meta.js`
+const willExternalAntd = false //  !minify
 
 const branchBaseUrl = (branch: string) =>
   `https://raw.githubusercontent.com/magicdawn/Bilibili-Gate/refs/heads/${branch}/`
@@ -113,10 +113,8 @@ export default defineConfig(({ command, mode }) => ({
 
   build: {
     emptyOutDir: process.env.CI || process.env.KEEP_DIST ? false : true,
-    cssMinify: minify,
     minify,
-    // target defaults `modules`, = ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari14']
-    // target: 'modules',
+    cssMinify: minify,
   },
 
   // Set this to 0.0.0.0 or true to listen on all addresses, including LAN and public addresses.
@@ -150,9 +148,6 @@ export default defineConfig(({ command, mode }) => ({
       compiler: 'jsx',
       jsx: 'react',
     }),
-
-    ...getBabelImportPlugins(command),
-
     getReactPlugin(command),
     UnoCSS(),
     monkey({
@@ -219,41 +214,42 @@ export default defineConfig(({ command, mode }) => ({
           'pinyin-match': cdn.npmmirror('PinyinMatch', 'dist/main.js'),
           'spark-md5': cdn.npmmirror('SparkMD5', 'spark-md5.min.js'),
 
-          // 'react': cdn.npmmirror('React', 'umd/react.production.min.js'),
-          // 'react-dom': cdn.npmmirror('ReactDOM', 'umd/react-dom.production.min.js'),
-          // 'react': [
-          //   'React',
-          //   (version, name, _importName = '', resolveName = '') =>
-          //     // `https://unpkg.com/react-umd@${version}/dist/react.umd.js`,
-          //     `http://localhost:3000/react.umd.js`,
-          // ],
-          // 'react-dom': [
-          //   'ReactDOM',
-          //   (version, name, _importName = '', resolveName = '') =>
-          //     // `https://unpkg.com/react-umd@${version}/dist/react-dom.umd.js`,
-          //     `http://localhost:3000/react-dom.umd.js`,
-          // ],
-          // 'react-dom/client': [
-          //   'ReactDOMClient',
-          //   (version, name, _importName = '', resolveName = '') =>
-          //     // `https://unpkg.com/react-umd@${version}/dist/react-dom.umd.js`,
-          //     `http://localhost:3000/react-dom-client.umd.js`,
-          // ],
-          // 'framer-motion': cdn.npmmirror('Motion', 'dist/framer-motion.js'),
-
           // !TODO when https://github.com/magicdawn/Bilibili-Gate/issues/204 resolved
-          // oxlint-disable-next-line no-constant-binary-expression no-constant-condition
-          ...(true || minify
-            ? {}
-            : // external more when no-minify: [antd]
+          // external antd, antd-deps
+          ...(willExternalAntd
+            ? // + react, react-dom
               {
+                // 'react': cdn.npmmirror('React', 'umd/react.production.min.js'),
+                // 'react-dom': cdn.npmmirror('ReactDOM', 'umd/react-dom.production.min.js'),
+                // 'react': [
+                //   'React',
+                //   (version, name, _importName = '', resolveName = '') =>
+                //     // `https://unpkg.com/react-umd@${version}/dist/react.umd.js`,
+                //     `http://localhost:3000/react.umd.js`,
+                // ],
+                // 'react-dom': [
+                //   'ReactDOM',
+                //   (version, name, _importName = '', resolveName = '') =>
+                //     // `https://unpkg.com/react-umd@${version}/dist/react-dom.umd.js`,
+                //     `http://localhost:3000/react-dom.umd.js`,
+                // ],
+                // 'react-dom/client': [
+                //   'ReactDOMClient',
+                //   (version, name, _importName = '', resolveName = '') =>
+                //     // `https://unpkg.com/react-umd@${version}/dist/react-dom.umd.js`,
+                //     `http://localhost:3000/react-dom-client.umd.js`,
+                // ],
+
+                // 'framer-motion': cdn.npmmirror('Motion', 'dist/framer-motion.js'),
+
                 // antd deps = [react, react-dom, dayjs]
                 'dayjs': cdn.npmmirror('dayjs', 'dayjs.min.js'),
                 'dayjs/plugin/duration': cdn.npmmirror('dayjs_plugin_duration', 'plugin/duration.js'),
                 // https://github.com/ant-design/ant-design/issues/45262
                 '@ant-design/cssinjs': cdn.npmmirror('antdCssinjs', 'dist/umd/cssinjs.min.js'),
                 'antd': cdn.npmmirror('antd', 'dist/antd.js'),
-              }),
+              }
+            : {}),
         },
       },
     }),
@@ -270,36 +266,25 @@ export default defineConfig(({ command, mode }) => ({
   ].filter(Boolean),
 }))
 
-/**
- * babel-plugin-import related
- */
-function getBabelImportPlugins(command: ConfigEnv['command']): PluginOption[] {
-  return [
-    command === 'build' &&
-      minify &&
-      importer({
-        libraryName: 'antd',
-        libraryDirectory: 'es',
-      }),
-  ].filter(Boolean)
-}
-
 function getReactPlugin(command: ConfigEnv['command']) {
   const swc = reactSwc({
     jsxImportSource: '@emotion/react',
+    plugins: [
+      //
+      ['@swc/plugin-emotion', {}],
+    ],
   })
-
-  const babel = react({
-    jsxImportSource: '@emotion/react',
-    babel: {
-      plugins: ['@emotion/babel-plugin', '@babel/plugin-syntax-explicit-resource-management'],
-    },
-  })
-
-  return babel
 
   // use @vitejs/plugin-react in build
   // for use emotion babel plugin
   // https://emotion.sh/docs/babel#features-which-are-enabled-with-the-babel-plugin
+  const babel = react({
+    jsxImportSource: '@emotion/react',
+    babel: {
+      plugins: ['@emotion/babel-plugin'],
+    },
+  })
+
+  return swc
   return command === 'serve' ? swc : babel
 }
