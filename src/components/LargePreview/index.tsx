@@ -4,7 +4,7 @@ import { getTargetElement, type BasicTarget } from 'ahooks/lib/utils/domTarget'
 import clsx from 'clsx'
 import { orderBy, throttle } from 'es-toolkit'
 import { motion } from 'framer-motion'
-import { memo, useMemo, useState, type ComponentPropsWithRef, type ReactNode } from 'react'
+import { memo, useMemo, useState, type ComponentProps, type ReactNode } from 'react'
 import { APP_CLS_CARD, APP_CLS_CARD_COVER, baseDebug } from '$common'
 import { useDelegatedRef } from '$common/hooks/mixed-ref'
 import { appPrimaryColorValue } from '$components/css-vars'
@@ -42,7 +42,7 @@ function getCoverRect(anchorElement: HTMLElement | undefined) {
     ?.getBoundingClientRect()
 }
 
-interface LargePreviewProps extends ComponentPropsWithRef<'div'> {
+interface LargePreviewProps extends ComponentProps<'div'> {
   children?: ReactNode
   aspectRatio?: number
   cardDescendantTarget: BasicTarget<HTMLElement> // 卡片后代元素

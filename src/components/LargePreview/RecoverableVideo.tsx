@@ -1,5 +1,5 @@
 import { useMemoizedFn, useMount } from 'ahooks'
-import { useRef, type ComponentPropsWithRef, type ComponentRef, type RefObject } from 'react'
+import { useRef, type ComponentProps, type ComponentRef, type RefObject } from 'react'
 import { useDelegatedRef } from '$common/hooks/mixed-ref'
 import { proxyWithGmStorage } from '$utility/valtio'
 
@@ -19,7 +19,7 @@ export const RecoverableVideo = function ({
   currentTimeRef,
   ref: propRef,
   ...videoProps
-}: ComponentPropsWithRef<'video'> & {
+}: ComponentProps<'video'> & {
   currentTimeRef: RefObject<number | undefined>
 }) {
   const ref = useDelegatedRef<ComponentRef<'video'>>(propRef)
