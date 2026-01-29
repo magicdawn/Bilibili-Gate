@@ -285,6 +285,7 @@ function getReactPlugin(command: ConfigEnv['command']) {
     },
   })
 
-  return swc
+  // 经测试: @swc/plugin-emotion 达不到 @emotion/babel-plugin 的效果
+  // data-role="preview", @swc/plugin-emotion 没有在编译时 parse
   return command === 'serve' ? swc : babel
 }
