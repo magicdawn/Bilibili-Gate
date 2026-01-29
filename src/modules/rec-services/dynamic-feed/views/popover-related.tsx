@@ -1,3 +1,9 @@
+/**
+ * 注意 filter 在此项目中有两种意思:
+ * 1. 内容过滤-过滤器
+ * 2. 本地搜索: API 搜索使用 search, 本地过滤式搜索使用 filter
+ */
+
 import { useMemoizedFn, useRequest } from 'ahooks'
 import { Badge, Button, Checkbox, Input, Popover, Radio } from 'antd'
 import { delay, throttle } from 'es-toolkit'
@@ -311,7 +317,16 @@ function PopoverContent({
               refresh?.()
             }}
           >
-            <AntdTooltip title='添加今日/更早分割线'>添加分割线</AntdTooltip>
+            <AntdTooltip
+              title={
+                <>
+                  添加今日/更早分割线 <br />
+                  当前实现为全局共享此设置
+                </>
+              }
+            >
+              添加分割线
+            </AntdTooltip>
           </Checkbox>
 
           {/* actions for up|group */}

@@ -57,13 +57,13 @@ export const TabConfig: Record<ETab, TabConfigItem> = {
       <IconForWatchlater className='size-17px [&_.circle]:stroke-current' />
     ),
     label: '稍后再看',
-    desc: '你添加的稍后再看; 默认随机乱序, 可在设置中关闭乱序',
+    desc: '「我」的稍后再看',
     swr: true,
   },
   [ETab.Fav]: {
     icon: <IconForFav className='mt--1px size-16px' />,
     label: '收藏',
-    desc: '你添加的收藏; 默认随机乱序, 可在设置中关闭乱序',
+    desc: '「我」的收藏',
     get swr() {
       return !favStore.usingShuffle
     },
@@ -99,32 +99,18 @@ export const TabConfig: Record<ETab, TabConfigItem> = {
   [ETab.Liked]: {
     icon: <IconForLike className='size-16px' />,
     label: '赞',
-    desc: '点赞过的视频. 使用 App 端 API, 需要 access_key',
+    desc: '「我」的点赞. 使用 App 端个人空间 API, 需要 access_key',
   },
 }
 
-type TabIconProps = {
-  tabKey: ETab
-  active?: boolean
-  className?: string
-}
-
-export function TabIcon({ tabKey, active, className }: TabIconProps) {
+export function TabIcon({ tabKey, active, className }: { tabKey: ETab; active?: boolean; className?: string }) {
   const { icon } = TabConfig[tabKey]
   const iconProps = icon.props as { className?: string; css?: any }
-  const newClassName = useUnoMerge(iconProps.className, className)
-
-  // Create a new object with all original props plus the new ones
   const newProps = {
     ...iconProps,
-    className: newClassName,
+    className: useUnoMerge(iconProps.className, className),
+    active: tabKey === ETab.Live ? active : undefined, // 否则 warn: svg recived boolean props
   }
-
-  // Conditionally add the active prop only for live tab
-  if (tabKey === ETab.Live) {
-    ;(newProps as any).active = active // 否则 warn: svg recived boolean props
-  }
-
   const cloned = cloneElement(icon, newProps)
   return cloned
 }
@@ -135,7 +121,7 @@ export function toastNeedLogin() {
   return toast(NEED_LOGIN_MESSAGE)
 }
 
-function gotoLogin() {
+export function gotoLogin() {
   const href = 'https://passport.bilibili.com/login'
   location.href = href
 }
