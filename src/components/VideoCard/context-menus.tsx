@@ -3,6 +3,7 @@
  */
 
 import { useMemoizedFn } from 'ahooks'
+import { isNil } from 'es-toolkit'
 import { useMemo, type MouseEvent } from 'react'
 import { useSnapshot } from 'valtio'
 import {
@@ -17,6 +18,7 @@ import { useRecSelfContext } from '$components/Recommends/rec.shared'
 import {
   isAppRecommend,
   isDynamicFeed,
+  isLive,
   isPcRecommend,
   isSpaceUpload,
   type DynamicFeedItemExtend,
@@ -153,12 +155,13 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
   /**
    * unfollow
    */
-  const followed =
-    cardData.followed ??
-    (() => {
-      if (isAppRecommend(item) || isPcRecommend(item)) return getFollowedStatus(recommendReason)
-      return false
-    })()
+  const followed = (() => {
+    if (!isNil(cardData.followed)) return cardData.followed
+    if (tab === ETab.DynamicFeed && isLive(item)) return true // 关注的人的直播; ETab.DynamicFeed 其他 item 使用 cardData.followed
+    if (tab === ETab.Live && isLive(item)) return true // 关注的人的直播
+    if (isAppRecommend(item) || isPcRecommend(item)) return getFollowedStatus(recommendReason)
+    return false
+  })()
   const hasUnfollowEntry = followed
   const onUnfollowUp = useMemoizedFn(async () => {
     if (!authorMid) return
