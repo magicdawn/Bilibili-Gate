@@ -236,7 +236,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
           openNewTab(u.href)
         },
       },
-    [hasEntry_dynamicFeed_offsetAndMinId, item],
+    [hasEntry_dynamicFeed_offsetAndMinId, item, authorMid],
   )
   const dynamicViewUpdateSinceThis: AntMenuItem | false = useMemo(
     () =>
@@ -251,7 +251,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
           openNewTab(u.href)
         },
       },
-    [hasEntry_dynamicFeed_offsetAndMinId, item],
+    [hasEntry_dynamicFeed_offsetAndMinId, item, authorMid],
   )
 
   /**
@@ -521,6 +521,8 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
     viewingSomeGroup,
     viewingGroupName,
     viewingGroupCount,
+    onMoveToFirst,
+    onRemoveCurrent,
   ])
 }
 
