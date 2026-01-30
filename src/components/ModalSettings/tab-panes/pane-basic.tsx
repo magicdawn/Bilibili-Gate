@@ -5,8 +5,10 @@ import { delay } from 'es-toolkit'
 import { useRef } from 'react'
 import { subscribeKey } from 'valtio/utils'
 import { APP_NAME } from '$common'
+import { TooltipContentDivider } from '$components/_base'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { AccessKeyManage } from '$components/AccessKeyManage'
+import { CustomKbd } from '$components/fragments'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { GridDisplayModeSwitcher } from '$components/RecGrid/display-mode'
 import { TabIcon } from '$components/RecHeader/tab-config'
@@ -56,7 +58,8 @@ export function TabPaneBasic() {
               tooltipProps={{ classNames: { root: 'text-14px' } }}
             >
               App 端登录凭证, 使用情况: <br />
-              <div className='group mt-1 flex items-start b-t-1px b-t-gate-border b-t-dashed pt-1'>
+              <TooltipContentDivider />
+              <div className='group flex items-start'>
                 <div className='w-55px flex flex-none items-center'>
                   <TabIcon tabKey={ETab.AppRecommend} className='mr-1' /> 推荐
                 </div>
@@ -65,7 +68,8 @@ export function TabPaneBasic() {
                   <li className='w-max'>提交不喜欢</li>
                 </ul>
               </div>
-              <div className='group mt-1 flex items-start b-t-1px b-t-gate-border b-t-dashed pt-1'>
+              <TooltipContentDivider />
+              <div className='group flex items-start'>
                 <div className='w-55px flex flex-none items-center'>
                   <TabIcon tabKey={ETab.Liked} className='mr-1' />赞
                 </div>
@@ -155,7 +159,7 @@ export function TabPaneBasic() {
                   如果期望显示更多的列, 可以调小这个值; <br />
                   如果期望显示更少的列, 可以调大这个值; <br />
                   手动设置列数时, 这个值不起作用. <br />
-                  <kbd>Alt / Opt</kbd> + 上下键可调整
+                  <CustomKbd>Alt / Opt</CustomKbd> + <CustomKbd>上下键</CustomKbd>可调整
                 </>
               }
             >

@@ -108,13 +108,17 @@ const WatchlaterItemsOrderConfig: Record<
 const list = Object.values(WatchlaterItemsOrder)
 
 const extraHelpInfo = (
-  <div className='flex flex-col gap-y-4px'>
+  <div className='grid grid-cols-[repeat(2,max-content)] gap-x-1 gap-y-0 line-height-tight'>
     {list.map((x) => {
       const { icon, label, helpInfo } = WatchlaterItemsOrderConfig[x]
       return (
-        <div key={x} className={'flex items-center justify-left gap-x-4px line-height-[0]'}>
-          {icon} <span className='min-w-80px'>{label}</span> :&nbsp;&nbsp; {helpInfo}
-        </div>
+        <>
+          <div className='flex-center gap-x-1'>
+            {icon}
+            {label}:&nbsp;
+          </div>
+          <div>{helpInfo}</div>
+        </>
       )
     })}
   </div>

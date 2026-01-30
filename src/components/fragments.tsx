@@ -1,11 +1,18 @@
-export const kbdClassName = 'inline-block cursor-pointer rounded bg-gate-primary-lv-2 px-1 text-white font-mono'
+import { useUnoMerge } from 'unocss-merge/react'
+import type { ComponentProps } from 'react'
+
+export const kbdClassName =
+  'inline-block cursor-pointer rounded bg-gate-primary-lv-3 px-6px text-white line-height-tight font-mono'
+
+export function CustomKbd({ className, ...restProps }: ComponentProps<'kbd'>) {
+  return <kbd {...restProps} className={useUnoMerge(kbdClassName, className)}></kbd>
+}
 
 export const antSpinIndicator = (
   <IconSvgSpinnersBarsRotateFade className='text-gate-primary [.ant-spin_.ant-spin-dot&]:size-25px' />
 )
 
-export const clsAntdButton =
-  'flex items-center gap-x-1 [&>span]:line-height-[1] [&.ant-btn:not(:disabled):focus-visible]:outline-0'
+export const clsAntdButton = 'flex items-center gap-x-1 [&.ant-btn:not(:disabled):focus-visible]:outline-0'
 
 // z-index
 export function parseZ(className: `z-${string}`) {

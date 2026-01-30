@@ -11,11 +11,8 @@ export function tweakColorWithOklch(
   const lValue = l ?? (deltaL ? `calc(l + ${deltaL})` : 'l')
   const cValue = c ?? (deltaC ? `calc(c + ${deltaC})` : 'c')
   const hValue = h ?? (deltaH ? `calc(h + ${deltaH})` : 'h')
-
-  const alphaValue = alpha ?? (deltaAlpha ? `calc(alpha + ${deltaAlpha})` : '')
-  const alphaComponent = alphaValue ? `/ ${alphaValue}` : ''
-
-  return `oklch(from ${originalColor} ${[lValue, cValue, hValue, alphaComponent].filter(Boolean).join(' ')})`
+  const alphaValue = alpha ?? (deltaAlpha ? `calc(alpha + ${deltaAlpha})` : 'alpha')
+  return `oklch(from ${originalColor} ${lValue} ${cValue} ${hValue} / ${alphaValue})`
 }
 
 export function tweakLightness(originalColor: string, delta: number) {
