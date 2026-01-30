@@ -263,6 +263,8 @@ function apiIpadAppAdapter(item: IpadAppRecItemExtend): IVideoCardData {
 }
 
 function apiPcAdapter(item: PcRecItemExtend): IVideoCardData {
+  // 2026-01-30 live 又过滤掉了:
+  // 我自己不使用 pc-recommend, 使用它的人 hate live items, 这里的适配代码实际上用不上了.
   const _isVideo = item.goto === PcRecGoto.AV
   const _isLive = item.goto === PcRecGoto.Live
 

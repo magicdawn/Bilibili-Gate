@@ -48,20 +48,16 @@ export class PcRecService extends BaseTabService<PcRecItemExtend> {
   private async getRecommendTimes(times: number, abortSignal: AbortSignal) {
     let list: PcRecItem[] = (await Promise.all(range(times).map(() => this.getRecommend(abortSignal)))).flat()
 
-    list = list.filter((item) => {
-      const allowedGotoList = [PcRecGoto.AV, PcRecGoto.Live]
-      if (!allowedGotoList.includes(item.goto)) {
-        const knownDisabledGotoList = [PcRecGoto.Ad]
-        if (!knownDisabledGotoList.includes(item.goto)) {
-          debug('uknown goto: %s %o', item.goto, item)
-        }
-        return false
+    const knownGotoSet = new Set([PcRecGoto.AV, PcRecGoto.Live, PcRecGoto.Ad])
+    list.forEach((item) => {
+      if (!knownGotoSet.has(item.goto)) {
+        debug('uknown goto from API: %s %o', item.goto, item)
       }
-      return true
     })
 
+    const allowedGotoSet = new Set([PcRecGoto.AV])
+    list = list.filter((item) => allowedGotoSet.has(item.goto))
     list = uniqBy(list, (item) => item.id)
-
     // 推荐理由补全
     list.forEach((item) => {
       if (item.rcmd_reason?.reason_type === 1) {
