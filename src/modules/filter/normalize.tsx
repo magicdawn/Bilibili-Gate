@@ -1,6 +1,7 @@
 import { av2bv } from '@mgdn/bvid'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
+import { memoize, noop, type MemoizeCache } from 'es-toolkit'
 import { appWarn } from '$common'
 import { defineStatItems, type StatItemField, type StatItemType } from '$components/VideoCard/stat-item'
 import {
@@ -94,24 +95,11 @@ export interface IVideoCardData {
   topMarkText?: string
 }
 
-type Getter<T> = Record<RecItemType['api'], (item: RecItemType) => T>
+export type LookintoOptions<T> = {
+  [ApiType in RecItemType['api']]: (item: Extract<RecItemType, { api: ApiType }>) => T
+}
 
-export function lookinto<T>(
-  item: RecItemType,
-  opts: {
-    [EApiType.AppRecommend]: (item: AppRecItemExtend) => T
-    [EApiType.PcRecommend]: (item: PcRecItemExtend) => T
-    [EApiType.DynamicFeed]: (item: DynamicFeedItemExtend) => T
-    [EApiType.Watchlater]: (item: WatchlaterItemExtend) => T
-    [EApiType.Fav]: (item: FavItemExtend) => T
-    [EApiType.PopularGeneral]: (item: PopularGeneralItemExtend) => T
-    [EApiType.PopularWeekly]: (item: PopularWeeklyItemExtend) => T
-    [EApiType.Rank]: (item: RankItemExtend) => T
-    [EApiType.Live]: (item: LiveItemExtend) => T
-    [EApiType.SpaceUpload]: (item: SpaceUploadItemExtend) => T
-    [EApiType.Liked]: (item: LikedItemExtend) => T
-  },
-): T {
+export function lookinto<T>(item: RecItemType, opts: LookintoOptions<T>): T {
   if (isAppRecommend(item)) return opts[EApiType.AppRecommend](item)
   if (isPcRecommend(item)) return opts[EApiType.PcRecommend](item)
   if (isDynamicFeed(item)) return opts[EApiType.DynamicFeed](item)
@@ -123,30 +111,45 @@ export function lookinto<T>(
   if (isLive(item)) return opts[EApiType.Live](item)
   if (isSpaceUpload(item)) return opts[EApiType.SpaceUpload](item)
   if (isLiked(item)) return opts[EApiType.Liked](item)
-  throw new Error(`unknown api type`)
+  // @ts-expect-error item is never
+  throw new Error(`unknown item.api = ${item.api}`)
 }
 
-export function normalizeCardData(item: RecItemType) {
-  const ret = lookinto<IVideoCardData>(item, {
-    [EApiType.AppRecommend]: apiAppAdapter,
-    [EApiType.PcRecommend]: apiPcAdapter,
-    [EApiType.DynamicFeed]: apiDynamicAdapter,
-    [EApiType.Watchlater]: apiWatchlaterAdapter,
-    [EApiType.Fav]: apiFavAdapter,
-    [EApiType.PopularGeneral]: apiPopularGeneralAdapter,
-    [EApiType.PopularWeekly]: apiPopularWeeklyAdapter,
-    [EApiType.Rank]: apiRankAdapter,
-    [EApiType.Live]: apiLiveAdapter,
-    [EApiType.SpaceUpload]: apiSpaceUploadAdapter,
-    [EApiType.Liked]: apiLikedAdapter,
-  })
-
-  // handle mixed content
-  if (ret.authorFace) ret.authorFace = toHttps(ret.authorFace)
-  if (ret.cover) ret.cover = toHttps(ret.cover)
-
-  return ret
+function createCacheFor__normalizeCardData() {
+  const weakMap = new WeakMap<RecItemType, IVideoCardData>()
+  const normalizeCardDataCache = weakMap as unknown as MemoizeCache<RecItemType, IVideoCardData>
+  normalizeCardDataCache.clear ??= noop // weakmap has no clear
+  normalizeCardDataCache.size = 0 // weakmap has no size
+  return normalizeCardDataCache
 }
+
+export const normalizeCardData = memoize(
+  (item: RecItemType) => {
+    const ret = lookinto<IVideoCardData>(item, {
+      [EApiType.AppRecommend]: apiAppAdapter,
+      [EApiType.PcRecommend]: apiPcAdapter,
+      [EApiType.DynamicFeed]: apiDynamicAdapter,
+      [EApiType.Watchlater]: apiWatchlaterAdapter,
+      [EApiType.Fav]: apiFavAdapter,
+      [EApiType.PopularGeneral]: apiPopularGeneralAdapter,
+      [EApiType.PopularWeekly]: apiPopularWeeklyAdapter,
+      [EApiType.Rank]: apiRankAdapter,
+      [EApiType.Live]: apiLiveAdapter,
+      [EApiType.SpaceUpload]: apiSpaceUploadAdapter,
+      [EApiType.Liked]: apiLikedAdapter,
+    })
+
+    // handle mixed content
+    if (ret.authorFace) ret.authorFace = toHttps(ret.authorFace)
+    if (ret.cover) ret.cover = toHttps(ret.cover)
+
+    return ret
+  },
+  {
+    cache: createCacheFor__normalizeCardData(),
+    getCacheKey: (item: RecItemType) => item,
+  },
+)
 
 function apiAppAdapter(item: AppRecItemExtend): IVideoCardData {
   return apiIpadAppAdapter(item)

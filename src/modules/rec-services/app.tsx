@@ -233,7 +233,7 @@ class AppRecInnerService implements IService {
       return {
         ...item,
         api: EApiType.AppRecommend,
-        uniqId: `${EApiType.AppRecommend}-${item.param}`,
+        uniqId: `${EApiType.AppRecommend}:${item.param}`,
       } satisfies AppRecItemExtend
     })
 

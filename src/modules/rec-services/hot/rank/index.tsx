@@ -57,7 +57,7 @@ export class RankRecService implements IService {
         return {
           ...item,
           api: EApiType.Rank,
-          uniqId: `${EApiType.Rank}-${this.rankTab.slug}-rankingNo:${rankingNo}`,
+          uniqId: `${EApiType.Rank}:${this.rankTab.slug}:rankingNo-${rankingNo}`,
           rankingNo,
           slug: this.rankTab.slug,
           rankTab: this.rankTab,

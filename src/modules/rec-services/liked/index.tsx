@@ -57,7 +57,12 @@ export class LikedRecService extends BaseTabService {
       Promise.all(list.map((x) => (x.state ? getVideoDetail(av2bv(x.param)) : undefined))),
     )
     const extendedList: LikedItemExtend[] = list.map((item, index) => {
-      return { ...item, uniqId: item.param, api: EApiType.Liked, videoDetail: detailList?.[index] }
+      return {
+        ...item,
+        api: EApiType.Liked,
+        uniqId: `${EApiType.Liked}:${item.param}`,
+        videoDetail: detailList?.[index],
+      }
     })
 
     this.pn++

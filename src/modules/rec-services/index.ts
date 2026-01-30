@@ -4,32 +4,18 @@ import { getColumnCount } from '$components/RecGrid/useShortcut'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { EApiType } from '$define/index.shared'
 import { anyFilterEnabled, filterRecItems } from '$modules/filter'
-import { lookinto } from '$modules/filter/normalize'
+import { normalizeCardData } from '$modules/filter/normalize'
 import { AppRecService } from './app'
-import { getArchive } from './dynamic-feed/api/enums'
 import { PcRecService } from './pc'
 import { getServiceFromRegistry, REC_TABS, type FetcherOptions } from './service-map'
-import type { Key } from 'react'
 import type { RecItemTypeOrSeparator } from '$define'
 
 const debug = baseDebug.extend('service')
 
-export const recItemUniqer = (item: RecItemTypeOrSeparator): Key =>
-  item.api === EApiType.Separator
-    ? item.uniqId
-    : lookinto<string | number>(item, {
-        [EApiType.AppRecommend]: (item) => item.param,
-        [EApiType.PcRecommend]: (item) => item.bvid,
-        [EApiType.DynamicFeed]: (item) => getArchive(item)?.bvid ?? item.id_str, // item.modules.module_dynamic.major.archive.bvid
-        [EApiType.Watchlater]: (item) => item.bvid,
-        [EApiType.Fav]: (item) => item.bvid,
-        [EApiType.PopularGeneral]: (item) => item.bvid,
-        [EApiType.PopularWeekly]: (item) => item.bvid,
-        [EApiType.Rank]: (item) => item.uniqId,
-        [EApiType.Live]: (item) => item.roomid,
-        [EApiType.SpaceUpload]: (item) => item.bvid,
-        [EApiType.Liked]: (item) => item.param,
-      })
+export const recItemUniqer = (item: RecItemTypeOrSeparator): string => {
+  if (item.api === EApiType.Separator) return item.uniqId
+  return normalizeCardData(item).bvid ?? item.uniqId
+}
 
 export function concatRecItems(existing: RecItemTypeOrSeparator[], newItems: RecItemTypeOrSeparator[]) {
   return uniqBy([...existing, ...newItems], recItemUniqer)

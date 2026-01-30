@@ -183,7 +183,7 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
       return {
         ...item,
         api: EApiType.SpaceUpload,
-        uniqId: `${EApiType.SpaceUpload}-${item.bvid}`,
+        uniqId: `${EApiType.SpaceUpload}:${item.bvid}`,
         groupId: this.groupId,
         vol: endVol - index,
         page: this.singleUpService ? this.singleUpService.page - 1 : undefined,

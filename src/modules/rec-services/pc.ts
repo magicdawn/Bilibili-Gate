@@ -68,7 +68,7 @@ export class PcRecService extends BaseTabService<PcRecItemExtend> {
     const _list = list.map((item) => {
       return {
         ...item,
-        uniqId: `${EApiType.PcRecommend}-${item.bvid || item.room_info?.room_id || crypto.randomUUID()}`,
+        uniqId: `${EApiType.PcRecommend}:${item.bvid || item.room_info?.room_id || crypto.randomUUID()}`,
         api: EApiType.PcRecommend,
       } satisfies PcRecItemExtend
     })

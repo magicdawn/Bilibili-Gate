@@ -60,7 +60,7 @@ export class LiveRecService extends BaseTabService<LiveItemExtend | ItemsSeparat
       const _item: LiveItemExtend = {
         ...item,
         api: EApiType.Live,
-        uniqId: `${EApiType.Live}-${item.roomid}`,
+        uniqId: `${EApiType.Live}:${item.roomid}`,
       }
       return _item
     })
@@ -83,7 +83,7 @@ export class LiveRecService extends BaseTabService<LiveItemExtend | ItemsSeparat
       const index = items.findIndex((x) => x.live_status !== ELiveStatus.Streaming)
       ret.splice(index, 0, {
         api: EApiType.Separator,
-        uniqId: 'live-separator-recent',
+        uniqId: `${EApiType.Live}:separator:recent`,
         content: '最近直播过',
       })
     }

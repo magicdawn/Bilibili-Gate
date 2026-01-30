@@ -132,7 +132,7 @@ function extendItem(item: WatchlaterItem): WatchlaterItemExtend {
   return {
     ...item,
     api: EApiType.Watchlater,
-    uniqId: `${EApiType.Watchlater}-${item.bvid}`,
+    uniqId: `${EApiType.Watchlater}:${item.bvid}`,
   }
 }
 
@@ -141,12 +141,12 @@ const getRecentGate = () => dayjs().subtract(2, 'days').unix()
 
 const recentSeparator: ItemsSeparator = {
   api: EApiType.Separator as const,
-  uniqId: 'watchlater-separator-recent',
+  uniqId: `${EApiType.Watchlater}:separator:recent`,
   content: '近期',
 }
 const earlierSeparator: ItemsSeparator = {
   api: EApiType.Separator as const,
-  uniqId: 'watchlater-separator-earlier',
+  uniqId: `${EApiType.Watchlater}:separator:earlier`,
   content: '更早',
 }
 
