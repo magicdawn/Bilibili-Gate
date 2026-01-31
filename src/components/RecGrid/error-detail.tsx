@@ -19,26 +19,21 @@ function wrapWithParagraph(node: ReactNode) {
 }
 
 function inspectErrDetail(err: any): ReactNode {
-  if (!(err instanceof Error)) {
+  if (!(err && err instanceof Error)) {
     return wrapWithParagraph(JSON.stringify(err))
   }
 
   // errors
-  let errSelf: ReactNode
+  const errMessage: ReactNode = !!err.message && <>Error Message: {err.message}</>
+  const errStack: ReactNode = !!err.stack && (
+    <>
+      Error Stack: <br />
+      {err.stack}
+    </>
+  )
+
   let errCause: ReactNode
   let errAxiosErrorDetail: ReactNode
-
-  // display stack, fallback to message
-  if (err.stack) {
-    errSelf = (
-      <>
-        Error Stack: <br />
-        {err.stack}
-      </>
-    )
-  } else {
-    errSelf = <>Error Message: {err.message}</>
-  }
 
   // add error cause
   if (err.cause) {
@@ -57,7 +52,8 @@ function inspectErrDetail(err: any): ReactNode {
 
   return (
     <>
-      {wrapWithParagraph(errSelf)}
+      {wrapWithParagraph(errMessage)}
+      {wrapWithParagraph(errStack)}
       {wrapWithParagraph(errCause)}
       {wrapWithParagraph(errAxiosErrorDetail)}
     </>
