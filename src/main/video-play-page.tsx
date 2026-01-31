@@ -136,7 +136,8 @@ async function setupCustomFavPicker() {
     (e) => {
       if (e.key !== 'e') return
       if (shouldDisableShortcut()) return
-      if (isTypingInComments(e.target as HTMLElement)) return
+      const target = e.target as HTMLElement
+      if (target.closest('bili-comments')) return // emit from a <bili-comments> element
       e.stopImmediatePropagation()
       e.preventDefault()
       addToFav()
@@ -182,15 +183,6 @@ async function addToFav(sourceFavFolderIds?: number[] | undefined) {
 
     return true
   })
-}
-
-/**
- * 判断是否在评论输入框输入
- */
-function isTypingInComments(el: Element) {
-  if (el.tagName.toLowerCase() !== 'bili-comments') return false
-  const activeEditor = shadowRootQuery(el, ['bili-comments-header-renderer', 'bili-comment-box', '#editor.active'])
-  return !!activeEditor
 }
 
 function shadowRootQuery(root: Element, selectors: string[]) {
