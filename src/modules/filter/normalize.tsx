@@ -4,31 +4,6 @@ import dayjs from 'dayjs'
 import { memoize, noop, type MemoizeCache } from 'es-toolkit'
 import { appWarn } from '$common'
 import { defineStatItems, type StatItemField, type StatItemType } from '$components/VideoCard/stat-item'
-import {
-  isAppRecommend,
-  isDynamicFeed,
-  isFav,
-  isLiked,
-  isLive,
-  isPcRecommend,
-  isPopularGeneral,
-  isPopularWeekly,
-  isRank,
-  isSpaceUpload,
-  isWatchlater,
-  type AppRecItemExtend,
-  type DynamicFeedItemExtend,
-  type IpadAppRecItemExtend,
-  type LikedItemExtend,
-  type LiveItemExtend,
-  type PcRecItemExtend,
-  type PopularGeneralItemExtend,
-  type PopularWeeklyItemExtend,
-  type RankItemExtend,
-  type RecItemType,
-  type SpaceUploadItemExtend,
-  type WatchlaterItemExtend,
-} from '$define'
 import { EApiType } from '$define/index.shared'
 import { PcRecGoto } from '$define/pc-recommend'
 import { AntdTooltip } from '$modules/antd/custom'
@@ -43,6 +18,20 @@ import { getSettingsSnapshot } from '$modules/settings'
 import { toHttps } from '$utility/url'
 import { formatDuration, formatTimeStamp, getVideoInvalidReason, parseCount, parseDuration } from '$utility/video'
 import type { ReactNode } from 'react'
+import type {
+  AppRecItemExtend,
+  DynamicFeedItemExtend,
+  IpadAppRecItemExtend,
+  LikedItemExtend,
+  LiveItemExtend,
+  PcRecItemExtend,
+  PopularGeneralItemExtend,
+  PopularWeeklyItemExtend,
+  RankItemExtend,
+  RecItemType,
+  SpaceUploadItemExtend,
+  WatchlaterItemExtend,
+} from '$define'
 import type { Badge as DynamicFeedBadge } from '$modules/rec-services/dynamic-feed/api/types/dynamic-feed.api'
 import type { FavItemExtend } from '$modules/rec-services/fav/types'
 
@@ -100,19 +89,14 @@ export type LookintoOptions<T> = {
 }
 
 export function lookinto<T>(item: RecItemType, opts: LookintoOptions<T>): T {
-  if (isAppRecommend(item)) return opts[EApiType.AppRecommend](item)
-  if (isPcRecommend(item)) return opts[EApiType.PcRecommend](item)
-  if (isDynamicFeed(item)) return opts[EApiType.DynamicFeed](item)
-  if (isWatchlater(item)) return opts[EApiType.Watchlater](item)
-  if (isFav(item)) return opts[EApiType.Fav](item)
-  if (isPopularGeneral(item)) return opts[EApiType.PopularGeneral](item)
-  if (isPopularWeekly(item)) return opts[EApiType.PopularWeekly](item)
-  if (isRank(item)) return opts[EApiType.Rank](item)
-  if (isLive(item)) return opts[EApiType.Live](item)
-  if (isSpaceUpload(item)) return opts[EApiType.SpaceUpload](item)
-  if (isLiked(item)) return opts[EApiType.Liked](item)
-  // @ts-expect-error item is never
-  throw new Error(`unknown item.api = ${item.api}`)
+  // 这样写的理由：
+  //  1. 类型安全在调用处保证：LookintoOptions 的定义确保调用方传入的 handlers 类型正确
+  //  2. Runtime 正确性：如果 item.api = 'AppRecommend'，则 opts['AppRecommend'] 确实期望接收 AppRecItemExtend
+  //  3. 编译通过：用 as any 绕过无法精确推断的限制
+  // 这是一个常见的 discriminated union + 动态查找的问题，在 TypeScript 中通常需要类型断言辅助。
+  const api = item.api as RecItemType['api']
+  const handler = opts[api] as (item: RecItemType) => T
+  return handler(item)
 }
 
 function createCacheFor__normalizeCardData() {
