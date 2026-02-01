@@ -12,17 +12,12 @@ import { IconForCollection } from '$modules/rec-services/fav/views'
 import { SpaceUploadQueryKey } from '$modules/rec-services/space-upload/store'
 import { reusePendingPromise } from '$utility/async'
 import { poll, tryAction } from '$utility/dom'
-import { setupForNoneHomepage } from './shared'
+import { globalEmitter } from '../shared'
 import type { ComponentProps, ReactNode } from 'react'
-
-export function initSpacePage() {
-  setupForNoneHomepage()
-  addDynEntry()
-}
 
 const rootElId = `${APP_NAMESPACE}-${crypto.randomUUID()}`
 
-async function addDynEntry() {
+export async function addActionButtons() {
   if (!state.mid) return
 
   const oldSelector = '.h-action'
@@ -113,12 +108,10 @@ const getFollowedStatus = reusePendingPromise(async () => {
   state.followed = !!followed
 })
 
-if (window.navigation !== undefined) {
-  window.navigation.addEventListener?.('navigatesuccess', () => {
-    state.href = location.href
-    getFollowedStatus()
-  })
-}
+globalEmitter.on('navigate-success', () => {
+  state.href = location.href
+  getFollowedStatus()
+})
 
 function ActionButtons() {
   const { mid, collectionId, followed, isSearching, searchKeyword } = useSnapshot(state)
