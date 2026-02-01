@@ -248,7 +248,7 @@ export function ModalFavManager({
           </div>
 
           <Input
-            className='w-200px'
+            className='w-215px'
             allowClear
             placeholder='过滤: 支持拼音 / 拼音首字母'
             value={filterText}
@@ -282,7 +282,7 @@ export function ModalFavManager({
           spinning={$updateFoldersReq.loading || $pickOkActionReq.loading || $modifyOkActionReq.loading}
           indicator={antSpinIndicator}
         >
-          <div className='grid grid-cols-[repeat(auto-fill,minmax(225px,1fr))] mb-10px min-h-100px content-start items-center gap-10px pr-15px'>
+          <div className='grid grid-cols-[repeat(auto-fill,minmax(225px,1fr))] mb-10px min-h-100px content-start items-center gap-10px pr-18px'>
             {foldersForRender.length ? (
               foldersForRender.map((f) => {
                 const isSourceFolder = mode === 'modify' && modifyInitialSelectedIdsSet.has(f.id)
@@ -336,7 +336,7 @@ export function ModalFavManager({
       <div className='mt-2 flex items-center justify-between'>
         <div className='flex-v-center gap-x-10px'>
           <a href={`https://space.bilibili.com/${getUid()}/favlist`} target='_blank' className='flex-v-center gap-x-1'>
-            <IconForOpenExternalLink className='relative top--1px size-13px' />
+            <IconForOpenExternalLink className='size-1.1em' />
             去个人空间新建收藏夹
           </a>
         </div>
