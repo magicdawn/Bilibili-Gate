@@ -1,3 +1,4 @@
+import { uniq } from 'es-toolkit'
 import { baseDebug } from '$common'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { isDynamicFeed, type RecItemTypeOrSeparator } from '$define'
@@ -224,7 +225,7 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
           possibleTitles.push(major.opus.summary?.text || '')
         }
       }
-      possibleTitles = possibleTitles.filter(Boolean)
+      possibleTitles = uniq(possibleTitles.filter(Boolean))
       if (possibleTitles.some(dfFilterByTitleTest)) {
         debug('filter out by df-title-rule: %o', {
           possibleTitles,
