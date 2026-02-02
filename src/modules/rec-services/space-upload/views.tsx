@@ -1,5 +1,5 @@
 import { useMemoizedFn, useMount } from 'ahooks'
-import { Input } from 'antd'
+import { Input, Space } from 'antd'
 import { useSnapshot } from 'valtio'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { useOnRefresh, useRecSelfContext } from '$components/Recommends/rec.shared'
@@ -66,12 +66,8 @@ export function SpaceUploadTabbarView() {
           onRefresh()
         }}
       />
-      <Input.Search
-        style={{ width: 200 }}
-        placeholder='本地过滤词'
-        allowClear
-        value={filterText}
-        addonBefore={
+      <Space.Compact>
+        <Space.Addon>
           <AntdTooltip title={<>精准搜索: 自动将搜索词同步到过滤词</>}>
             <CheckboxSettingItem
               className='[&>.ant-checkbox-label]:hidden'
@@ -84,15 +80,21 @@ export function SpaceUploadTabbarView() {
               }}
             />
           </AntdTooltip>
-        }
-        disabled={useSyncFilterTextFromSearchText}
-        onChange={(e) => (spaceUploadStore.filterText = e.target.value)}
-        onSearch={(value) => {
-          spaceUploadStore.filterText = value
-          onSyncStoreToUrl()
-          onRefresh()
-        }}
-      />
+        </Space.Addon>
+        <Input.Search
+          style={{ width: 200 }}
+          placeholder='本地过滤词'
+          allowClear
+          value={filterText}
+          disabled={useSyncFilterTextFromSearchText}
+          onChange={(e) => (spaceUploadStore.filterText = e.target.value)}
+          onSearch={(value) => {
+            spaceUploadStore.filterText = value
+            onSyncStoreToUrl()
+            onRefresh()
+          }}
+        />
+      </Space.Compact>
 
       <CheckboxSettingItem configPath='spaceUpload.showVol' label={'显示序号'} className='flex-none' />
 

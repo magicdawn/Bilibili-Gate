@@ -1,4 +1,4 @@
-import { Button, InputNumber, Popover, Tabs, Tag } from 'antd'
+import { Button, InputNumber, Popover, Space, Tabs, Tag } from 'antd'
 import clsx from 'clsx'
 import { isEqual, isNil } from 'es-toolkit'
 import pmap from 'promise.map'
@@ -120,16 +120,18 @@ function SubTabFilterForRec() {
                 disabled={!enabled}
                 className='min-w-130px'
               />
-              <InputNumber
-                className='w-130px'
-                size='small'
-                min={1}
-                step={10}
-                addonAfter={'秒'}
-                value={minDuration.value}
-                onChange={(val) => !isNil(val) && (settings.filter.minDuration.value = val)}
-                disabled={!enabled || !minDuration.enabled}
-              />
+              <Space.Compact>
+                <InputNumber
+                  className='w-130px'
+                  size='small'
+                  min={1}
+                  step={10}
+                  value={minDuration.value}
+                  onChange={(val) => !isNil(val) && (settings.filter.minDuration.value = val)}
+                  disabled={!enabled || !minDuration.enabled}
+                />
+                <Space.Addon>秒</Space.Addon>
+              </Space.Compact>
             </div>
 
             <div className='flex items-center'>
@@ -140,16 +142,18 @@ function SubTabFilterForRec() {
                 tooltip={<>不显示播放次数很少的视频</>}
                 className='min-w-130px'
               />
-              <InputNumber
-                className='w-130px'
-                size='small'
-                min={1}
-                step={1000}
-                value={minPlayCount.value}
-                onChange={(val) => !isNil(val) && (settings.filter.minPlayCount.value = val)}
-                disabled={!enabled || !minPlayCount.enabled}
-                addonAfter={'次'}
-              />
+              <Space.Compact>
+                <InputNumber
+                  className='w-130px'
+                  size='small'
+                  min={1}
+                  step={1000}
+                  value={minPlayCount.value}
+                  onChange={(val) => !isNil(val) && (settings.filter.minPlayCount.value = val)}
+                  disabled={!enabled || !minPlayCount.enabled}
+                />
+                <Space.Addon>次</Space.Addon>
+              </Space.Compact>
             </div>
 
             <div className='flex items-center'>
@@ -160,16 +164,18 @@ function SubTabFilterForRec() {
                 tooltip={<>不显示弹幕条数很少的视频</>}
                 className='min-w-130px'
               />
-              <InputNumber
-                className='w-130px'
-                size='small'
-                min={1}
-                step={100}
-                value={minDanmakuCount.value}
-                onChange={(val) => !isNil(val) && (settings.filter.minDanmakuCount.value = val)}
-                disabled={!enabled || !minDanmakuCount.enabled}
-                addonAfter={'条'}
-              />
+              <Space.Compact>
+                <InputNumber
+                  className='w-130px'
+                  size='small'
+                  min={1}
+                  step={100}
+                  value={minDanmakuCount.value}
+                  onChange={(val) => !isNil(val) && (settings.filter.minDanmakuCount.value = val)}
+                  disabled={!enabled || !minDanmakuCount.enabled}
+                />
+                <Space.Addon>条</Space.Addon>
+              </Space.Compact>
             </div>
             <CheckboxSettingItem
               configPath='filter.exemptForFollowed.video'
@@ -273,8 +279,6 @@ function SubTabFilterForRec() {
               <Tag color='success' variant='solid'>
                 /abc|\d+/
               </Tag>
-              <br />
-              作用范围: 推荐 / 热门
             </HelpInfo>
             <SwitchSettingItem configPath='filter.byTitle.enabled' disabled={!enabled} className='ml-10px' />
             <div className='flex-1' />
