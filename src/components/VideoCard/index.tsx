@@ -621,7 +621,7 @@ const VideoCardInner = memo(function VideoCardInner({
           </div>
         ) : (
           <div className='size-full flex-center'>
-            <div className='line-clamp-4 my-auto p-2 text-center line-height-snug'>{title}</div>
+            <div className='line-clamp-3 my-auto px-4 py-2 text-center text-1.2em line-height-snug'>{title}</div>
           </div>
         )}
       </div>
