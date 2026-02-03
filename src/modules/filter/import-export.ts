@@ -21,6 +21,12 @@ export function exportDfFilterByTitle() {
 export function importDfFilterByTitle() {
   return _importForPath('filter.dfByTitle.keywords')
 }
+export function exportDfHideOpusMids() {
+  return _exportForPath('filter.dfHideOpusMids.keywords')
+}
+export function importDfHideOpusMids() {
+  return _importForPath('filter.dfHideOpusMids.keywords')
+}
 
 // 一个奇怪的 json key, 减少其他内容的干扰
 function getJsonKey(p: ListSettingsPath) {
@@ -30,6 +36,7 @@ function getJsonKey(p: ListSettingsPath) {
 async function _exportForPath(listSettingsPath: ListSettingsPath) {
   const key = getJsonKey(listSettingsPath)
   const val = await getNewestValueOfSettingsInnerArray(listSettingsPath)
+  if (!val?.length) return antMessage.error('没有可导出数据!')
   GM.setClipboard(JSON.stringify({ [key]: val }, null, 2))
   antMessage.success('已复制到剪贴板!')
 }

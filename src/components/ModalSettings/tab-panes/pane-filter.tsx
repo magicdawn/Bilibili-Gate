@@ -10,9 +10,11 @@ import { antMessage } from '$modules/antd'
 import { getUserNickname } from '$modules/bilibili/user/nickname'
 import {
   exportDfFilterByTitle,
+  exportDfHideOpusMids,
   exportFilterByAuthor,
   exportFilterByTitle,
   importDfFilterByTitle,
+  importDfHideOpusMids,
   importFilterByAuthor,
   importFilterByTitle,
 } from '$modules/filter/import-export'
@@ -62,6 +64,13 @@ export function TabPaneFilter() {
                 <span className='inline-flex-center gap-x-1'>
                   <TabIcon tabKey={ETab.DynamicFeed} />
                   动态
+                  <HelpInfo className='ml-1'>
+                    使用场景: 关注的 UP 发布的广告 <br />
+                    <ol>
+                      <li>如果有规律可以按标题关键字过滤</li>
+                      <li>没有规律可以屏蔽 UP 的全部图文动态</li>
+                    </ol>
+                  </HelpInfo>
                 </span>
               ),
               children: <SubTabFilterForDynamicFeed />,
@@ -245,7 +254,7 @@ function SubTabFilterForRec() {
                     <IconForDelete />
                     清理无效备注数据
                   </Button>
-                  <Button onClick={exportFilterByAuthor}>
+                  <Button onClick={exportFilterByAuthor} disabled={!byAuthor.keywords.length}>
                     <IconTablerFileExport />
                     导出
                   </Button>
@@ -286,7 +295,7 @@ function SubTabFilterForRec() {
               placement='left'
               content={
                 <div className='flex flex-col gap-x-10px gap-y-5px'>
-                  <Button onClick={exportFilterByTitle}>
+                  <Button onClick={exportFilterByTitle} disabled={!byTitle.keywords.length}>
                     <IconTablerFileExport />
                     导出
                   </Button>
@@ -328,6 +337,8 @@ function SubTabFilterForDynamicFeed() {
             <Tag color='success' variant='solid'>
               /abc|\d+/
             </Tag>
+            <br />
+            作用范围: 支持的动态类型: 视频 / 图文
           </HelpInfo>
           <SwitchSettingItem configPath='filter.dfByTitle.enabled' disabled={!enabled} className='ml-10px' />
           <div className='flex-1' />
@@ -335,7 +346,7 @@ function SubTabFilterForDynamicFeed() {
             placement='left'
             content={
               <div className='flex flex-col gap-x-10px gap-y-5px'>
-                <Button onClick={exportDfFilterByTitle}>
+                <Button onClick={exportDfFilterByTitle} disabled={!dfByTitle.keywords.length}>
                   <IconTablerFileExport />
                   导出
                 </Button>
@@ -366,6 +377,26 @@ function SubTabFilterForDynamicFeed() {
             右键图文动态可快速添加
           </HelpInfo>
           <SwitchSettingItem configPath='filter.dfHideOpusMids.enabled' disabled={!enabled} className='ml-10px' />
+          <div className='flex-1' />
+          <Popover
+            placement='left'
+            content={
+              <div className='flex flex-col gap-x-10px gap-y-5px'>
+                <Button onClick={exportDfHideOpusMids} disabled={!dfHideOpusMids.keywords.length}>
+                  <IconTablerFileExport />
+                  导出
+                </Button>
+                <Button onClick={importDfHideOpusMids}>
+                  <IconTablerFileImport />
+                  导入
+                </Button>
+              </div>
+            }
+          >
+            <Button className='icon-only-round-button size-26px'>
+              <IconForPopoverTrigger className='size-16px' />
+            </Button>
+          </Popover>
         </div>
         <EditableListSettingItem
           configPath={'filter.dfHideOpusMids.keywords'}
