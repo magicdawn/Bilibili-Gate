@@ -17,7 +17,7 @@ export function parseUpRepresent(author: string): Partial<{ mid: string; remark:
   return {}
 }
 
-export function parseFilterByAuthor(keywords: string[] | readonly string[]) {
+export function parseFilterByAuthor(keywords: readonly string[]) {
   const blockUpMids = new Set<string>()
   const blockUpNames = new Set<string>()
 

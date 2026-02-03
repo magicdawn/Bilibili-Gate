@@ -40,7 +40,7 @@ export function anyFilterEnabled(tab: ETab) {
     return true
   }
 
-  if (tab === ETab.DynamicFeed && settings.filter.dfByTitle.enabled) {
+  if (tab === ETab.DynamicFeed && (settings.filter.dfByTitle.enabled || settings.filter.dfHideOpusMids.enabled)) {
     return true
   }
 
@@ -65,10 +65,13 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
   }
 
   const filter = getSettingsSnapshot().filter
-  const { minDuration, minPlayCount, minDanmakuCount, byAuthor, byTitle, dfByTitle } = filter
+  const { minDuration, minPlayCount, minDanmakuCount, byAuthor, byTitle, dfByTitle, dfHideOpusMids } = filter
+  // general videos
   const { blockUpMids, blockUpNames } = parseFilterByAuthor(byAuthor.keywords)
   const { test: filterByTitleTest } = parseFilterByTitle(byTitle.keywords)
+  // df
   const { test: dfFilterByTitleTest } = parseFilterByTitle(dfByTitle.keywords)
+  const { blockUpMids: dfBlockOpusMids } = parseFilterByAuthor(dfHideOpusMids.keywords)
 
   return items.filter((item) => {
     // just keep it
@@ -217,21 +220,40 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
       return true
     }
 
-    if (tab === ETab.DynamicFeed && settings.filter.dfByTitle.enabled && settings.filter.dfByTitle.keywords.length) {
-      let possibleTitles = [title]
-      if (isDynamicFeed(item)) {
-        const { major } = item.modules.module_dynamic
-        if (major?.type === DynamicFeedEnums.MajorType.Opus) {
-          possibleTitles.push(major.opus.summary?.text || '')
+    // 动态
+    if (tab === ETab.DynamicFeed && isDynamicFeed(item) && filter.enabled) {
+      const { major } = item.modules.module_dynamic
+      const isMajorOpus = major?.type === DynamicFeedEnums.MajorType.Opus
+
+      // dfByTitle
+      if (settings.filter.dfByTitle.enabled && settings.filter.dfByTitle.keywords.length) {
+        let possibleTitles = [title]
+        if (isMajorOpus) possibleTitles.push(major.opus.summary?.text || '')
+        possibleTitles = uniq(possibleTitles.filter(Boolean))
+        if (possibleTitles.some(dfFilterByTitleTest)) {
+          debug('filter out by df-title-rule: %o', {
+            possibleTitles,
+            rules: dfByTitle.keywords,
+            uniqId: item.uniqId,
+            item,
+          })
+          return false
         }
       }
-      possibleTitles = uniq(possibleTitles.filter(Boolean))
-      if (possibleTitles.some(dfFilterByTitleTest)) {
-        debug('filter out by df-title-rule: %o', {
-          possibleTitles,
-          rules: dfByTitle.keywords,
+
+      // dfHideOpusMids
+      if (
+        isMajorOpus &&
+        dfHideOpusMids.enabled &&
+        dfHideOpusMids.keywords.length &&
+        authorMid &&
+        dfBlockOpusMids.has(authorMid)
+      ) {
+        debug('filter out by df-hide-opus-mids-rule: %o', {
+          dfHideOpusMids,
+          authorMid,
+          title,
           uniqId: item.uniqId,
-          item,
         })
         return false
       }
