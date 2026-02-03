@@ -2,7 +2,7 @@ import { css } from '@emotion/react'
 import { Empty, Input } from 'antd'
 import clsx from 'clsx'
 import { identity, uniq } from 'es-toolkit'
-import { memo, useEffect, useMemo, useState, type ComponentProps, type ReactNode } from 'react'
+import { memo, useEffect, useMemo, useState, type ComponentProps, type ElementType, type ReactNode } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
@@ -37,6 +37,7 @@ export function EditableListSettingItem({
 }) {
   const rawList = useSettingsInnerArray(configPath)
   const list = useMemo(() => uniq(rawList).toReversed(), [rawList])
+  const isUpRepresent = ['filter.byAuthor.keywords', 'filter.dfHideOpusMids.keywords'].includes(configPath)
 
   const input = (
     <Search
@@ -69,6 +70,7 @@ export function EditableListSettingItem({
     />
   )
 
+  /* #region list */
   const hasData = !!list.length
   const isEmpty = !hasData
   const _listClassName = useUnoMerge(
@@ -76,66 +78,72 @@ export function EditableListSettingItem({
       ? 'rounded-lg'
       : ['max-h-250px flex flex-wrap items-start gap-x-10px gap-y-5px overflow-y-auto pr-10px', listClassName],
   )
+  const listEl = (
+    <div
+      className={_listClassName}
+      css={
+        disabled &&
+        css`
+          color: var(--ant-color-text-disabled);
+          background-color: var(--ant-color-bg-container-disabled);
+          box-shadow: none;
+          opacity: 1;
+          pointer-events: none;
+          cursor: not-allowed;
+        `
+      }
+    >
+      {isEmpty && (
+        <Empty
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          description='空空如也'
+          className='[&.ant-empty-normal]:(my-1 py-5px)'
+        />
+      )}
+      {hasData &&
+        list.map((t) => {
+          return (
+            <TagItemDisplay
+              key={t}
+              tag={t.toString()}
+              TagComponent={isUpRepresent ? UpTagItemDisplay : undefined}
+              onDelete={(tag) => updateSettingsInnerArray(configPath, { remove: [tag] })}
+            />
+          )
+        })}
+    </div>
+  )
+  /* #endregion */
 
   return (
     <>
       {renderHeader(input)}
-      <div
-        className={_listClassName}
-        css={
-          disabled &&
-          css`
-            color: var(--ant-color-text-disabled);
-            background-color: var(--ant-color-bg-container-disabled);
-            box-shadow: none;
-            opacity: 1;
-            pointer-events: none;
-            cursor: not-allowed;
-          `
-        }
-      >
-        {isEmpty && (
-          <Empty
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description='空空如也'
-            className='[&.ant-empty-normal]:(my-1 py-5px)'
-          />
-        )}
-        {hasData &&
-          list.map((t) => {
-            return (
-              <TagItemDisplay
-                key={t}
-                tag={t.toString()}
-                onDelete={async (tag) => {
-                  await updateSettingsInnerArray(configPath, { remove: [tag] })
-                }}
-                renderTag={
-                  configPath === 'filter.byAuthor.keywords' || configPath === 'filter.dfHideOpusMids.keywords'
-                    ? (tag) => <UpTagItemDisplay tag={tag} />
-                    : undefined
-                }
-              />
-            )
-          })}
-      </div>
+      {listEl}
     </>
   )
 }
 
 interface TagItemDisplayProps extends Omit<ComponentProps<'div'>, 'children'> {
   tag: string
+  TagComponent?: ElementType<{ tag: string }>
   renderTag?: (tag: string) => ReactNode
   onDelete?: (tag: string) => void
 }
 
-export const TagItemDisplay = memo(function TagItemDisplay({
+export const TagItemDisplay = memo(function ({
   tag,
   renderTag,
+  TagComponent,
   onDelete,
   className,
   ...restProps
 }: TagItemDisplayProps) {
+  const tagEl = useMemo(() => {
+    if (TagComponent) return <TagComponent tag={tag} />
+    renderTag ??= identity
+    return renderTag(tag)
+  }, [TagComponent, renderTag, tag])
+
   return (
     <div
       {...restProps}
@@ -144,18 +152,16 @@ export const TagItemDisplay = memo(function TagItemDisplay({
         className,
       )}
     >
-      {renderTag ? renderTag(tag) : tag}
+      {tagEl}
       <IconParkOutlineCloseSmall
         className='ml-2px size-16px cursor-pointer text-size-12px'
-        onClick={() => {
-          onDelete?.(tag)
-        }}
+        onClick={() => onDelete?.(tag)}
       />
     </div>
   )
 })
 
-function UpTagItemDisplay({ tag }: { tag: string }) {
+const UpTagItemDisplay = memo(function ({ tag }: { tag: string }) {
   const { mid, remark } = useMemo(() => parseUpRepresent(tag), [tag])
 
   const [nicknameByMid, setNicknameByMid] = useState<string | undefined>(undefined)
@@ -213,4 +219,4 @@ function UpTagItemDisplay({ tag }: { tag: string }) {
       </AntdTooltip>
     </>
   )
-}
+})
