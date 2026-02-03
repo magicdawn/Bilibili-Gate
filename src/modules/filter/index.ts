@@ -222,13 +222,13 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
 
     // 动态
     if (tab === ETab.DynamicFeed && isDynamicFeed(item) && filter.enabled) {
+      const { major } = item.modules.module_dynamic
+      const isMajorOpus = major?.type === DynamicFeedEnums.MajorType.Opus
+
       // dfByTitle
       if (settings.filter.dfByTitle.enabled && settings.filter.dfByTitle.keywords.length) {
         let possibleTitles = [title]
-        const { major } = item.modules.module_dynamic
-        if (major?.type === DynamicFeedEnums.MajorType.Opus) {
-          possibleTitles.push(major.opus.summary?.text || '')
-        }
+        if (isMajorOpus) possibleTitles.push(major.opus.summary?.text || '')
         possibleTitles = uniq(possibleTitles.filter(Boolean))
         if (possibleTitles.some(dfFilterByTitleTest)) {
           debug('filter out by df-title-rule: %o', {
@@ -243,7 +243,7 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
 
       // dfHideOpusMids
       if (
-        item.modules.module_dynamic.major?.type === DynamicFeedEnums.MajorType.Opus &&
+        isMajorOpus &&
         dfHideOpusMids.enabled &&
         dfHideOpusMids.keywords.length &&
         authorMid &&
