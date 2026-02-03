@@ -316,7 +316,7 @@ function SubTabFilterForRec() {
 
 function SubTabFilterForDynamicFeed() {
   const {
-    filter: { enabled, dfByTitle },
+    filter: { enabled, dfByTitle, dfHideOpusMids },
   } = useSettingsSnapshot()
   return (
     <div className='flex flex-col gap-y-15px'>
@@ -360,17 +360,17 @@ function SubTabFilterForDynamicFeed() {
 
       <div className={C.blockContainer}>
         <div className={sharedClassNames.settingsGroupSubTitle}>
-          <span>图文动态 (UP)</span>
+          <span>屏蔽 UP 的图文动态</span>
           <HelpInfo>
-            仅对「纯文字 / 图片」动态生效 <br />
             支持 mid 或 mid(备注) <br />
             右键图文动态可快速添加
           </HelpInfo>
+          <SwitchSettingItem configPath='filter.dfHideOpusMids.enabled' disabled={!enabled} className='ml-10px' />
         </div>
         <EditableListSettingItem
-          configPath={'filter.dfHideOpusMids'}
+          configPath={'filter.dfHideOpusMids.keywords'}
           searchProps={{ placeholder: '添加 UP: mid / mid(备注)' }}
-          disabled={!enabled}
+          disabled={!enabled || !dfHideOpusMids.enabled}
           listClassName='max-h-130px'
         />
       </div>

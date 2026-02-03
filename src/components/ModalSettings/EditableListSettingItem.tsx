@@ -111,7 +111,7 @@ export function EditableListSettingItem({
                   await updateSettingsInnerArray(configPath, { remove: [tag] })
                 }}
                 renderTag={
-                  configPath === 'filter.byAuthor.keywords' || configPath === 'filter.dfHideOpusMids'
+                  configPath === 'filter.byAuthor.keywords' || configPath === 'filter.dfHideOpusMids.keywords'
                     ? (tag) => <UpTagItemDisplay tag={tag} />
                     : undefined
                 }

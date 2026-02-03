@@ -116,6 +116,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
   } = cardData
 
   const { enableHideSomeContents } = useSnapshot(settings.dynamicFeed.whenViewAll)
+  const { enabled: dfHideOpusMidsEnabled } = useSnapshot(settings.filter.dfHideOpusMids)
   const { recSharedEmitter } = useRecSelfContext()
 
   const onCopyLink = useMemoizedFn(() => {
@@ -214,14 +215,17 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
    * 图文动态: 屏蔽此 UP
    */
   const hasEntry_hideUpOpusDynamic =
-    isDynamicFeed(item) && item.modules.module_dynamic.major?.type === DynamicFeedEnums.MajorType.Opus && !!authorMid
+    dfHideOpusMidsEnabled &&
+    isDynamicFeed(item) &&
+    item.modules.module_dynamic.major?.type === DynamicFeedEnums.MajorType.Opus &&
+    !!authorMid
   const onAddMidTo_dfHideOpusMids = useMemoizedFn(async () => {
     if (!authorMid) return antMessage.error('UP mid 为空!')
     const content = `${authorMid}`
-    if (settings.filter.dfHideOpusMids.includes(content)) {
+    if (settings.filter.dfHideOpusMids.keywords.includes(content)) {
       return toast(`已在过滤名单中: ${content}`)
     }
-    await updateSettingsInnerArray('filter.dfHideOpusMids', { add: [content] })
+    await updateSettingsInnerArray('filter.dfHideOpusMids.keywords', { add: [content] })
     if (authorName) setNicknameCache(authorMid, authorName)
     antMessage.success(`已屏蔽【${authorName || authorMid}】的图文动态`)
   })
