@@ -65,10 +65,10 @@ export function TabPaneFilter() {
                   <TabIcon tabKey={ETab.DynamicFeed} />
                   动态
                   <HelpInfo className='ml-1'>
-                    使用场景: 关注的 UP 发布的广告 <br />
+                    使用场景: 关注的 UP 发布的部分内容 <br />
                     <ol>
                       <li>如果有规律可以按标题关键字过滤</li>
-                      <li>没有规律可以屏蔽 UP 的全部图文动态</li>
+                      <li>没有规律可以屏蔽 UP 发布的全部图文动态</li>
                     </ol>
                   </HelpInfo>
                 </span>
