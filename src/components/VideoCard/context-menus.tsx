@@ -44,6 +44,7 @@ import {
   IconForWatchlater,
 } from '$modules/icon'
 import { multiSelectStore } from '$modules/multi-select/store'
+import { DynamicFeedEnums } from '$modules/rec-services/dynamic-feed/api/enums'
 import {
   DF_SELECTED_KEY_ALL,
   DF_SELECTED_KEY_PREFIX_UP,
@@ -207,6 +208,22 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
     })
     setNicknameCache(authorMid, authorName || '')
     antMessage.success(`在「全部」动态中隐藏【${authorName}】的动态`)
+  })
+
+  /**
+   * 图文动态: 屏蔽此 UP
+   */
+  const hasEntry_hideUpOpusDynamic =
+    isDynamicFeed(item) && item.modules.module_dynamic.major?.type === DynamicFeedEnums.MajorType.Opus && !!authorMid
+  const onAddMidTo_dfHideOpusMids = useMemoizedFn(async () => {
+    if (!authorMid) return antMessage.error('UP mid 为空!')
+    const content = `${authorMid}`
+    if (settings.filter.dfHideOpusMids.includes(content)) {
+      return toast(`已在过滤名单中: ${content}`)
+    }
+    await updateSettingsInnerArray('filter.dfHideOpusMids', { add: [content] })
+    if (authorName) setNicknameCache(authorMid, authorName)
+    antMessage.success(`已屏蔽【${authorName || authorMid}】的图文动态`)
   })
 
   /**
@@ -453,6 +470,13 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
         onClick: onAddMidTo_dynamicFeedWhenViewAllHideIds,
       },
       {
+        test: hasEntry_hideUpOpusDynamic,
+        key: 'hide-up-opus-dynamic',
+        label: '屏蔽此 UP 的图文动态',
+        icon: <IconLetsIconsViewHide className={clsContextMenuIcon} />,
+        onClick: onAddMidTo_dfHideOpusMids,
+      },
+      {
         test: hasBlacklistEntry,
         key: 'blacklist-up',
         label: '将 UP 加入黑名单',
@@ -512,6 +536,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
     hasBlacklistEntry,
     hasViewUpVideoListEntry,
     hasEntry_addMidTo_dynamicFeedWhenViewAllHideIds,
+    hasEntry_hideUpOpusDynamic,
     // menus
     consistentOpenMenus,
     conditionalOpenMenus,

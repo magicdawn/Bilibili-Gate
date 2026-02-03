@@ -65,7 +65,7 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
   }
 
   const filter = getSettingsSnapshot().filter
-  const { minDuration, minPlayCount, minDanmakuCount, byAuthor, byTitle, dfByTitle } = filter
+  const { minDuration, minPlayCount, minDanmakuCount, byAuthor, byTitle, dfByTitle, dfHideOpusMids } = filter
   const { blockUpMids, blockUpNames } = parseFilterByAuthor(byAuthor.keywords)
   const { test: filterByTitleTest } = parseFilterByTitle(byTitle.keywords)
   const { test: dfFilterByTitleTest } = parseFilterByTitle(dfByTitle.keywords)
@@ -235,6 +235,23 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
         })
         return false
       }
+    }
+
+    if (
+      tab === ETab.DynamicFeed &&
+      filter.enabled &&
+      dfHideOpusMids.length &&
+      authorMid &&
+      isDynamicFeed(item) &&
+      item.modules.module_dynamic.major?.type === DynamicFeedEnums.MajorType.Opus &&
+      dfHideOpusMids.includes(authorMid)
+    ) {
+      debug('filter out by df-hide-opus-mids-rule: %o', {
+        authorMid,
+        title,
+        uniqId: item.uniqId,
+      })
+      return false
     }
 
     return true // just keep it

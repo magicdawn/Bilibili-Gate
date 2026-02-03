@@ -319,42 +319,61 @@ function SubTabFilterForDynamicFeed() {
     filter: { enabled, dfByTitle },
   } = useSettingsSnapshot()
   return (
-    <div className={C.blockContainer}>
-      <div className={sharedClassNames.settingsGroupSubTitle}>
-        <span>标题</span>
-        <HelpInfo>
-          支持普通关键字和正则(i), 语法：
-          <Tag color='success' variant='solid'>
-            /abc|\d+/
-          </Tag>
-        </HelpInfo>
-        <SwitchSettingItem configPath='filter.dfByTitle.enabled' disabled={!enabled} className='ml-10px' />
-        <div className='flex-1' />
-        <Popover
-          placement='left'
-          content={
-            <div className='flex flex-col gap-x-10px gap-y-5px'>
-              <Button onClick={exportDfFilterByTitle}>
-                <IconTablerFileExport />
-                导出
-              </Button>
-              <Button onClick={importDfFilterByTitle}>
-                <IconTablerFileImport />
-                导入
-              </Button>
-            </div>
-          }
-        >
-          <Button className='icon-only-round-button size-26px'>
-            <IconForPopoverTrigger className='size-16px' />
-          </Button>
-        </Popover>
+    <div className='flex flex-col gap-y-15px'>
+      <div className={C.blockContainer}>
+        <div className={sharedClassNames.settingsGroupSubTitle}>
+          <span>标题</span>
+          <HelpInfo>
+            支持普通关键字和正则(i), 语法：
+            <Tag color='success' variant='solid'>
+              /abc|\d+/
+            </Tag>
+          </HelpInfo>
+          <SwitchSettingItem configPath='filter.dfByTitle.enabled' disabled={!enabled} className='ml-10px' />
+          <div className='flex-1' />
+          <Popover
+            placement='left'
+            content={
+              <div className='flex flex-col gap-x-10px gap-y-5px'>
+                <Button onClick={exportDfFilterByTitle}>
+                  <IconTablerFileExport />
+                  导出
+                </Button>
+                <Button onClick={importDfFilterByTitle}>
+                  <IconTablerFileImport />
+                  导入
+                </Button>
+              </div>
+            }
+          >
+            <Button className='icon-only-round-button size-26px'>
+              <IconForPopoverTrigger className='size-16px' />
+            </Button>
+          </Popover>
+        </div>
+        <EditableListSettingItem
+          configPath={'filter.dfByTitle.keywords'}
+          searchProps={{ placeholder: '添加过滤关键词' }}
+          disabled={!enabled || !dfByTitle.enabled}
+        />
       </div>
-      <EditableListSettingItem
-        configPath={'filter.dfByTitle.keywords'}
-        searchProps={{ placeholder: '添加过滤关键词' }}
-        disabled={!enabled || !dfByTitle.enabled}
-      />
+
+      <div className={C.blockContainer}>
+        <div className={sharedClassNames.settingsGroupSubTitle}>
+          <span>图文动态 (UP)</span>
+          <HelpInfo>
+            仅对「纯文字 / 图片」动态生效 <br />
+            支持 mid 或 mid(备注) <br />
+            右键图文动态可快速添加
+          </HelpInfo>
+        </div>
+        <EditableListSettingItem
+          configPath={'filter.dfHideOpusMids'}
+          searchProps={{ placeholder: '添加 UP: mid / mid(备注)' }}
+          disabled={!enabled}
+          listClassName='max-h-130px'
+        />
+      </div>
     </div>
   )
 }

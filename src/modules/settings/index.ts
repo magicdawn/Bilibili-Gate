@@ -221,6 +221,7 @@ export const initialSettings = {
       enabled: false,
       keywords: [] as string[],
     },
+    dfHideOpusMids: [] as string[],
   },
 
   /**
