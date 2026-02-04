@@ -82,16 +82,6 @@ export function getWatchlaterTabFavMenus(ctx: FavContext, item: RecItemType, avi
 
   const unfavedMenus = defineAntMenus([
     {
-      // 快速收藏
-      key: 'watchlater:add-quick-fav',
-      icon: <IconForFav className={clsContextMenuIcon} />,
-      label: '收藏到「默认收藏夹」',
-      async onClick() {
-        const success = await UserFavApi.addFav(avid)
-        if (success) antMessage.success(`已加入收藏夹「${defaultFavFolderTitle}」`)
-      },
-    },
-    {
       // 收藏
       key: 'watchlater:add-fav',
       icon: <IconForFav className={clsContextMenuIcon} />,
@@ -102,6 +92,16 @@ export function getWatchlaterTabFavMenus(ctx: FavContext, item: RecItemType, avi
           if (success) antMessage.success(`已加入收藏夹「${targetFolder.title}」`)
           return success
         })
+      },
+    },
+    {
+      // 快速收藏
+      key: 'watchlater:add-quick-fav',
+      icon: <IconForFav className={clsContextMenuIcon} />,
+      label: '收藏到「默认收藏夹」',
+      async onClick() {
+        const success = await UserFavApi.addFav(avid)
+        if (success) antMessage.success(`已加入收藏夹「${defaultFavFolderTitle}」`)
       },
     },
   ])
