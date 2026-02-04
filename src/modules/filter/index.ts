@@ -1,6 +1,5 @@
 import { uniq } from 'es-toolkit'
 import { baseDebug } from '$common'
-import { ETab } from '$components/RecHeader/tab-enum'
 import { isDynamicFeed, type RecItemTypeOrSeparator } from '$define'
 import { EApiType } from '$define/index.shared'
 import { blacklistMids } from '$modules/bilibili/me/relations/blacklist'
@@ -9,42 +8,12 @@ import { isNormalRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { getSettingsSnapshot, settings } from '$modules/settings'
 import { normalizeCardData } from './normalize'
 import { parseFilterByAuthor, parseFilterByTitle } from './parse'
+import type { ETab } from '$components/RecHeader/tab-enum'
 
 const debug = baseDebug.extend('modules:filter')
 
 export function getFollowedStatus(recommendReason?: string): boolean {
   return !!recommendReason && ['已关注', '新关注'].includes(recommendReason)
-}
-
-/**
- * 用于快速判断是否应该启用过滤, 避免 normalizeData 等一些列操作
- * 有可能返回 true, 应尽量返回 true
- */
-export function anyFilterEnabled(tab: ETab) {
-  if (tab === ETab.KeepFollowOnly) {
-    return true
-  }
-
-  // 推荐 / 热门
-  const mayNeedCheck_blacklist_filterByUp_filterByTitle = [ETab.AppRecommend, ETab.PcRecommend, ETab.Hot].includes(tab)
-  if (
-    mayNeedCheck_blacklist_filterByUp_filterByTitle &&
-    (blacklistMids.size ||
-      (settings.filter.enabled &&
-        (settings.filter.byAuthor.enabled ||
-          settings.filter.byTitle.enabled ||
-          settings.filter.minDuration.enabled ||
-          settings.filter.minPlayCount.enabled ||
-          settings.filter.minDanmakuCount.enabled)))
-  ) {
-    return true
-  }
-
-  if (tab === ETab.DynamicFeed && (settings.filter.dfByTitle.enabled || settings.filter.dfHideOpusMids.enabled)) {
-    return true
-  }
-
-  return false
 }
 
 // 推荐 / 热门
@@ -60,7 +29,8 @@ export function isApiRecLike(api: EApiType) {
 }
 
 export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
-  if (!anyFilterEnabled(tab)) {
+  // quick skip when (filter not enabled && blacklistMids empty)
+  if (!settings.filter.enabled && !blacklistMids.size) {
     return items
   }
 
@@ -221,7 +191,7 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
     }
 
     // 动态
-    if (tab === ETab.DynamicFeed && isDynamicFeed(item) && filter.enabled) {
+    if (isDynamicFeed(item) && filter.enabled) {
       const { major } = item.modules.module_dynamic
       const isMajorOpus = major?.type === DynamicFeedEnums.MajorType.Opus
 

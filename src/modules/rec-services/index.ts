@@ -3,8 +3,9 @@ import { baseDebug } from '$common'
 import { getColumnCount } from '$components/RecGrid/useShortcut'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { EApiType } from '$define/index.shared'
-import { anyFilterEnabled, filterRecItems } from '$modules/filter'
+import { filterRecItems } from '$modules/filter'
 import { normalizeCardData } from '$modules/filter/normalize'
+import { settings } from '$modules/settings'
 import { AppRecService } from './app'
 import { PcRecService } from './pc'
 import { getServiceFromRegistry, REC_TABS, type FetcherOptions } from './service-map'
@@ -59,11 +60,21 @@ async function fetchMinCount(count: number, fetcherOptions: FetcherOptions, filt
     } else {
       // 常规
       const pagesize = willUsePcApi(tab) ? PcRecService.PAGE_SIZE : AppRecService.PAGE_SIZE
+      const hasFilter = (() => {
+        const { enabled, byAuthor, byTitle, minDuration, minPlayCount, minDanmakuCount } = settings.filter
+        return (
+          enabled ||
+          byAuthor.enabled ||
+          byTitle.enabled ||
+          minDuration.enabled ||
+          minPlayCount.enabled ||
+          minDanmakuCount.enabled
+        )
+      })()
 
-      const multipler = anyFilterEnabled(tab)
+      const multipler = hasFilter
         ? filterMultiplier // 过滤, 需要大基数
         : 1.2 // 可能有重复, so not 1.0
-
       times = Math.ceil((restCount * multipler) / pagesize)
 
       debug(
