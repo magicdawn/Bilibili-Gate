@@ -3,7 +3,6 @@ import { useKeyPress, useMemoizedFn, useRequest, useUpdateEffect } from 'ahooks'
 import { Button, Empty, Input, Popover, Radio, Slider, Spin } from 'antd'
 import clsx from 'clsx'
 import { assert, isEqual, uniqBy } from 'es-toolkit'
-import { fastOrderBy } from 'fast-sort-lens'
 import PinyinMatch from 'pinyin-match'
 import { useEffect, useMemo, useState } from 'react'
 import { useSnapshot } from 'valtio'
@@ -21,17 +20,14 @@ import {
   IconForOpenExternalLink,
   IconForReset,
 } from '$modules/icon'
-import { isFavFolderDefault } from '$modules/rec-services/fav/fav-util'
 import { favStore, updateFavFolderList } from '$modules/rec-services/fav/store'
 import { useSettingsSnapshot } from '$modules/settings'
 import { getUid } from '$utility/cookie'
 import { shouldDisableShortcut } from '$utility/dom'
-import { mapNameForSort, zhLocaleComparer } from '$utility/sort'
 import { proxyWithLocalStorage } from '$utility/valtio'
+import { sortFavFoldersByName, type FavFolderOrder } from './fav-folder-order'
 import type { Promisable } from 'type-fest'
 import type { FavFolder } from '$modules/rec-services/fav/types/folders/list-all-folders'
-
-type FavFolderOrder = 'default' | 'name'
 
 const localStoreInitial = {
   modalWidth: 60, // percent
@@ -39,12 +35,6 @@ const localStoreInitial = {
 }
 
 const localStore = proxyWithLocalStorage({ ...localStoreInitial }, 'modal-fav-manager')
-
-function mapFavFolderTitleForSort(title: string) {
-  title = title.replace(/^[\s\p{RGI_Emoji}]+/v, '') // rm leading space & emoji
-  title = mapNameForSort(title)
-  return title
-}
 
 function ConfigPopoverContent() {
   const { modalWidth, favFolderOrder } = useSnapshot(localStore)
@@ -147,13 +137,7 @@ export function ModalFavManager({
   }, [folders, filterText])
   // order
   const foldersAfterSort = useMemo(() => {
-    if (favFolderOrder === 'name') {
-      return fastOrderBy(
-        foldersAfterFilter,
-        [(f) => (isFavFolderDefault(f.attr) ? 1 : 0), (f) => mapFavFolderTitleForSort(f.title)],
-        ['desc', zhLocaleComparer],
-      )
-    }
+    if (favFolderOrder === 'name') return sortFavFoldersByName(foldersAfterFilter)
     return foldersAfterFilter
   }, [foldersAfterFilter, favFolderOrder])
   const foldersForRender = foldersAfterSort

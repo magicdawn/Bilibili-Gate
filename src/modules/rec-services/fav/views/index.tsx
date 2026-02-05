@@ -1,9 +1,10 @@
 import { useMemoizedFn, useMount, useUpdateEffect } from 'ahooks'
-import { Button, Dropdown, Menu, Popover, Tag, Transfer } from 'antd'
+import { Button, Dropdown, Menu, Popover, Segmented, Tag, Transfer } from 'antd'
 import { delay, groupBy } from 'es-toolkit'
 import { useMemo, useState, type Key, type ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
+import { sortFavFoldersByName, type FavFolderOrder } from '$components/ModalFavManager/fav-folder-order'
 import { useOnRefresh } from '$components/Recommends/rec.shared'
 import { sidebarBottomLine, useRevealMenuSelectedKey } from '$components/RecSidebar/sidebar-shared'
 import { defineAntMenus, type AntMenuItem } from '$modules/antd'
@@ -12,6 +13,7 @@ import { CopyBvidButtonsTabbarView } from '$modules/rec-services/_shared/copy-bv
 import { formatSpaceUrl } from '$modules/rec-services/dynamic-feed/shared'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { sortListByName } from '$utility/sort'
+import { proxyWithLocalStorage } from '$utility/valtio'
 import { usePopupContainer } from '../../_base'
 import { dropdownMenuStyle } from '../../_shared'
 import { isFavFolderDefault, isFavFolderPrivate } from '../fav-util'
@@ -25,11 +27,59 @@ export const IconForPrivateFolder = IconLucideFolderLock
 export const IconForPublicFolder = IconLucideFolder
 export const IconForCollection = IconIonLayersOutline
 
-function useScopeMenus(extraOnMenuItemClick?: () => void) {
+const viewLocalStore = proxyWithLocalStorage(
+  { sidebarFavFolderOrder: 'default' as FavFolderOrder },
+  'fav-rec-service:view',
+)
+
+function useScopeMenus(parentView: 'sidebarView' | 'tabbarView', extraOnMenuItemClick?: () => void) {
   const { folders, collections, selectedKey } = useSnapshot(favStore)
+  const { sidebarFavFolderOrder } = useSnapshot(viewLocalStore)
   const onRefresh = useOnRefresh()
 
   const menuItems: AntMenuItem[] = useMemo(() => {
+    /* #region folders */
+    let usingFolders = folders
+    let favFolderLabelAddon: ReactNode
+    if (parentView === 'sidebarView') {
+      favFolderLabelAddon = (
+        <Segmented<FavFolderOrder>
+          className='ml-4'
+          size='small'
+          value={sidebarFavFolderOrder}
+          onChange={(v) => (viewLocalStore.sidebarFavFolderOrder = v)}
+          options={[
+            { label: '默认', value: 'default' },
+            { label: '名称', value: 'name' },
+          ]}
+        />
+      )
+      if (sidebarFavFolderOrder === 'name') {
+        usingFolders = sortFavFoldersByName(folders)
+      }
+    }
+    const folderSubMenus: AntMenuItem[] = usingFolders.map((f) => {
+      const isDefault = isFavFolderDefault(f.attr)
+      const isPrivate = isFavFolderPrivate(f.attr)
+      const key: FavStore['selectedKey'] = `fav-folder:${f.id}`
+      const icon = isPrivate ? <IconForPrivateFolder /> : <IconForPublicFolder />
+      const label = `${f.title} (${f.media_count})`
+      return {
+        key,
+        icon,
+        label,
+        async onClick() {
+          favStore.selectedFavFolderId = f.id
+          favStore.selectedFavCollectionId = undefined
+          extraOnMenuItemClick?.()
+          await delay(100)
+          onRefresh()
+        },
+      }
+    })
+    /* #endregion */
+
+    /* #region collections */
     const collectionSubMenus: AntMenuItem[] = []
     const collectionGrouped = groupBy(collections, (x) => x.upper.name)
     let entries = Object.entries(collectionGrouped).map(([upName, collections]) => ({
@@ -77,6 +127,7 @@ function useScopeMenus(extraOnMenuItemClick?: () => void) {
         ]),
       )
     }
+    /* #endregion */
 
     return defineAntMenus([
       {
@@ -93,26 +144,8 @@ function useScopeMenus(extraOnMenuItemClick?: () => void) {
       },
       !!folders.length && {
         type: 'group',
-        label: '收藏夹',
-        children: folders.map((f) => {
-          const isDefault = isFavFolderDefault(f.attr)
-          const isPrivate = isFavFolderPrivate(f.attr)
-          const key: FavStore['selectedKey'] = `fav-folder:${f.id}`
-          const icon = isPrivate ? <IconForPrivateFolder /> : <IconForPublicFolder />
-          const label = `${f.title} (${f.media_count})`
-          return {
-            key,
-            icon,
-            label,
-            async onClick() {
-              favStore.selectedFavFolderId = f.id
-              favStore.selectedFavCollectionId = undefined
-              extraOnMenuItemClick?.()
-              await delay(100)
-              onRefresh()
-            },
-          }
-        }),
+        label: <div className='flex items-center'>收藏夹{favFolderLabelAddon}</div>,
+        children: folderSubMenus,
       },
       !!collections.length && {
         type: 'group',
@@ -120,7 +153,7 @@ function useScopeMenus(extraOnMenuItemClick?: () => void) {
         children: collectionSubMenus,
       },
     ])
-  }, [folders, collections])
+  }, [folders, collections, parentView, sidebarFavFolderOrder, onRefresh])
 
   return { menuItems, selectedKey }
 }
@@ -145,7 +178,7 @@ export function FavTabbarView({ extraContent }: { extraContent?: ReactNode }) {
 
   /* #region scope selection dropdown */
   const [scopeDropdownOpen, setScopeDropdownOpen] = useState(false)
-  const { menuItems } = useScopeMenus(() => {
+  const { menuItems } = useScopeMenus('tabbarView', () => {
     setScopeDropdownOpen(false)
   })
 
@@ -264,7 +297,7 @@ export function ViewingAllExcludeFolderConfig({
 }
 
 export function FavSidebarView() {
-  const { menuItems, selectedKey } = useScopeMenus()
+  const { menuItems, selectedKey } = useScopeMenus('sidebarView')
   const { menuRef } = useRevealMenuSelectedKey(menuItems, selectedKey)
   return (
     <>

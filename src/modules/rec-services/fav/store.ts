@@ -50,6 +50,8 @@ export const QUERY_FAV_FOLDER_ID = parseId(
 export const SHOW_FAV_TAB_ONLY =
   IN_BILIBILI_HOMEPAGE && (typeof QUERY_FAV_FOLDER_ID === 'number' || typeof QUERY_FAV_COLLECTION_ID === 'number')
 
+type FavFolderOrder = 'default' | 'name'
+
 export const favStore = proxy({
   folders: [] as FavFolder[],
   foldersUpdateAt: 0,
