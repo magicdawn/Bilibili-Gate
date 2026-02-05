@@ -9,7 +9,8 @@ import {
 } from '$components/ModalFavManager'
 import { getMultiSelectedItems } from '$components/RecGrid/rec-grid-state'
 import { ETab } from '$components/RecHeader/tab-enum'
-import { isFav, isLiked, isWatchlater, type RecItemType } from '$define'
+import { isFav, type RecItemType } from '$define'
+import { EApiType } from '$define/index.shared'
 import { antMessage, antModal, defineAntMenus } from '$modules/antd'
 import { IconForDelete, IconForEdit, IconForFav, IconForFaved, IconForOpenExternalLink } from '$modules/icon'
 import { multiSelectStore } from '$modules/multi-select/store'
@@ -31,9 +32,10 @@ export function useInitFavContext(item: RecItemType, avid: string | undefined) {
   const [folderIds, setFolderIds] = useState<number[] | undefined>(undefined)
 
   const updateFavFolderNames = useMemoizedFn(async () => {
-    // 只在「稍后再看」|「赞」|「收藏」提供收藏状态
-    if (!(isWatchlater(item) || isLiked(item) || (isFav(item) && item.from === 'fav-folder'))) return
     if (!avid) return
+    // 仅在 [收藏Tab | 提供 quick-fav 的地方] 更新收藏状态
+    const { enable: enableQuickFav } = getQuickFavConfig(item.api)
+    if (!(enableQuickFav || (isFav(item) && item.from === 'fav-folder'))) return
     const result = await UserFavApi.getVideoFavState(avid)
     if (result) {
       setFolderNames(result.favFolderNames)
@@ -48,29 +50,28 @@ export function useInitFavContext(item: RecItemType, avid: string | undefined) {
   )
 }
 
-export function getWatchlaterTabFavMenus(ctx: FavContext, item: RecItemType, avid: string | undefined) {
-  if (!isWatchlater(item) || !avid) return []
+function getQuickFavConfig(api: EApiType) {
+  const enable = ![EApiType.Separator, EApiType.Live, EApiType.Fav].includes(api) // almost anything
+  const enableDetailMenu = api === EApiType.Watchlater || api === EApiType.Liked
+  return { enable, enableDetailMenu }
+}
+
+// 快速收藏
+export function getQuickFavMenus(ctx: FavContext, item: RecItemType, avid: string | undefined) {
+  if (!avid) return
+  const { enable, enableDetailMenu } = getQuickFavConfig(item.api)
+  if (!enable) return
+
   const folderNames = ctx.folderNames ?? []
   const folderUrls = ctx.folderUrls ?? []
   const folderIds = ctx.folderIds ?? []
 
   const favedMenus = defineAntMenus([
     {
-      // 浏览收藏夹
-      key: 'watchlater-faved:browse-fav-folder',
+      // 修改收藏夹
+      key: 'quick-fav:faved:modify-fav',
       icon: <IconForFaved className={clsx(clsContextMenuIcon, 'color-gate-primary')} />,
       label: `已收藏在 ${(folderNames || []).map((n) => `「${n}」`).join('')}`,
-      onClick() {
-        folderUrls.forEach((u) => {
-          window.open(u, getLinkTarget())
-        })
-      },
-    },
-    {
-      // 修改收藏夹
-      key: 'watchlater-faved:modify-fav',
-      icon: <IconForEdit className={clsContextMenuIcon} />,
-      label: '编辑收藏',
       async onClick() {
         assert(folderIds.length, 'folderIds.length should not be empty')
         await startModifyFavItemToFolder(folderIds, (targetFolder) => {
@@ -78,12 +79,23 @@ export function getWatchlaterTabFavMenus(ctx: FavContext, item: RecItemType, avi
         })
       },
     },
+    {
+      // 浏览收藏夹
+      test: enableDetailMenu,
+      key: 'quick-fav:faved:browse-fav-folder',
+      icon: <IconForOpenExternalLink className={clsContextMenuIcon} />,
+      label: '去个人空间查看收藏',
+      onClick() {
+        folderUrls.forEach((u) => {
+          window.open(u, getLinkTarget())
+        })
+      },
+    },
   ])
-
   const unfavedMenus = defineAntMenus([
     {
       // 收藏
-      key: 'watchlater:add-fav',
+      key: 'quick-fav:unfaved:add-fav',
       icon: <IconForFav className={clsContextMenuIcon} />,
       label: '收藏到',
       async onClick() {
@@ -96,7 +108,8 @@ export function getWatchlaterTabFavMenus(ctx: FavContext, item: RecItemType, avi
     },
     {
       // 快速收藏
-      key: 'watchlater:add-quick-fav',
+      test: enableDetailMenu,
+      key: 'quick-fav:unfaved:add-fav-to-default-folder',
       icon: <IconForFav className={clsContextMenuIcon} />,
       label: '收藏到「默认收藏夹」',
       async onClick() {

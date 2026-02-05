@@ -4,7 +4,6 @@
 
 - [ ] reconsider `fav:context-menu`
 - [ ] space-upload / dynamic-feed: quick search following up
-- [ ] 稍后再看-重新添加, 最早添加时应为移到最后.
 - [ ] 推荐里的视频可以直接收藏, 而不是必须加入稍后再看
 - [ ] 收藏Tab: 收藏夹 sidebar 排序, 可记忆. maybe reuse ModalFavManager
 - [ ] 稍后再看, 可以批量收藏, 方便整理之前想收藏, 但只能加入稍后再看的项.
@@ -19,3 +18,4 @@
 - unify tooltip divider style
 - port fix for 合集跳转问题
 - 稍后再看-重新添加, 最早添加时应为移到最后.
+- 推荐里的视频可以直接收藏, 而不是必须加入稍后再看
