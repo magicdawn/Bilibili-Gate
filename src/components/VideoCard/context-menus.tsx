@@ -123,7 +123,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
   } = useSettingsSnapshot()
   /* #endregion */
 
-  const watchlaterNewestItemPos = watchlaterItemsOrder === WatchlaterItemsOrder.AddTimeAsc ? 'last' : 'first'
+  const watchlaterNewestItemPos = watchlaterItemsOrder === WatchlaterItemsOrder.AddTimeAsc ? 'end' : 'start'
   const watchlaterNewestItemPosText = watchlaterItemsOrder === WatchlaterItemsOrder.AddTimeAsc ? '移到最后' : '移到最前'
 
   const { recSharedEmitter } = useRecSelfContext()

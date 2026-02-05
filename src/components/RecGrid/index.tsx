@@ -382,11 +382,20 @@ export const RecGrid = memo(function RecGrid({
       return newItems
     })
   })
-  const handleMoveCardTo = useMemoizedFn((itemUniqId: string, pos: 'first' | 'last') => {
+  const handleMoveCardTo = useMemoizedFn((itemUniqId: string, pos: 'start' | 'end') => {
     modifyItems((items) => {
       const index = items.findIndex((x) => x.uniqId === itemUniqId)
       if (index === -1) return
-      return arrayMove(items, index, pos === 'first' ? 0 : items.length - 1)
+      // move to start
+      if (pos === 'start') {
+        const firstNoneSeparatorIndex = items.findIndex((x) => x.api !== EApiType.Separator)
+        return arrayMove(items, index, firstNoneSeparatorIndex)
+      }
+      // to end
+      else if (pos === 'end') {
+        // NOTE: 移到最后也不太准确, 需考虑分页加载
+        return arrayMove(items, index, items.length - 1)
+      }
     })
   })
   useEmitterOn(recSharedEmitter, 'remove-cards', (eventArg) => handleRemoveCards(...eventArg))
