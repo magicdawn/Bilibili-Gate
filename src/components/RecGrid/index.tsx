@@ -1,3 +1,4 @@
+import { arrayMove } from '@dnd-kit/sortable'
 import { useCreation, useEventListener, useLatest, useMemoizedFn, useMount, useUnmountedRef } from 'ahooks'
 import { Divider } from 'antd'
 import clsx, { type ClassValue } from 'clsx'
@@ -44,8 +45,7 @@ import { useShortcut } from './useShortcut'
 import * as gridClassNames from './video-grid.module.scss'
 import type { ArgsProps } from 'antd/es/notification'
 import type { VideoCardEmitter, VideoCardEvents } from '$components/VideoCard/index.shared'
-import type { RecItemType, RecItemTypeOrSeparator } from '$define'
-import type { IVideoCardData } from '$modules/filter/normalize'
+import type { RecItemTypeOrSeparator } from '$define'
 
 const debug = baseDebug.extend('components:RecGrid')
 
@@ -345,9 +345,11 @@ export const RecGrid = memo(function RecGrid({
   /**
    * card state change
    */
-  const modifyItems = (fn: (items: RecItemTypeOrSeparator[]) => RecItemTypeOrSeparator[]) => {
-    self.setStore({ items: fn(self.store.items) })
-  }
+  type Modifier = (items: RecItemTypeOrSeparator[]) => RecItemTypeOrSeparator[] | undefined
+  const modifyItems = useMemoizedFn((fn: Modifier) => {
+    const val = self.store.items
+    self.setStore({ items: fn(val) ?? val })
+  })
   const handleRemoveCards = useMemoizedFn((uniqIds: string[], titles?: string[], silent?: boolean) => {
     modifyItems((items) => {
       const newItems = items.slice()
@@ -380,25 +382,15 @@ export const RecGrid = memo(function RecGrid({
       return newItems
     })
   })
-  const handleMoveCardToFirst = useMemoizedFn((item: RecItemType, _data: IVideoCardData) => {
+  const handleMoveCardTo = useMemoizedFn((itemUniqId: string, pos: 'first' | 'last') => {
     modifyItems((items) => {
-      const currentItem = items.find((x) => x.uniqId === item.uniqId)
-      if (!currentItem) return items
-      const index = items.indexOf(currentItem)
-
-      const newItems = items.slice()
-      // rm
-      newItems.splice(index, 1)
-      // insert
-      const newIndex = newItems.findIndex((x) => x.api !== EApiType.Separator)
-      newItems.splice(newIndex, 0, currentItem)
-
-      return newItems
+      const index = items.findIndex((x) => x.uniqId === itemUniqId)
+      if (index === -1) return
+      return arrayMove(items, index, pos === 'first' ? 0 : items.length - 1)
     })
   })
-  useEmitterOn(recSharedEmitter, 'remove-cards', ([uniqIds, titles, silent]) =>
-    handleRemoveCards(uniqIds, titles, silent),
-  )
+  useEmitterOn(recSharedEmitter, 'remove-cards', (eventArg) => handleRemoveCards(...eventArg))
+  useEmitterOn(recSharedEmitter, 'move-card-to', (eventArg) => handleMoveCardTo(...eventArg))
 
   /**
    * footer for infinite scroll
@@ -555,8 +547,6 @@ export const RecGrid = memo(function RecGrid({
           item={item}
           active={active}
           onRemoveCurrent={(item, data, silent) => handleRemoveCards([item.uniqId], [data.title], silent)}
-          onMoveToFirst={handleMoveCardToFirst}
-          refresh={refresh}
           emitter={videoCardEmitters[index]}
           recSharedEmitter={recSharedEmitter}
           gridDisplayMode={gridDisplayMode}

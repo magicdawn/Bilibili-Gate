@@ -18,3 +18,4 @@
 - multi-select: copy bvid single line, copy bvid multi line, copy bvid info, 写一个 bbdown 教程
 - unify tooltip divider style
 - port fix for 合集跳转问题
+- 稍后再看-重新添加, 最早添加时应为移到最后.

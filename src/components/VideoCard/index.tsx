@@ -25,7 +25,7 @@ import { isDisplayAsList } from '$components/RecGrid/display-mode'
 import { getBvidInfo } from '$components/RecGrid/rec-grid-state'
 import { setGlobalValue } from '$components/RecGrid/unsafe-window-export'
 import { ETab } from '$components/RecHeader/tab-enum'
-import { defaultRecSharedEmitter, type RecSharedEmitter, type RefreshFn } from '$components/Recommends/rec.shared'
+import { defaultRecSharedEmitter, type RecSharedEmitter } from '$components/Recommends/rec.shared'
 import { clsGateVideoCardContextMenuRoot } from '$components/shared.module.scss'
 import {
   isAppRecommend,
@@ -85,8 +85,6 @@ export type VideoCardProps = {
   active?: boolean // 键盘 active
   item?: RecItemType
   onRemoveCurrent?: (item: RecItemType, data: IVideoCardData, silent?: boolean) => void | Promise<void>
-  onMoveToFirst?: (item: RecItemType, data: IVideoCardData) => void | Promise<void>
-  refresh?: RefreshFn
   emitter?: VideoCardEmitter
   recSharedEmitter?: RecSharedEmitter
   tab: ETab
@@ -102,8 +100,6 @@ export const VideoCard = memo(function VideoCard({
   loading,
   active,
   onRemoveCurrent,
-  onMoveToFirst,
-  refresh,
   emitter,
   recSharedEmitter,
   tab,
@@ -166,8 +162,6 @@ export const VideoCard = memo(function VideoCard({
             recSharedEmitter={recSharedEmitter}
             tab={tab}
             onRemoveCurrent={onRemoveCurrent}
-            onMoveToFirst={onMoveToFirst}
-            refresh={refresh}
             watchlaterAdded={watchlaterAdded}
             gridDisplayMode={gridDisplayMode}
             multiSelecting={multiSelecting}
@@ -184,8 +178,6 @@ export type VideoCardInnerProps = {
   cardData: IVideoCardData
   active?: boolean
   onRemoveCurrent?: (item: RecItemType, data: IVideoCardData, silent?: boolean) => void | Promise<void>
-  onMoveToFirst?: (item: RecItemType, data: IVideoCardData) => void | Promise<void>
-  refresh?: RefreshFn
   emitter?: VideoCardEmitter
   recSharedEmitter?: RecSharedEmitter
   watchlaterAdded: boolean
@@ -200,8 +192,6 @@ const VideoCardInner = memo(function VideoCardInner({
   tab,
   active = false,
   onRemoveCurrent,
-  onMoveToFirst,
-  refresh,
   emitter = defaultVideoCardEmitter,
   recSharedEmitter = defaultRecSharedEmitter,
   watchlaterAdded,
@@ -445,7 +435,6 @@ const VideoCardInner = memo(function VideoCardInner({
     isNormalVideo,
     watchlaterContext,
     favContext,
-    onMoveToFirst,
     hasDislikeEntry,
     onTriggerDislike,
     onRemoveCurrent,

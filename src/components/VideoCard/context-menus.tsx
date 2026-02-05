@@ -53,7 +53,8 @@ import {
   QUERY_DYNAMIC_UP_MID,
 } from '$modules/rec-services/dynamic-feed/store'
 import { SHOW_SPACE_UPLOAD_ONLY, SpaceUploadQueryKey } from '$modules/rec-services/space-upload/store'
-import { settings, updateSettingsInnerArray } from '$modules/settings'
+import { WatchlaterItemsOrder } from '$modules/rec-services/watchlater/watchlater-enum'
+import { settings, updateSettingsInnerArray, useSettingsSnapshot } from '$modules/settings'
 import toast from '$utility/toast'
 import { copyContent } from './index.shared'
 import { watchlaterAdd } from './services'
@@ -74,8 +75,6 @@ type UseContextMenuOptions = {
   favContext: FavContext
   hasDislikeEntry: boolean
   onTriggerDislike: () => unknown
-
-  onMoveToFirst: ((item: RecItemType, data: IVideoCardData) => void | Promise<void>) | undefined
   onRemoveCurrent: ((item: RecItemType, data: IVideoCardData, silent?: boolean) => void | Promise<void>) | undefined
 
   consistentOpenMenus: AntMenuItem[]
@@ -93,8 +92,6 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
     watchlaterContext,
     hasDislikeEntry,
     onTriggerDislike,
-
-    onMoveToFirst,
     onRemoveCurrent,
 
     consistentOpenMenus,
@@ -102,7 +99,6 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
 
     multiSelecting,
   } = options
-
   const {
     avid,
     bvid,
@@ -115,8 +111,21 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
     authorMid,
   } = cardData
 
-  const { enableHideSomeContents } = useSnapshot(settings.dynamicFeed.whenViewAll)
-  const { enabled: dfHideOpusMidsEnabled } = useSnapshot(settings.filter.dfHideOpusMids)
+  /* #region from settings */
+  const {
+    watchlaterItemsOrder,
+    filter: {
+      dfHideOpusMids: { enabled: dfHideOpusMidsEnabled },
+    },
+    dynamicFeed: {
+      whenViewAll: { enableHideSomeContents },
+    },
+  } = useSettingsSnapshot()
+  /* #endregion */
+
+  const watchlaterNewestItemPos = watchlaterItemsOrder === WatchlaterItemsOrder.AddTimeAsc ? 'last' : 'first'
+  const watchlaterNewestItemPosText = watchlaterItemsOrder === WatchlaterItemsOrder.AddTimeAsc ? '移到最后' : '移到最前'
+
   const { recSharedEmitter } = useRecSelfContext()
 
   const onCopyLink = useMemoizedFn(() => {
@@ -433,14 +442,14 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
       {
         test: hasWatchlaterEntry && watchlaterAdded,
         key: 'watchlater-readd',
-        label: `重新添加稍候再看${tab === ETab.Watchlater ? ' (移到最前)' : ''}`,
+        label: `重新添加稍候再看${tab === ETab.Watchlater ? ` (${watchlaterNewestItemPosText})` : ''}`,
         icon: <IconParkOutlineAddTwo className={clsContextMenuIcon} />,
         async onClick() {
           const { success } = await onToggleWatchlater(undefined, watchlaterAdd)
           if (!success) return
           antMessage.success('已重新添加')
           if (tab === ETab.Watchlater) {
-            onMoveToFirst?.(item, cardData)
+            recSharedEmitter.emit('move-card-to', [item.uniqId, watchlaterNewestItemPos])
           }
         },
       },
@@ -550,7 +559,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
     viewingSomeGroup,
     viewingGroupName,
     viewingGroupCount,
-    onMoveToFirst,
+    recSharedEmitter,
     onRemoveCurrent,
   ])
 }

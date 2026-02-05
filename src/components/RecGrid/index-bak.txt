@@ -95,7 +95,6 @@ if (ENABLE_VIRTUAL_GRID) {
               item={item}
               active={active}
               onRemoveCurrent={handleRemoveCard}
-              onMoveToFirst={handleMoveCardToFirst}
               refresh={refresh}
               emitter={videoCardEmitters[index]}
             />

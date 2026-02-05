@@ -115,7 +115,6 @@ export function useCardBorderCss(): CssProp {
             ${useDelayForHover && Styles.coverZoomEffect}
           }
         `,
-
         // show border not:hover
         (multiSelecting || !useBorderOnlyOnHover) && Styles.normalBorder,
       ],

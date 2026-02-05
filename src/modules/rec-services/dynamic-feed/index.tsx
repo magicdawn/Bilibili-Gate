@@ -31,7 +31,6 @@ import {
 import { DynamicFeedSidebarView, DynamicFeedTabbarView } from './views'
 import type { ReactNode } from 'react'
 import type { DynamicFeedItem, DynamicFeedItemExtend, ItemsSeparator, LiveItemExtend } from '$define'
-import type { Nullable } from '$utility/type'
 
 export type DynamicFeedServiceConfig = ReturnType<typeof getDynamicFeedServiceConfig>
 
@@ -91,7 +90,7 @@ export function getDynamicFeedServiceConfig(usingDfStore: DynamicFeedStore = dfS
   }
 }
 
-function isValidNumber(str: Nullable<string>) {
+function isValidNumber(str: string | undefined | null) {
   return !!str && /^\d+$/.test(str)
 }
 

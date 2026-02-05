@@ -16,7 +16,7 @@ export function getFollowedStatus(recommendReason?: string): boolean {
   return !!recommendReason && ['已关注', '新关注'].includes(recommendReason)
 }
 
-// 推荐 / 热门
+// 广义上的 "推荐"
 // 会使用 blacklistMids / filter.byAuthor / filter.byTitle 过滤
 export function isApiRecLike(api: EApiType) {
   return [
