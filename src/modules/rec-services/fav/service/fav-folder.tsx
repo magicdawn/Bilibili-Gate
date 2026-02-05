@@ -25,8 +25,9 @@ export function FavFolderSeparator({ service }: { service: FavFolderBasicService
     <>
       <CustomTargetLink href={formatFavFolderUrl(service.entry.id, service.entry.attr)} className={clsFavSeparator}>
         <IconForOpenExternalLink className='size-16px' />
-        {service.entry.title}
+        去个人空间查看收藏夹: {service.entry.title}
       </CustomTargetLink>
+
       <CustomTargetLink href={formatFavPlaylistUrl(service.entry.id)} className={clsFavSeparator}>
         <IconForPlayer className='size-16px' />
         播放全部

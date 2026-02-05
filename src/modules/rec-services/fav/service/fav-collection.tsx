@@ -150,15 +150,16 @@ export function FavCollectionSeparator({ service }: { service: FavCollectionServ
         title={
           <>
             UP: {info?.upper.name} <br />
-            {info?.intro || '简介: N/A'}
+            简介: {info?.intro || '无'}
           </>
         }
       >
         <CustomTargetLink href={formatFavCollectionUrl(service.collectionId)} className={clsFavSeparator}>
           <IconForOpenExternalLink className='size-16px' />
-          {info?.title}
+          去个人空间查看合集: {info?.title}
         </CustomTargetLink>
       </AntdTooltip>
+
       {firstBvid && (
         <CustomTargetLink href={formatBvidUrl(firstBvid)} className={clsFavSeparator}>
           <IconForPlayer className='size-16px' />
