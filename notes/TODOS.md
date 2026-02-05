@@ -6,7 +6,6 @@
 - [ ] space-upload / dynamic-feed: quick search following up
 - [ ] 稍后再看, 可以批量收藏, 方便整理之前想收藏, 但只能加入稍后再看的项.
 - [ ] ModalFavManager: 显示拼音首字母. 可能引入的库比较大...
-- [ ] 收藏夹 separator: 第一个链接不够明显, 文本改为去个人空间管理; 增加改名功能(可能只在浏览单个文件夹时)
 
 # Completed
 
