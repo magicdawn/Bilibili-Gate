@@ -2,6 +2,7 @@ import { Segmented } from 'antd'
 import { fastSortWithRules, type FastSortRule } from 'fast-sort-lens'
 import { isFavFolderDefault } from '$modules/rec-services/fav/fav-util'
 import { mapNameForSort, zhLocaleComparer } from '$utility/sort'
+import { assertNever } from '$utility/type'
 import type { ComponentProps } from 'react'
 import type { FavFolder } from '$modules/rec-services/fav/types/folders/list-all-folders'
 
@@ -14,8 +15,6 @@ function mapFavFolderTitleForSort(title: string) {
 }
 
 export function sortFavFolders(originalFolders: FavFolder[], order: FavFolderOrder) {
-  if (order === 'default') return originalFolders
-
   const ruleDefaultFirst: FastSortRule<FavFolder> = { prop: (f) => (isFavFolderDefault(f.attr) ? 1 : 0), order: 'desc' }
   const ruleByNameAsc: FastSortRule<FavFolder> = {
     prop: (f) => mapFavFolderTitleForSort(f.title),
@@ -23,10 +22,11 @@ export function sortFavFolders(originalFolders: FavFolder[], order: FavFolderOrd
   }
   const ruleByCountDesc: FastSortRule<FavFolder> = { prop: 'media_count', order: 'desc' }
 
+  if (order === 'default') return originalFolders
   if (order === 'name') return fastSortWithRules(originalFolders, [ruleDefaultFirst, ruleByNameAsc])
   if (order === 'count') return fastSortWithRules(originalFolders, [ruleDefaultFirst, ruleByCountDesc, ruleByNameAsc])
 
-  return originalFolders
+  assertNever(order)
 }
 
 export function FavFolderOrderSwitcher(props: Omit<ComponentProps<typeof Segmented<FavFolderOrder>>, 'options'>) {
