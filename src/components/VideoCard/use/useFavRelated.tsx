@@ -82,9 +82,9 @@ export function getQuickFavMenus(ctx: FavContext, item: RecItemType, avid: strin
     {
       // 浏览收藏夹
       test: enableDetailMenu,
-      key: 'quick-fav:faved:browse-fav-folder',
+      key: 'quick-fav:faved:browse-fav-folder-in-self-space',
       icon: <IconForOpenExternalLink className={clsContextMenuIcon} />,
-      label: '去个人空间查看收藏',
+      label: '去个人空间查看收藏夹',
       onClick() {
         folderUrls.forEach((u) => {
           window.open(u, getLinkTarget())
@@ -194,15 +194,22 @@ export function getFavTabMenus({
 
     return defineAntMenus([
       {
-        key: 'open-fav-folder',
-        label: '浏览收藏夹',
+        key: 'fav:browse-fav-folder-in-self-space',
+        label: '去个人空间查看收藏夹',
         icon: <IconForOpenExternalLink className={clsContextMenuIcon} />,
         onClick() {
           const { id } = item.folder
-          const url =
-            tab !== ETab.Fav || (favStore.selectedKey === 'all' && favStore.usingShuffle)
-              ? `/?${FavQueryKey.FolderIdFull}=${id}`
-              : formatFavFolderUrl(id)
+          const url = formatFavFolderUrl(id)
+          window.open(url, getLinkTarget())
+        },
+      },
+      {
+        key: 'fav:view-fav-in-new-window',
+        label: '在新窗口中查看收藏夹',
+        icon: <IconForOpenExternalLink className={clsContextMenuIcon} />,
+        onClick() {
+          const { id } = item.folder
+          const url = `/?${FavQueryKey.FolderIdFull}=${id}`
           window.open(url, getLinkTarget())
         },
       },
