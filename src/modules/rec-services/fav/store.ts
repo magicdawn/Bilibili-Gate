@@ -50,8 +50,6 @@ export const QUERY_FAV_FOLDER_ID = parseId(
 export const SHOW_FAV_TAB_ONLY =
   IN_BILIBILI_HOMEPAGE && (typeof QUERY_FAV_FOLDER_ID === 'number' || typeof QUERY_FAV_COLLECTION_ID === 'number')
 
-type FavFolderOrder = 'default' | 'name'
-
 export const favStore = proxy({
   folders: [] as FavFolder[],
   foldersUpdateAt: 0,
@@ -112,6 +110,15 @@ export const favStore = proxy({
   get usingShuffle() {
     const curret = getSavedOrder(this.selectedKey, this.savedOrderMap)
     return curret === FavItemsOrder.Shuffle
+  },
+  get viewingAll() {
+    return this.selectedKey === 'all'
+  },
+  get viewingSomeFolder() {
+    return typeof this.selectedFavFolderId === 'number'
+  },
+  get viewingSomeCollection() {
+    return typeof this.selectedFavCollectionId === 'number'
   },
 })
 

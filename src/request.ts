@@ -27,7 +27,15 @@ request.interceptors.request.use(async function (config) {
  * - message = OK, 稍后再看
  */
 export function isWebApiSuccess(json: any) {
-  return json?.code === 0 && (json?.message === '0' || json?.message === 'success' || json?.message === 'OK')
+  return json?.code === 0 && ['0', 'success', 'ok'].includes(json?.message?.toLowerCase())
+}
+
+export class WebApiError extends Error {
+  constructor(public json: any) {
+    const msg = 'WebApiError: ' + json.message
+    super(msg)
+    this.name = 'WebApiError'
+  }
 }
 
 // 可以跨域

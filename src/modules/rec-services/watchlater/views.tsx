@@ -11,7 +11,8 @@ import toast from '$utility/toast'
 import { usePopupContainer } from '../_base'
 import { CopyBvidButtonsTabbarView } from '../_shared/copy-bvid-buttons'
 import { GenericOrderSwitcher } from '../_shared/generic-order-switcher'
-import { removeMultiSelectedWatchlaterItems, type WatchlaterRecService } from '.'
+import { removeMultiSelectedWatchlaterItems, type WatchlaterRecService } from './index'
+import { recentGateDescription } from './shared'
 import { watchlaterStore } from './store'
 import { WatchlaterItemsOrder } from './watchlater-enum'
 import type { ComponentRef, ReactNode } from 'react'
@@ -101,14 +102,14 @@ const WatchlaterItemsOrderConfig: Record<
   [WatchlaterItemsOrder.Shuffle]: {
     icon: <IconForShuffle />,
     label: '随机顺序',
-    helpInfo: '不包括近期添加的稍后再看, 近期: 最近48小时内',
+    helpInfo: `随机但不包括近期添加的稍后再看, 近期指: ${recentGateDescription}`,
   },
 }
 
 const list = Object.values(WatchlaterItemsOrder)
 
 const extraHelpInfo = (
-  <div className='grid grid-cols-[repeat(2,max-content)] gap-x-1 gap-y-0 line-height-tight'>
+  <div className='grid grid-cols-[repeat(2,max-content)] gap-x-1 gap-y-0 line-height-normal'>
     {list.map((x) => {
       const { icon, label, helpInfo } = WatchlaterItemsOrderConfig[x]
       return (

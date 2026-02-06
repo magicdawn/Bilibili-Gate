@@ -18,6 +18,9 @@ export function getFavServiceConfig() {
   const snap = snapshot(favStore)
   return {
     selectedKey: snap.selectedKey,
+    viewingAll: snap.viewingAll,
+    viewingSomeFolder: snap.viewingSomeFolder,
+    viewingSomeCollection: snap.viewingSomeCollection,
     itemsOrder: getSavedOrder(snap.selectedKey, snap.savedOrderMap as Map<string, FavItemsOrder>),
 
     selectedFavFolderId: snap.selectedFavFolderId,
@@ -27,23 +30,6 @@ export function getFavServiceConfig() {
     addSeparator: settings.fav.addSeparator,
     excludedFolderIds: settings.fav.excludedFolderIds,
   }
-}
-
-type FavServiceConfigExtra = ReturnType<typeof getFavServiceConfigExtra>
-function getFavServiceConfigExtra(config: FavServiceConfig) {
-  const ret = {
-    ...config,
-    get viewingAll() {
-      return config.selectedKey === 'all'
-    },
-    get viewingSomeFolder() {
-      return typeof config.selectedFavFolderId === 'number'
-    },
-    get viewingSomeCollection() {
-      return typeof config.selectedFavCollectionId === 'number'
-    },
-  }
-  return ret
 }
 
 export interface IFavInnerService {
@@ -56,12 +42,9 @@ export interface IFavInnerService {
 export class FavRecService extends BaseTabService<FavItemExtend | ItemsSeparator> {
   static PAGE_SIZE = FAV_PAGE_SIZE
 
-  config: FavServiceConfigExtra
   innerService: IFavInnerService
-  constructor(config: FavServiceConfig) {
+  constructor(public config: FavServiceConfig) {
     super(FavRecService.PAGE_SIZE)
-    this.config = getFavServiceConfigExtra(config)
-
     const { viewingAll, viewingSomeFolder, viewingSomeCollection } = this.config
     if (viewingAll) {
       this.innerService = new FavAllService(

@@ -1,18 +1,23 @@
+import { useMemoizedFn, useRequest } from 'ahooks'
+import { Button, Input, Popover } from 'antd'
+import clsx from 'clsx'
 import { assert, shuffle } from 'es-toolkit'
 import ms from 'ms'
-import { snapshot } from 'valtio'
+import { useState } from 'react'
+import { snapshot, useSnapshot } from 'valtio'
 import { REQUEST_FAIL_MSG } from '$common'
 import { CustomTargetLink } from '$components/VideoCard/use/useOpenRelated'
 import { EApiType } from '$define/index.shared'
-import { IconForOpenExternalLink, IconForPlayer } from '$modules/icon'
+import { IconForEdit, IconForOpenExternalLink, IconForPlayer } from '$modules/icon'
 import { isWebApiSuccess, request } from '$request'
 import { getIdbCache, wrapWithIdbCache } from '$utility/idb'
 import toast from '$utility/toast'
+import { editFavFolder } from '../api'
 import { FavItemsOrder, handleItemsOrder } from '../fav-enum'
 import { formatFavFolderUrl, formatFavPlaylistUrl } from '../fav-url'
 import { favStore, updateFavFolderMediaCount, updateFavList } from '../store'
 import { FavItemsOrderSwitcher } from '../views/fav-items-order'
-import { clsFavSeparator, FAV_PAGE_SIZE } from './_base'
+import { clsFavSeparatorItem, FAV_PAGE_SIZE } from './_base'
 import type { SetNonNullable } from 'type-fest'
 import type { ItemsSeparator } from '$define'
 import type { IFavInnerService } from '../index'
@@ -20,18 +25,96 @@ import type { FavItemExtend } from '../types'
 import type { FavFolder } from '../types/folders/list-all-folders'
 import type { FavFolderDetailInfo, ResourceListJSON } from '../types/folders/list-folder-items'
 
+export function FavFolderRenamePopover({
+  folderId,
+  currentFolderTitle,
+  onClosePopover,
+}: {
+  folderId: number
+  currentFolderTitle: string
+  onClosePopover: () => void
+}) {
+  const $req = useRequest((newTitle: string) => editFavFolder(folderId, newTitle), { manual: true })
+
+  const [folderTitle, setFolderTitle] = useState<string>(currentFolderTitle)
+  const handleSubmit = useMemoizedFn(async () => {
+    const newTitle = folderTitle.trim()
+    if (!newTitle) return toast('收藏夹名称不能为空!')
+    if (newTitle === currentFolderTitle) return toast('无变更!')
+
+    const success = await $req.runAsync(newTitle)
+    if (!success) return
+
+    onClosePopover()
+    // refresh UI state
+    const folder = favStore.folders.find((f) => f.id === folderId)
+    if (folder) folder.title = folderTitle
+  })
+
+  return (
+    <div className='flex flex-col gap-y-2'>
+      <div>重命名收藏夹</div>
+      <Input
+        placeholder='收藏夹名称'
+        value={folderTitle}
+        onChange={(e) => setFolderTitle(e.target.value)}
+        onPressEnter={handleSubmit}
+      />
+      <div className='flex justify-end gap-x-2'>
+        <Button onClick={onClosePopover}>取消</Button>
+        <Button
+          type='primary'
+          loading={$req.loading}
+          onClick={handleSubmit}
+          disabled={!folderTitle || folderTitle === currentFolderTitle}
+        >
+          确定
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 export function FavFolderSeparator({ service }: { service: FavFolderBasicService }) {
+  const [renamePopoverOpen, setRenamePopoverOpen] = useState(false)
+  const { viewingSomeFolder } = useSnapshot(favStore)
+
+  const { id: folderId, attr: folderAttr, title: folderTitleFromService } = service.entry
+  const folderTitle = useSnapshot(favStore.folders).find((f) => f.id === folderId)?.title ?? folderTitleFromService
+
+  const clsIcon = 'size-16px'
+
   return (
     <>
-      <CustomTargetLink href={formatFavFolderUrl(service.entry.id, service.entry.attr)} className={clsFavSeparator}>
-        <IconForOpenExternalLink className='size-16px' />
-        去个人空间查看收藏夹: {service.entry.title}
+      <CustomTargetLink href={formatFavFolderUrl(folderId, folderAttr)} className={clsFavSeparatorItem}>
+        <IconForOpenExternalLink className={clsIcon} />
+        去个人空间查看收藏夹: {folderTitle}
       </CustomTargetLink>
 
-      <CustomTargetLink href={formatFavPlaylistUrl(service.entry.id)} className={clsFavSeparator}>
-        <IconForPlayer className='size-16px' />
+      <CustomTargetLink href={formatFavPlaylistUrl(folderId)} className={clsFavSeparatorItem}>
+        <IconForPlayer className={clsIcon} />
         播放全部
       </CustomTargetLink>
+
+      {viewingSomeFolder && (
+        <Popover
+          open={renamePopoverOpen}
+          onOpenChange={setRenamePopoverOpen}
+          trigger='click'
+          content={
+            <FavFolderRenamePopover
+              folderId={folderId}
+              currentFolderTitle={folderTitle}
+              onClosePopover={() => setRenamePopoverOpen(false)}
+            />
+          }
+        >
+          <Button className={clsx(clsFavSeparatorItem, 'gap-x-1 px-0 text-15px!')} type='link'>
+            <IconForEdit className={clsIcon} />
+            重命名
+          </Button>
+        </Popover>
+      )}
     </>
   )
 }

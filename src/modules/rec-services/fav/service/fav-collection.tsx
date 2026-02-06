@@ -10,7 +10,7 @@ import { FavItemsOrder, handleItemsOrder } from '../fav-enum'
 import { formatBvidUrl, formatFavCollectionUrl } from '../fav-url'
 import { favStore } from '../store'
 import { FavItemsOrderSwitcher } from '../views/fav-items-order'
-import { clsFavSeparator, FAV_PAGE_SIZE } from './_base'
+import { clsFavSeparatorItem, FAV_PAGE_SIZE } from './_base'
 import type { ItemsSeparator } from '$define'
 import type { IFavInnerService } from '../index'
 import type { FavItemExtend } from '../types'
@@ -154,14 +154,14 @@ export function FavCollectionSeparator({ service }: { service: FavCollectionServ
           </>
         }
       >
-        <CustomTargetLink href={formatFavCollectionUrl(service.collectionId)} className={clsFavSeparator}>
+        <CustomTargetLink href={formatFavCollectionUrl(service.collectionId)} className={clsFavSeparatorItem}>
           <IconForOpenExternalLink className='size-16px' />
           去个人空间查看合集: {info?.title}
         </CustomTargetLink>
       </AntdTooltip>
 
       {firstBvid && (
-        <CustomTargetLink href={formatBvidUrl(firstBvid)} className={clsFavSeparator}>
+        <CustomTargetLink href={formatBvidUrl(firstBvid)} className={clsFavSeparatorItem}>
           <IconForPlayer className='size-16px' />
           播放全部
         </CustomTargetLink>

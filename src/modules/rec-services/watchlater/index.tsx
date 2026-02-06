@@ -1,4 +1,3 @@
-import dayjs from 'dayjs'
 import { assert, orderBy, shuffle } from 'es-toolkit'
 import pRetry from 'p-retry'
 import { proxy, useSnapshot } from 'valtio'
@@ -12,6 +11,7 @@ import { whenIdle } from '$utility/dom'
 import toast from '$utility/toast'
 import { BaseTabService, type IService } from '../_base'
 import { batchRemoveWatchlater, fetchWatchlaterItems } from './api'
+import { earlierSeparator, getRecentGate, recentSeparator } from './shared'
 import { WatchlaterTabbarView } from './views'
 import { WatchlaterItemsOrder } from './watchlater-enum'
 import type { RecSharedEmitter } from '$components/Recommends/rec.shared'
@@ -134,20 +134,6 @@ function extendItem(item: WatchlaterItem): WatchlaterItemExtend {
     api: EApiType.Watchlater,
     uniqId: `${EApiType.Watchlater}:${item.bvid}`,
   }
-}
-
-// recent + earlier
-const getRecentGate = () => dayjs().subtract(2, 'days').unix()
-
-const recentSeparator: ItemsSeparator = {
-  api: EApiType.Separator as const,
-  uniqId: `${EApiType.Watchlater}:separator:recent`,
-  content: '近期',
-}
-const earlierSeparator: ItemsSeparator = {
-  api: EApiType.Separator as const,
-  uniqId: `${EApiType.Watchlater}:separator:earlier`,
-  content: '更早',
 }
 
 function showApiRequestError(err: string) {

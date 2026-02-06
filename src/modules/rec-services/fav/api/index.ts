@@ -7,12 +7,13 @@
 
 import { difference } from 'es-toolkit'
 import { OPERATION_FAIL_MSG } from '$common'
-import { isWebApiSuccess, request } from '$request'
+import { isWebApiSuccess, request, WebApiError } from '$request'
 import { getCsrfToken, getHasLogined, getUid } from '$utility/cookie'
 import toast from '$utility/toast'
 import { formatFavFolderUrl } from '../fav-url'
-import { isFavFolderDefault } from '../fav-util'
+import { isFavFolderDefault, isFavFolderPrivate } from '../fav-util'
 import { favStore, updateFavFolderList } from '../store'
+import type { FavFolderInfoJson } from '../types/folders/get-folder-info.api'
 import type { FavFolderListAllJson } from '../types/folders/list-all-folders'
 
 /* #region base */
@@ -161,5 +162,37 @@ async function modifyFav(
     del_media_ids: delArr.length ? delArr.join(',') : undefined,
     add_media_ids: addArr.length ? addArr.join(',') : undefined,
   })
+  return success
+}
+
+export async function getFavFolderInfo(folderId: number) {
+  const res = await request.get('/x/v3/fav/folder/info', {
+    params: { media_id: folderId, web_location: '0.0' },
+  })
+  const json = res.data as FavFolderInfoJson
+  if (!isWebApiSuccess(json)) throw new WebApiError(json)
+  return json.data
+}
+
+export async function editFavFolder(folderId: number, newTitle: string) {
+  const info = await getFavFolderInfo(folderId)
+  if (!info) return
+  const form = new URLSearchParams({
+    media_id: folderId.toString(),
+    title: newTitle,
+    intro: info.intro,
+    cover: info.cover,
+    privacy: isFavFolderPrivate(info.attr) ? '1' : '0', // 0：公开  1：私有
+    csrf: getCsrfToken(),
+  })
+  const res = await request.post('/x/v3/fav/folder/edit', form)
+  const json = res.data
+  const success = isWebApiSuccess(json)
+
+  if (!success) {
+    const msg = json.message || '编辑收藏夹失败'
+    toast(msg)
+  }
+
   return success
 }
