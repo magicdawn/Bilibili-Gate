@@ -1,6 +1,6 @@
 /* eslint-disable require-await */
 import { useKeyPress, useMemoizedFn, useRequest, useUpdateEffect } from 'ahooks'
-import { Button, Empty, Input, Popover, Radio, Slider, Spin } from 'antd'
+import { Button, Empty, Input, Popover, Slider, Spin } from 'antd'
 import clsx from 'clsx'
 import { assert, isEqual, uniqBy } from 'es-toolkit'
 import PinyinMatch from 'pinyin-match'
@@ -25,7 +25,7 @@ import { useSettingsSnapshot } from '$modules/settings'
 import { getUid } from '$utility/cookie'
 import { shouldDisableShortcut } from '$utility/dom'
 import { proxyWithLocalStorage } from '$utility/valtio'
-import { sortFavFoldersByName, type FavFolderOrder } from './fav-folder-order'
+import { FavFolderOrderSwitcher, sortFavFolders, type FavFolderOrder } from './fav-folder-order'
 import type { Promisable } from 'type-fest'
 import type { FavFolder } from '$modules/rec-services/fav/types/folders/list-all-folders'
 
@@ -69,15 +69,7 @@ function ConfigPopoverContent() {
 
       <div>
         <div className={clsSubTitle}>收藏夹排序</div>
-        <Radio.Group
-          value={favFolderOrder}
-          onChange={(e) => {
-            localStore.favFolderOrder = e.target.value
-          }}
-        >
-          <Radio value='default'>默认顺序</Radio>
-          <Radio value='name'>按名称</Radio>
-        </Radio.Group>
+        <FavFolderOrderSwitcher value={favFolderOrder} onChange={(v) => (localStore.favFolderOrder = v)} />
       </div>
     </div>
   )
@@ -136,10 +128,10 @@ export function ModalFavManager({
     return uniqBy([...included, ...includedIgnoreCase, ...pinyinMatched], (x) => x.id)
   }, [folders, filterText])
   // order
-  const foldersAfterSort = useMemo(() => {
-    if (favFolderOrder === 'name') return sortFavFoldersByName(foldersAfterFilter)
-    return foldersAfterFilter
-  }, [foldersAfterFilter, favFolderOrder])
+  const foldersAfterSort = useMemo(
+    () => sortFavFolders(foldersAfterFilter, favFolderOrder),
+    [foldersAfterFilter, favFolderOrder],
+  )
   const foldersForRender = foldersAfterSort
 
   const modifyInitialSelectedIdsSet = useMemo(

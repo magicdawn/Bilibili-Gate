@@ -1,4 +1,4 @@
-import { fastSortWithOrders } from 'fast-sort-lens'
+import { fastSortWithRules } from 'fast-sort-lens'
 import type { ConditionalKeys } from 'type-fest'
 
 export function mapNameForSort(name: string) {
@@ -18,7 +18,7 @@ export function sortListByName<T extends object>(
   entries: T[],
   prop: ConditionalKeys<T, string> | ((item: T) => string),
 ) {
-  return fastSortWithOrders(entries, [
+  return fastSortWithRules(entries, [
     {
       prop: (item) => {
         const val = typeof prop === 'function' ? prop(item) : (item[prop] as string)

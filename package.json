@@ -42,7 +42,7 @@
     "dayjs": "^1.11.19",
     "emittery": "^1.2.0",
     "es-toolkit": "^1.44.0",
-    "fast-sort-lens": "^0.0.4",
+    "fast-sort-lens": "^1.0.2",
     "framer-motion": "^12.29.2",
     "localforage": "^1.10.0",
     "ms": "^2.1.3",

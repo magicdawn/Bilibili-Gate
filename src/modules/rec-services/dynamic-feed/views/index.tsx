@@ -1,7 +1,7 @@
 import { useMemoizedFn, useMount } from 'ahooks'
 import { Avatar, Badge, Button, Dropdown, Menu } from 'antd'
 import { delay } from 'es-toolkit'
-import { fastSortWithOrders } from 'fast-sort-lens'
+import { fastSortWithRules } from 'fast-sort-lens'
 import { useMemo, useState, type ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
@@ -92,7 +92,7 @@ function useScopeMenus(form: 'dropdown' | 'sidebar') {
 
     let usingUpList = upList
     if (form === 'dropdown') {
-      usingUpList = fastSortWithOrders(upList, [
+      usingUpList = fastSortWithRules(upList, [
         { prop: (item) => (item.has_update ? 1 : 0), order: 'desc' },
         { prop: (item) => mapNameForSort(item.uname), order: zhLocaleComparer },
       ])

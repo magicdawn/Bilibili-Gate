@@ -1,9 +1,11 @@
-import { fastOrderBy } from 'fast-sort-lens'
+import { Segmented } from 'antd'
+import { fastSortWithRules, type FastSortRule } from 'fast-sort-lens'
 import { isFavFolderDefault } from '$modules/rec-services/fav/fav-util'
 import { mapNameForSort, zhLocaleComparer } from '$utility/sort'
+import type { ComponentProps } from 'react'
 import type { FavFolder } from '$modules/rec-services/fav/types/folders/list-all-folders'
 
-export type FavFolderOrder = 'default' | 'name'
+export type FavFolderOrder = 'default' | 'name' | 'count'
 
 function mapFavFolderTitleForSort(title: string) {
   title = title.replace(/^[\s\p{RGI_Emoji}]+/v, '') // rm leading space & emoji
@@ -11,10 +13,32 @@ function mapFavFolderTitleForSort(title: string) {
   return title
 }
 
-export function sortFavFoldersByName(folders: FavFolder[]) {
-  return fastOrderBy(
-    folders,
-    [(f) => (isFavFolderDefault(f.attr) ? 1 : 0), (f) => mapFavFolderTitleForSort(f.title)],
-    ['desc', zhLocaleComparer],
+export function sortFavFolders(originalFolders: FavFolder[], order: FavFolderOrder) {
+  if (order === 'default') return originalFolders
+
+  const ruleDefaultFirst: FastSortRule<FavFolder> = { prop: (f) => (isFavFolderDefault(f.attr) ? 1 : 0), order: 'desc' }
+  const ruleByNameAsc: FastSortRule<FavFolder> = {
+    prop: (f) => mapFavFolderTitleForSort(f.title),
+    order: zhLocaleComparer,
+  }
+  const ruleByCountDesc: FastSortRule<FavFolder> = { prop: 'media_count', order: 'desc' }
+
+  if (order === 'name') return fastSortWithRules(originalFolders, [ruleDefaultFirst, ruleByNameAsc])
+  if (order === 'count') return fastSortWithRules(originalFolders, [ruleDefaultFirst, ruleByCountDesc, ruleByNameAsc])
+
+  return originalFolders
+}
+
+export function FavFolderOrderSwitcher(props: Omit<ComponentProps<typeof Segmented<FavFolderOrder>>, 'options'>) {
+  return (
+    <Segmented<FavFolderOrder>
+      size='middle'
+      options={[
+        { label: '默认', value: 'default' },
+        { label: '名称', value: 'name' },
+        { label: '数量', value: 'count' },
+      ]}
+      {...props}
+    />
   )
 }

@@ -44,9 +44,9 @@ function SetupInner() {
 
 export type AntMenuItem = NonNullable<NonNullable<MenuProps['items']>[number]>
 
-type ItemInput = (AntMenuItem & { test?: boolean | (() => boolean) }) | false | undefined | null
+export type PossibleAntMenuItem = (AntMenuItem & { test?: boolean | (() => boolean) }) | false | undefined | null
 
-export function defineAntMenus(arr: ItemInput[]): AntMenuItem[] {
+export function defineAntMenus(arr: PossibleAntMenuItem[]): AntMenuItem[] {
   return arr
     .filter(Boolean)
     .filter((x) => {

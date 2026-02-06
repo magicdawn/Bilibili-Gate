@@ -1,13 +1,17 @@
 import { useMemoizedFn, useMount, useUpdateEffect } from 'ahooks'
-import { Button, Dropdown, Menu, Popover, Segmented, Tag, Transfer } from 'antd'
+import { Button, Dropdown, Menu, Popover, Tag, Transfer } from 'antd'
 import { delay, groupBy } from 'es-toolkit'
 import { useMemo, useState, type Key, type ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
-import { sortFavFoldersByName, type FavFolderOrder } from '$components/ModalFavManager/fav-folder-order'
+import {
+  FavFolderOrderSwitcher,
+  sortFavFolders,
+  type FavFolderOrder,
+} from '$components/ModalFavManager/fav-folder-order'
 import { useOnRefresh } from '$components/Recommends/rec.shared'
 import { sidebarBottomLine, useRevealMenuSelectedKey } from '$components/RecSidebar/sidebar-shared'
-import { defineAntMenus, type AntMenuItem } from '$modules/antd'
+import { defineAntMenus, type AntMenuItem, type PossibleAntMenuItem } from '$modules/antd'
 import { IconForOpenExternalLink } from '$modules/icon'
 import { CopyBvidButtonsTabbarView } from '$modules/rec-services/_shared/copy-bvid-buttons'
 import { formatSpaceUrl } from '$modules/rec-services/dynamic-feed/shared'
@@ -38,94 +42,103 @@ function useScopeMenus(parentView: 'sidebarView' | 'tabbarView', extraOnMenuItem
   const onRefresh = useOnRefresh()
 
   const menuItems: AntMenuItem[] = useMemo(() => {
-    /* #region folders */
-    let usingFolders = folders
-    let favFolderLabelAddon: ReactNode
-    if (parentView === 'sidebarView') {
-      favFolderLabelAddon = (
-        <Segmented<FavFolderOrder>
-          className='ml-4'
-          size='small'
-          value={sidebarFavFolderOrder}
-          onChange={(v) => (viewLocalStore.sidebarFavFolderOrder = v)}
-          options={[
-            { label: '默认', value: 'default' },
-            { label: '名称', value: 'name' },
-          ]}
-        />
-      )
-      if (sidebarFavFolderOrder === 'name') {
-        usingFolders = sortFavFoldersByName(folders)
+    /* #region fav-folder */
+    let menuItemFavFolders: PossibleAntMenuItem
+    {
+      let _folders = folders
+      let labelAddon: ReactNode
+      if (parentView === 'sidebarView') {
+        labelAddon = (
+          <FavFolderOrderSwitcher
+            value={sidebarFavFolderOrder}
+            onChange={(v) => (viewLocalStore.sidebarFavFolderOrder = v)}
+            className='ml-4'
+          />
+        )
+        _folders = sortFavFolders(folders, sidebarFavFolderOrder)
+      }
+      const subMenus: AntMenuItem[] = _folders.map((f) => {
+        const isDefault = isFavFolderDefault(f.attr)
+        const isPrivate = isFavFolderPrivate(f.attr)
+        const key: FavStore['selectedKey'] = `fav-folder:${f.id}`
+        const icon = isPrivate ? <IconForPrivateFolder /> : <IconForPublicFolder />
+        const label = `${f.title} (${f.media_count})`
+        return {
+          key,
+          icon,
+          label,
+          async onClick() {
+            favStore.selectedFavFolderId = f.id
+            favStore.selectedFavCollectionId = undefined
+            extraOnMenuItemClick?.()
+            await delay(100)
+            onRefresh()
+          },
+        }
+      })
+      menuItemFavFolders = !!_folders.length && {
+        type: 'group',
+        label: <div className='flex items-center justify-between line-height-snug'>收藏夹{labelAddon}</div>,
+        children: subMenus,
       }
     }
-    const folderSubMenus: AntMenuItem[] = usingFolders.map((f) => {
-      const isDefault = isFavFolderDefault(f.attr)
-      const isPrivate = isFavFolderPrivate(f.attr)
-      const key: FavStore['selectedKey'] = `fav-folder:${f.id}`
-      const icon = isPrivate ? <IconForPrivateFolder /> : <IconForPublicFolder />
-      const label = `${f.title} (${f.media_count})`
-      return {
-        key,
-        icon,
-        label,
-        async onClick() {
-          favStore.selectedFavFolderId = f.id
-          favStore.selectedFavCollectionId = undefined
-          extraOnMenuItemClick?.()
-          await delay(100)
-          onRefresh()
-        },
-      }
-    })
     /* #endregion */
 
-    /* #region collections */
-    const collectionSubMenus: AntMenuItem[] = []
-    const collectionGrouped = groupBy(collections, (x) => x.upper.name)
-    let entries = Object.entries(collectionGrouped).map(([upName, collections]) => ({
-      upName,
-      collections: sortListByName(collections, 'title'),
-    }))
-    entries = sortListByName(entries, 'upName')
-    for (const { upName, collections } of entries) {
-      const upMid = collections[0]?.upper.mid
-      const upSpaceUrl = upMid ? formatSpaceUrl(upMid) : '#'
-      collectionSubMenus.push(
-        ...defineAntMenus([
-          {
-            type: 'group',
-            label: (
-              <span className='flex items-center gap-x-2px'>
-                <IconForOpenExternalLink className='mt-2px size-15px flex-none' />
-                <a target='_blank' href={upSpaceUrl}>
-                  @{upName}
-                </a>
-              </span>
-            ),
-            children: collections.map((f) => {
-              const key: FavStore['selectedKey'] = `fav-collection:${f.id}`
-              const label = (
-                <span className='ml-8px flex items-center gap-x-2px'>
-                  <IconForCollection className='size-15px flex-none' />
-                  {f.title} ({f.media_count})
+    /* #region fav-collection */
+    let menuItemFavCollections: PossibleAntMenuItem
+    {
+      const collectionGrouped = groupBy(collections, (x) => x.upper.name)
+      let entries = Object.entries(collectionGrouped).map(([upName, collections]) => ({
+        upName,
+        collections: sortListByName(collections, 'title'),
+      }))
+      entries = sortListByName(entries, 'upName')
+      const subMenus: AntMenuItem[] = []
+      for (const { upName, collections } of entries) {
+        const upMid = collections[0]?.upper.mid
+        const upSpaceUrl = upMid ? formatSpaceUrl(upMid) : '#'
+        subMenus.push(
+          ...defineAntMenus([
+            {
+              type: 'group',
+              label: (
+                <span className='flex items-center gap-x-2px'>
+                  <IconForOpenExternalLink className='mt-2px size-15px flex-none' />
+                  <a target='_blank' href={upSpaceUrl}>
+                    @{upName}
+                  </a>
                 </span>
-              )
-              return {
-                key,
-                label,
-                title: `${f.title} (${f.media_count})`,
-                async onClick() {
-                  favStore.selectedFavFolderId = undefined
-                  favStore.selectedFavCollectionId = f.id
-                  extraOnMenuItemClick?.()
-                  await delay(100)
-                  onRefresh()
-                },
-              }
-            }),
-          },
-        ]),
-      )
+              ),
+              children: collections.map((f) => {
+                const key: FavStore['selectedKey'] = `fav-collection:${f.id}`
+                const label = (
+                  <span className='ml-8px flex items-center gap-x-2px'>
+                    <IconForCollection className='size-15px flex-none' />
+                    {f.title} ({f.media_count})
+                  </span>
+                )
+                return {
+                  key,
+                  label,
+                  title: `${f.title} (${f.media_count})`,
+                  async onClick() {
+                    favStore.selectedFavFolderId = undefined
+                    favStore.selectedFavCollectionId = f.id
+                    extraOnMenuItemClick?.()
+                    await delay(100)
+                    onRefresh()
+                  },
+                }
+              }),
+            },
+          ]),
+        )
+      }
+      menuItemFavCollections = !!collections.length && {
+        type: 'group',
+        label: '合集',
+        children: subMenus,
+      }
     }
     /* #endregion */
 
@@ -142,16 +155,8 @@ function useScopeMenus(parentView: 'sidebarView' | 'tabbarView', extraOnMenuItem
           onRefresh()
         },
       },
-      !!folders.length && {
-        type: 'group',
-        label: <div className='flex items-center'>收藏夹{favFolderLabelAddon}</div>,
-        children: folderSubMenus,
-      },
-      !!collections.length && {
-        type: 'group',
-        label: '合集',
-        children: collectionSubMenus,
-      },
+      menuItemFavFolders,
+      menuItemFavCollections,
     ])
   }, [folders, collections, parentView, sidebarFavFolderOrder, onRefresh])
 

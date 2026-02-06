@@ -9,6 +9,7 @@ minimumReleaseAgeExclude:
   - '@magicdawn/*'
   - '@mgdn/*'
   - unocss-merge
+  - fast-sort-lens
   - antd
   - react
   - react-dom
