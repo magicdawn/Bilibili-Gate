@@ -15,7 +15,9 @@ const debug = baseDebug.extend('service')
 
 export const recItemUniqer = (item: RecItemTypeOrSeparator): string => {
   if (item.api === EApiType.Separator) return item.uniqId
-  return normalizeCardData(item).bvid ?? item.uniqId
+  const { bvid } = normalizeCardData(item)
+  if (bvid) return bvid // maybe empty string: rank-pgc-season
+  return item.uniqId
 }
 
 export function concatRecItems(existing: RecItemTypeOrSeparator[], newItems: RecItemTypeOrSeparator[]) {
