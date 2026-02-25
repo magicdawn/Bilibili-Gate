@@ -14,6 +14,7 @@ const initialValue = {
   qrcodeUrl: '',
   auth_code: '',
   message: '',
+  expired: false,
 }
 const store = proxy({ ...initialValue })
 export { store as qrcodeStore }
@@ -27,7 +28,7 @@ export function showQrCodeModal(data: Partial<typeof initialValue>) {
   updateStore({ ...initialValue, ...data, show: true })
 }
 
-const emitter = new Emittery<{ hide: undefined }>()
+const emitter = new Emittery<{ hide: undefined; refresh: undefined }>()
 
 export function hideQrCodeModal() {
   updateStore({ ...initialValue })
@@ -35,6 +36,10 @@ export function hideQrCodeModal() {
 }
 export function whenQrCodeModalHide() {
   return emitter.once('hide')
+}
+
+export function whenQrCodeRefresh() {
+  return emitter.once('refresh')
 }
 
 /**
@@ -47,8 +52,11 @@ async function confirmQrCodeLoginWithCookie() {
 }
 
 export function TvQrCodeAuth() {
-  const { qrcodeUrl, show, message } = useSnapshot(store)
+  const { qrcodeUrl, show, message, expired } = useSnapshot(store)
   const onHide = hideQrCodeModal
+  const onRefresh = () => {
+    emitter.emit('refresh')
+  }
 
   return (
     <BaseModal
@@ -69,15 +77,26 @@ export function TvQrCodeAuth() {
         <div className='mb-2px min-h-25px flex-center text-size-14px'>{message || ''}</div>
 
         {qrcodeUrl && (
-          <QRCode
-            className='mx-auto mb-40px flex-shrink-0 p-8px'
-            value={qrcodeUrl}
-            size={200}
-            icon='https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/72/9c/b6/729cb6d8-75f5-0a56-0508-3a26cbba69ae/AppIcon-1x_U007emarketing-0-6-0-0-85-220-0.png/230x0w.webp'
-          />
+          <div className='relative mx-auto mb-40px flex-shrink-0'>
+            <QRCode
+              className='p-8px'
+              value={qrcodeUrl}
+              size={200}
+              icon='https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/72/9c/b6/729cb6d8-75f5-0a56-0508-3a26cbba69ae/AppIcon-1x_U007emarketing-0-6-0-0-85-220-0.png/230x0w.webp'
+            />
+            {expired && (
+              <div
+                className='absolute inset-0 flex flex-col cursor-pointer items-center justify-center bg-black/65 text-white'
+                onClick={onRefresh}
+              >
+                <div className='mb-8px text-size-14px font-600'>二维码已过期</div>
+                <div className='border border-white/40 rounded-6px px-12px py-6px text-size-13px'>点击刷新</div>
+              </div>
+            )}
+          </div>
         )}
 
-        <div className='footnote text-size-13px'>
+        <div className='footnote text-size-13px line-height-snug'>
           打开「哔哩哔哩」或「bilibili」App <br />
           扫码获取 access_key
         </div>

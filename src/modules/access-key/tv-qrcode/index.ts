@@ -6,7 +6,14 @@
 import { delay } from 'es-toolkit'
 import toast from '$utility/toast'
 import { getQrCodeInfo, poll, type PollResult } from './api'
-import { hideQrCodeModal, qrcodeStore, showQrCodeModal, updateStore, whenQrCodeModalHide } from './TvQrCodeAuth'
+import {
+  hideQrCodeModal,
+  qrcodeStore,
+  showQrCodeModal,
+  updateStore,
+  whenQrCodeModalHide,
+  whenQrCodeRefresh,
+} from './TvQrCodeAuth'
 
 async function refreshQrCode() {
   const qrinfo = await getQrCodeInfo()
@@ -21,12 +28,13 @@ async function refreshQrCode() {
 // window.getAccessKeyByQrCode = getAccessKeyByQrCode
 
 export async function getAccessKeyByQrCode() {
+  // poll state
+  let pollfor: string | undefined
+  let res: PollResult | undefined
+
   const next = await refreshQrCode()
   if (!next) return
-
-  // start poll
-  let res: PollResult | undefined
-  let pollfor = qrcodeStore.auth_code
+  pollfor = qrcodeStore.auth_code
 
   // break check
   // wrap shouldBreak before & after any long-running operation
@@ -67,11 +75,20 @@ export async function getAccessKeyByQrCode() {
 
     // refresh
     if (action === 'refresh') {
-      await delay(2000) // let user see '已过期消息'
+      updateStore({ message: '二维码已过期，请点击刷新', expired: true })
+
+      const p1 = whenQrCodeModalHide()
+      const p2 = whenQrCodeRefresh()
+      await Promise.race([p1, p2])
+      p1.off()
+      p2.off()
       if (shouldBreak()) return
-      await refreshQrCode()
+
+      const next = await refreshQrCode()
+      if (!next) return
       pollfor = qrcodeStore.auth_code
-      updateStore({ message: '已刷新二维码' })
+
+      updateStore({ message: '已刷新二维码', expired: false })
       continue
     }
 
