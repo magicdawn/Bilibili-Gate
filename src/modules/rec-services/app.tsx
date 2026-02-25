@@ -114,7 +114,7 @@ export class AppRecService extends BaseTabService<RecItemType> {
         selectedFavFolderId: undefined,
         selectedFavCollectionId: undefined,
         addSeparator: false,
-      } satisfies Partial<FavServiceConfig>)
+      } satisfies Omit<FavServiceConfig, 'excludedFolderIds'>)
       favService = new FavRecService(config)
     }
     {
