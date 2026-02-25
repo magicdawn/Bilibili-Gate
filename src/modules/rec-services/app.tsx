@@ -152,7 +152,7 @@ export class AppRecService extends BaseTabService<RecItemType> {
         .flat()
         .filter((x) => x.api !== EApiType.Separator)
       items.push(...more)
-      items = shuffle(this.qs.bufferQueue) // 我要验牌...
+      items = shuffle(items) // 我要验牌...
     }
     return items
   }
