@@ -84,7 +84,10 @@ export function TabPaneBasic() {
         <AccessKeyManage />
       </SettingsGroup>
 
-      <SettingsGroup title='开关' resetSettingPaths={['pureRecommend', 'multiSelect.showIcon']}>
+      <SettingsGroup
+        title='开关'
+        resetSettingPaths={['pureRecommend', 'multiSelect.showIcon', 'showBackForwardButtons']}
+      >
         <div className={sharedClassNames.settingsLine}>
           <CheckboxSettingItem
             configPath='pureRecommend'
