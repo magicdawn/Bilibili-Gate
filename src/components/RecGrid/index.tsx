@@ -116,7 +116,7 @@ export const RecGrid = memo(function RecGrid({
 }: RecGridProps) {
   // rec-shared
   const recSelf = useRecSelfContext()
-  const { servicesRegistry, recSharedEmitter } = recSelf
+  const { serviceRegistry, recSharedEmitter } = recSelf
   const { refreshing } = recSelf.useStore()
   // rec-grid
   const self = useCreation(() => new RecGridSelf(), [])
@@ -130,8 +130,8 @@ export const RecGrid = memo(function RecGrid({
   const updateViewFromService = useMemoizedFn(() => {
     if (unmountedRef.current) return
     recSelf.setStore({
-      tabbarView: servicesRegistry[tab]?.tabbarView,
-      sidebarView: servicesRegistry[tab]?.sidebarView,
+      tabbarView: serviceRegistry[tab]?.tabbarView,
+      sidebarView: serviceRegistry[tab]?.sidebarView,
     })
   })
   useMount(updateViewFromService)
@@ -178,7 +178,7 @@ export const RecGrid = memo(function RecGrid({
       // 场景
       // 当前 Tab: 稍后再看, 点视频进去, 在视频页移除了, 关闭视频页, 回到首页
       if (tab === ETab.Watchlater && goOutAt.current && Date.now() - goOutAt.current > ms('1h')) {
-        refresh(true)
+        refresh('reuse')
       }
     },
     { target: document },
@@ -216,7 +216,7 @@ export const RecGrid = memo(function RecGrid({
     let newHasMore = true
     let err: any
     try {
-      const service = getServiceFromRegistry(servicesRegistry, tab)
+      const service = getServiceFromRegistry(serviceRegistry, tab)
       let more = (await service.loadMore(self.abortController.signal)) || []
       more = filterRecItems(more, tab)
       newItems = concatRecItems(newItems, more)
@@ -364,10 +364,10 @@ export const RecGrid = memo(function RecGrid({
         if (title) removedTitles.push(title)
 
         if (tab === ETab.Watchlater) {
-          servicesRegistry[tab]?.decreaseTotal()
+          serviceRegistry[tab]?.decreaseTotal()
         }
         if (tab === ETab.Fav) {
-          servicesRegistry[tab]?.decreaseTotal()
+          serviceRegistry[tab]?.decreaseTotal()
         }
       }
 

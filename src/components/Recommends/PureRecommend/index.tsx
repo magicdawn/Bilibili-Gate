@@ -62,7 +62,7 @@ export function PureRecommend() {
 
   return (
     <RecSelfContext.Provider value={recSelf}>
-      <RecHeader ref={recHeaderRef} leftSlot={tabbarView} shortcutEnabled={shortcutEnabled} />
+      <RecHeader ref={recHeaderRef} tab={tab} leftSlot={tabbarView} shortcutEnabled={shortcutEnabled} />
       <div className={clsFlexContainer}>
         <RecSidebar css={sidebarCss} tab={tab} sidebarView={sidebarView} />
         <RecGrid

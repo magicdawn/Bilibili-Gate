@@ -9,18 +9,20 @@ import { useSizeExpression } from '$common/hooks/useResizeObserverExpression'
 import { useSticky } from '$common/hooks/useSticky'
 import { clsZRecHeader } from '$components/fragments'
 import { ModalSettingsHotkey } from '$components/ModalSettings'
+import { useOnRefresh, useRecSelfContext } from '$components/Recommends/rec.shared'
 import { $headerHeight, $usingEvolevdHeader } from '$header'
 import { AntdTooltip } from '$modules/antd/custom'
 import { useIsDarkMode } from '$modules/dark-mode'
 import { IconForConfig } from '$modules/icon'
 import { MultiSelectButton } from '$modules/multi-select'
+import { isRecTab } from '$modules/rec-services/service-map'
 import { useSettingsSnapshot } from '$modules/settings'
 import { isMac, isSafari } from '$ua'
 import { getElementOffset, shouldDisableShortcut } from '$utility/dom'
 import { AccessKeyManage } from '../AccessKeyManage'
 import { showModalSettings, toggleModalSettings } from './modals'
 import { RefreshButton } from './RefreshButton'
-import { useCurrentUsingTab, VideoSourceTab } from './tab'
+import { VideoSourceTab } from './tab'
 import { ETab } from './tab-enum'
 import type { CssProp } from '$utility/type'
 
@@ -31,20 +33,28 @@ export type RecHeaderRef = {
 }
 
 type RecHeaderProps = {
+  tab: ETab
   shortcutEnabled: boolean
   leftSlot?: ReactNode
   rightSlot?: ReactNode
   ref?: Ref<RecHeaderRef>
 }
 
-export function RecHeader({ leftSlot, rightSlot, shortcutEnabled, ref }: RecHeaderProps) {
+export function RecHeader({ tab, leftSlot, rightSlot, shortcutEnabled, ref }: RecHeaderProps) {
   const {
     pureRecommend,
+    showBackForwardButtons,
     multiSelect: { showIcon: multiSelectShowIcon },
     style: {
       pureRecommend: { useStickyTabbar, stickyTabbarShadow, useWhiteBackground },
     },
   } = useSettingsSnapshot()
+
+  const _isRecTab = useMemo(() => isRecTab(tab), [tab])
+  const recSelf = useRecSelfContext()
+  const { refreshing, serviceQueueStateMap } = recSelf.useStore()
+  const [canGoBack, canGoForward] = recSelf.useTabBackForwardStatus(tab)
+  const onRefresh = useOnRefresh()
 
   useKeyPress(
     ['shift.comma'],
@@ -73,7 +83,7 @@ export function RecHeader({ leftSlot, rightSlot, shortcutEnabled, ref }: RecHead
   useImperativeHandle(ref, () => ({ scrollToTop }))
 
   const headerHeight = $headerHeight.use()
-  const showAccessKeyManage = useShouldShowAccessKeyManage()
+  const showAccessKeyManage = useShouldShowAccessKeyManage(tab)
   const usingEvolevdHeader = $usingEvolevdHeader.use()
   const dark = useIsDarkMode()
   const expandToFullWidthCss = useExpandToFullWidthCss()
@@ -127,7 +137,31 @@ export function RecHeader({ leftSlot, rightSlot, shortcutEnabled, ref }: RecHead
           data-class-name='right'
           className='h-full min-w-180px flex flex-row-reverse flex-wrap items-center justify-right gap-x-8px gap-y-8px'
         >
-          <RefreshButton refreshHotkeyEnabled={shortcutEnabled} />
+          <RefreshButton tab={tab} refreshHotkeyEnabled={shortcutEnabled} />
+
+          {/* 前进4 !!! */}
+          {showBackForwardButtons && _isRecTab && (
+            <>
+              <AntdTooltip arrow={false} title='前进'>
+                <Button
+                  className='icon-only-round-button'
+                  disabled={refreshing || !canGoForward}
+                  onClick={() => onRefresh('forward')}
+                >
+                  <IconParkOutlineArrowRight />
+                </Button>
+              </AntdTooltip>
+              <AntdTooltip arrow={false} title='后退'>
+                <Button
+                  className='icon-only-round-button'
+                  disabled={refreshing || !canGoBack}
+                  onClick={() => onRefresh('back')}
+                >
+                  <IconParkOutlineArrowLeft />
+                </Button>
+              </AntdTooltip>
+            </>
+          )}
 
           <AntdTooltip title='设置' arrow={false}>
             <Button onClick={showModalSettings} className='icon-only-round-button'>
@@ -183,8 +217,7 @@ function useExpandToFullWidthCss() {
   }, [xScrolling, bodyWidth])
 }
 
-function useShouldShowAccessKeyManage() {
+function useShouldShowAccessKeyManage(tab: ETab): boolean {
   const { accessKey } = useSettingsSnapshot()
-  const tab = useCurrentUsingTab()
   return !accessKey && [ETab.AppRecommend, ETab.Liked].includes(tab)
 }

@@ -8,8 +8,9 @@ import { normalizeCardData } from '$modules/filter/normalize'
 import { settings } from '$modules/settings'
 import { AppRecService } from './app'
 import { PcRecService } from './pc'
-import { getServiceFromRegistry, REC_TABS, type FetcherOptions } from './service-map'
+import { isRecTab, type FetcherOptions } from './service-map'
 import type { RecItemTypeOrSeparator } from '$define'
+import type { DynamicFeedRecService } from './dynamic-feed'
 
 const debug = baseDebug.extend('service')
 
@@ -28,7 +29,7 @@ const willUsePcApi = (tab: ETab): tab is ETab.PcRecommend | ETab.KeepFollowOnly 
   tab === ETab.PcRecommend || tab === ETab.KeepFollowOnly
 
 async function fetchMinCount(count: number, fetcherOptions: FetcherOptions, filterMultiplier = 5) {
-  const { tab, abortSignal, servicesRegistry } = fetcherOptions
+  const { tab, service, abortSignal } = fetcherOptions
 
   let items: RecItemTypeOrSeparator[] = []
   let hasMore = true
@@ -41,8 +42,7 @@ async function fetchMinCount(count: number, fetcherOptions: FetcherOptions, filt
     // fav              收藏
     // hot              热门 (popular-general  综合热门, popular-weekly  每周必看, ranking  排行榜)
     // live             直播
-    if (!REC_TABS.includes(tab)) {
-      const service = getServiceFromRegistry(servicesRegistry, tab)
+    if (!isRecTab(tab)) {
       cur = (await service.loadMore(abortSignal)) ?? []
       hasMore = service.hasMore
       cur = filterRecItems(cur, tab) // filter
@@ -53,7 +53,6 @@ async function fetchMinCount(count: number, fetcherOptions: FetcherOptions, filt
     /**
      * REC_TABS
      */
-
     let times: number
     if (tab === ETab.KeepFollowOnly) {
       // 已关注
@@ -78,7 +77,6 @@ async function fetchMinCount(count: number, fetcherOptions: FetcherOptions, filt
         ? filterMultiplier // 过滤, 需要大基数
         : 1.2 // 可能有重复, so not 1.0
       times = Math.ceil((restCount * multipler) / pagesize)
-
       debug(
         'getMinCount: addMore(restCount = %s) multipler=%s pagesize=%s times=%s',
         restCount,
@@ -89,20 +87,18 @@ async function fetchMinCount(count: number, fetcherOptions: FetcherOptions, filt
     }
 
     if (willUsePcApi(tab)) {
-      const service = getServiceFromRegistry(servicesRegistry, tab)
-      cur = (await service.loadMoreBatch(times, abortSignal)) || []
-      hasMore = service.hasMore
+      await (service as PcRecService).preloadTimesFromApiIfNeeded(abortSignal, times)
     } else {
-      const service = getServiceFromRegistry(servicesRegistry, ETab.AppRecommend)
-      cur =
-        (await (service.config.addOtherTabContents
-          ? service.loadMore(abortSignal)
-          : service.loadMoreBatch(abortSignal, times))) || []
-      hasMore = service.hasMore
+      const s = service as AppRecService
+      if (!s.config.addOtherTabContents) {
+        await s.preloadTimesFromApiIfNeeded(abortSignal, times)
+      }
     }
 
+    cur = (await service.loadMore(abortSignal)) || []
     cur = filterRecItems(cur, tab) // filter
     items = concatRecItems(items, cur) // concat
+    hasMore = service.hasMore
   }
 
   await addMore(count)
@@ -143,8 +139,8 @@ export async function refreshForGrid(fetcherOptions: FetcherOptions) {
 
   // 当结果很少的, 不用等一屏
   if (fetcherOptions.tab === ETab.DynamicFeed) {
-    const service = getServiceFromRegistry(fetcherOptions.servicesRegistry, ETab.DynamicFeed)
-    if (await service.shouldReduceMinCount()) {
+    const _service = fetcherOptions.service as DynamicFeedRecService
+    if (await _service.shouldReduceMinCount()) {
       minCount = 1
     }
   }

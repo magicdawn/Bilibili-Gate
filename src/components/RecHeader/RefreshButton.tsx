@@ -19,17 +19,17 @@ import { isHotTabUsingShuffle } from '$modules/rec-services/hot'
 import { WatchlaterItemsOrder } from '$modules/rec-services/watchlater/watchlater-enum'
 import { useSettingsSnapshot } from '$modules/settings'
 import { shouldDisableShortcut } from '$utility/dom'
-import { useCurrentUsingTab } from './tab'
 import { ETab } from './tab-enum'
 
 export type RefreshButtonActions = { click: () => void }
 export type RefreshButtonProps = {
   style?: CSSProperties
   className?: string
+  tab: ETab
   refreshHotkeyEnabled?: boolean
   ref?: Ref<RefreshButtonActions>
 }
-export function RefreshButton({ className = '', style, refreshHotkeyEnabled, ref }: RefreshButtonProps) {
+export function RefreshButton({ className = '', style, tab, refreshHotkeyEnabled, ref }: RefreshButtonProps) {
   refreshHotkeyEnabled ??= true
   const { refreshing } = useRecSelfContext().useStore()
   const onRefresh = useOnRefresh()
@@ -55,7 +55,6 @@ export function RefreshButton({ className = '', style, refreshHotkeyEnabled, ref
     { exactMatch: true },
   )
 
-  const tab = useCurrentUsingTab()
   const { watchlaterItemsOrder, popularWeeklyUseShuffle } = useSettingsSnapshot()
   const { usingShuffle: favUsingShuffle } = useSnapshot(favStore)
   const text =

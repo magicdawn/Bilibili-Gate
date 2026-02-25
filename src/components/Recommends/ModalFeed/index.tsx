@@ -69,7 +69,7 @@ export const ModalFeed = memo(function ModalFeed({ show, onHide }: IProps) {
               <ModalFeedConfigChecks />
             </CollapseBtn>
           )}
-          <RefreshButton refreshHotkeyEnabled={shortcutEnabled} />
+          <RefreshButton refreshHotkeyEnabled={shortcutEnabled} tab={tab} />
           <ModalClose onClick={onHide} className='ml-5px' />
         </div>
       </div>

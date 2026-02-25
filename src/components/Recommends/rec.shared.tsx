@@ -1,9 +1,9 @@
 import { useCreation, useLockFn } from 'ahooks'
 import Emittery from 'emittery'
-import { createContext, useContext, type ReactNode } from 'react'
-import { proxy, ref, useSnapshot } from 'valtio'
+import { createContext, useContext, useMemo, type ReactNode } from 'react'
+import { proxy, ref, snapshot, useSnapshot } from 'valtio'
+import { isRecTab, type RecTab, type ServiceMap, type ServiceQueueMap } from '$modules/rec-services/service-map'
 import type { ETab } from '$components/RecHeader/tab-enum'
-import type { ServiceMap } from '$modules/rec-services/service-map'
 
 /* #region RecSharedEmitter */
 export type RecSharedEmitterEvents = {
@@ -32,7 +32,8 @@ export const defaultRecSharedEmitter = new Emittery<RecSharedEmitterEvents>()
 export class RecSelf {
   constructor(public insideModal?: boolean) {}
   recSharedEmitter = new Emittery<RecSharedEmitterEvents>()
-  servicesRegistry: Partial<ServiceMap> = {}
+  serviceRegistry: Partial<ServiceMap> = {}
+  serviceQueueMap: Partial<ServiceQueueMap> = {}
 
   // render state
   private store = proxy({
@@ -40,6 +41,7 @@ export class RecSelf {
     refreshingTab: undefined as ETab | undefined,
     tabbarView: undefined as ReactNode,
     sidebarView: undefined as ReactNode,
+    serviceQueueStateMap: {} as Partial<Record<RecTab, { len: number; cursor: number }>>,
   })
 
   get refreshing() {
@@ -50,10 +52,9 @@ export class RecSelf {
   }
 
   useStore = () => {
-    // oxlint-disable-next-line react-hooks/rules-of-hooks
+    /* oxlint-disable react-hooks/rules-of-hooks */
     return useSnapshot(this.store)
   }
-
   setStore = (payload: Partial<typeof this.store>) => {
     const wrapRefKeys: (keyof typeof this.store)[] = ['tabbarView', 'sidebarView']
     for (const key of wrapRefKeys) {
@@ -63,6 +64,29 @@ export class RecSelf {
       }
     }
     Object.assign(this.store, payload)
+  }
+
+  getTabServiceQueueState = (tab: ETab) => {
+    return snapshot(this.store.serviceQueueStateMap)[tab as RecTab]
+  }
+  setTabServiceQueueState = (tab: RecTab, state: { len: number; cursor: number }) => {
+    this.store.serviceQueueStateMap[tab] = state
+  }
+  private _calcTabBackForwardStatus = (
+    tab: ETab,
+    state: { len: number; cursor: number } | undefined,
+  ): [canGoBack: boolean, canGoForward: boolean] => {
+    if (!isRecTab(tab) || !state || state.len <= 1) return [false, false]
+    const { len, cursor } = state
+    return [cursor > 0, cursor < len - 1]
+  }
+  getTabBackForwardStatus = (tab: ETab) => {
+    return this._calcTabBackForwardStatus(tab, this.getTabServiceQueueState(tab))
+  }
+  useTabBackForwardStatus = (tab: ETab) => {
+    /* oxlint-disable react-hooks/rules-of-hooks */
+    const state = useSnapshot(this.store.serviceQueueStateMap)[tab as RecTab]
+    return useMemo(() => this._calcTabBackForwardStatus(tab, state), [tab, state])
   }
 }
 
@@ -76,12 +100,13 @@ export function useRecSelfContext() {
   return useContext(RecSelfContext)
 }
 
-export type RefreshFn = (reuse?: boolean) => void | Promise<void>
+export type RefreshType = 'refresh' | 'reuse' | 'back' | 'forward'
+export type RefreshFn = (refreshType?: RefreshType) => void | Promise<void>
 
 /**
  * return a function to trigger a refresh event
  */
 export function useOnRefresh() {
   const { recSharedEmitter } = useRecSelfContext()
-  return useLockFn((reuse?: boolean) => recSharedEmitter.emit('refresh', reuse))
+  return useLockFn((refreshType?: RefreshType) => recSharedEmitter.emit('refresh', refreshType))
 }

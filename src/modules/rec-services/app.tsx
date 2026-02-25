@@ -135,35 +135,37 @@ export class AppRecService extends BaseTabService<RecItemType> {
 
   override hasMoreExceptQueue = true
 
-  // this is not used, since below `override loadMore`
   override fetchMore(abortSignal: AbortSignal): Promise<RecItemType[] | undefined> {
-    throw new Error('Method not implemented.')
+    return this.config.addOtherTabContents
+      ? this._fetchWithOtherTabsChecked(abortSignal)
+      : this._fetchFromApi(abortSignal, 2)
   }
 
-  override async loadMore(abortSignal: AbortSignal) {
-    if (!this.hasMore) return
-
-    // fill if needed
-    while (this.hasMore && this.qs.bufferQueue.length < AppRecService.PAGE_SIZE * 3) {
+  private async _fetchWithOtherTabsChecked(abortSignal: AbortSignal) {
+    let items: RecItemType[] = []
+    // shuffle 需要大的数据量, 否则这一页全是一个 类型
+    while (this.hasMore && items.length < AppRecService.PAGE_SIZE * 3) {
       const restServices = this.allServices.filter((s) => s.hasMore)
       if (!restServices.length) break
       const pickedServices = shuffle(restServices).slice(0, 3)
       const more = (await Promise.all(pickedServices.map(async (s) => (await s.loadMore(abortSignal)) || [])))
         .flat()
         .filter((x) => x.api !== EApiType.Separator)
-      this.qs.bufferQueue.push(...more)
-      this.qs.bufferQueue = shuffle(this.qs.bufferQueue)
+      items.push(...more)
+      items = shuffle(items) // 我要验牌...
     }
-
-    // slice
-    return this.qs.sliceFromQueue()
+    return items
   }
 
-  // for filter
-  async loadMoreBatch(abortSignal: AbortSignal, times: number) {
-    if (!this.hasMore) return
-    if (this.qs.bufferQueue.length) return this.qs.sliceFromQueue(times)
-    return this.qs.doReturnItems(await this.innerService.getRecommendTimes(abortSignal, times))
+  private _fetchFromApi(abortSignal: AbortSignal, times: number) {
+    return this.innerService.getRecommendTimes(abortSignal, times)
+  }
+
+  // preload for filter
+  async preloadTimesFromApiIfNeeded(abortSignal: AbortSignal, times: number) {
+    if (this.qs.bufferQueue.length < AppRecService.PAGE_SIZE) {
+      this.qs.bufferQueue.push(...(await this._fetchFromApi(abortSignal, times)))
+    }
   }
 }
 

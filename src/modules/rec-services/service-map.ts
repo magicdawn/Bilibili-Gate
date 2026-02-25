@@ -16,7 +16,9 @@ import type { BaseTabService } from './_base'
 
 export const REC_TABS = [ETab.KeepFollowOnly, ETab.PcRecommend, ETab.AppRecommend] satisfies ETab[]
 
-export function isRecTab(tab: ETab): tab is ETab.AppRecommend | ETab.PcRecommend | ETab.KeepFollowOnly {
+export type RecTab = (typeof REC_TABS)[number]
+
+export function isRecTab(tab: ETab): tab is RecTab {
   return REC_TABS.includes(tab)
 }
 
@@ -51,14 +53,18 @@ export type ServiceMap = {
   [K in ServiceMapKey]: ReturnType<(typeof createServiceMap)[K]>
 }
 
-export type FetcherOptions = {
-  tab: ETab
-  abortSignal: AbortSignal
-  servicesRegistry: Partial<ServiceMap>
+export type ServiceQueueMap = {
+  [K in (typeof REC_TABS)[number]]: Array<ReturnType<(typeof createServiceMap)[K]>>
 }
 
-export function getServiceFromRegistry<T extends ETab>(servicesRegistry: Partial<ServiceMap>, tab: T): ServiceMap[T] {
-  const service = servicesRegistry[tab]
-  assert(service, `servicesRegistry[tab=${tab}] should not be nil`)
+export type FetcherOptions = {
+  tab: ETab
+  service: BaseTabService
+  abortSignal: AbortSignal
+}
+
+export function getServiceFromRegistry<T extends ETab>(serviceRegistry: Partial<ServiceMap>, tab: T): ServiceMap[T] {
+  const service = serviceRegistry[tab]
+  assert(service, `serviceRegistry[tab=${tab}] should not be nil`)
   return service
 }

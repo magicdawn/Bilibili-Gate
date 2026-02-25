@@ -45,6 +45,8 @@ declare global {
   const IconOcticonSortAsc16: typeof import('~icons/octicon/sort-asc16.jsx').default
   const IconOcticonSortDesc16: typeof import('~icons/octicon/sort-desc16.jsx').default
   const IconParkOutlineAddTwo: typeof import('~icons/icon-park-outline/add-two.jsx').default
+  const IconParkOutlineArrowLeft: typeof import('~icons/icon-park-outline/arrow-left.jsx').default
+  const IconParkOutlineArrowRight: typeof import('~icons/icon-park-outline/arrow-right.jsx').default
   const IconParkOutlineCloseSmall: typeof import('~icons/icon-park-outline/close-small.jsx').default
   const IconParkOutlineComputer: typeof import('~icons/icon-park-outline/computer.jsx').default
   const IconParkOutlineConcern: typeof import('~icons/icon-park-outline/concern.jsx').default
