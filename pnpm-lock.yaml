@@ -110,9 +110,6 @@ importers:
       spark-md5:
         specifier: ^3.0.2
         version: 3.0.2
-      ts-pattern:
-        specifier: ^5.9.0
-        version: 5.9.0
       ua-parser-js:
         specifier: ^1.0.41
         version: 1.0.41
@@ -4908,9 +4905,6 @@ packages:
     resolution: {integrity: sha512-EDyGAwH1gO0Ausm9gV6T2nUvBgXT5kGoCMJPllOaooZ+4VvJiKBdZE7wK18N1deEowhcUptS+5GXZK8U/fvpwA==}
     peerDependencies:
       typescript: '>=4.0.0'
-
-  ts-pattern@5.9.0:
-    resolution: {integrity: sha512-6s5V71mX8qBUmlgbrfL33xDUwO0fq48rxAu2LBE11WBeGdpCPOsXksQbZJHvHwhrd3QjUusd3mAOM5Gg0mFBLg==}
 
   tsconfck@3.1.6:
     resolution: {integrity: sha512-ks6Vjr/jEw0P1gmOVwutM3B7fWxoWBL2KRDb1JfqGVawBmO5UsvmWOQFGHBPl5yxYz4eERr19E6L7NMv+Fej4w==}
@@ -10174,8 +10168,6 @@ snapshots:
     dependencies:
       picomatch: 4.0.3
       typescript: 5.9.3
-
-  ts-pattern@5.9.0: {}
 
   tsconfck@3.1.6(typescript@5.9.3):
     optionalDependencies:
