@@ -107,6 +107,9 @@ export class AppRecService extends BaseTabService<RecItemType> {
     {
       const config = Object.assign(getFavServiceConfig(), {
         selectedKey: 'all',
+        viewingAll: true,
+        viewingSomeFolder: false,
+        viewingSomeCollection: false,
         itemsOrder: FavItemsOrder.Shuffle,
         selectedFavFolderId: undefined,
         selectedFavCollectionId: undefined,
