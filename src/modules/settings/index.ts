@@ -285,6 +285,7 @@ export const initialSettings = {
    */
   hidingTabKeys: [ETab.KeepFollowOnly, ETab.Live, ETab.Liked] satisfies ETab[] as ETab[],
   customTabKeysOrder: [] satisfies ETab[] as ETab[],
+  showBackForwardButtons: false,
 
   /**
    * multi-select module

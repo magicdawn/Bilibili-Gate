@@ -35,17 +35,17 @@ export class PcRecService extends BaseTabService<PcRecItemExtend> {
 
   override fetchMore(abortSignal: AbortSignal): Promise<PcRecItemExtend[] | undefined> {
     const times = this.isKeepFollowOnly ? 5 : 2
-    return this.getRecommendTimes(times, abortSignal)
+    return this.getRecommendTimes(abortSignal, times)
   }
 
-  // for filter
-  async loadMoreBatch(times: number, abortSignal: AbortSignal) {
-    if (!this.hasMore) return
-    if (this.qs.bufferQueue.length) return this.qs.sliceFromQueue(times)
-    return this.qs.doReturnItems(await this.getRecommendTimes(times, abortSignal))
+  // preload for filter
+  async preloadTimesFromApiIfNeeded(abortSignal: AbortSignal, times: number) {
+    if (this.qs.bufferQueue.length < PcRecService.PAGE_SIZE) {
+      this.qs.bufferQueue.push(...(await this.getRecommendTimes(abortSignal, times)))
+    }
   }
 
-  private async getRecommendTimes(times: number, abortSignal: AbortSignal) {
+  private async getRecommendTimes(abortSignal: AbortSignal, times: number) {
     let list: PcRecItem[] = (await Promise.all(range(times).map(() => this.getRecommend(abortSignal)))).flat()
 
     const knownGotoSet = new Set([PcRecGoto.AV, PcRecGoto.Live, PcRecGoto.Ad])

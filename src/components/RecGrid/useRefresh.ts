@@ -1,9 +1,10 @@
 import { useMemoizedFn, useMount, useUnmount } from 'ahooks'
-import { attempt, attemptAsync, isEqual } from 'es-toolkit'
+import { assert, attempt, attemptAsync, isEqual } from 'es-toolkit'
 import { useEmitterOn } from '$common/hooks/useEmitter'
 import { TabConfig } from '$components/RecHeader/tab-config'
 import { EHotSubTab, ETab } from '$components/RecHeader/tab-enum'
-import { useRecSelfContext, type RefreshFn } from '$components/Recommends/rec.shared'
+import { useRecSelfContext, type RefreshFn, type RefreshType } from '$components/Recommends/rec.shared'
+import { filterRecItems } from '$modules/filter'
 import { getGridRefreshCount } from '$modules/rec-services'
 import { getDynamicFeedServiceConfig, type DynamicFeedRecService } from '$modules/rec-services/dynamic-feed'
 import { getFavServiceConfig, type FavRecService } from '$modules/rec-services/fav'
@@ -13,30 +14,33 @@ import { rankStore } from '$modules/rec-services/hot/rank/store'
 import {
   createServiceMap,
   getServiceFromRegistry,
+  isRecTab,
   type FetcherOptions,
   type ServiceMap,
 } from '$modules/rec-services/service-map'
 import { getSpaceUploadServiceConfig, type SpaceUploadService } from '$modules/rec-services/space-upload'
+import { assertNever } from '$utility/type'
 import type { Debugger } from 'obug'
 import type { RecItemTypeOrSeparator } from '$define'
+import type { BaseTabService } from '$modules/rec-services/_base'
 import type { RecGridSelf } from '.'
 
 /**
  * refresh for same tab, but conditions changed
  */
-function checkIsSameTabButConditionsChanged(tab: ETab, servicesRegistry: Partial<ServiceMap>) {
+function checkIsSameTabButConditionsChanged(tab: ETab, serviceRegistry: Partial<ServiceMap>) {
   let s: DynamicFeedRecService | FavRecService | HotRecService | SpaceUploadService | undefined
   switch (tab) {
     case ETab.DynamicFeed:
-      s = servicesRegistry[ETab.DynamicFeed]
+      s = serviceRegistry[ETab.DynamicFeed]
       return !isEqual(s?.config, getDynamicFeedServiceConfig())
 
     case ETab.Fav:
-      s = servicesRegistry[ETab.Fav]
+      s = serviceRegistry[ETab.Fav]
       return !isEqual(s?.config, getFavServiceConfig())
 
     case ETab.Hot:
-      s = servicesRegistry[ETab.Hot]
+      s = serviceRegistry[ETab.Hot]
       if (s?.subtab !== hotStore.subtab) return true // subtab changed
       if (
         // rank slug changed
@@ -49,7 +53,7 @@ function checkIsSameTabButConditionsChanged(tab: ETab, servicesRegistry: Partial
       return false
 
     case ETab.SpaceUpload:
-      s = servicesRegistry[ETab.SpaceUpload]
+      s = serviceRegistry[ETab.SpaceUpload]
       return !isEqual(s?.config, getSpaceUploadServiceConfig())
 
     default:
@@ -75,21 +79,21 @@ export function useRefresh({
   self: RecGridSelf
 }) {
   const recSelf = useRecSelfContext()
-  const { servicesRegistry } = recSelf
+  const { serviceRegistry } = recSelf
 
   useMount(() => {
     // Q: why `true`   A: when switch tab, set reuse to `true`
-    refresh(true)
+    refresh('reuse')
   })
   // switch away
   useUnmount(() => {
     self.abortController.abort()
   })
 
-  const refresh: RefreshFn = useMemoizedFn(async (reuse: boolean = false) => {
+  const refresh: RefreshFn = useMemoizedFn(async (refreshType: RefreshType = 'refresh') => {
     const isSameTabRefreshing = recSelf.refreshing && recSelf.refreshingTab === tab
     if (isSameTabRefreshing) {
-      if (checkIsSameTabButConditionsChanged(tab, servicesRegistry)) {
+      if (checkIsSameTabButConditionsChanged(tab, serviceRegistry)) {
         debug('refresh(): tab=%s [start], current refreshing, sametab but conditions change, abort existing', tab)
         self.abortController.abort()
       } else {
@@ -122,17 +126,11 @@ export function useRefresh({
     }
     function onSuccess() {
       _onAny()
-      self.setStore({ hasMore: getServiceFromRegistry(servicesRegistry, tab).hasMore })
+      self.setStore({ hasMore: getServiceFromRegistry(serviceRegistry, tab).hasMore })
     }
 
-    async function doFetch() {
-      const [err, currentItems] = await attemptAsync(() =>
-        fetcher({
-          tab,
-          abortSignal: signal,
-          servicesRegistry,
-        }),
-      )
+    async function doFetch(service: BaseTabService) {
+      const [err, currentItems] = await attemptAsync(() => fetcher({ tab, service, abortSignal: signal }))
       // explicit aborted
       if (signal.aborted) return debug('refresh(): tab=%s [aborted], ignoring rest code', tab)
       if (err) return onError(err)
@@ -141,31 +139,72 @@ export function useRefresh({
       return true // mark success
     }
 
-    let willRefresh: boolean
-    const existingService = reuse ? servicesRegistry[tab] : undefined
-    // reuse existing service
+    let existingService: (typeof serviceRegistry)[ETab]
+    let willRecreateService: boolean
+    switch (refreshType) {
+      case 'refresh':
+        break
+      case 'reuse':
+        existingService = serviceRegistry[tab] // reuse existing service
+        break
+      case 'back':
+      case 'forward': {
+        assert(isRecTab(tab), `only rec tab can perform back/forward`)
+        const [canGoBack, canGoForward] = recSelf.getTabBackForwardStatus(tab)
+        if (refreshType === 'back' && !canGoBack) throw new Error('cannot go back')
+        if (refreshType === 'forward' && !canGoForward) throw new Error('cannot go forard')
+
+        const state = recSelf.getTabServiceQueueState(tab)
+        assert(state, `state should not be nil`)
+        const { len, cursor } = state
+        const inc = refreshType === 'back' ? -1 : 1
+        const newCursor = cursor + inc
+        if (newCursor < 0 || newCursor > len - 1) throw new Error('cannot go back/forward')
+
+        const service = recSelf.serviceQueueMap[tab]?.[newCursor]
+        assert(service, `service should not be nil`)
+        existingService = service
+        recSelf.setTabServiceQueueState(tab, { cursor: newCursor, len })
+        serviceRegistry[tab] = service as any
+
+        willRecreateService = false
+        break
+      }
+      default:
+        assertNever(refreshType)
+        break
+    }
+
     if (existingService) {
       // cache
       existingService.restore()
-      self.setStore({ items: existingService.qs.bufferQueue.slice(0, getGridRefreshCount()) })
-      const success = !!(await doFetch())
+      const cachedItems = filterRecItems(existingService.qs.bufferQueue, tab).slice(0, getGridRefreshCount())
+      self.setStore({ items: cachedItems })
+      const success = !!(await doFetch(existingService))
       // swr?
-      willRefresh = success && !!TabConfig[tab].swr
+      willRecreateService ??= success && !!TabConfig[tab].swr
     }
     // create new service
     else {
       self.setStore({ showSkeleton: true })
-      willRefresh = true
+      willRecreateService = true
     }
 
-    if (willRefresh) {
+    if (willRecreateService) {
       const [err, service] = attempt(() => createServiceMap[tab]({ existingService }))
       if (err) return onError(err)
 
-      servicesRegistry[tab] = service as any
+      // save services
+      serviceRegistry[tab] = service as any
       updateViewFromService?.()
+      if (isRecTab(tab)) {
+        recSelf.serviceQueueMap[tab] ||= []
+        recSelf.serviceQueueMap[tab].push(service as any)
+        const len = recSelf.serviceQueueMap[tab].length
+        recSelf.setTabServiceQueueState(tab, { len, cursor: len - 1 })
+      }
 
-      const success = await doFetch()
+      const success = await doFetch(service!)
       if (!success) return
     }
 

@@ -104,6 +104,11 @@ export function TabPaneBasic() {
             label='「多选」按钮'
             tooltip='是否显示「多选」按钮'
           />
+          <CheckboxSettingItem
+            configPath={'showBackForwardButtons'}
+            label='「后退 / 前进」按钮'
+            tooltip='是否显示「后退 / 前进」'
+          />
         </div>
       </SettingsGroup>
 
