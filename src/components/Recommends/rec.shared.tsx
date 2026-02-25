@@ -2,7 +2,7 @@ import { useCreation, useLockFn } from 'ahooks'
 import Emittery from 'emittery'
 import { createContext, useContext, useMemo, type ReactNode } from 'react'
 import { proxy, ref, snapshot, useSnapshot } from 'valtio'
-import { isRecTab, type RecTab, type SerivesQueueMap, type ServiceMap } from '$modules/rec-services/service-map'
+import { isRecTab, type RecTab, type ServiceMap, type ServiceQueueMap } from '$modules/rec-services/service-map'
 import type { ETab } from '$components/RecHeader/tab-enum'
 
 /* #region RecSharedEmitter */
@@ -33,7 +33,7 @@ export class RecSelf {
   constructor(public insideModal?: boolean) {}
   recSharedEmitter = new Emittery<RecSharedEmitterEvents>()
   serviceRegistry: Partial<ServiceMap> = {}
-  serviceQueueMap: Partial<SerivesQueueMap> = {}
+  serviceQueueMap: Partial<ServiceQueueMap> = {}
 
   // render state
   private store = proxy({
