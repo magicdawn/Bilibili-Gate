@@ -152,7 +152,7 @@ export function useRefresh({
         assert(isRecTab(tab), `only rec tab can perform back/forward`)
         const [canGoBack, canGoForward] = recSelf.getTabBackForwardStatus(tab)
         if (refreshType === 'back' && !canGoBack) throw new Error('cannot go back')
-        if (refreshType === 'forward' && !canGoForward) throw new Error('cannot go forard')
+        if (refreshType === 'forward' && !canGoForward) throw new Error('cannot go forward')
 
         const state = recSelf.getTabServiceQueueState(tab)
         assert(state, `state should not be nil`)
