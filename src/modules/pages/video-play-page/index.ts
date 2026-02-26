@@ -8,7 +8,7 @@ const handlers: Array<[prefix: string, handler: () => string | undefined]> = [
   [
     '/video/',
     () => {
-      return /^\/video\/(?<bvid>BV\w+)\//.exec(location.pathname)?.groups?.bvid
+      return /^\/video\/(?<bvid>BV\w+)\/?/.exec(location.pathname)?.groups?.bvid
     },
   ],
   [
