@@ -1,21 +1,19 @@
 import { useMemoizedFn } from 'ahooks'
 import clsx from 'clsx'
 import { memo } from 'react'
-import { OPERATION_FAIL_MSG } from '$common'
 import { useEmitterOn } from '$common/hooks/useEmitter'
-import { delDislikeId, type DislikeReason } from '$components/ModalDislike'
+import { handleCancelDislike } from '$components/ModalDislike/api'
+import { normalizeDislikeReason, type DislikeReason } from '$components/ModalDislike/types'
 import { antMessage } from '$modules/antd'
 import { UserBlacklistService } from '$modules/bilibili/me/relations/blacklist'
 import { parseUpRepresent } from '$modules/filter/parse'
 import { IconForBlacklist, IconForReset } from '$modules/icon'
 import { settings, updateSettingsInnerArray } from '$modules/settings'
-import { toastRequestFail } from '$utility/toast'
 import { videoCardBorderRadiusValue } from '../../css-vars'
 import { defaultVideoCardEmitter, type VideoCardEmitter } from '../index.shared'
-import { cancelDislike } from '../services'
 import { skeletonActive as clsSkeletonActive } from './skeleton.module.scss'
 import { VideoCardBottom } from './VideoCardBottom'
-import type { AppRecItemExtend, RecItemType } from '$define'
+import type { RecItemType } from '$define'
 import type { IVideoCardData } from '$modules/filter/normalize'
 
 export const SkeletonCard = memo(function SkeletonCard({ loading }: { loading: boolean }) {
@@ -59,44 +57,25 @@ export const DislikedCard = memo(function DislikedCard({
   dislikedReason,
   emitter = defaultVideoCardEmitter,
 }: {
-  item: AppRecItemExtend
+  item: RecItemType
   cardData: IVideoCardData
   dislikedReason: DislikeReason
   emitter?: VideoCardEmitter
 }) {
   const onCancelDislike = useMemoizedFn(async () => {
-    if (!dislikedReason?.id) return
-
-    let success = false
-    let message = ''
-    let err: Error | undefined
-    try {
-      ;({ success, message } = await cancelDislike(item, dislikedReason.id))
-    } catch (e) {
-      err = e as Error
-    }
-    if (err) {
-      console.error(err.stack || err)
-      return toastRequestFail()
-    }
-
-    if (success) {
-      antMessage.success('已撤销')
-      delDislikeId(item.param)
-    } else {
-      antMessage.error(message || OPERATION_FAIL_MSG)
-    }
+    await handleCancelDislike(item, dislikedReason)
   })
-
   useEmitterOn(emitter, 'cancel-dislike', onCancelDislike)
+
+  const { text, helpText } = normalizeDislikeReason(dislikedReason)
 
   return (
     <div className={blockedCardClassNames.wrapper}>
       <div className={blockedCardClassNames.cover}>
         <div className={blockedCardClassNames.coverInner}>
           <IconParkOutlineDistraughtFace className='size-32px' />
-          <div className={blockedCardClassNames.dislikeReason}>{dislikedReason?.name}</div>
-          <div className={blockedCardClassNames.dislikeDesc}>{dislikedReason?.toast || '将减少此类内容推荐'}</div>
+          <div className={blockedCardClassNames.dislikeReason}>{text}</div>
+          <div className={blockedCardClassNames.dislikeDesc}>{helpText || '将减少此类内容推荐'}</div>
         </div>
       </div>
       <__BottomRevertAction item={item} cardData={cardData} onClick={onCancelDislike} />

@@ -20,7 +20,7 @@ import { useLessFrequentFn } from '$common/hooks/useLessFrequentFn'
 import { useRefStateBox } from '$common/hooks/useRefState'
 import { Picture } from '$components/_base/Picture'
 import { clsZVideoCardContextMenu } from '$components/fragments'
-import { useDislikedReason } from '$components/ModalDislike'
+import { calcRecItemDislikedMapKey, useDislikedReason } from '$components/ModalDislike/store'
 import { isDisplayAsList } from '$components/RecGrid/display-mode'
 import { getBvidInfo } from '$components/RecGrid/rec-grid-state'
 import { setGlobalValue } from '$components/RecGrid/unsafe-window-export'
@@ -35,11 +35,9 @@ import {
   isRank,
   isSpaceUpload,
   isWatchlater,
-  type AppRecItemExtend,
   type PvideoJson,
   type RecItemType,
 } from '$define'
-import { EApiType } from '$define/index.shared'
 import { PcRecGoto } from '$define/pc-recommend'
 import { antNotification } from '$modules/antd'
 import { useInBlacklist } from '$modules/bilibili/me/relations/blacklist'
@@ -115,7 +113,8 @@ export const VideoCard = memo(function VideoCard({
   const cardData = useMemo(() => item && normalizeCardData(item), [item])
 
   // state
-  const dislikedReason = useDislikedReason(item?.api === EApiType.AppRecommend ? item.param : undefined)
+  const dislikeKey = useMemo(() => (item ? calcRecItemDislikedMapKey(item) : undefined), [item])
+  const dislikedReason = useDislikedReason(dislikeKey)
   const blacklisted = useInBlacklist(cardData?.authorMid)
   const blocked = useInFilterByAuthorList(cardData?.authorMid)
   const watchlaterAdded = useWatchlaterState(cardData?.bvid)
@@ -143,12 +142,7 @@ export const VideoCard = memo(function VideoCard({
         item &&
         cardData &&
         (showingDislikeCard ? (
-          <DislikedCard
-            item={item as AppRecItemExtend}
-            cardData={cardData}
-            emitter={emitter}
-            dislikedReason={dislikedReason!}
-          />
+          <DislikedCard item={item} cardData={cardData} emitter={emitter} dislikedReason={dislikedReason!} />
         ) : showingBlacklistCard ? (
           <BlockedCard item={item} cardData={cardData} blockType='blacklist' />
         ) : showingBlockedCard ? (

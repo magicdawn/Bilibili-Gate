@@ -1,16 +1,16 @@
 import { attemptAsync } from 'es-toolkit'
 import ms from 'ms'
 import QuickLRU from 'quick-lru'
-import { baseDebug, HOST_APP, OPERATION_FAIL_MSG } from '$common'
+import { baseDebug } from '$common'
 import { antNotification } from '$modules/antd'
 import { getVideoPlayUrl } from '$modules/bilibili/video/play-url'
 import { getVideoPageList } from '$modules/bilibili/video/video-detail'
-import { gmrequest, isWebApiSuccess, request } from '$request'
+import { isWebApiSuccess, request } from '$request'
 import { reusePendingPromise } from '$utility/async'
 import { getCsrfToken } from '$utility/cookie'
 import toast from '$utility/toast'
 import { getVideoshotJson, isVideoshotDataValid } from './videoshot'
-import type { AppRecItem, PvideoJson } from '$define'
+import type { PvideoJson } from '$define'
 import type { VideoPage } from '$modules/bilibili/video/types/page-list'
 
 const debug = baseDebug.extend('VideoCard:services')
@@ -46,57 +46,6 @@ function watchlaterFactory(action: 'add' | 'del') {
 
 export const watchlaterAdd = watchlaterFactory('add')
 export const watchlaterDel = watchlaterFactory('del')
-
-/**
- * 不喜欢 / 撤销不喜欢
- * https://github.com/indefined/UserScripts/blob/master/bilibiliHome/bilibiliHome.API.md
- *
- * 此类内容过多 reason_id = 12
- * 推荐过 reason_id = 13
- */
-const dislikeFactory = (type: 'dislike' | 'cancel') => {
-  const pathname = {
-    dislike: '/x/feed/dislike',
-    cancel: '/x/feed/dislike/cancel',
-  }[type]
-
-  return async function (item: AppRecItem, reasonId: number) {
-    const res = await gmrequest.get(HOST_APP + pathname, {
-      responseType: 'json',
-      params: {
-        goto: item.goto,
-        id: item.param,
-
-        // mid: item.mid,
-        // rid: item.tid,
-        // tag_id: item.tag?.tag_id,
-
-        reason_id: reasonId,
-
-        // other stuffs
-        build: '1',
-        mobi_app: 'android',
-        idx: (Date.now() / 1000).toFixed(0),
-      },
-    })
-
-    // { "code": 0, "message": "0", "ttl": 1 }
-    const json = res.data
-    const success = isWebApiSuccess(json)
-
-    let message = json.message
-    if (!success) {
-      message ||= OPERATION_FAIL_MSG
-      message += `(code ${json.code})`
-      message += '\n请重新获取 access_key 后重试'
-    }
-
-    return { success, json, message }
-  }
-}
-
-export const dislike = dislikeFactory('dislike')
-export const cancelDislike = dislikeFactory('cancel')
 
 /**
  * 可以查询视频: 关注/点赞/投币/收藏 状态

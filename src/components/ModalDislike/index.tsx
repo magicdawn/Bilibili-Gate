@@ -6,33 +6,13 @@ import { clsx } from 'clsx'
 import Emittery from 'emittery'
 import { useRef, useState, type MouseEvent } from 'react'
 import { useSnapshot } from 'valtio'
-import { proxyMap } from 'valtio/utils'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { antSpinIndicator } from '$components/fragments'
 import { IconAnimatedChecked, IconForDislike } from '$modules/icon'
 import { shouldDisableShortcut } from '$utility/dom'
 import { wrapComponent } from '$utility/global-component'
-
-export type DislikeReason = { id: number; name: string; toast: string }
-
-export const dislikedIds = proxyMap<string, DislikeReason>()
-export function useDislikedIds() {
-  return useSnapshot(dislikedIds)
-}
-export function useDislikedReason(id: string | undefined) {
-  const map = useDislikedIds()
-  return id ? map.get(id) : undefined
-}
-export function delDislikeId(id: string) {
-  dislikedIds.delete(id)
-}
-
-// Q: why callback 的形式
-// A: okAction 表示 Modal Ok 后的动作
-//    okAction 可能失败, 这样的情况不希望关闭 modal, 有重试的机会; 使用 promise 处理 onAction fail 的情况串起来会比较复杂
-//    boolean 表示 okAction success, success 后关闭 modal
-export type OkAction = (reason: DislikeReason) => boolean | undefined | void | Promise<boolean | undefined | void>
+import { normalizeDislikeReason, type DislikeReason, type OkAction } from './types'
 
 const defaultProps = {
   show: false,
@@ -72,7 +52,12 @@ export function ModalDislike({ show, reasons, onHide, okAction }: typeof default
 
   const [activeIndex, setActiveIndex] = useState(reasons.length - 1)
   useUpdateLayoutEffect(() => {
-    setActiveIndex(reasons.length - 1)
+    const platform = reasons[0]?.platform
+    if (platform === 'app') {
+      setActiveIndex(reasons.length - 1) // 最后一项, 通常是不感兴趣
+    } else if (platform === 'pc') {
+      setActiveIndex(0)
+    }
   }, [reasons])
 
   const KEYS = ['1', '2', '3', '4', '5', '6']
@@ -143,10 +128,10 @@ export function ModalDislike({ show, reasons, onHide, okAction }: typeof default
           <div className='reason-list mb-20px mt-20px flex flex-col gap-y-10px'>
             {reasons.map((reason, index) => {
               const active = index === activeIndex
+              const { reasonId, text, helpText } = normalizeDislikeReason(reason)
               return (
                 <button
-                  key={reason.id}
-                  data-id={reason.id}
+                  key={reasonId}
                   className={clsx(
                     'reason',
                     { active },
@@ -164,7 +149,7 @@ export function ModalDislike({ show, reasons, onHide, okAction }: typeof default
                   >
                     {index + 1}
                   </span>
-                  <span className='flex-1 px-4px text-14px'>{reason.name}</span>
+                  <span className='flex-1 px-4px text-14px'>{text}</span>
                   <span className='size-20px flex-none'>
                     {active && <IconAnimatedChecked className='h-100% w-100% color-gate-primary' useAnimation />}
                   </span>
