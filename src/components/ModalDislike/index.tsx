@@ -1,10 +1,10 @@
 /* eslint-disable require-await */
 
-import { useKeyPress, useLockFn, useMemoizedFn, useRequest, useUpdateLayoutEffect } from 'ahooks'
+import { useKeyPress, useLockFn, useMemoizedFn, useRequest } from 'ahooks'
 import { Button, Spin } from 'antd'
 import { clsx } from 'clsx'
 import Emittery from 'emittery'
-import { useRef, useState, type MouseEvent } from 'react'
+import { useLayoutEffect, useRef, useState, type MouseEvent } from 'react'
 import { useSnapshot } from 'valtio'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { HelpInfo } from '$components/_base/HelpInfo'
@@ -12,6 +12,7 @@ import { antSpinIndicator } from '$components/fragments'
 import { IconAnimatedChecked, IconForDislike } from '$modules/icon'
 import { shouldDisableShortcut } from '$utility/dom'
 import { wrapComponent } from '$utility/global-component'
+import { assertNever } from '$utility/type'
 import { normalizeDislikeReason, type DislikeReason, type OkAction } from './types'
 
 const defaultProps = {
@@ -50,13 +51,16 @@ export function ModalDislike({ show, reasons, onHide, okAction }: typeof default
   const $req = useRequest(async (reason: DislikeReason) => okAction?.(reason), { manual: true })
   const okActionLoading = $req.loading
 
-  const [activeIndex, setActiveIndex] = useState(reasons.length - 1)
-  useUpdateLayoutEffect(() => {
-    const platform = reasons[0]?.platform
+  const [activeIndex, setActiveIndex] = useState(() => (reasons.length ? reasons.length - 1 : 0))
+  useLayoutEffect(() => {
+    if (!reasons.length) return
+    const platform = reasons[0].platform
     if (platform === 'app') {
       setActiveIndex(reasons.length - 1) // 最后一项, 通常是不感兴趣
     } else if (platform === 'pc') {
       setActiveIndex(0)
+    } else {
+      assertNever(platform)
     }
   }, [reasons])
 
