@@ -1,11 +1,12 @@
-import { range, uniqBy } from 'es-toolkit'
+import { attempt, range, uniqBy } from 'es-toolkit'
 import { baseDebug } from '$common'
 import { EApiType } from '$define/index.shared'
 import { PcRecGoto } from '$define/pc-recommend'
+import { normalizeCardData } from '$modules/filter/normalize'
 import { isWebApiSuccess, request } from '$request'
+import { poll } from '$utility/dom'
 import toast from '$utility/toast'
 import { BaseTabService } from './_base'
-import { getWebInitialRecommendItems } from './pc-initial-rec'
 import type { PcRecItem, PcRecItemExtend, PcRecommendJson } from '$define'
 
 const debug = baseDebug.extend('modules:rec-services:pc')
@@ -49,40 +50,12 @@ export class PcRecService extends BaseTabService<PcRecItemExtend> {
   // preload pc-initial items
   async preloadPcInitialRecItems(abortSignal: AbortSignal) {
     const initialItems = await getWebInitialRecommendItems(abortSignal)
-    this.qs.bufferQueue.push(...this.processRawList(initialItems))
-  }
-
-  private processRawList(list: PcRecItem[]): PcRecItemExtend[] {
-    const knownGotoSet = new Set([PcRecGoto.AV, PcRecGoto.Live, PcRecGoto.Ad])
-    list.forEach((item) => {
-      if (!knownGotoSet.has(item.goto)) {
-        debug('uknown goto from API: %s %o', item.goto, item)
-      }
-    })
-
-    const allowedGotoSet = new Set([PcRecGoto.AV])
-    list = list.filter((item) => allowedGotoSet.has(item.goto))
-    list = uniqBy(list, (item) => item.id)
-    // 推荐理由补全
-    list.forEach((item) => {
-      if (item.rcmd_reason?.reason_type === 1) {
-        item.rcmd_reason.content ||= '已关注'
-      }
-    })
-
-    const _list = list.map((item) => {
-      return {
-        ...item,
-        uniqId: `${EApiType.PcRecommend}:${item.bvid || item.room_info?.room_id || crypto.randomUUID()}`,
-        api: EApiType.PcRecommend,
-      } satisfies PcRecItemExtend
-    })
-    return _list
+    this.qs.bufferQueue.push(...initialItems)
   }
 
   private getRecommendTimes = async (abortSignal: AbortSignal, times: number) => {
     const list: PcRecItem[] = (await Promise.all(range(times).map(() => this.getRecommend(abortSignal)))).flat()
-    return this.processRawList(list)
+    return processRawList(list)
   }
 
   page = 0
@@ -119,4 +92,53 @@ export class PcRecService extends BaseTabService<PcRecItemExtend> {
     const items = json.data?.item || []
     return items
   }
+}
+
+function processRawList(list: PcRecItem[]): PcRecItemExtend[] {
+  const knownGotoSet = new Set([PcRecGoto.AV, PcRecGoto.Live, PcRecGoto.Ad])
+  list.forEach((item) => {
+    if (!knownGotoSet.has(item.goto)) {
+      debug('uknown goto from API: %s %o', item.goto, item)
+    }
+  })
+
+  const allowedGotoSet = new Set([PcRecGoto.AV])
+  list = list.filter((item) => allowedGotoSet.has(item.goto))
+  list = uniqBy(list, (item) => item.id)
+  // 推荐理由补全
+  list.forEach((item) => {
+    if (item.rcmd_reason?.reason_type === 1) {
+      item.rcmd_reason.content ||= '已关注'
+    }
+  })
+
+  const _list: PcRecItemExtend[] = list.map((item) => {
+    return {
+      ...item,
+      uniqId: `${EApiType.PcRecommend}:${item.bvid || item.room_info?.room_id || crypto.randomUUID()}`,
+      api: EApiType.PcRecommend,
+    }
+  })
+  return _list
+}
+
+async function getWebInitialRecommendItems(abortSignal: AbortSignal): Promise<PcRecItemExtend[]> {
+  // wait `window.__pinia`, then use `feed.data.recommend.item`
+  const __pinia = await poll(
+    () => {
+      const [_, ret] = attempt(() => (unsafeWindow as any).__pinia)
+      return ret
+    },
+    { interval: 100, timeout: 1_000, abortSignal },
+  )
+  const rawList: PcRecItem[] = __pinia?.feed?.data?.recommend?.item || []
+  debug('initial rec rawList: %o', rawList)
+
+  // 不可控, SSR 数据可能会变
+  const [_, list] = attempt(() => {
+    const list = processRawList(rawList)
+    list.forEach((item) => normalizeCardData(item)) // try normalize
+    return list
+  })
+  return list || []
 }
