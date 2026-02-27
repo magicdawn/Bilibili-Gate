@@ -53,10 +53,6 @@ export type ServiceMap = {
   [K in ServiceMapKey]: ReturnType<(typeof createServiceMap)[K]>
 }
 
-export type ServiceQueueMap = {
-  [K in (typeof REC_TABS)[number]]: Array<ReturnType<(typeof createServiceMap)[K]>>
-}
-
 export type FetcherOptions = {
   tab: ETab
   service: BaseTabService

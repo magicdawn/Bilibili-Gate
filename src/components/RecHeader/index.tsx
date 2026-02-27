@@ -50,11 +50,18 @@ export function RecHeader({ tab, leftSlot, rightSlot, shortcutEnabled, ref }: Re
     },
   } = useSettingsSnapshot()
 
+  const onRefresh = useOnRefresh()
   const _isRecTab = useMemo(() => isRecTab(tab), [tab])
   const recSelf = useRecSelfContext()
-  const { refreshing, serviceQueueStateMap } = recSelf.useStore()
+  const { refreshing } = recSelf.useStore()
   const [canGoBack, canGoForward] = recSelf.useTabBackForwardStatus(tab)
-  const onRefresh = useOnRefresh()
+  const serviceQueueState = recSelf.useTabServiceQueueState(tab)
+  const serviceQueueStateInfo = serviceQueueState ? (
+    <>
+      {' '}
+      (当前 {serviceQueueState.cursor + 1}/{serviceQueueState.len})
+    </>
+  ) : undefined
 
   useKeyPress(
     ['shift.comma'],
@@ -142,7 +149,7 @@ export function RecHeader({ tab, leftSlot, rightSlot, shortcutEnabled, ref }: Re
           {/* 前进4 !!! */}
           {showBackForwardButtons && _isRecTab && (
             <>
-              <AntdTooltip arrow={false} title='前进'>
+              <AntdTooltip arrow={false} title={<>前进{serviceQueueStateInfo}</>}>
                 <Button
                   className='icon-only-round-button'
                   disabled={refreshing || !canGoForward}
@@ -151,7 +158,7 @@ export function RecHeader({ tab, leftSlot, rightSlot, shortcutEnabled, ref }: Re
                   <IconParkOutlineArrowRight />
                 </Button>
               </AntdTooltip>
-              <AntdTooltip arrow={false} title='后退'>
+              <AntdTooltip arrow={false} title={<>后退{serviceQueueStateInfo}</>}>
                 <Button
                   className='icon-only-round-button'
                   disabled={refreshing || !canGoBack}

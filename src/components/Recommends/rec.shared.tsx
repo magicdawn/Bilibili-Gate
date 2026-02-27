@@ -1,9 +1,14 @@
+/* oxlint-disable react-hooks/rules-of-hooks */
+
 import { useCreation, useLockFn } from 'ahooks'
 import Emittery from 'emittery'
 import { createContext, useContext, useMemo, type ReactNode } from 'react'
 import { proxy, ref, snapshot, useSnapshot } from 'valtio'
-import { isRecTab, type RecTab, type ServiceMap, type ServiceQueueMap } from '$modules/rec-services/service-map'
+import { isRecTab, type RecTab, type ServiceMap } from '$modules/rec-services/service-map'
+import type { RingBuffer } from 'ring-buffer-ts'
 import type { ETab } from '$components/RecHeader/tab-enum'
+import type { AppRecService } from '$modules/rec-services/app'
+import type { PcRecService } from '$modules/rec-services/pc'
 
 /* #region RecSharedEmitter */
 export type RecSharedEmitterEvents = {
@@ -33,7 +38,7 @@ export class RecSelf {
   constructor(public insideModal?: boolean) {}
   recSharedEmitter = new Emittery<RecSharedEmitterEvents>()
   serviceRegistry: Partial<ServiceMap> = {}
-  serviceQueueMap: Partial<ServiceQueueMap> = {}
+  serviceQueueMap: Partial<Record<RecTab, RingBuffer<AppRecService | PcRecService>>> = {}
 
   // render state
   private store = proxy({
@@ -52,7 +57,6 @@ export class RecSelf {
   }
 
   useStore = () => {
-    /* oxlint-disable react-hooks/rules-of-hooks */
     return useSnapshot(this.store)
   }
   setStore = (payload: Partial<typeof this.store>) => {
@@ -66,12 +70,16 @@ export class RecSelf {
     Object.assign(this.store, payload)
   }
 
+  useTabServiceQueueState = (tab: ETab) => {
+    return useSnapshot(this.store.serviceQueueStateMap)[tab as RecTab]
+  }
   getTabServiceQueueState = (tab: ETab) => {
     return snapshot(this.store.serviceQueueStateMap)[tab as RecTab]
   }
   setTabServiceQueueState = (tab: RecTab, state: { len: number; cursor: number }) => {
     this.store.serviceQueueStateMap[tab] = state
   }
+
   private _calcTabBackForwardStatus = (
     tab: ETab,
     state: { len: number; cursor: number } | undefined,
@@ -84,8 +92,7 @@ export class RecSelf {
     return this._calcTabBackForwardStatus(tab, this.getTabServiceQueueState(tab))
   }
   useTabBackForwardStatus = (tab: ETab) => {
-    /* oxlint-disable react-hooks/rules-of-hooks */
-    const state = useSnapshot(this.store.serviceQueueStateMap)[tab as RecTab]
+    const state = this.useTabServiceQueueState(tab)
     return useMemo(() => this._calcTabBackForwardStatus(tab, state), [tab, state])
   }
 }

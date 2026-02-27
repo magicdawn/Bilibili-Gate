@@ -1,5 +1,6 @@
 import { useMemoizedFn, useMount, useUnmount } from 'ahooks'
 import { assert, attempt, attemptAsync, isEqual } from 'es-toolkit'
+import { RingBuffer } from 'ring-buffer-ts'
 import { useEmitterOn } from '$common/hooks/useEmitter'
 import { TabConfig } from '$components/RecHeader/tab-config'
 import { EHotSubTab, ETab } from '$components/RecHeader/tab-enum'
@@ -60,6 +61,8 @@ function checkIsSameTabButConditionsChanged(tab: ETab, serviceRegistry: Partial<
       return false
   }
 }
+
+const MAX_REC_SERVICE_HISTORY_COUNT = 5
 
 export function useRefresh({
   tab,
@@ -161,7 +164,7 @@ export function useRefresh({
         const newCursor = cursor + inc
         if (newCursor < 0 || newCursor > len - 1) throw new Error('cannot go back/forward')
 
-        const service = recSelf.serviceQueueMap[tab]?.[newCursor]
+        const service = recSelf.serviceQueueMap[tab]?.get(newCursor)
         assert(service, `service should not be nil`)
         existingService = service
         recSelf.setTabServiceQueueState(tab, { cursor: newCursor, len })
@@ -198,9 +201,10 @@ export function useRefresh({
       serviceRegistry[tab] = service as any
       updateViewFromService?.()
       if (isRecTab(tab)) {
-        recSelf.serviceQueueMap[tab] ||= []
-        recSelf.serviceQueueMap[tab].push(service as any)
-        const len = recSelf.serviceQueueMap[tab].length
+        recSelf.serviceQueueMap[tab] ||= new RingBuffer(MAX_REC_SERVICE_HISTORY_COUNT)
+        const queue = recSelf.serviceQueueMap[tab]
+        queue.add(service as any)
+        const len = queue.getBufferLength()
         recSelf.setTabServiceQueueState(tab, { len, cursor: len - 1 })
       }
 
