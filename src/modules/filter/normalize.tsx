@@ -1,7 +1,7 @@
 import { av2bv } from '@mgdn/bvid'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
-import { memoize, noop, type MemoizeCache } from 'es-toolkit'
+import { assert, memoize, noop, type MemoizeCache } from 'es-toolkit'
 import { appWarn } from '$common'
 import { defineStatItems, type StatItemField, type StatItemType } from '$components/VideoCard/stat-item'
 import { EApiType } from '$define/index.shared'
@@ -32,7 +32,6 @@ import type {
   SpaceUploadItemExtend,
   WatchlaterItemExtend,
 } from '$define'
-import type { Badge as DynamicFeedBadge } from '$modules/rec-services/dynamic-feed/api/types/dynamic-feed.api'
 import type { FavItemExtend } from '$modules/rec-services/fav/types'
 
 export const DESC_SEPARATOR = '·'
@@ -126,6 +125,10 @@ export const normalizeCardData = memoize(
     // handle mixed content
     if (ret.authorFace) ret.authorFace = toHttps(ret.authorFace)
     if (ret.cover) ret.cover = toHttps(ret.cover)
+
+    // empty string -> undefined
+    ret.bvid ||= undefined
+    ret.avid ||= undefined
 
     return ret
   },
@@ -289,9 +292,10 @@ function apiPcAdapter(item: PcRecItemExtend): IVideoCardData {
   }
 }
 
-export type { DynamicFeedBadge }
 function apiDynamicAdapter(item: DynamicFeedItemExtend): IVideoCardData {
-  return normalizeDynamicFeedItem(item)! // make sure result not empty
+  const ret = normalizeDynamicFeedItem(item)
+  assert(ret, 'unexpected `normalizeDynamicFeedItem` empty result')
+  return ret
 }
 
 function apiWatchlaterAdapter(item: WatchlaterItemExtend): IVideoCardData {
