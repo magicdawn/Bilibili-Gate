@@ -5,6 +5,7 @@ import { PcRecGoto } from '$define/pc-recommend'
 import { isWebApiSuccess, request } from '$request'
 import toast from '$utility/toast'
 import { BaseTabService } from './_base'
+import { getWebInitialRecommendItems } from './pc-initial-rec'
 import type { PcRecItem, PcRecItemExtend, PcRecommendJson } from '$define'
 
 const debug = baseDebug.extend('modules:rec-services:pc')
@@ -45,9 +46,13 @@ export class PcRecService extends BaseTabService<PcRecItemExtend> {
     }
   }
 
-  private async getRecommendTimes(abortSignal: AbortSignal, times: number) {
-    let list: PcRecItem[] = (await Promise.all(range(times).map(() => this.getRecommend(abortSignal)))).flat()
+  // preload pc-initial items
+  async preloadPcInitialRecItems(abortSignal: AbortSignal) {
+    const initialItems = await getWebInitialRecommendItems(abortSignal)
+    this.qs.bufferQueue.push(...this.processRawList(initialItems))
+  }
 
+  private processRawList(list: PcRecItem[]): PcRecItemExtend[] {
     const knownGotoSet = new Set([PcRecGoto.AV, PcRecGoto.Live, PcRecGoto.Ad])
     list.forEach((item) => {
       if (!knownGotoSet.has(item.goto)) {
@@ -75,8 +80,13 @@ export class PcRecService extends BaseTabService<PcRecItemExtend> {
     return _list
   }
 
+  private getRecommendTimes = async (abortSignal: AbortSignal, times: number) => {
+    const list: PcRecItem[] = (await Promise.all(range(times).map(() => this.getRecommend(abortSignal)))).flat()
+    return this.processRawList(list)
+  }
+
   page = 0
-  private async getRecommend(abortSignal: AbortSignal) {
+  private getRecommend = async (abortSignal: AbortSignal) => {
     const curpage = ++this.page // this has parallel call, can not ++ after success
 
     // https://socialsisteryi.github.io/bilibili-API-collect/docs/video/recommend.html#获取首页视频推荐列表-web端

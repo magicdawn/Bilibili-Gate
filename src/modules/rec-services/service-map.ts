@@ -57,6 +57,7 @@ export type FetcherOptions = {
   tab: ETab
   service: BaseTabService
   abortSignal: AbortSignal
+  firstFetch?: boolean
 }
 
 export function getServiceFromRegistry<T extends ETab>(serviceRegistry: Partial<ServiceMap>, tab: T): ServiceMap[T] {

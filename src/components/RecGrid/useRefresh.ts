@@ -132,8 +132,8 @@ export function useRefresh({
       self.setStore({ hasMore: getServiceFromRegistry(serviceRegistry, tab).hasMore })
     }
 
-    async function doFetch(service: BaseTabService) {
-      const [err, currentItems] = await attemptAsync(() => fetcher({ tab, service, abortSignal: signal }))
+    async function doFetch(service: BaseTabService, firstFetch?: boolean) {
+      const [err, currentItems] = await attemptAsync(() => fetcher({ tab, service, abortSignal: signal, firstFetch }))
       // explicit aborted
       if (signal.aborted) return debug('refresh(): tab=%s [aborted], ignoring rest code', tab)
       if (err) return onError(err)
@@ -198,6 +198,7 @@ export function useRefresh({
       if (err) return onError(err)
 
       // save services
+      const firstFetch = serviceRegistry[tab] ? undefined : true // no previous service
       serviceRegistry[tab] = service as any
       updateViewFromService?.()
       if (isRecTab(tab)) {
@@ -208,7 +209,7 @@ export function useRefresh({
         recSelf.setTabServiceQueueState(tab, { len, cursor: len - 1 })
       }
 
-      const success = await doFetch(service!)
+      const success = await doFetch(service!, firstFetch)
       if (!success) return
     }
 

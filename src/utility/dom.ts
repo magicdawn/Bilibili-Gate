@@ -1,3 +1,4 @@
+import Emittery from 'emittery'
 import { delay, isNil } from 'es-toolkit'
 import { appWarn, baseDebug } from '$common'
 
@@ -9,6 +10,7 @@ const DEFAULT_POLL_INTERVAL = 200
 export type PollOptions<T> = {
   interval?: number
   timeout?: number
+  abortSignal?: AbortSignal
   validate?: (value: T) => boolean
 }
 
@@ -17,12 +19,22 @@ export async function poll<T>(fn: () => T, options?: PollOptions<T>) {
   let timeout = options?.timeout ?? DEFAULT_POLL_TIMEOUT
   if (timeout === 0) timeout = Infinity
   const validate = options?.validate ?? ((val: T) => !isNil(val))
+  const abortSignal = options?.abortSignal
 
   const start = performance.now()
   let result = fn()
 
-  while (!validate(result) && performance.now() - start < timeout) {
-    await delay(interval)
+  const emittery = new Emittery<{ abort: undefined }>()
+  abortSignal?.addEventListener('abort', () => {
+    emittery.emit('abort')
+  })
+
+  const hasLeftTime = () => performance.now() - start < timeout
+  while (!validate(result) && hasLeftTime() && !abortSignal?.aborted) {
+    const p1 = delay(interval)
+    const p2 = emittery.once('abort')
+    await Promise.race([p1, p2])
+    p2.off()
     result = fn()
   }
 
