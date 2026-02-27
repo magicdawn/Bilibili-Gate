@@ -132,7 +132,7 @@ export function ModalDislike({ show, reasons, onHide, okAction }: typeof default
           <div className='reason-list mb-20px mt-20px flex flex-col gap-y-10px'>
             {reasons.map((reason, index) => {
               const active = index === activeIndex
-              const { reasonId, text, helpText } = normalizeDislikeReason(reason)
+              const { reasonId, text } = normalizeDislikeReason(reason)
               return (
                 <button
                   key={reasonId}

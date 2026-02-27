@@ -1,6 +1,6 @@
 import { useMemoizedFn } from 'ahooks'
 import clsx from 'clsx'
-import { memo } from 'react'
+import { memo, useMemo } from 'react'
 import { useEmitterOn } from '$common/hooks/useEmitter'
 import { handleCancelDislike } from '$components/ModalDislike/api'
 import { normalizeDislikeReason, type DislikeReason } from '$components/ModalDislike/types'
@@ -43,12 +43,12 @@ const blockedCardClassNames = {
   wrapper: 'h-full flex flex-col overflow-hidden',
   cover: 'relative aspect-16/9 rounded-t-6px',
   coverInner: 'absolute left-0 top-0 h-full w-full flex flex-col items-center justify-center gap-y-2',
-  dislikeReason: 'text-center font-size-20px',
-  dislikeDesc: 'text-center text-16px',
+  dislikeReason: 'text-center text-1.4em',
+  dislikeDesc: 'text-center text-1em',
   action: 'relative flex-1',
   actionInner:
     'absolute left-0 top-0 h-full w-full flex items-center justify-center b-t-1px b-t-$bilibili-gate--separator-color b-t-solid transition-duration-300 transition-property-[border-color]',
-  actionButton: 'flex cursor-pointer items-center rounded-lg bg-transparent p-15px text-16px color-inherit',
+  actionButton: 'flex cursor-pointer items-center rounded-lg bg-transparent p-15px text-1.2em color-inherit',
 } as const
 
 export const DislikedCard = memo(function DislikedCard({
@@ -67,13 +67,13 @@ export const DislikedCard = memo(function DislikedCard({
   })
   useEmitterOn(emitter, 'cancel-dislike', onCancelDislike)
 
-  const { text, helpText } = normalizeDislikeReason(dislikedReason)
+  const { text, helpText } = useMemo(() => normalizeDislikeReason(dislikedReason), [dislikedReason])
 
   return (
     <div className={blockedCardClassNames.wrapper}>
       <div className={blockedCardClassNames.cover}>
         <div className={blockedCardClassNames.coverInner}>
-          <IconParkOutlineDistraughtFace className='size-32px' />
+          <IconParkOutlineDistraughtFace className='size-2.5em' />
           <div className={blockedCardClassNames.dislikeReason}>{text}</div>
           <div className={blockedCardClassNames.dislikeDesc}>{helpText || '将减少此类内容推荐'}</div>
         </div>
@@ -98,7 +98,7 @@ function __BottomRevertAction({
       <VideoCardBottom item={item} cardData={cardData} className='invisible' />
       <div className={blockedCardClassNames.actionInner}>
         <button className={blockedCardClassNames.actionButton} onClick={onClick}>
-          <IconForReset className='mr-4px mt--2px size-16px' />
+          <IconForReset className='mr-4px mt--2px' />
           撤销
         </button>
       </div>

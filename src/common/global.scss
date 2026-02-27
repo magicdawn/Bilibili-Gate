@@ -29,7 +29,11 @@
   font-size: 14px;
   --back-top-right: 24px;
 
-  button,
+  // why this
+  // button {
+  //   font-size: inherit;
+  // }
+
   dd,
   dl,
   ol,
