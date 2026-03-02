@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
-import { attempt, trim } from 'es-toolkit'
+import { attempt, debounce, trim } from 'es-toolkit'
+import ms from 'ms'
 import { APP_NAME } from '$common'
 import { toastAndReload } from '$components/ModalSettings/index.shared'
 import { antMessage } from '$modules/antd'
@@ -17,18 +18,27 @@ import { set_HAS_RESTORED_SETTINGS } from './restore-flag'
 import type { PartialDeep } from 'type-fest'
 
 let lastUrl: string | undefined
-async function genUrl(paths: LeafSettingsPath[] | undefined) {
-  // revoke previous created url
+
+const revokeObjectUrl = () => {
   attempt(() => {
     if (lastUrl) URL.revokeObjectURL(lastUrl)
     lastUrl = undefined
   })
+}
 
+const delayRevokeObjectUrl = debounce(revokeObjectUrl, ms('10min'))
+
+async function genUrl(paths: LeafSettingsPath[] | undefined) {
   const fullSettings = await loadSettingsFromGmStorage()
   const val = paths?.length ? pickSettings(fullSettings, paths).pickedSettings : fullSettings
   const json = JSON.stringify(val, null, 2)
   const blob = new Blob([json], { type: 'application/json' })
+
+  revokeObjectUrl()
+  delayRevokeObjectUrl.cancel()
   lastUrl = URL.createObjectURL(blob)
+  delayRevokeObjectUrl()
+
   return lastUrl
 }
 
