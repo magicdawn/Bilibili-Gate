@@ -1,38 +1,41 @@
 import dayjs from 'dayjs'
-import { attempt } from 'es-toolkit'
+import { attempt, trim } from 'es-toolkit'
 import { APP_NAME } from '$common'
 import { toastAndReload } from '$components/ModalSettings/index.shared'
 import { antMessage } from '$modules/antd'
 import toast from '$utility/toast'
 import {
   allowedLeafSettingsPaths,
-  getSettingsSnapshot,
+  loadSettingsFromGmStorage,
   pickSettings,
   runSettingsMigration,
   updateSettings,
+  type LeafSettingsPath,
   type Settings,
 } from './index'
 import { set_HAS_RESTORED_SETTINGS } from './restore-flag'
 import type { PartialDeep } from 'type-fest'
 
 let lastUrl: string | undefined
-function genUrl() {
+async function genUrl(paths: LeafSettingsPath[] | undefined) {
   // revoke previous created url
   attempt(() => {
     if (lastUrl) URL.revokeObjectURL(lastUrl)
     lastUrl = undefined
   })
 
-  const val = getSettingsSnapshot()
+  const fullSettings = await loadSettingsFromGmStorage()
+  const val = paths?.length ? pickSettings(fullSettings, paths).pickedSettings : fullSettings
   const json = JSON.stringify(val, null, 2)
   const blob = new Blob([json], { type: 'application/json' })
   lastUrl = URL.createObjectURL(blob)
   return lastUrl
 }
 
-export function exportSettings() {
-  const url = genUrl()
-  const filename = `${APP_NAME}-settings ${dayjs().format('YYYY-MM-DD HH:mm:ss')}.json`
+export async function exportSettings(paths?: LeafSettingsPath[], moduleLabel?: string) {
+  const url = await genUrl(paths)
+  const prefix = [APP_NAME, trim(moduleLabel || '', ['-', ' ']), 'settings'].filter(Boolean).join('-')
+  const filename = `${prefix} ${dayjs().format('YYYY-MM-DD HH:mm:ss')}.json`
   if (typeof GM_download !== 'undefined') {
     GM_download?.({ url, name: filename })
   } else {
@@ -43,7 +46,7 @@ export function exportSettings() {
   }
 }
 
-export async function importSettings() {
+export async function chooseFileForImportSettings() {
   const file = await chooseSingleJsonFile()
   if (!file) return
 
@@ -58,13 +61,26 @@ export async function importSettings() {
   }
 
   runSettingsMigration(settingsFromFile)
-  const { pickedPaths, pickedSettings } = pickSettings(settingsFromFile, allowedLeafSettingsPaths)
-  if (!pickedPaths.length) {
-    return toast('没有有效的设置!')
+  return settingsFromFile
+}
+
+export async function importSettings() {
+  const settingsFromFile = await chooseFileForImportSettings()
+  if (!settingsFromFile) return
+
+  const { pickedPaths, pickedSettings: importedSettings } = pickSettings(settingsFromFile, allowedLeafSettingsPaths)
+  if (!pickedPaths.length) return toast('没有有效的设置!')
+
+  {
+    const keys = Object.keys(importedSettings)
+    if (keys.length === 1) {
+      if (keys[0] === 'filter') return toast('过滤相关数据请使用「内容过滤」内独立的导入导出功能!', 5000)
+      return toast('异常数据', 5000)
+    }
   }
 
   set_HAS_RESTORED_SETTINGS(true)
-  updateSettings(pickedSettings)
+  updateSettings(importedSettings)
   antMessage.success('导入成功!')
   return toastAndReload()
 }

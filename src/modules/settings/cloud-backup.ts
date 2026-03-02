@@ -1,4 +1,4 @@
-import { isEqual, throttle } from 'es-toolkit'
+import { difference, isEqual, throttle } from 'es-toolkit'
 import ms from 'ms'
 import { allowedLeafSettingsPaths, pickSettings, type Settings } from '.'
 import { articleDraft, debug, getBackupOmitPaths } from './index.shared'
@@ -12,7 +12,10 @@ export async function saveToDraft(val: ReadonlyDeep<PartialDeep<Settings>>) {
   if (!val.backupSettingsToArticleDraft) return
   if (HAS_RESTORED_SETTINGS) return // skip when `HAS_RESTORED_SETTINGS=true`
 
-  const { pickedSettings: currentBackupVal } = pickSettings(val, allowedLeafSettingsPaths, getBackupOmitPaths())
+  const { pickedSettings: currentBackupVal } = pickSettings(
+    val,
+    difference(allowedLeafSettingsPaths, getBackupOmitPaths()),
+  )
   const shouldBackup = !lastBackupVal || !isEqual(lastBackupVal, currentBackupVal)
   if (!shouldBackup) return
 

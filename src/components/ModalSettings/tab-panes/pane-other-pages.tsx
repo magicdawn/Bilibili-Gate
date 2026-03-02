@@ -1,12 +1,17 @@
-import clsx from 'clsx'
 import { APP_NAME } from '$common'
-import { kbdClassName } from '$components/fragments'
+import { CustomKbd } from '$components/fragments'
 import { CheckboxSettingItem } from '../setting-item'
-import { SettingsGroup, sharedClassNames } from './shared'
+import { ResetPartialSettingsButton, SettingsGroup, sharedClassNames } from './shared'
 
 export function TabPaneOtherPages() {
   return (
     <div className={sharedClassNames.tabPane}>
+      <div className='mb-10px flex justify-start'>
+        <ResetPartialSettingsButton
+          paths={['fav.useCustomFavPicker.onPlayPage', 'videoCard.videoPreview.addTo.searchPage']}
+        />
+      </div>
+
       <SettingsGroup title='视频播放页'>
         <CheckboxSettingItem
           configPath='fav.useCustomFavPicker.onPlayPage'
@@ -19,7 +24,7 @@ export function TabPaneOtherPages() {
                 <li>
                   <span className='flex-v-center'>
                     支持从收藏夹图标 或 快捷键
-                    <kbd className={clsx(kbdClassName, 'mx-1 h-14px py-0 line-height-14px')}>e</kbd>
+                    <CustomKbd className='mx-1 h-14px py-0 line-height-13px'>e</CustomKbd>
                     触发
                   </span>
                 </li>

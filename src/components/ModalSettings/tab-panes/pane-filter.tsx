@@ -1,4 +1,4 @@
-import { Button, InputNumber, Popover, Space, Tabs, Tag } from 'antd'
+import { Button, InputNumber, Space, Tabs, Tag } from 'antd'
 import clsx from 'clsx'
 import { isEqual, isNil } from 'es-toolkit'
 import pmap from 'promise.map'
@@ -8,19 +8,9 @@ import { TabIcon } from '$components/RecHeader/tab-config'
 import { ETab } from '$components/RecHeader/tab-enum'
 import { antMessage } from '$modules/antd'
 import { getUserNickname } from '$modules/bilibili/user/nickname'
-import {
-  exportDfFilterByTitle,
-  exportDfHideOpusMids,
-  exportFilterByAuthor,
-  exportFilterByTitle,
-  importDfFilterByTitle,
-  importDfHideOpusMids,
-  importFilterByAuthor,
-  importFilterByTitle,
-} from '$modules/filter/import-export'
+import { exportFilterSettings, importFilterSettings } from '$modules/filter/import-export'
 import { parseUpRepresent } from '$modules/filter/parse'
 import { IconForDelete, IconForInfo } from '$modules/icon'
-import { IconForPopoverTrigger } from '$modules/rec-services/dynamic-feed/shared'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { EditableListSettingItem } from '../EditableListSettingItem'
 import { SettingsGroup, sharedClassNames } from './shared'
@@ -31,13 +21,38 @@ const C = {
 }
 
 export function TabPaneFilter() {
+  const {
+    filter: { byAuthor, byTitle, dfByTitle, dfHideOpusMids },
+  } = useSettingsSnapshot()
+
   return (
     <div className={clsx(sharedClassNames.tabPane, 'pr-15px')}>
       <SettingsGroup
         title={
           <>
-            内容过滤
+            <span>内容过滤</span>
             <SwitchSettingItem configPath='filter.enabled' className='ml-10px' />
+            <div className='flex-1' />
+            <Space size={5}>
+              <Button
+                onClick={exportFilterSettings}
+                disabled={
+                  !(
+                    byAuthor.keywords.length ||
+                    byTitle.keywords.length ||
+                    dfByTitle.keywords.length ||
+                    dfHideOpusMids.keywords.length
+                  )
+                }
+              >
+                <IconTablerFileExport />
+                导出
+              </Button>
+              <Button onClick={importFilterSettings}>
+                <IconTablerFileImport />
+                导入
+              </Button>
+            </Space>
           </>
         }
       >
@@ -246,29 +261,10 @@ function SubTabFilterForRec() {
             </HelpInfo>
             <SwitchSettingItem configPath='filter.byAuthor.enabled' disabled={!enabled} className='ml-10px' />
             <div className='flex-1' />
-            <Popover
-              placement='left'
-              content={
-                <div className='flex flex-col gap-x-10px gap-y-5px'>
-                  <Button onClick={clear_filterByAuthor_uselessRemarkData}>
-                    <IconForDelete />
-                    清理无效备注数据
-                  </Button>
-                  <Button onClick={exportFilterByAuthor} disabled={!byAuthor.keywords.length}>
-                    <IconTablerFileExport />
-                    导出
-                  </Button>
-                  <Button onClick={importFilterByAuthor}>
-                    <IconTablerFileImport />
-                    导入
-                  </Button>
-                </div>
-              }
-            >
-              <Button className='icon-only-round-button size-26px'>
-                <IconForPopoverTrigger className='size-16px' />
-              </Button>
-            </Popover>
+            <Button onClick={clear_filterByAuthor_uselessRemarkData}>
+              <IconForDelete />
+              清理无效备注数据
+            </Button>
           </div>
           <EditableListSettingItem
             configPath={'filter.byAuthor.keywords'}
@@ -290,26 +286,6 @@ function SubTabFilterForRec() {
               </Tag>
             </HelpInfo>
             <SwitchSettingItem configPath='filter.byTitle.enabled' disabled={!enabled} className='ml-10px' />
-            <div className='flex-1' />
-            <Popover
-              placement='left'
-              content={
-                <div className='flex flex-col gap-x-10px gap-y-5px'>
-                  <Button onClick={exportFilterByTitle} disabled={!byTitle.keywords.length}>
-                    <IconTablerFileExport />
-                    导出
-                  </Button>
-                  <Button onClick={importFilterByTitle}>
-                    <IconTablerFileImport />
-                    导入
-                  </Button>
-                </div>
-              }
-            >
-              <Button className='icon-only-round-button size-26px'>
-                <IconForPopoverTrigger className='size-16px' />
-              </Button>
-            </Popover>
           </div>
           <EditableListSettingItem
             configPath={'filter.byTitle.keywords'}
@@ -341,26 +317,6 @@ function SubTabFilterForDynamicFeed() {
             作用范围: 支持的动态类型: 视频 / 图文
           </HelpInfo>
           <SwitchSettingItem configPath='filter.dfByTitle.enabled' disabled={!enabled} className='ml-10px' />
-          <div className='flex-1' />
-          <Popover
-            placement='left'
-            content={
-              <div className='flex flex-col gap-x-10px gap-y-5px'>
-                <Button onClick={exportDfFilterByTitle} disabled={!dfByTitle.keywords.length}>
-                  <IconTablerFileExport />
-                  导出
-                </Button>
-                <Button onClick={importDfFilterByTitle}>
-                  <IconTablerFileImport />
-                  导入
-                </Button>
-              </div>
-            }
-          >
-            <Button className='icon-only-round-button size-26px'>
-              <IconForPopoverTrigger className='size-16px' />
-            </Button>
-          </Popover>
         </div>
         <EditableListSettingItem
           configPath={'filter.dfByTitle.keywords'}
@@ -377,26 +333,6 @@ function SubTabFilterForDynamicFeed() {
             右键图文动态可快速添加
           </HelpInfo>
           <SwitchSettingItem configPath='filter.dfHideOpusMids.enabled' disabled={!enabled} className='ml-10px' />
-          <div className='flex-1' />
-          <Popover
-            placement='left'
-            content={
-              <div className='flex flex-col gap-x-10px gap-y-5px'>
-                <Button onClick={exportDfHideOpusMids} disabled={!dfHideOpusMids.keywords.length}>
-                  <IconTablerFileExport />
-                  导出
-                </Button>
-                <Button onClick={importDfHideOpusMids}>
-                  <IconTablerFileImport />
-                  导入
-                </Button>
-              </div>
-            }
-          >
-            <Button className='icon-only-round-button size-26px'>
-              <IconForPopoverTrigger className='size-16px' />
-            </Button>
-          </Popover>
         </div>
         <EditableListSettingItem
           configPath={'filter.dfHideOpusMids.keywords'}

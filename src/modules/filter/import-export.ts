@@ -1,63 +1,95 @@
-import { attempt, attemptAsync, difference } from 'es-toolkit'
-import { APP_NAME } from '$common'
+import { difference, isEqual, isNil, uniq } from 'es-toolkit'
+import { get } from 'es-toolkit/compat'
 import { antMessage } from '$modules/antd'
-import { getNewestValueOfSettingsInnerArray, updateSettingsInnerArray, type ListSettingsPath } from '$modules/settings'
+import {
+  allowedLeafSettingsPaths,
+  loadSettingsFromGmStorage,
+  pickSettings,
+  updateSettings,
+  type ListSettingsPath,
+} from '$modules/settings'
+import { chooseFileForImportSettings, exportSettings } from '$modules/settings/file-backup'
+import toast from '$utility/toast'
 
-export function exportFilterByAuthor() {
-  return _exportForPath('filter.byAuthor.keywords')
-}
-export function importFilterByAuthor() {
-  return _importForPath('filter.byAuthor.keywords')
-}
-export function exportFilterByTitle() {
-  return _exportForPath('filter.byTitle.keywords')
-}
-export function importFilterByTitle() {
-  return _importForPath('filter.byTitle.keywords')
-}
-export function exportDfFilterByTitle() {
-  return _exportForPath('filter.dfByTitle.keywords')
-}
-export function importDfFilterByTitle() {
-  return _importForPath('filter.dfByTitle.keywords')
-}
-export function exportDfHideOpusMids() {
-  return _exportForPath('filter.dfHideOpusMids.keywords')
-}
-export function importDfHideOpusMids() {
-  return _importForPath('filter.dfHideOpusMids.keywords')
-}
+type ListFilterSettingPath = Extract<ListSettingsPath, `filter.${string}`>
+const LIST_FILTER_SETTING_PATHS = [
+  'filter.byAuthor.keywords',
+  'filter.byTitle.keywords',
+  'filter.dfByTitle.keywords',
+  'filter.dfHideOpusMids.keywords',
+] as const satisfies ListFilterSettingPath[]
 
-// 一个奇怪的 json key, 减少其他内容的干扰
-function getJsonKey(p: ListSettingsPath) {
-  return `__${APP_NAME}:${p}__`
-}
+const ALL_FILTER_SETTING_PATHS = allowedLeafSettingsPaths.filter((p) => p.startsWith('filter.'))
 
-async function _exportForPath(listSettingsPath: ListSettingsPath) {
-  const key = getJsonKey(listSettingsPath)
-  const val = await getNewestValueOfSettingsInnerArray(listSettingsPath)
-  if (!val?.length) return antMessage.error('没有可导出数据!')
-  GM.setClipboard(JSON.stringify({ [key]: val }, null, 2))
-  antMessage.success('已复制到剪贴板!')
+const NONE_LIST_FILTER_SETTING_PATHS = difference(ALL_FILTER_SETTING_PATHS, LIST_FILTER_SETTING_PATHS)
+
+export async function exportFilterSettings() {
+  const settings = await loadSettingsFromGmStorage()
+  const listEntryCount = LIST_FILTER_SETTING_PATHS.reduce(
+    (count, path) => count + (get(settings, path)?.length ?? 0),
+    0,
+  )
+  if (!listEntryCount) antMessage.warning('列表数据为空!')
+  await exportSettings(ALL_FILTER_SETTING_PATHS, 'filter')
 }
 
-async function _importForPath(listSettingsPath: ListSettingsPath) {
-  const [errClip, text] = await attemptAsync(() => navigator.clipboard.readText())
-  if (errClip) return antMessage.error('读取剪贴板失败!')
-  if (!text) return antMessage.error('剪贴板内容为空!')
+export async function importFilterSettings() {
+  const settingsFromFile = await chooseFileForImportSettings()
+  if (!settingsFromFile) return
 
-  const [errJson, json] = attempt(() => JSON.parse(text))
-  if (errJson) return antMessage.error('无法解析剪贴板内容!')
-  if (!json) return antMessage.error('剪贴板内容为空!')
+  const { pickedPaths, pickedSettings: importedSettings } = pickSettings(settingsFromFile, ALL_FILTER_SETTING_PATHS)
+  if (!pickedPaths.length) return toast('没有有效的设置!')
 
-  const key = getJsonKey(listSettingsPath)
-  const val = (json as any)?.[key] as string[] | undefined
-  if (!val?.length) return antMessage.error('没有符合条件的数据!')
+  // 没有可导入内容, 已全部存在
+  const existingSettings = await loadSettingsFromGmStorage()
+  const hasSomethingToImport = (() => {
+    if (
+      NONE_LIST_FILTER_SETTING_PATHS.some((path) => {
+        const imported = get(importedSettings, path)
+        const existing = get(existingSettings, path)
+        if (isNil(imported) || isEqual(imported, existing)) return
+        return true
+      })
+    ) {
+      return true
+    }
+    if (
+      LIST_FILTER_SETTING_PATHS.some((path) => {
+        const importedArr = get(importedSettings, path)
+        const existingArr = get(existingSettings, path) ?? []
+        if (!importedArr?.length) return
 
-  const currentList = await getNewestValueOfSettingsInnerArray(listSettingsPath)
-  const toAdd = difference(val, currentList)
-  if (!toAdd.length) return antMessage.warning('没有可导入内容, 已全部存在!')
+        const toAdd = difference(importedArr, existingArr)
+        if (!toAdd.length) return
 
-  updateSettingsInnerArray(listSettingsPath, { add: toAdd })
-  antMessage.success(`已导入 ${toAdd.length} 条数据!`)
+        return true
+      })
+    ) {
+      return true
+    }
+    return false
+  })()
+  if (!hasSomethingToImport) return toast('没有可导入内容, 导入内容与现有设置相同!', 5000)
+
+  let noneListEntryImported = 0
+  let listEntryImported = 0
+  NONE_LIST_FILTER_SETTING_PATHS.forEach((path) => {
+    const imported = get(importedSettings, path)
+    const existing = get(existingSettings, path)
+    if (isNil(imported) || isEqual(imported, existing)) return
+    updateSettings({ [path]: imported })
+    noneListEntryImported += 1
+  })
+  LIST_FILTER_SETTING_PATHS.forEach((path) => {
+    const importedArr = get(importedSettings, path)
+    const existingArr = get(existingSettings, path) ?? []
+    if (!importedArr?.length) return
+
+    const toAdd = difference(importedArr, existingArr)
+    if (!toAdd.length) return
+
+    updateSettings({ [path]: uniq([...existingArr, ...toAdd]) })
+    listEntryImported += toAdd.length
+  })
+  antMessage.success(`已导入 ${noneListEntryImported} 条常规数据, ${listEntryImported} 条列表数据!`)
 }

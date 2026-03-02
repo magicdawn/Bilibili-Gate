@@ -1,6 +1,6 @@
 import { Button, Popconfirm, Space } from 'antd'
 import clsx from 'clsx'
-import { startCase } from 'es-toolkit'
+import { difference, startCase } from 'es-toolkit'
 import { useState, type ReactNode } from 'react'
 import { APP_NAME } from '$common'
 import { buttonOpenCss } from '$common/emotion-css'
@@ -33,7 +33,10 @@ function onResetSettings() {
 async function onRestoreSettings() {
   const remoteSettings = await articleDraft.getData()
   runSettingsMigration(remoteSettings)
-  const { pickedPaths, pickedSettings } = pickSettings(remoteSettings, allowedLeafSettingsPaths, restoreOmitPaths)
+  const { pickedPaths, pickedSettings } = pickSettings(
+    remoteSettings,
+    difference(allowedLeafSettingsPaths, restoreOmitPaths),
+  )
   if (!pickedPaths.length) {
     return antMessage.error('备份不存在或没有有效的配置')
   }

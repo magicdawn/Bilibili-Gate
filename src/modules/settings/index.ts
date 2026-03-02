@@ -331,7 +331,7 @@ export function getSettingsSnapshot() {
  */
 const storageKey = `settings`
 
-async function __pickSettingsFromGmStorage(): Promise<PartialDeep<Settings>> {
+export async function loadSettingsFromGmStorage(): Promise<PartialDeep<Settings>> {
   const saved = await GM.getValue<Settings>(storageKey)
   if (!saved || typeof saved !== 'object') return {}
   runSettingsMigration(saved)
@@ -339,7 +339,7 @@ async function __pickSettingsFromGmStorage(): Promise<PartialDeep<Settings>> {
 }
 
 export async function loadAndSetup() {
-  const val = await __pickSettingsFromGmStorage()
+  const val = await loadSettingsFromGmStorage()
   updateSettings(val)
 
   // persist when config change
@@ -464,15 +464,9 @@ export function runSettingsMigration(val: object | undefined) {
 /**
  * pick
  */
-export function pickSettings(
-  source: ReadonlyDeep<PartialDeep<Settings>>,
-  paths: LeafSettingsPath[],
-  omit: LeafSettingsPath[] = [],
-) {
+export function pickSettings(source: ReadonlyDeep<PartialDeep<Settings>>, paths: LeafSettingsPath[]) {
   const pickedSettings: PartialDeep<Settings> = {}
-  const pickedPaths = paths.filter(
-    (p) => allowedLeafSettingsPaths.includes(p) && !omit.includes(p) && !isNil(get(source, p)),
-  )
+  const pickedPaths = paths.filter((p) => allowedLeafSettingsPaths.includes(p) && !isNil(get(source, p)))
   pickedPaths.forEach((p) => {
     const v = get(source, p)
     set(pickedSettings, p, v)
@@ -482,6 +476,15 @@ export function pickSettings(
 // #endregion
 
 // #region `inner array`
+
+//
+// Q: 为什么重新获取
+// A: 在多 Tab 访问的情况下, `settings` 上的数据可能不是最新的, 不想丢失 collection 数据
+//
+// Q: reciveGmValueUpdatesFromOtherTab
+// A: 现代脚本管理器可以订阅其他 Tab 更改, 但存在不支持的脚本管理器
+//
+
 export type SettingsInnerArrayItem<P extends ListSettingsPath> = Get<Settings, P>[number]
 
 export function useSettingsInnerArray<P extends ListSettingsPath>(path: P) {
@@ -490,9 +493,7 @@ export function useSettingsInnerArray<P extends ListSettingsPath>(path: P) {
 }
 
 export async function getNewestValueOfSettingsInnerArray<P extends ListSettingsPath>(path: P) {
-  // Q: 为什么重新获取
-  // A: 在多 Tab 访问的情况下, `settings` 上的数据可能不是最新的, 不想丢失 collection 数据
-  const newest = await __pickSettingsFromGmStorage()
+  const newest = await loadSettingsFromGmStorage()
   return (get(newest, path) || get(getSettingsSnapshot(), path)) as SettingsInnerArrayItem<P>[]
 }
 

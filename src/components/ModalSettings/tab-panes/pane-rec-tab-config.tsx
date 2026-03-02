@@ -57,7 +57,20 @@ export function TabPaneRecTabsConfig() {
           <VideoSourceTabOrder />
         </SettingsGroup>
 
-        <SettingsGroup title='更多设置' contentClassName='gap-y-15px'>
+        <SettingsGroup
+          title='更多设置'
+          contentClassName='gap-y-15px'
+          resetSettingPaths={[
+            'watchlaterAddSeparator',
+            'watchlaterUseNormalVideoUrl',
+            'fav.addSeparator',
+            'dynamicFeed.followGroup.enabled',
+            'dynamicFeed.showLive',
+            'dynamicFeed.videoOnly',
+            'dynamicFeed.whenViewAll.enableHideSomeContents',
+            'appRecommend.addOtherTabContents',
+          ]}
+        >
           {/* watchlater */}
           <div style={getCssOrderStyle(ETab.Watchlater)}>
             <div className='flex items-center text-size-1.3em'>
