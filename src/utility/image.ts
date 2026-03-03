@@ -3,6 +3,7 @@
  */
 
 import { isSafari } from '$ua'
+import { toHttps } from './url'
 
 function supportAvif() {
   return new Promise<boolean>((resolve, reject) => {
@@ -30,7 +31,7 @@ export const shouldUseAvif = !isSafari && (await supportAvif())
 
 export function getAvatarSrc(avatar: string) {
   const suffix = shouldUseAvif ? '.avif' : '.webp'
-  return `${avatar}@96w_96h_1c_1s_!web-avatar${suffix}`
+  return `${toHttps(avatar)}@96w_96h_1c_1s_!web-avatar${suffix}`
 }
 
 export function preloadImg(src: string) {
