@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { attempt, debounce, trim } from 'es-toolkit'
+import { attempt, trim } from 'es-toolkit'
 import ms from 'ms'
 import { APP_NAME } from '$common'
 import { toastAndReload } from '$components/ModalSettings/index.shared'
@@ -17,29 +17,30 @@ import {
 import { set_HAS_RESTORED_SETTINGS } from './restore-flag'
 import type { PartialDeep } from 'type-fest'
 
-let lastUrl: string | undefined
-
-const revokeObjectUrl = () => {
-  attempt(() => {
-    if (lastUrl) URL.revokeObjectURL(lastUrl)
-    lastUrl = undefined
-  })
+export class ObjectUrl {
+  public url: string | undefined
+  public revokeTimer: number | undefined
+  constructor(obj: Blob, delay: number = ms('10min')) {
+    this.url = URL.createObjectURL(obj)
+    this.revokeTimer = setTimeout(this.revoke, delay)
+  }
+  revoke = () => {
+    if (this.revokeTimer !== undefined) clearTimeout(this.revokeTimer)
+    this.revokeTimer = undefined
+    if (this.url) attempt(() => URL.revokeObjectURL(this.url!))
+    this.url = undefined
+  }
 }
 
-const delayRevokeObjectUrl = debounce(revokeObjectUrl, ms('10min'))
-
+let lastObjectUrl: ObjectUrl | undefined
 async function genUrl(paths: LeafSettingsPath[] | undefined) {
   const fullSettings = await loadSettingsFromGmStorage()
   const val = paths?.length ? pickSettings(fullSettings, paths).pickedSettings : fullSettings
   const json = JSON.stringify(val, null, 2)
   const blob = new Blob([json], { type: 'application/json' })
-
-  revokeObjectUrl()
-  delayRevokeObjectUrl.cancel()
-  lastUrl = URL.createObjectURL(blob)
-  delayRevokeObjectUrl()
-
-  return lastUrl
+  lastObjectUrl?.revoke()
+  lastObjectUrl = new ObjectUrl(blob)
+  return lastObjectUrl.url!
 }
 
 export async function exportSettings(paths?: LeafSettingsPath[], moduleLabel?: string) {
