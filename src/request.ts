@@ -1,7 +1,7 @@
 import axios from 'axios'
 import gmAdapter from 'axios-userscript-adapter'
 import { omit } from 'es-toolkit'
-import { appWarn, HOST_API, TVKeyInfo } from '$common'
+import { appWarn, HOST_API, OPERATION_FAIL_MSG, TVKeyInfo } from '$common'
 import { encWbi } from '$modules/bilibili/risk-control/wbi'
 import { appSign } from '$utility/app-api'
 import { settings } from './modules/settings'
@@ -30,12 +30,31 @@ export function isWebApiSuccess(json: any) {
   return json?.code === 0 && ['0', 'success', 'ok'].includes(json?.message?.toLowerCase())
 }
 
-export class WebApiError extends Error {
-  constructor(public json: any) {
-    const msg = 'WebApiError: ' + json.message
+// 请求成功了, 但返回的内容表示操作失败
+export class OperationFailError extends Error {
+  constructor(
+    public json: any,
+    msg?: string,
+  ) {
+    msg ||= `${OPERATION_FAIL_MSG} (code: ${json?.code}, message: ${json?.message})`
     super(msg)
-    this.name = 'WebApiError'
+    this.name = 'OperationFailError'
   }
+}
+
+/**
+ * request 报错了, 但不是 `[AxiosError, Error]`
+ */
+export class AxiosRequestError extends Error {
+  constructor(e: any) {
+    super(`Axios Request Error: ${e?.message || e?.toString()}`, { cause: e })
+    this.name = 'AxiosRequestError'
+  }
+}
+
+export function toAxiosRequestError(err: any) {
+  if (err && err instanceof Error) return err
+  return new AxiosRequestError(err)
 }
 
 // 可以跨域
