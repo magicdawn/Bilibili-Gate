@@ -1,7 +1,7 @@
 import { attemptAsync, cloneDeep, countBy, orderBy, shuffle } from 'es-toolkit'
 import { proxy, useSnapshot } from 'valtio'
 import { CustomTargetLink } from '$components/VideoCard/use/useOpenRelated'
-import { EApiType } from '$define/index.shared'
+import { EApiType } from '$enums'
 import { AntdTooltip } from '$modules/antd/custom'
 import { getSpaceAccInfo } from '$modules/bilibili/user/space-acc-info'
 import { IconForOpenExternalLink, IconForPlayer } from '$modules/icon'

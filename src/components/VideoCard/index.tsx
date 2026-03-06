@@ -24,7 +24,6 @@ import { calcRecItemDislikedMapKey, useDislikedReason } from '$components/ModalD
 import { isDisplayAsList } from '$components/RecGrid/display-mode'
 import { getBvidInfo } from '$components/RecGrid/rec-grid-state'
 import { setGlobalValue } from '$components/RecGrid/unsafe-window-export'
-import { ETab } from '$components/RecHeader/tab-enum'
 import { defaultRecSharedEmitter, type RecSharedEmitter } from '$components/Recommends/rec.shared'
 import { clsGateVideoCardContextMenuRoot } from '$components/shared.module.scss'
 import {
@@ -39,13 +38,13 @@ import {
   type RecItemType,
 } from '$define'
 import { PcRecGoto } from '$define/pc-recommend'
+import { ELiveStatus, ETab, type EGridDisplayMode } from '$enums'
 import { antNotification } from '$modules/antd'
 import { useInBlacklist } from '$modules/bilibili/me/relations/blacklist'
 import { useInFilterByAuthorList } from '$modules/filter/block-state'
 import { normalizeCardData, type IVideoCardData } from '$modules/filter/normalize'
 import { IconForCopy } from '$modules/icon'
 import { useMultiSelectState } from '$modules/multi-select/store'
-import { ELiveStatus } from '$modules/rec-services/live/live-enum'
 import { useWatchlaterState } from '$modules/rec-services/watchlater'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { isWebApiSuccess } from '$request'
@@ -73,7 +72,6 @@ import { useMultiSelectRelated } from './use/useMultiSelect'
 import { getRecItemDimension, useLinkTarget, useOpenRelated } from './use/useOpenRelated'
 import { usePreviewRelated } from './use/usePreviewRelated'
 import { useWatchlaterRelated } from './use/useWatchlaterRelated'
-import type { EGridDisplayMode } from '$enums'
 import type { CssProp } from '$utility/type'
 
 export type VideoCardProps = {

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import type { EApiType } from '$define/index.shared'
+import type { EApiType } from '$enums'
 import type { FavCollectionDetailInfo, FavCollectionDetailMedia } from './collections/collection-detail'
 import type { FavFolderDetailInfo, FavFolderDetailMedia } from './folders/list-folder-items'
 

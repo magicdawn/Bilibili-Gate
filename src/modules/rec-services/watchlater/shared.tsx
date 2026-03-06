@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import { HelpInfo } from '$components/_base/HelpInfo'
-import { EApiType } from '$define/index.shared'
+import { EApiType } from '$enums'
 import type { ItemsSeparator } from '$define'
 
 // define "recent"

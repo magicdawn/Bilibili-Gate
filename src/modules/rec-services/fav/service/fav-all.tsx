@@ -1,7 +1,7 @@
 import { cloneDeep, shuffle } from 'es-toolkit'
 import pmap from 'promise.map'
 import { proxy, snapshot } from 'valtio'
-import { EApiType } from '$define/index.shared'
+import { EApiType } from '$enums'
 import { FavItemsOrder } from '../fav-enum'
 import { favStore, updateFavList } from '../store'
 import { ViewingAllExcludeFolderConfig } from '../views'

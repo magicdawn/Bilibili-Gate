@@ -1,7 +1,7 @@
 import { attempt, range, uniqBy } from 'es-toolkit'
 import { baseDebug } from '$common'
-import { EApiType } from '$define/index.shared'
 import { PcRecGoto } from '$define/pc-recommend'
+import { EApiType } from '$enums'
 import { normalizeCardData } from '$modules/filter/normalize'
 import { isWebApiSuccess, request } from '$request'
 import { poll } from '$utility/dom'

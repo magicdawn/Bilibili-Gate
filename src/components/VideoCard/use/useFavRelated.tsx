@@ -8,9 +8,8 @@ import {
   startPickFavFolder,
 } from '$components/ModalFavManager'
 import { getMultiSelectedItems } from '$components/RecGrid/rec-grid-state'
-import { ETab } from '$components/RecHeader/tab-enum'
 import { isFav, type RecItemType } from '$define'
-import { EApiType } from '$define/index.shared'
+import { EApiType, ETab } from '$enums'
 import { antMessage, antModal, defineAntMenus } from '$modules/antd'
 import { IconForDelete, IconForEdit, IconForFav, IconForFaved, IconForOpenExternalLink } from '$modules/icon'
 import { multiSelectStore } from '$modules/multi-select/store'

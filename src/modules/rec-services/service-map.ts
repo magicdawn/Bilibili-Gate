@@ -1,6 +1,6 @@
 import { assert } from 'es-toolkit'
 import { snapshot } from 'valtio'
-import { ETab } from '$components/RecHeader/tab-enum'
+import { ETab } from '$enums'
 import { settings } from '$modules/settings'
 import { AppRecService, getAppRecServiceConfig } from './app'
 import { DynamicFeedRecService, getDynamicFeedServiceConfig } from './dynamic-feed'

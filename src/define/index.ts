@@ -1,4 +1,4 @@
-import { EApiType } from './index.shared'
+import { EApiType } from '$enums'
 import type { ReactNode } from 'react'
 import type { VideoDetailData } from '$modules/bilibili/video/types/video-detail'
 import type { ERankApiType, IRankTab } from '$modules/rec-services/hot/rank/rank-tab'

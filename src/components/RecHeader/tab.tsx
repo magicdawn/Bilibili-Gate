@@ -5,12 +5,13 @@ import clsx from 'clsx'
 import { Fragment, useDeferredValue, useMemo, type ReactNode } from 'react'
 import { useSnapshot, type UseSnapshotOptions } from 'valtio'
 import { HelpInfo } from '$components/_base/HelpInfo'
+import { ETab } from '$enums'
 import { useSettingsSnapshot } from '$modules/settings'
 import { getOnlyTab } from '$routes'
 import { checkLoginStatus, useHasLogined } from '$utility/cookie'
 import { proxyWithGmStorage } from '$utility/valtio'
 import { TabConfig, TabIcon, toastNeedLogin, type TabConfigItem } from './tab-config'
-import { ALL_TAB_KEYS, CONFIGURABLE_TAB_KEYS, ETab } from './tab-enum'
+import { ALL_TAB_KEYS, CONFIGURABLE_TAB_KEYS } from './tab-enum'
 
 /**
  * initial tab

@@ -1,4 +1,4 @@
-import { ETab } from '$components/RecHeader/tab-enum'
+import { ETab } from '$enums'
 import { SHOW_DYNAMIC_FEED_ONLY } from '$modules/rec-services/dynamic-feed/store'
 import { SHOW_FAV_TAB_ONLY } from '$modules/rec-services/fav/store'
 import { SHOW_SPACE_UPLOAD_ONLY } from '$modules/rec-services/space-upload/store'

@@ -6,7 +6,7 @@ import { createContext, useContext, useMemo, type ReactNode } from 'react'
 import { proxy, ref, snapshot, useSnapshot } from 'valtio'
 import { isRecTab, type RecTab, type ServiceMap } from '$modules/rec-services/service-map'
 import type { RingBuffer } from 'ring-buffer-ts'
-import type { ETab } from '$components/RecHeader/tab-enum'
+import type { ETab } from '$enums'
 import type { AppRecService } from '$modules/rec-services/app'
 import type { PcRecService } from '$modules/rec-services/pc'
 

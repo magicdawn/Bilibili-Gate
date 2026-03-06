@@ -3,7 +3,6 @@
  */
 
 import pRetry from 'p-retry'
-import { OPERATION_FAIL_MSG } from '$common'
 import { IconForFav, IconForPlayer, IconForTimestamp } from '$modules/icon'
 import { isWebApiSuccess, request } from '$request'
 import type { ReactNode } from 'react'
@@ -58,8 +57,7 @@ export async function getSpaceUpload({
 
   const json = res.data as SpaceUploadJson
   if (!isWebApiSuccess(json)) {
-    // eslint-disable-next-line no-constant-binary-expression
-    throw new Error(`request json error: ${json.message}` || OPERATION_FAIL_MSG)
+    throw new Error(`request json error: ${json.message}`)
   }
 
   const items = json.data.list.vlist || []

@@ -13,13 +13,13 @@ import {
 import { useSnapshot } from 'valtio'
 import { clsAntdButton } from '$components/fragments'
 import { useOnRefresh, useRecSelfContext } from '$components/Recommends/rec.shared'
+import { ETab } from '$enums'
 import { IconForRoll } from '$modules/icon/stat-icons'
 import { favStore } from '$modules/rec-services/fav/store'
 import { isHotTabUsingShuffle } from '$modules/rec-services/hot'
 import { WatchlaterItemsOrder } from '$modules/rec-services/watchlater/watchlater-enum'
 import { useSettingsSnapshot } from '$modules/settings'
 import { shouldDisableShortcut } from '$utility/dom'
-import { ETab } from './tab-enum'
 
 export type RefreshButtonActions = { click: () => void }
 export type RefreshButtonProps = {

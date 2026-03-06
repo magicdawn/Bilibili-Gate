@@ -4,7 +4,7 @@
 
 import { attempt } from 'es-toolkit'
 import { APP_KEY_PREFIX } from '$common'
-import { EApiType } from '$define/index.shared'
+import { EApiType } from '$enums'
 import { copyBvidInfos, copyBvidsSingleLine, getGenericCardDatas, setCurrentGridItems } from './rec-grid-state'
 import type { RecItemTypeOrSeparator } from '$define'
 

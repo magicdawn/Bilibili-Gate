@@ -13,7 +13,6 @@ import {
   getBvidInfo,
   getCurrentGridItems,
 } from '$components/RecGrid/rec-grid-state'
-import { ETab } from '$components/RecHeader/tab-enum'
 import { useRecSelfContext } from '$components/Recommends/rec.shared'
 import {
   isAppRecommend,
@@ -24,7 +23,7 @@ import {
   type DynamicFeedItemExtend,
   type RecItemType,
 } from '$define'
-import { EApiType } from '$define/index.shared'
+import { EApiType, ETab } from '$enums'
 import { antMessage, antModal, defineAntMenus, type AntMenuItem } from '$modules/antd'
 import { UserBlacklistService } from '$modules/bilibili/me/relations/blacklist'
 import { UserfollowService } from '$modules/bilibili/me/relations/follow'

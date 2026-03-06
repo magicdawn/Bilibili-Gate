@@ -1,7 +1,7 @@
 import { av2bv } from '@mgdn/bvid'
 import { attemptAsync } from 'es-toolkit'
 import { proxy, useSnapshot } from 'valtio'
-import { EApiType } from '$define/index.shared'
+import { EApiType } from '$enums'
 import { antNotification } from '$modules/antd'
 import { getVideoDetail } from '$modules/bilibili/video/video-detail'
 import { settings } from '$modules/settings'

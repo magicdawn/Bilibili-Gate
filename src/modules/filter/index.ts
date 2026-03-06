@@ -1,14 +1,13 @@
 import { uniq } from 'es-toolkit'
 import { baseDebug } from '$common'
 import { isDynamicFeed, type RecItemTypeOrSeparator } from '$define'
-import { EApiType } from '$define/index.shared'
+import { EApiType, type ETab } from '$enums'
 import { blacklistMids } from '$modules/bilibili/me/relations/blacklist'
 import { DynamicFeedEnums } from '$modules/rec-services/dynamic-feed/api/enums'
 import { isNormalRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { getSettingsSnapshot, settings } from '$modules/settings'
 import { normalizeCardData } from './normalize'
 import { parseFilterByAuthor, parseFilterByTitle } from './parse'
-import type { ETab } from '$components/RecHeader/tab-enum'
 
 const debug = baseDebug.extend('modules:filter')
 

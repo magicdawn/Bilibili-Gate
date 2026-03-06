@@ -1,23 +1,5 @@
 import { difference } from 'es-toolkit'
-
-export enum ETab {
-  AppRecommend = 'app-recommend',
-  PcRecommend = 'pc-recommend',
-  KeepFollowOnly = 'keep-follow-only',
-  DynamicFeed = 'dynamic-feed',
-  Watchlater = 'watchlater',
-  Fav = 'fav',
-  Hot = 'hot',
-  Live = 'live',
-  SpaceUpload = 'space-upload',
-  Liked = 'liked', // 点赞的视频
-}
-
-export enum EHotSubTab {
-  PopularGeneral = 'popular-general',
-  PopularWeekly = 'popular-weekly',
-  Rank = 'ranking',
-}
+import { ETab } from '$enums'
 
 export const ALL_TAB_KEYS = Object.values(ETab)
 

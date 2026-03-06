@@ -1,5 +1,6 @@
 import { cloneElement, type ReactElement, type ReactNode } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
+import { ETab } from '$enums'
 import {
   IconForDynamicFeed,
   IconForFav,
@@ -16,7 +17,6 @@ import { favStore } from '$modules/rec-services/fav/store'
 import { isHotTabUsingShuffle } from '$modules/rec-services/hot'
 import { advancedFilterHelpInfo } from '$utility/local-filter'
 import toast from '$utility/toast'
-import { ETab } from './tab-enum'
 
 export type TabConfigItem = {
   icon: ReactElement

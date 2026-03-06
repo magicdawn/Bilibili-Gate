@@ -1,10 +1,9 @@
 import dayjs from 'dayjs'
 import { REQUEST_FAIL_MSG } from '$common'
-import { EApiType } from '$define/index.shared'
+import { EApiType, ELiveStatus } from '$enums'
 import { isWebApiSuccess, request } from '$request'
 import toast from '$utility/toast'
 import { BaseTabService } from '../_base'
-import { ELiveStatus } from './live-enum'
 import type { ItemsSeparator, LiveItemExtend } from '$define'
 import type { ListFollowingLiveJson } from './types/list-live'
 
