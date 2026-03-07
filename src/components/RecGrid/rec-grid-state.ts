@@ -56,7 +56,9 @@ export function getGenericCardDatas(): IVideoCardData[] {
 }
 
 export function copyBvidsSingleLine() {
-  const bvids = getGenericCardDatas().map((cardData) => cardData.bvid)
+  const bvids = getGenericCardDatas()
+    .map((cardData) => cardData.bvid)
+    .filter(Boolean)
   const content = bvids.join(' ')
   copyContent(content, 1)
 }
@@ -68,7 +70,9 @@ export function getBvidInfo(cardData: IVideoCardData) {
   return `${bvid} ;; [${authorName}] ${date} ${title}`
 }
 export function copyBvidInfos() {
-  const lines = getGenericCardDatas().map(getBvidInfo)
+  const lines = getGenericCardDatas()
+    .filter((cardData) => cardData.bvid)
+    .map(getBvidInfo)
   const content = lines.join('\n')
   copyContent(content, 1)
 }
