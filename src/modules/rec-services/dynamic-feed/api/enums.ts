@@ -10,6 +10,7 @@ export namespace DynamicFeedEnums {
     UgcSeason = 'DYNAMIC_TYPE_UGC_SEASON',
     Forward = 'DYNAMIC_TYPE_FORWARD',
     Article = 'DYNAMIC_TYPE_ARTICLE',
+    Word = 'DYNAMIC_TYPE_WORD',
     LiveRcmd = 'DYNAMIC_TYPE_LIVE_RCMD',
   }
 

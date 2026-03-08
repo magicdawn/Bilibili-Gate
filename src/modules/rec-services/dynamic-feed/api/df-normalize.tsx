@@ -84,13 +84,14 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
 
   if (majorType === DynamicFeedEnums.MajorType.Opus && major.opus) {
     const { opus } = major
-    const hasPic = !!opus.pics?.length
     const isReserve = additional?.type === DynamicFeedEnums.AdditionalType.Reserve
     const isLiveReserve = isReserve && /直播预告/.test(additional.reserve.title)
+    const hasPic = !!opus.pics?.length
     const topMarkText: string | undefined = (() => {
       if (isLiveReserve) return '直播预告'
       if (isReserve) return additional.reserve.title?.split('：')[0] || '预约'
-      // 我也不知道有啥区别?
+      // DynamicFeedEnums.ItemType.Draw | Article | Word 不知道有啥区别?
+      if (item.type === DynamicFeedEnums.ItemType.Word) return '文字动态'
       if (item.type === DynamicFeedEnums.ItemType.Draw) return hasPic ? '图片' : '文字动态'
       if (item.type === DynamicFeedEnums.ItemType.Article) return '专栏'
     })()

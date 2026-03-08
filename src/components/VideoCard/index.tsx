@@ -595,14 +595,16 @@ const VideoCardInner = memo(function VideoCardInner({
           <div className='bili-video-card__image--wrap'>
             <Picture
               src={`${cover}@672w_378h_1c_!web-home-common-cover`}
-              className='bili-video-card__cover v-img'
+              className={clsx('bili-video-card__cover v-img')}
               style={{ borderRadius: 0 }}
               imgProps={{ alt: title }}
             />
           </div>
         ) : (
-          <div className='size-full flex-center'>
-            <div className='line-clamp-3 my-auto px-4 py-2 text-center text-1.2em line-height-snug'>{title}</div>
+          <div className='size-full flex-center px-4 py-2'>
+            <div className='line-clamp-3 text-center text-1.2em color-gate-text line-height-snug hover:color-gate-primary'>
+              {title}
+            </div>
           </div>
         )}
       </div>

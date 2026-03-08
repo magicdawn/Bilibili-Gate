@@ -11,6 +11,7 @@ import { AccessKeyManage } from '$components/AccessKeyManage'
 import { CustomKbd } from '$components/fragments'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { GridDisplayModeSwitcher } from '$components/RecGrid/display-mode'
+import { MAX_REC_SERVICE_HISTORY_COUNT } from '$components/RecGrid/useRefresh'
 import { TabIcon } from '$components/RecHeader/tab-config'
 import { ESidebarAlign, ETab } from '$enums'
 import { antMessage } from '$modules/antd'
@@ -109,7 +110,12 @@ export function TabPaneBasic() {
           <CheckboxSettingItem
             configPath={'showBackForwardButtons'}
             label='「后退 / 前进」按钮'
-            tooltip='是否显示「后退 / 前进」按钮'
+            tooltip={
+              <>
+                是否显示「后退 / 前进」按钮 <br />
+                仅推荐 Tab 支持, 最多保留 {MAX_REC_SERVICE_HISTORY_COUNT} 次刷新历史
+              </>
+            }
           />
         </div>
       </SettingsGroup>

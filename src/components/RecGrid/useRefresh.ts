@@ -62,7 +62,7 @@ function checkIsSameTabButConditionsChanged(tab: ETab, serviceRegistry: Partial<
   }
 }
 
-const MAX_REC_SERVICE_HISTORY_COUNT = 5
+export const MAX_REC_SERVICE_HISTORY_COUNT = 5
 
 export function useRefresh({
   tab,
