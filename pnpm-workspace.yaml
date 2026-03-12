@@ -8,12 +8,13 @@ minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
   - '@magicdawn/*'
   - '@mgdn/*'
+  - '@types/*'
+  - '@typescript/native-preview'
   - unocss-merge
   - fast-sort-lens
   - antd
   - react
   - react-dom
-  - '@types/*'
 
 onlyBuiltDependencies:
   - '@biomejs/biome'

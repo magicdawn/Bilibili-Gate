@@ -138,7 +138,7 @@ export function useLargePreviewRelated({
     triggerElement.set(undefined)
     hideAt.set(Date.now())
   })
-  useEmitterOn(recSharedEmitter, 'show-large-preview', (srcUniqId) => {
+  useEmitterOn(recSharedEmitter, 'show-large-preview', ({ data: srcUniqId }) => {
     if (srcUniqId === uniqId) return
     clearTimers()
     hide()

@@ -114,7 +114,7 @@ export function usePreviewRelated({
     isHoveringAfterDelayBox.set(false)
   })
   useEventListener('mouseleave', _mouseleaveAction, { target: videoPreviewWrapperRef })
-  useEmitterOn(recSharedEmitter, 'mouseenter', (srcUniqId) => {
+  useEmitterOn(recSharedEmitter, 'mouseenter', ({ data: srcUniqId }) => {
     if (srcUniqId === uniqId) return
     _mouseleaveAction()
   })

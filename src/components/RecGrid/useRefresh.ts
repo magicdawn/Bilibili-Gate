@@ -221,7 +221,7 @@ export function useRefresh({
 
   // listen for `refresh` event
   const { recSharedEmitter } = useRecSelfContext()
-  useEmitterOn(recSharedEmitter, 'refresh', refresh)
+  useEmitterOn(recSharedEmitter, 'refresh', ({ data }) => refresh(data))
 
   return { refresh }
 }

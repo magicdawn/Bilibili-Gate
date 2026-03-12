@@ -34,18 +34,16 @@ async function fetchMinCount(count: number, fetcherOptions: FetcherOptions, filt
   let hasMore = true
 
   const addMore = async (restCount: number) => {
-    let cur: RecItemTypeOrSeparator[] = []
-
     // dynamic-feed     动态
     // watchlater       稍候再看
     // fav              收藏
     // hot              热门 (popular-general  综合热门, popular-weekly  每周必看, ranking  排行榜)
     // live             直播
     if (!isRecTab(tab)) {
-      cur = (await service.loadMore(abortSignal)) ?? []
-      hasMore = service.hasMore
+      let cur = (await service.loadMore(abortSignal)) ?? []
       cur = filterRecItems(cur, tab) // filter
       items = concatRecItems(items, cur) // concat
+      hasMore = service.hasMore
       return
     }
 
@@ -96,7 +94,7 @@ async function fetchMinCount(count: number, fetcherOptions: FetcherOptions, filt
       }
     }
 
-    cur = (await service.loadMore(abortSignal)) || []
+    let cur = (await service.loadMore(abortSignal)) || []
     cur = filterRecItems(cur, tab) // filter
     items = concatRecItems(items, cur) // concat
     hasMore = service.hasMore

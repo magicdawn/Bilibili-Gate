@@ -36,6 +36,8 @@ export async function getFollowGroupContent(tagid: number | string) {
 
   let pn = 1
   let items: FollowGroupContent[] = []
+  // Rule 有 bug, 在 while 里用了, 但它识别不到
+  // eslint-disable-next-line no-useless-assignment
   let currentPageItems: FollowGroupContent[] = []
   do {
     currentPageItems = await singleRequest(pn)

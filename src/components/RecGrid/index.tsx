@@ -310,7 +310,7 @@ export const RecGrid = memo(function RecGrid({
   }, [videoList])
 
   const [activeLargePreviewUniqId, setActiveLargePreviewUniqId] = useState<string | undefined>(undefined)
-  useEmitterOn(recSharedEmitter, 'show-large-preview', setActiveLargePreviewUniqId)
+  useEmitterOn(recSharedEmitter, 'show-large-preview', ({ data: uniqId }) => setActiveLargePreviewUniqId(uniqId))
   const activeLargePreviewItemIndex = useMemo(() => {
     if (!activeLargePreviewUniqId) return
     return videoList.findIndex((item) => item.uniqId === activeLargePreviewUniqId)
@@ -396,8 +396,8 @@ export const RecGrid = memo(function RecGrid({
       }
     })
   })
-  useEmitterOn(recSharedEmitter, 'remove-cards', (eventArg) => handleRemoveCards(...eventArg))
-  useEmitterOn(recSharedEmitter, 'move-card-to', (eventArg) => handleMoveCardTo(...eventArg))
+  useEmitterOn(recSharedEmitter, 'remove-cards', ({ data }) => handleRemoveCards(...data))
+  useEmitterOn(recSharedEmitter, 'move-card-to', ({ data }) => handleMoveCardTo(...data))
 
   /**
    * footer for infinite scroll

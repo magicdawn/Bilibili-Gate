@@ -106,9 +106,7 @@ const PreviewImageInner = memo(function PreviewImageInner({
   elWidth: number
   elHeight: number
 }) {
-  let index = useMemo(() => {
-    return calcIndex(pvideo?.index || [], t) ?? 0
-  }, [pvideo, t])
+  let index = useMemo(() => calcIndex(pvideo?.index || [], t) ?? 0, [pvideo, t])
 
   const { img_x_len: colCount, img_y_len: rowCount, img_x_size: w, img_y_size: h } = pvideo
   const countPerPreview = rowCount * colCount
@@ -169,15 +167,13 @@ export function SimpleProgressBar({ progress, className, ...props }: { progress:
 
 function calcIndex(arr: number[], t: number) {
   let index = findIndex(arr, t)
-
-  if (index !== -1) {
-    return index
-  }
+  if (index !== -1) return index
 
   // https://www.bilibili.com/video/av297635747
   // 没有后面的预览
   if (t > arr.at(-1)!) {
     index = arr.length - 1
+    return index
   }
 }
 
