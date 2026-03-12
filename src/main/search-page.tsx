@@ -1,6 +1,6 @@
 import { useHover } from 'ahooks'
-import { limitFunction } from 'promise.map'
-import { useMemo, useRef } from 'react'
+import { throttle } from 'es-toolkit'
+import { useMemo, useRef, type ComponentProps } from 'react'
 import { createPortal } from 'react-dom'
 import { createRoot } from 'react-dom/client'
 import { useUnoMerge } from 'unocss-merge/react'
@@ -8,7 +8,10 @@ import { APP_NAMESPACE } from '$common'
 import { AppRoot } from '$components/AppRoot'
 import { useLargePreviewRelated } from '$components/LargePreview/useLargePreview'
 import { defaultRecSharedEmitter } from '$components/Recommends/rec.shared'
-import { VideoCardActionsClassNames } from '$components/VideoCard/child-components/VideoCardActions'
+import {
+  VideoCardActionsClassNames,
+  type VideoCardActionButton,
+} from '$components/VideoCard/child-components/VideoCardActions'
 import { settings } from '$modules/settings'
 import { isInIframe, setupForNoneHomepage } from './shared'
 
@@ -21,12 +24,11 @@ export function initSearchPage() {
 }
 
 function addLargePreviewForSearchResults() {
-  const run = limitFunction(() => {
+  const run = throttle(() => {
     const itemsSelector = '.video-list-item:has(> .bili-video-card),div:has(> .bili-video-card)'
     const list = Array.from(document.querySelectorAll<HTMLDivElement>(itemsSelector))
     for (const el of list) addLargePreview(el)
-  }, 1)
-
+  }, 1000)
   run()
   const ob = new MutationObserver(() => run())
   ob.observe(document.body, { childList: true, subtree: true })
@@ -55,26 +57,28 @@ function addLargePreview(el: HTMLDivElement) {
   )
 }
 
+const actionButtonProps: Partial<ComponentProps<typeof VideoCardActionButton>> = {
+  useMotion: true,
+  motionProps: {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0, transition: { delay: 0 } },
+    transition: { duration: 0.2, ease: 'linear', delay: 0.2 },
+  },
+}
+
 function LargePreviewSetup({ el }: { el: HTMLDivElement }) {
   const { bvid = '', cover } = useMemo(() => parseCardInfo(el), [el])
   const cardEl = useMemo(() => el.querySelector<HTMLDivElement>('.bili-video-card') ?? el, [el])
   const coverEl = useMemo(() => cardEl.querySelector<HTMLAnchorElement>('.bili-video-card__wrap > a'), [el])
-  const hovering = useHover(cardEl)
+  const hovering = useHover(coverEl)
   const videoCardAsTriggerRef = useRef<HTMLElement | null>(coverEl)
 
   const { largePreviewActionButtonEl, largePreviewEl } = useLargePreviewRelated({
     shouldFetchPreviewData: !!bvid,
     hasLargePreviewActionButton: true,
     actionButtonVisible: hovering,
-    actionButtonProps: {
-      useMotion: true,
-      motionProps: {
-        initial: { opacity: 0 },
-        animate: { opacity: 1 },
-        exit: { opacity: 0, transition: { delay: 0 } },
-        transition: { duration: 0.2, ease: 'linear', delay: 0.2 },
-      },
-    },
+    actionButtonProps,
     // required
     bvid,
     cid: undefined,

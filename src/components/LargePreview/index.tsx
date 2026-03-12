@@ -12,7 +12,7 @@ import { clsZVideoCardLargePreview } from '$components/fragments'
 import { useSettingsSnapshot } from '$modules/settings'
 import { classListToSelector } from '$utility/dom'
 
-const debug = baseDebug.extend('VideoCard:LargePreview')
+const debug = baseDebug.extend('large-preview:LargePreview')
 
 export enum AspectRatioPreset {
   Horizontal = 16 / 9,
@@ -22,6 +22,15 @@ export enum AspectRatioPreset {
 
 type Direction = 'top' | 'right' | 'bottom' | 'left'
 type Bbox = { x: number; y: number; width: number; height: number }
+type Position = {
+  direction: Direction
+  elWidth: number
+  elHeight: number
+  elPosX: number
+  elPosY: number
+  arrowTop: number
+  arrowLeft: number
+}
 
 const DirectionConfig: Record<Direction, { multiplier: 1 | -1; axis: 'x' | 'y'; reverse: Direction }> = {
   right: { multiplier: 1, axis: 'x', reverse: 'left' },
@@ -58,18 +67,8 @@ export const LargePreview = memo(function LargePreview({
   const popoverRef = useDelegatedRef(propRef)
 
   const [visible, setVisible] = useState(false)
-  const [position, setPosition] = useState<
-    | {
-        direction: Direction
-        elWidth: number
-        elHeight: number
-        elPosX: number
-        elPosY: number
-        arrowTop: number
-        arrowLeft: number
-      }
-    | undefined
-  >(undefined)
+  const [position, setPosition] = useState<Position | undefined>(undefined)
+  debug('render state: %o', { visible, position })
 
   const hide = useMemoizedFn(() => {
     setVisible(false)
@@ -226,18 +225,19 @@ export const LargePreview = memo(function LargePreview({
 
     elPosX = Math.floor(elPosX)
     elPosY = Math.floor(elPosY)
+    const newPosition: Position = { direction, elWidth, elHeight, elPosX, elPosY, arrowTop, arrowLeft }
+    debug('updating state to: visible: ✅, position: %o ', newPosition)
     setVisible(true)
-    setPosition({ direction, elWidth, elHeight, elPosX, elPosY, arrowTop, arrowLeft })
+    setPosition(newPosition)
   })
 
   const calculatePostionThrottled = useMemo(() => throttle(calculatePostion, 100), [calculatePostion])
-
-  useMount(calculatePostionThrottled)
+  // immediate on mount
+  useMount(calculatePostion) // or useMount(() => (calculatePostionThrottled(), calculatePostionThrottled.flush()))
   useEventListener('resize', calculatePostionThrottled, { target: window })
   useEventListener('scroll', calculatePostionThrottled, { target: window })
 
   const { useScale } = useSettingsSnapshot().videoCard.videoPreview
-
   // default duration: 0.3
   const animationDuration = useScale ? 0.2 : 0.3
 

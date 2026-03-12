@@ -8,9 +8,19 @@ import {
   useUpdateEffect,
 } from 'ahooks'
 import { getTargetElement } from 'ahooks/lib/utils/domTarget'
-import { useMemo, useRef, useState, type ComponentProps, type ComponentRef, type RefObject } from 'react'
+import {
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentProps,
+  type ComponentRef,
+  type MouseEventHandler,
+  type ReactNode,
+  type RefObject,
+} from 'react'
 import { useSnapshot } from 'valtio'
-import { __PROD__, APP_CLS_CARD, appLog, BiliDomain } from '$common'
+import { APP_CLS_CARD, baseVerboseDebug, BiliDomain } from '$common'
 import { useEmitterOn } from '$common/hooks/useEmitter'
 import { useRefBox, useRefStateBox } from '$common/hooks/useRefState'
 import { openNewTab } from '$modules/gm'
@@ -33,7 +43,7 @@ function clearTimerRef(timerRef: TimerRef) {
   timerRef.current = undefined
 }
 
-const DEBUG_TRIGGER = __PROD__ ? false : false // 👈🏻👈🏻👈🏻 dev: free to change
+const debugTrigger = baseVerboseDebug.extend('large-preview:trigger')
 
 type UseLargePreviewOptions = {
   // videoPreview data
@@ -124,15 +134,15 @@ export function useLargePreviewRelated({
   })
 
   const showBy = useMemoizedFn((action: TriggerAction, el: TriggerElement) => {
-    DEBUG_TRIGGER && appLog(bvid, 'showBy', action, el)
+    debugTrigger('%s: showBy %s %s', bvid, action, el)
     setVisible(true)
     triggerAction.set(action)
     triggerElement.set(el)
     recSharedEmitter.emit('show-large-preview', uniqId)
     hideAt.set(undefined)
   })
-  const hide = useMemoizedFn(() => {
-    DEBUG_TRIGGER && appLog(bvid, 'hide()')
+  const hide = useMemoizedFn((debug = true) => {
+    if (debug) debugTrigger('%s: hide', bvid)
     setVisible(false)
     triggerAction.set(undefined)
     triggerElement.set(undefined)
@@ -141,12 +151,12 @@ export function useLargePreviewRelated({
   useEmitterOn(recSharedEmitter, 'show-large-preview', ({ data: srcUniqId }) => {
     if (srcUniqId === uniqId) return
     clearTimers()
-    hide()
+    hide(false) // when broadcast from other-card, do not output debug message
   })
 
   const onMouseEnter = useMemoizedFn((triggerEl: TriggerElement) => {
+    debugTrigger('%s: onMouseEnter %s', bvid, triggerEl)
     hoveringRef.set({ ...hoveringRef.val, [triggerEl]: true })
-    DEBUG_TRIGGER && appLog(bvid, 'onMouseEnter', triggerEl)
     if (triggerAction.val === 'click') return
 
     $req.run()
@@ -163,8 +173,8 @@ export function useLargePreviewRelated({
     }
   })
   const onMouseLeave = useMemoizedFn((triggerEl: TriggerElement) => {
+    debugTrigger('%s: onMouseLeave %s', bvid, triggerEl)
     hoveringRef.set({ ...hoveringRef.val, [triggerEl]: false })
-    DEBUG_TRIGGER && appLog(bvid, 'onMouseLeave', triggerEl)
     if (triggerAction.val === 'click') return
 
     const checkHide = () => {
@@ -225,85 +235,100 @@ export function useLargePreviewRelated({
   const currentTimeRef = useRef<number | undefined>(undefined)
   const largePreviewRef = useRef<ComponentRef<typeof LargePreview> | null>(null)
   const willRenderLargePreview = visible && !!videoPreviewDataBox.state?.playUrls?.length
-  const largePreviewEl = willRenderLargePreview && (
-    <LargePreview
-      ref={largePreviewRef}
-      aspectRatio={usingAspectRatio}
-      onMouseEnter={(e) => onMouseEnter('popover')}
-      onMouseLeave={(e) => onMouseLeave('popover')}
-      cardDescendantTarget={cardTarget}
-    >
-      <RecoverableVideo
-        ref={videoRef}
-        currentTimeRef={currentTimeRef}
-        autoPlay
-        controls
-        loop
-        poster={cover}
-        className='size-full object-contain' // avoid 'cover', this video may goto fullscreen
+  let largePreviewEl: ReactNode
+  {
+    const _mouseEnter: MouseEventHandler<HTMLDivElement> = useCallback(() => onMouseEnter('popover'), [onMouseEnter])
+    const _mouseLeave: MouseEventHandler<HTMLDivElement> = useCallback(() => onMouseLeave('popover'), [onMouseLeave])
+    largePreviewEl = willRenderLargePreview && (
+      <LargePreview
+        ref={largePreviewRef}
+        aspectRatio={usingAspectRatio}
+        onMouseEnter={_mouseEnter}
+        onMouseLeave={_mouseLeave}
+        cardDescendantTarget={cardTarget}
       >
-        {videoPreviewDataBox.state?.playUrls?.map((url, i) => (
-          <source key={i} src={url} />
-        ))}
-      </RecoverableVideo>
-      {/* action buttons */}
-      <div className='absolute right-10px top-10px flex flex-row-reverse items-center justify-start gap-x-5px'>
-        {triggerAction.state === 'click' ? (
+        <RecoverableVideo
+          ref={videoRef}
+          currentTimeRef={currentTimeRef}
+          autoPlay
+          controls
+          loop
+          poster={cover}
+          className='size-full object-contain' // avoid 'cover', this video may goto fullscreen
+        >
+          {videoPreviewDataBox.state?.playUrls?.map((url, i) => (
+            <source key={i} src={url} />
+          ))}
+        </RecoverableVideo>
+        {/* action buttons */}
+        <div className='absolute right-10px top-10px flex flex-row-reverse items-center justify-start gap-x-5px'>
+          {triggerAction.state === 'click' ? (
+            <VideoCardActionButton
+              inlinePosition={'right'}
+              icon={<IconRadixIconsCross2 className='size-14px' />}
+              tooltip={'关闭'}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                hide()
+              }}
+            />
+          ) : (
+            <VideoCardActionButton
+              inlinePosition={'right'}
+              icon={<IconParkOutlinePin className='size-14px' />}
+              tooltip={'固定'}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                onClick('popover-action-button')
+              }}
+            />
+          )}
           <VideoCardActionButton
             inlinePosition={'right'}
-            icon={<IconRadixIconsCross2 className='size-14px' />}
-            tooltip={'关闭'}
+            icon={<IconRadixIconsOpenInNewWindow className='size-14px' />}
+            tooltip={'新窗口打开'}
             onClick={(e) => {
               e.preventDefault()
               e.stopPropagation()
-              hide()
+              onOpenInNewTab()
             }}
           />
-        ) : (
-          <VideoCardActionButton
-            inlinePosition={'right'}
-            icon={<IconParkOutlinePin className='size-14px' />}
-            tooltip={'固定'}
-            onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              onClick('popover-action-button')
-            }}
-          />
-        )}
-        <VideoCardActionButton
-          inlinePosition={'right'}
-          icon={<IconRadixIconsOpenInNewWindow className='size-14px' />}
-          tooltip={'新窗口打开'}
-          onClick={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            onOpenInNewTab()
-          }}
-        />
-      </div>
-    </LargePreview>
-  )
+        </div>
+      </LargePreview>
+    )
+  }
 
-  const largePreviewActionButtonEl = hasLargePreviewActionButton && shouldFetchPreviewData && (
-    <VideoCardActionButton
-      key='video-card-action-button'
-      css={actionButtonCss}
-      {...actionButtonProps}
-      visible={actionButtonVisible}
-      active={willRenderLargePreview}
-      inlinePosition={'right'}
-      icon={$req.loading ? <IconForLoading className='size-16px' /> : <IconParkOutlineVideoTwo className='size-15px' />}
-      tooltip={triggerAction.state === 'click' ? (visible ? '关闭浮动预览' : '浮动预览') : '浮动预览'}
-      onMouseEnter={(e) => onMouseEnter('video-card-action-button')}
-      onMouseLeave={(e) => onMouseLeave('video-card-action-button')}
-      onClick={(e) => {
+  let largePreviewActionButtonEl: ReactNode
+  {
+    const _onMouseEnter = useCallback(() => onMouseEnter('video-card-action-button'), [onMouseEnter])
+    const _onMouseLeave = useCallback(() => onMouseLeave('video-card-action-button'), [onMouseLeave])
+    const _onClick: MouseEventHandler<HTMLDivElement> = useCallback(
+      (e) => {
         e.preventDefault()
         e.stopPropagation()
         onClick('video-card-action-button')
-      }}
-    />
-  )
+      },
+      [onClick],
+    )
+    largePreviewActionButtonEl = hasLargePreviewActionButton && shouldFetchPreviewData && (
+      <VideoCardActionButton
+        css={actionButtonCss}
+        {...actionButtonProps}
+        visible={actionButtonVisible}
+        active={willRenderLargePreview}
+        inlinePosition={'right'}
+        icon={
+          $req.loading ? <IconForLoading className='size-16px' /> : <IconParkOutlineVideoTwo className='size-15px' />
+        }
+        tooltip={triggerAction.state === 'click' ? (visible ? '关闭浮动预览' : '浮动预览') : '浮动预览'}
+        onMouseEnter={_onMouseEnter}
+        onMouseLeave={_onMouseLeave}
+        onClick={_onClick}
+      />
+    )
+  }
 
   /**
    * trigger by click, more ways to close

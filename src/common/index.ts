@@ -6,6 +6,7 @@ export const APP_KEY_PREFIX = 'bilibili_gate' // as javascript key prefix, snake
 export const APP_SHORT_PREFIX = 'bili-gate'
 
 export const baseDebug = createDebug(APP_NAMESPACE)
+export const baseVerboseDebug = createDebug(APP_NAMESPACE + '-verbose')
 
 export const HOST_API = 'https://api.bilibili.com'
 export const HOST_APP = 'https://app.bilibili.com'
