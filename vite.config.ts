@@ -14,6 +14,7 @@ import { analyzer } from 'vite-bundle-analyzer'
 import Inspect from 'vite-plugin-inspect'
 import monkey, { cdn } from 'vite-plugin-monkey'
 import tsconfigPaths from 'vite-tsconfig-paths'
+import z from 'zod'
 import { name as packageName, version as packageVersion } from './package.json'
 
 const typedScssModules = interopImportCJSDefault(typedScssModulesOriginal)
@@ -48,6 +49,11 @@ const minify = (() => {
   if (process.argv.includes('--no-minify')) return false
 
   // env.MINIFY
+  if (process.env.MINIFY) {
+    const parsed = z.stringbool().safeParse(process.env.MINIFY)
+    if (parsed.success) return parsed.data
+  }
+
   if (process.env.MINIFY === 'false') return false
   if (process.env.MINIFY === 'true') return true
 

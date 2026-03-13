@@ -121,7 +121,8 @@
     "vite-plugin-inspect": "^11.3.3",
     "vite-plugin-monkey": "^7.1.9",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.0.18"
+    "vitest": "^4.0.18",
+    "zod": "^4.3.6"
   },
   "lint-staged": {
     "*.{?(c|m)(j|t)s?(x),json,y?(a)ml}": [
