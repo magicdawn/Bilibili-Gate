@@ -60,8 +60,7 @@ type SpaceUploadFilterState = {
 }
 
 const defaultFilterState = {
-  // 保持当前默认逻辑: 默认隐藏充电专属
-  hideChargeOnlyVideos: true,
+  hideChargeOnlyVideos: false,
   filterMinDuration: SpaceUploadVideoMinDuration.All,
 } as const satisfies SpaceUploadFilterState
 
@@ -124,6 +123,9 @@ const store = proxy({
       ...this.currentFilterState,
       filterMinDuration: val,
     })
+  },
+  resetCurrentFilterState() {
+    this.filterStateMap.set(this.currentFilterKey, { ...defaultFilterState })
   },
 })
 

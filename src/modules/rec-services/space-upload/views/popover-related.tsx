@@ -1,5 +1,4 @@
 import { Badge, Button, Checkbox, Popover, Radio } from 'antd'
-import { delay } from 'es-toolkit'
 import { useMemo, useState } from 'react'
 import { useSnapshot } from 'valtio'
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
@@ -65,9 +64,8 @@ function PopoverContent({ refresh }: { refresh: RefreshFn | undefined }) {
           <Checkbox
             className='ml-5px'
             checked={hideChargeOnlyVideos}
-            onChange={async (e) => {
+            onChange={(e) => {
               spaceUploadStore.setHideChargeOnlyVideos(e.target.checked)
-              await delay(100)
               refresh?.()
             }}
           >
@@ -85,9 +83,8 @@ function PopoverContent({ refresh }: { refresh: RefreshFn | undefined }) {
             className='overflow-hidden [&_.ant-radio-button-wrapper]:px-7px'
             buttonStyle='solid'
             value={filterMinDuration}
-            onChange={async (v) => {
+            onChange={(v) => {
               spaceUploadStore.setFilterMinDuration(v.target.value)
-              await delay(100)
               refresh?.()
             }}
           >
@@ -100,6 +97,19 @@ function PopoverContent({ refresh }: { refresh: RefreshFn | undefined }) {
               )
             })}
           </Radio.Group>
+        </div>
+      </div>
+
+      <div className={classes.section}>
+        <div className={classes.sectionContent}>
+          <Button
+            onClick={() => {
+              spaceUploadStore.resetCurrentFilterState()
+              refresh?.()
+            }}
+          >
+            重置筛选
+          </Button>
         </div>
       </div>
     </div>
