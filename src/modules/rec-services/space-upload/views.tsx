@@ -4,11 +4,13 @@ import { useSnapshot } from 'valtio'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { useOnRefresh, useRecSelfContext } from '$components/Recommends/rec.shared'
 import { AntdTooltip } from '$modules/antd/custom'
+import { usePopupContainer } from '$modules/rec-services/_base'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { CopyBvidButtonsTabbarView } from '../_shared/copy-bvid-buttons'
 import { GenericOrderSwitcher } from '../_shared/generic-order-switcher'
 import { SpaceUploadOrderConfig, type SpaceUploadOrder } from './api'
 import { SpaceUploadQueryKey, spaceUploadStore } from './store'
+import { usePopoverRelated } from './views/popover-related'
 
 export function SpaceUploadTabbarView() {
   const { searchText, filterText } = useSnapshot(spaceUploadStore, { sync: true })
@@ -18,6 +20,8 @@ export function SpaceUploadTabbarView() {
   } = useSettingsSnapshot()
   const onRefresh = useOnRefresh()
   const { recSharedEmitter } = useRecSelfContext()
+  const { ref, getPopupContainer } = usePopupContainer()
+  const { popoverTrigger } = usePopoverRelated({ onRefresh, getPopupContainer })
 
   const onSyncStoreToUrl = useMemoizedFn(() => {
     syncFilterTextFromSearchText()
@@ -44,7 +48,7 @@ export function SpaceUploadTabbarView() {
   useMount(onSyncStoreToUrl)
 
   return (
-    <div className='flex items-center gap-x-10px'>
+    <div ref={ref} className='flex items-center gap-x-10px'>
       <GenericOrderSwitcher<SpaceUploadOrder>
         value={usingOrder}
         list={allowedOrders as SpaceUploadOrder[]}
@@ -54,6 +58,7 @@ export function SpaceUploadTabbarView() {
           onRefresh()
         }}
       />
+      {popoverTrigger}
       <Input.Search
         style={{ width: 200 }}
         placeholder='搜索词'
