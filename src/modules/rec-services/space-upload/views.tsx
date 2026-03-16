@@ -50,7 +50,6 @@ export function SpaceUploadTabbarView() {
   useMount(onSyncStoreToUrl)
 
   // shift+/
-
   const searchRef = useRef<ComponentRef<typeof Input>>(null)
   const shortcutEnabled = usePlainShortcutEnabled()
   useHotkey({ shift: true, key: '?' }, (e) => searchRef.current?.focus(), {
