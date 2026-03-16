@@ -4,6 +4,7 @@ import { Input, Space } from 'antd'
 import { useRef, type ComponentRef } from 'react'
 import { useSnapshot } from 'valtio'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
+import { usePlainShortcutEnabled } from '$components/RecHeader/index.shared'
 import { useOnRefresh } from '$components/Recommends/rec.shared'
 import { AntdTooltip } from '$modules/antd/custom'
 import { usePopupContainer } from '$modules/rec-services/_base'
@@ -49,12 +50,18 @@ export function SpaceUploadTabbarView() {
   useMount(onSyncStoreToUrl)
 
   // shift+/
+
   const searchRef = useRef<ComponentRef<typeof Input>>(null)
-  useHotkey({ shift: true, key: '?' }, (e) => searchRef.current?.focus(), { eventType: 'keyup' })
+  const shortcutEnabled = usePlainShortcutEnabled()
+  useHotkey({ shift: true, key: '?' }, (e) => searchRef.current?.focus(), {
+    eventType: 'keyup', // work with Bilibili-Evolved
+    enabled: shortcutEnabled,
+  })
   useHotkey('Escape', (e) => searchRef.current?.blur(), {
     target: searchRef.current?.nativeElement,
     ignoreInputs: false,
     requireReset: false,
+    enabled: shortcutEnabled,
   })
 
   return (
