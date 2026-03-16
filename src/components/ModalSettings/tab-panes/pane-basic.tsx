@@ -1,5 +1,5 @@
 import { useHover, useMemoizedFn, useMount } from 'ahooks'
-import { Button, InputNumber, Radio, Tag } from 'antd'
+import { Button, Radio, Tag } from 'antd'
 import clsx from 'clsx'
 import { delay } from 'es-toolkit'
 import { useRef } from 'react'
@@ -8,9 +8,8 @@ import { APP_NAME } from '$common'
 import { TooltipContentDivider } from '$components/_base'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { AccessKeyManage } from '$components/AccessKeyManage'
-import { CustomKbd } from '$components/fragments'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
-import { GridDisplayModeSwitcher } from '$components/RecGrid/display-mode'
+import { GridDisplayModeSwitcher, GridTemplateColumnsConfig } from '$components/RecGrid/display-mode'
 import { MAX_REC_SERVICE_HISTORY_COUNT } from '$components/RecGrid/useRefresh'
 import { TabIcon } from '$components/RecHeader/tab-config'
 import { ESidebarAlign, ETab } from '$enums'
@@ -139,8 +138,8 @@ export function TabPaneBasic() {
         }
         resetSettingPaths={[
           'grid.useCustomGrid',
-          'grid.cardMinWidth',
           'grid.enableForceColumn',
+          'grid.cardMinWidth',
           'grid.forceColumnCount',
 
           'enableSidebar',
@@ -164,57 +163,11 @@ export function TabPaneBasic() {
               </>
             }
           />
+        </div>
 
-          <div className='flex items-center gap-x-1 px-6px'>
-            <AntdTooltip
-              title={
-                <>
-                  如果期望显示更多的列, 可以调小这个值; <br />
-                  如果期望显示更少的列, 可以调大这个值; <br />
-                  手动设置列数时, 这个值不起作用. <br />
-                  <CustomKbd>Alt / Opt</CustomKbd> + <CustomKbd>上下键</CustomKbd>可调整
-                </>
-              }
-            >
-              <span className='cursor-pointer'>视频卡片最小宽度</span>
-            </AntdTooltip>
-            <InputNumber
-              disabled={!useCustomGrid || enableForceColumn}
-              value={cardMinWidth}
-              onChange={(val) => {
-                if (val) settings.grid.cardMinWidth = val
-              }}
-              min={150}
-              max={450}
-              step={10}
-              size='small'
-              className='w-75px'
-            />
-          </div>
-
-          <div className='flex items-center px-6px'>
-            <CheckboxSettingItem
-              disabled={!useCustomGrid}
-              configPath='grid.enableForceColumn'
-              label='手动设置列数'
-              tooltip={<>手动设置列数</>}
-            />
-            {useCustomGrid && enableForceColumn && (
-              <InputNumber
-                value={forceColumnCount}
-                onChange={(val) => {
-                  if (val) {
-                    settings.grid.forceColumnCount = val
-                  }
-                }}
-                min={0}
-                max={10}
-                step={1}
-                size='small'
-                className='w-50px'
-              />
-            )}
-          </div>
+        <div className={sharedClassNames.settingsLine}>
+          网格列数:
+          <GridTemplateColumnsConfig />
         </div>
 
         <div className='flex items-center gap-x-4px'>
