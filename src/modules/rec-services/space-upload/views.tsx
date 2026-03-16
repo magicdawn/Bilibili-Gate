@@ -1,5 +1,7 @@
+import { useHotkey } from '@tanstack/react-hotkeys'
 import { useMemoizedFn, useMount } from 'ahooks'
 import { Input, Space } from 'antd'
+import { useRef, type ComponentRef } from 'react'
 import { useSnapshot } from 'valtio'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { useOnRefresh } from '$components/Recommends/rec.shared'
@@ -46,6 +48,15 @@ export function SpaceUploadTabbarView() {
   // initial sync
   useMount(onSyncStoreToUrl)
 
+  // shift+/
+  const searchRef = useRef<ComponentRef<typeof Input>>(null)
+  useHotkey({ shift: true, key: '?' }, (e) => searchRef.current?.focus(), { eventType: 'keyup' })
+  useHotkey('Escape', (e) => searchRef.current?.blur(), {
+    target: searchRef.current?.nativeElement,
+    ignoreInputs: false,
+    requireReset: false,
+  })
+
   return (
     <div ref={ref} className='flex items-center gap-x-10px'>
       <GenericOrderSwitcher<SpaceUploadOrder>
@@ -59,6 +70,7 @@ export function SpaceUploadTabbarView() {
       />
       {popoverTrigger}
       <Input.Search
+        ref={searchRef}
         style={{ width: 200 }}
         placeholder='搜索词'
         allowClear
