@@ -137,14 +137,14 @@ export function useShortcut({
   }
 
   // by 1
-  useCustomHotkey('ArrowLeft', addActiveIndex(-1))
-  useCustomHotkey('ArrowRight', addActiveIndex(1))
-  useCustomHotkey('Tab', addActiveIndex(1))
-  useCustomHotkey('Shift+Tab', addActiveIndex(-1))
+  useCustomHotkey('ArrowLeft', addActiveIndex(-1), { requireReset: false })
+  useCustomHotkey('ArrowRight', addActiveIndex(1), { requireReset: false })
+  useCustomHotkey('Tab', addActiveIndex(1), { requireReset: false })
+  useCustomHotkey('Shift+Tab', addActiveIndex(-1), { requireReset: false })
   // by row
   // 不使用 getColCount 是因为, Separator 类型导致有空的位置
-  useCustomHotkey('ArrowUp', addActiveIndex('up'))
-  useCustomHotkey('ArrowDown', addActiveIndex('down'))
+  useCustomHotkey('ArrowUp', addActiveIndex('up'), { requireReset: false })
+  useCustomHotkey('ArrowDown', addActiveIndex('down'), { requireReset: false })
 
   // actions
   const clearActiveIndex = () => {
