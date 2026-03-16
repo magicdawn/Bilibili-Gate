@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: Git describe
         id: ghd
-        uses: proudust/gh-describe@v2
+        uses: proudust/gh-describe@v3
 
   test-and-build:
     runs-on: ubuntu-latest
