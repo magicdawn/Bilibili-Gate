@@ -2,6 +2,7 @@ import { css } from '@emotion/react'
 import { useHotkey } from '@tanstack/react-hotkeys'
 import { useMemoizedFn } from 'ahooks'
 import clsx from 'clsx'
+import { assert } from 'es-toolkit'
 import { useRef, type ComponentProps, type CSSProperties, type MouseEvent, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { useUnoMerge } from 'unocss-merge/react'
@@ -77,10 +78,19 @@ export function BaseModal({
   useHotkey(
     'Escape',
     (e) => {
+      // 只有自己是最顶层 modal 时才能 close
+      // test: 先打开 ModalDislike -> ModalSettings
+      const baseModalRoot = wrapperRef.current?.closest<HTMLDivElement>(`[data-role='base-modal']`)
+      assert(baseModalRoot, 'baseModalRoot should not be null')
+      const follingSiblings = [...(baseModalRoot.parentElement?.children || [])].slice(
+        [...(baseModalRoot.parentElement?.children || [])].indexOf(baseModalRoot) + 1,
+      )
+      if (follingSiblings.some((el) => el.matches(`.${APP_CLS_MODAL_VISIBLE}`))) return
+
       // prevent other esc handler run
       e.preventDefault()
       e.stopImmediatePropagation()
-      // wait the unpreventable esc handlers run, close in next tick
+      // 这是啥意思, 看不懂以前的注释了: `wait the unpreventable esc handlers run, close in next tick`
       setTimeout(onHide)
     },
     { enabled: show && hideWhenEsc },
