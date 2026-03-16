@@ -2,7 +2,6 @@ import { css } from '@emotion/react'
 import { useHotkey } from '@tanstack/react-hotkeys'
 import { useMemoizedFn } from 'ahooks'
 import clsx from 'clsx'
-import { assert } from 'es-toolkit'
 import { useRef, type ComponentProps, type CSSProperties, type MouseEvent, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { useUnoMerge } from 'unocss-merge/react'
@@ -53,13 +52,14 @@ export function BaseModal({
   hideWhenMaskOnClick = false,
   hideWhenEsc = false,
 }: BaseModalProps) {
-  const wrapperRef = useRef<HTMLDivElement>(null)
+  const rootRef = useRef<HTMLDivElement>(null)
+  const modalRef = useRef<HTMLDivElement>(null)
 
   const onMaskClick = useMemoizedFn((e: MouseEvent) => {
     const target = e.target as HTMLElement
 
     // click from .modal
-    if (wrapperRef.current?.contains(target)) return
+    if (modalRef.current?.contains(target)) return
 
     // react onClick 即使点击的是 antd Portal 元素, 也会触发 mask onClick
     // click from antd components
@@ -80,12 +80,8 @@ export function BaseModal({
     (e) => {
       // 只有自己是最顶层 modal 时才能 close
       // test: 先打开 ModalDislike -> ModalSettings
-      const baseModalRoot = wrapperRef.current?.closest<HTMLDivElement>(`[data-role='base-modal']`)
-      assert(baseModalRoot, 'baseModalRoot should not be null')
-      const follingSiblings = [...(baseModalRoot.parentElement?.children || [])].slice(
-        [...(baseModalRoot.parentElement?.children || [])].indexOf(baseModalRoot) + 1,
-      )
-      if (follingSiblings.some((el) => el.matches(`.${APP_CLS_MODAL_VISIBLE}`))) return
+      if (!rootRef.current) return
+      if (rootRef.current.matches(`:has(~ .${APP_CLS_MODAL_VISIBLE})`)) return
 
       // prevent other esc handler run
       e.preventDefault()
@@ -104,9 +100,9 @@ export function BaseModal({
   }
 
   return createPortal(
-    <div className={clsx(APP_CLS_ROOT, { [APP_CLS_MODAL_VISIBLE]: show })} data-role='base-modal'>
+    <div className={clsx(APP_CLS_ROOT, { [APP_CLS_MODAL_VISIBLE]: show })} data-role='base-modal' ref={rootRef}>
       <div className={_clsModalMask} onClick={onMaskClick}>
-        <div className={_clsModal} style={{ width }} ref={wrapperRef}>
+        <div className={_clsModal} style={{ width }} ref={modalRef}>
           {children}
         </div>
       </div>
