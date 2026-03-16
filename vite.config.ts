@@ -54,9 +54,6 @@ const minify = (() => {
     if (parsed.success) return parsed.data
   }
 
-  if (process.env.MINIFY === 'false') return false
-  if (process.env.MINIFY === 'true') return true
-
   // GreasyFork: default no minify
   if (process.env.RELEASE) return false
 
