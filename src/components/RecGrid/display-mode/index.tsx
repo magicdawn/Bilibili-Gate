@@ -93,7 +93,7 @@ export function GridTemplateColumnsConfig({ className }: { className?: string })
   const { useCustomGrid, enableForceColumn, cardMinWidth, forceColumnCount } = useSnapshot(settings.grid)
 
   /**
-   * 复用 `settings.grid.enableForceCilumn: boolean` 后续如果有更多可能的值, 再改成 enum
+   * 复用 `settings.grid.enableForceColumn: boolean` 后续如果有更多可能的值, 再改成 enum
    */
   type AllowedValue = 'auto-fill' | 'force-column'
   const value: AllowedValue = enableForceColumn ? 'force-column' : 'auto-fill'
