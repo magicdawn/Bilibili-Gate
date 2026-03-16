@@ -1,5 +1,5 @@
 import { css } from '@emotion/react'
-import { useKeyPress } from 'ahooks'
+import { useHotkey, type RegisterableHotkey } from '@tanstack/react-hotkeys'
 import { Tabs } from 'antd'
 import { get, set } from 'es-toolkit/compat'
 import { proxy, useSnapshot } from 'valtio'
@@ -8,7 +8,6 @@ import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/Ba
 import { antMessage } from '$modules/antd'
 import { IconForConfig } from '$modules/icon'
 import { settings, type BooleanSettingsPath } from '$modules/settings'
-import { shouldDisableShortcut } from '$utility/dom'
 import { TabPaneAdvance } from './tab-panes/pane-advance'
 import { TabPaneBasic } from './tab-panes/pane-basic'
 import { TabPaneFilter } from './tab-panes/pane-filter'
@@ -18,18 +17,13 @@ import { TabPaneVideoCard, useHotkeyForConfigBorder } from './tab-panes/pane-vid
 import { sharedClassNames } from './tab-panes/shared'
 import { ThemesSelect } from './theme'
 
-function useHotkeyForConfig(hotkey: string | string[], configPath: BooleanSettingsPath, label: string) {
-  return useKeyPress(
-    hotkey,
-    (e) => {
-      if (shouldDisableShortcut()) return
-      const current = Boolean(get(settings, configPath))
-      const newValue = !current
-      set(settings, configPath, newValue)
-      antMessage.success(`已${newValue ? '启用' : '禁用'}「${label}」`)
-    },
-    { exactMatch: true },
-  )
+function useHotkeyForConfig(hotkey: RegisterableHotkey, configPath: BooleanSettingsPath, label: string) {
+  return useHotkey(hotkey, (e) => {
+    const current = Boolean(get(settings, configPath))
+    const newValue = !current
+    set(settings, configPath, newValue)
+    antMessage.success(`已${newValue ? '启用' : '禁用'}「${label}」`)
+  })
 }
 
 const enum TabPaneKey {
@@ -50,8 +44,8 @@ const modalSettingsStore = proxy({ tab })
 
 // empty component for conditional render
 export function ModalSettingsHotkey() {
-  useHotkeyForConfig(['shift.p'], 'videoCard.imgPreview.autoPreviewWhenKeyboardSelect', '键盘选中后自动开始预览')
-  useHotkeyForConfig(['shift.m'], 'videoCard.imgPreview.autoPreviewWhenHover', '鼠标悬浮后自动开始预览')
+  useHotkeyForConfig('Shift+P', 'videoCard.imgPreview.autoPreviewWhenKeyboardSelect', '键盘选中后自动开始预览')
+  useHotkeyForConfig('Shift+M', 'videoCard.imgPreview.autoPreviewWhenHover', '鼠标悬浮后自动开始预览')
   useHotkeyForConfigBorder()
   return null
 }

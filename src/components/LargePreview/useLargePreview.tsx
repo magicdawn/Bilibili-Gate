@@ -1,12 +1,5 @@
-import {
-  useClickAway,
-  useEventListener,
-  useKeyPress,
-  useLockFn,
-  useMemoizedFn,
-  useRequest,
-  useUpdateEffect,
-} from 'ahooks'
+import { useHotkey } from '@tanstack/react-hotkeys'
+import { useClickAway, useEventListener, useLockFn, useMemoizedFn, useRequest, useUpdateEffect } from 'ahooks'
 import { getTargetElement } from 'ahooks/lib/utils/domTarget'
 import {
   useCallback,
@@ -26,7 +19,7 @@ import { useRefBox, useRefStateBox } from '$common/hooks/useRefState'
 import { openNewTab } from '$modules/gm'
 import { IconForLoading } from '$modules/icon'
 import { settings } from '$modules/settings'
-import { classListToSelector, shouldDisableShortcut } from '$utility/dom'
+import { classListToSelector } from '$utility/dom'
 import { VideoCardActionButton } from '../VideoCard/child-components/VideoCardActions'
 import { fetchVideoPreviewData, isVideoPreviewDataValid, type VideoPreviewData } from '../VideoCard/services'
 import { getRecItemDimension } from '../VideoCard/use/useOpenRelated'
@@ -333,14 +326,7 @@ export function useLargePreviewRelated({
   /**
    * trigger by click, more ways to close
    */
-  useKeyPress(
-    'esc',
-    () => {
-      if (shouldDisableShortcut()) return
-      hide()
-    },
-    { exactMatch: true },
-  )
+  useHotkey('Escape', hide)
   useClickAway(
     () => hide(),
     [

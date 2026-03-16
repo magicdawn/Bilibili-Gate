@@ -1,4 +1,5 @@
-import { useKeyPress, useMemoizedFn } from 'ahooks'
+import { useHotkey } from '@tanstack/react-hotkeys'
+import { useMemoizedFn } from 'ahooks'
 import { Button } from 'antd'
 import clsx from 'clsx'
 import { useAnimate } from 'framer-motion'
@@ -19,7 +20,6 @@ import { favStore } from '$modules/rec-services/fav/store'
 import { isHotTabUsingShuffle } from '$modules/rec-services/hot'
 import { WatchlaterItemsOrder } from '$modules/rec-services/watchlater/watchlater-enum'
 import { useSettingsSnapshot } from '$modules/settings'
-import { shouldDisableShortcut } from '$utility/dom'
 
 export type RefreshButtonActions = { click: () => void }
 export type RefreshButtonProps = {
@@ -41,19 +41,11 @@ export function RefreshButton({ className = '', style, tab, refreshHotkeyEnabled
     btn.current.click()
   })
 
-  // click from outside
+  // trigger click from outside
   useImperativeHandle(ref, () => ({ click }), [])
 
   // refresh
-  useKeyPress(
-    'r',
-    () => {
-      if (shouldDisableShortcut()) return
-      if (!refreshHotkeyEnabled) return
-      click()
-    },
-    { exactMatch: true },
-  )
+  useHotkey('R', click, { enabled: refreshHotkeyEnabled })
 
   const { watchlaterItemsOrder, popularWeeklyUseShuffle } = useSettingsSnapshot()
   const { usingShuffle: favUsingShuffle } = useSnapshot(favStore)

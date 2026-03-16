@@ -1,5 +1,6 @@
 import { css } from '@emotion/react'
-import { useKeyPress, useMemoizedFn } from 'ahooks'
+import { useHotkey } from '@tanstack/react-hotkeys'
+import { useMemoizedFn } from 'ahooks'
 import clsx from 'clsx'
 import { useRef, type ComponentProps, type CSSProperties, type MouseEvent, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
@@ -73,20 +74,16 @@ export function BaseModal({
     }
   })
 
-  useKeyPress(
-    'esc',
+  useHotkey(
+    'Escape',
     (e) => {
-      if (!show) return
-      if (hideWhenEsc) {
-        // prevent other esc handler run
-        e.preventDefault()
-        e.stopImmediatePropagation()
-
-        // wait the unpreventable esc handlers run, close in next tick
-        setTimeout(onHide)
-      }
+      // prevent other esc handler run
+      e.preventDefault()
+      e.stopImmediatePropagation()
+      // wait the unpreventable esc handlers run, close in next tick
+      setTimeout(onHide)
     },
-    { exactMatch: true },
+    { enabled: show && hideWhenEsc },
   )
 
   const _clsModalMask = useUnoMerge(BaseModalClassNames.modalMask, clsModalMask)

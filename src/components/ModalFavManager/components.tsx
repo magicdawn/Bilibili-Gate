@@ -1,5 +1,6 @@
 /* eslint-disable require-await */
-import { useKeyPress, useMemoizedFn, useRequest, useUpdateEffect } from 'ahooks'
+import { useHotkey } from '@tanstack/react-hotkeys'
+import { useMemoizedFn, useRequest, useUpdateEffect } from 'ahooks'
 import { Button, Empty, Input, Popover, Slider, Spin } from 'antd'
 import clsx from 'clsx'
 import { assert, isEqual, uniqBy } from 'es-toolkit'
@@ -23,7 +24,6 @@ import {
 import { favStore, updateFavFolderList } from '$modules/rec-services/fav/store'
 import { useSettingsSnapshot } from '$modules/settings'
 import { getUid } from '$utility/cookie'
-import { shouldDisableShortcut } from '$utility/dom'
 import { proxyWithLocalStorage } from '$utility/valtio'
 import { FavFolderOrderSwitcher, sortFavFolders, type FavFolderOrder } from './fav-folder-order'
 import type { Promisable } from 'type-fest'
@@ -152,15 +152,7 @@ export function ModalFavManager({
   /* #endregion */
 
   /* #region callbacks & shortcuts */
-  useKeyPress(
-    'r',
-    () => {
-      if (!show) return
-      if (shouldDisableShortcut()) return
-      $updateFoldersReq.run(true)
-    },
-    { exactMatch: true },
-  )
+  useHotkey('R', () => $updateFoldersReq.run(true), { enabled: show })
 
   const onOk = useMemoizedFn(async () => {
     let selectedFolder: FavFolder | undefined

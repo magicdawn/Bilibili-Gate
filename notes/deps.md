@@ -25,3 +25,26 @@ pnpm add -D typescript@5.4.5
 ## `mitt` v.s `emittery`
 
 emittery 可以直接 `emitter.once('event'): Promise<Data>`, 可以省掉 `p-event` 的使用
+
+## `@tanstack/react-hotkeys` v.s `ahooks.useKeyPress`
+
+```
+// refresh
+useKeyPress(
+  'r',
+  () => {
+    if (shouldDisableShortcut()) return
+    if (!refreshHotkeyEnabled) return
+    click()
+  },
+  { exactMatch: true },
+)
+```
+
+@tanstack/react-hotkeys
+
+- ❌ bigger bundle size
+- ✅ 省略 `exactMatch`: `exactMatch` 很蠢很啰嗦
+- ✅ enabled option, 不用在逻辑里 check 了
+- ✅ ignoreInputs 内置默认行为, 不需要 `shouldDisableShortcut`
+- ✅ typesafe key

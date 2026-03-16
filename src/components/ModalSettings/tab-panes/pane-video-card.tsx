@@ -1,4 +1,4 @@
-import { useKeyPress } from 'ahooks'
+import { useHotkey } from '@tanstack/react-hotkeys'
 import { Divider, Select, Slider, Tag } from 'antd'
 import { isEqual, pick } from 'es-toolkit'
 import { useMemo } from 'react'
@@ -6,7 +6,6 @@ import { HelpInfo } from '$components/_base/HelpInfo'
 import { EVideoLinkOpenMode, VideoLinkOpenModeConfig } from '$components/VideoCard/index.shared'
 import { antMessage } from '$modules/antd'
 import { settings, updateSettings, useSettingsSnapshot, type Settings } from '$modules/settings'
-import { shouldDisableShortcut } from '$utility/dom'
 import { explainForFlag } from '../index.shared'
 import { CheckboxSettingItem, SwitchSettingItem } from '../setting-item'
 import { SettingsGroup, sharedClassNames } from './shared'
@@ -19,26 +18,20 @@ const borderCycleList: CardBorderState[] = [
 ]
 const borderCycleListLabels = ['「卡片边框」: 禁用', '「卡片边框」: 仅在悬浮时显示', '「卡片边框」: 总是显示']
 export function useHotkeyForConfigBorder() {
-  return useKeyPress(
-    ['shift.b'],
-    (e) => {
-      if (shouldDisableShortcut()) return
+  return useHotkey('Shift+B', (e) => {
+    const curState: CardBorderState = pick(settings.style.videoCard, ['useBorder', 'useBorderOnlyOnHover'])
+    const curIndex = borderCycleList.findIndex((state) => {
+      return isEqual(state, pick(curState, Object.keys(state) as (keyof CardBorderState)[]))
+    })
+    if (curIndex === -1) throw new Error('unexpected curIndex = -1')
 
-      const curState: CardBorderState = pick(settings.style.videoCard, ['useBorder', 'useBorderOnlyOnHover'])
-      const curIndex = borderCycleList.findIndex((state) => {
-        return isEqual(state, pick(curState, Object.keys(state) as (keyof CardBorderState)[]))
-      })
-      if (curIndex === -1) throw new Error('unexpected curIndex = -1')
+    const nextIndex = (curIndex + 1) % borderCycleList.length
+    const nextState = borderCycleList[nextIndex]
+    Object.assign(settings.style.videoCard, nextState)
 
-      const nextIndex = (curIndex + 1) % borderCycleList.length
-      const nextState = borderCycleList[nextIndex]
-      Object.assign(settings.style.videoCard, nextState)
-
-      const nextLabel = borderCycleListLabels[nextIndex]
-      antMessage.success(nextLabel)
-    },
-    { exactMatch: true },
-  )
+    const nextLabel = borderCycleListLabels[nextIndex]
+    antMessage.success(nextLabel)
+  })
 }
 
 export function TabPaneVideoCard() {

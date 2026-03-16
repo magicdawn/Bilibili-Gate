@@ -1,16 +1,14 @@
+import { useHotkey } from '@tanstack/react-hotkeys'
 import { useMemoizedFn } from 'ahooks'
-import useKeyPress, { type KeyFilter, type KeyType } from 'ahooks/lib/useKeyPress'
 import { useState, type RefObject } from 'react'
 import { APP_CLS_CARD, APP_CLS_CARD_ACTIVE, appWarn } from '$common'
 import { EGridDisplayMode } from '$enums'
 import { settings } from '$modules/settings'
-import { shouldDisableShortcut } from '$utility/dom'
 import { videoGrid } from './video-grid.module.scss'
 import type { VideoCardEmitter } from '$components/VideoCard/index.shared'
 
 interface IOptions {
   enabled: boolean
-  refresh: () => void | Promise<void>
   minIndex?: number
   maxIndex: number
 
@@ -32,7 +30,6 @@ interface IOptions {
 // 快捷键
 export function useShortcut({
   enabled,
-  refresh,
   minIndex = 0,
   maxIndex,
   gridRef,
@@ -41,14 +38,13 @@ export function useShortcut({
   videoCardEmitters,
   activeLargePreviewItemIndex,
 }: IOptions) {
+  const useCustomHotkey: typeof useHotkey = (hotkey, callback, options) =>
+    useHotkey(hotkey, callback, {
+      enabled, // set default `enabled` options
+      ...options,
+    })
+
   const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined)
-
-  const isEnabled = useMemoizedFn(() => {
-    if (!enabled) return false
-    if (shouldDisableShortcut()) return false
-    return true
-  })
-
   const activeIndexIsValid = useMemoizedFn(() => {
     if (typeof activeIndex !== 'number') return false
     if (!gridRef.current) return false
@@ -112,8 +108,7 @@ export function useShortcut({
   }
 
   const addActiveIndex = (step: number | 'up' | 'down') => (e?: KeyboardEvent) => {
-    if (!isEnabled()) return
-
+    if (!enabled) return
     // 防止 scroller focus 的情况下, 因键盘产生滑动, 进而页面抖动
     e?.preventDefault()
 
@@ -141,59 +136,49 @@ export function useShortcut({
     makeVisible(newActiveIndex)
   }
 
-  const useKey = (keyFilter: KeyFilter, eventHandler: (event: KeyboardEvent, key: KeyType) => void) => {
-    useKeyPress(
-      keyFilter,
-      (event, key) => {
-        if (!isEnabled()) return
-        eventHandler(event, key)
-      },
-      { exactMatch: true },
-    )
-  }
-
   // by 1
-  useKey('leftarrow', addActiveIndex(-1))
-  useKey('rightarrow', addActiveIndex(1))
-
-  useKey('tab', addActiveIndex(1))
-  useKey('shift.tab', addActiveIndex(-1))
-
+  useCustomHotkey('ArrowLeft', addActiveIndex(-1))
+  useCustomHotkey('ArrowRight', addActiveIndex(1))
+  useCustomHotkey('Tab', addActiveIndex(1))
+  useCustomHotkey('Shift+Tab', addActiveIndex(-1))
   // by row
   // 不使用 getColCount 是因为, Separator 类型导致有空的位置
-  useKey('uparrow', addActiveIndex('up'))
-  useKey('downarrow', addActiveIndex('down'))
+  useCustomHotkey('ArrowUp', addActiveIndex('up'))
+  useCustomHotkey('ArrowDown', addActiveIndex('down'))
 
   // actions
   const clearActiveIndex = () => {
-    if (!isEnabled()) return
+    if (!enabled) return
     setActiveIndex(undefined)
   }
-
   const getActiveEmitter = () => {
-    if (!isEnabled() || typeof activeIndex !== 'number') return
+    if (!enabled || typeof activeIndex !== 'number') return
     return videoCardEmitters[activeIndex]
   }
 
-  useKey('esc', clearActiveIndex)
-  useKey('enter', (e) => {
-    if (!isEnabled()) return
+  useCustomHotkey('Escape', clearActiveIndex)
+  useHotkey(
+    'Enter',
+    (e) => {
+      if (typeof activeIndex === 'number') {
+        e.preventDefault()
+        return videoCardEmitters[activeIndex]?.emit('open')
+      }
 
-    if (typeof activeIndex === 'number') {
-      e.preventDefault()
-      return videoCardEmitters[activeIndex]?.emit('open')
-    }
-
-    if (typeof activeLargePreviewItemIndex === 'number') {
-      e.preventDefault()
-      return videoCardEmitters[activeLargePreviewItemIndex]?.emit('open-with-large-preview-visible')
-    }
-  })
-  useKey('x', () => getActiveEmitter()?.emit('open-in-popup'))
-  useKey('backspace', () => getActiveEmitter()?.emit('trigger-dislike'))
+      if (typeof activeLargePreviewItemIndex === 'number') {
+        e.preventDefault()
+        return videoCardEmitters[activeLargePreviewItemIndex]?.emit('open-with-large-preview-visible')
+      }
+    },
+    { enabled },
+  )
+  useCustomHotkey('X', () => getActiveEmitter()?.emit('open-in-popup'))
+  useCustomHotkey('Backspace', () => getActiveEmitter()?.emit('trigger-dislike'))
   // 稍候再看, s 与 BILIBILI-Envoled 快捷键冲突
-  useKey(['s', 'w'], () => getActiveEmitter()?.emit('toggle-watch-later'))
-  useKey(['period', 'p'], () => getActiveEmitter()?.emit('hotkey-preview-animation'))
+  useCustomHotkey('S', () => getActiveEmitter()?.emit('toggle-watch-later'))
+  useCustomHotkey('W', () => getActiveEmitter()?.emit('toggle-watch-later'))
+  useCustomHotkey('.', () => getActiveEmitter()?.emit('hotkey-preview-animation'))
+  useCustomHotkey('P', () => getActiveEmitter()?.emit('hotkey-preview-animation'))
 
   function getInitialIndex() {
     const scrollerRect = getScrollerRect()

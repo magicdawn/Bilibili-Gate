@@ -1,5 +1,6 @@
 import { css } from '@emotion/react'
-import { useKeyPress, useMemoizedFn } from 'ahooks'
+import { useHotkey } from '@tanstack/react-hotkeys'
+import { useMemoizedFn } from 'ahooks'
 import { Button } from 'antd'
 import clsx from 'clsx'
 import { useImperativeHandle, useMemo, type ReactNode, type Ref } from 'react'
@@ -19,7 +20,7 @@ import { MultiSelectButton } from '$modules/multi-select'
 import { isRecTab } from '$modules/rec-services/service-map'
 import { useSettingsSnapshot } from '$modules/settings'
 import { isMac, isSafari } from '$ua'
-import { getElementOffset, shouldDisableShortcut } from '$utility/dom'
+import { getElementOffset } from '$utility/dom'
 import { AccessKeyManage } from '../AccessKeyManage'
 import { showModalSettings, toggleModalSettings } from './modals'
 import { RefreshButton } from './RefreshButton'
@@ -63,13 +64,11 @@ export function RecHeader({ tab, leftSlot, rightSlot, shortcutEnabled, ref }: Re
     </>
   ) : undefined
 
-  useKeyPress(
-    ['shift.comma'],
-    (e) => {
-      if (shouldDisableShortcut()) return
-      toggleModalSettings()
-    },
-    { exactMatch: true, useCapture: true },
+  // ModalSettings hotkey shift+,
+  useHotkey(
+    { shift: true, key: '<' },
+    toggleModalSettings,
+    { eventType: 'keyup' }, // keydown 与 Bilibili-Evolved 不能一起工作, 不知道为什么
   )
 
   const [stickyRef, sticky] = useSticky<HTMLDivElement>()

@@ -2,7 +2,7 @@ import { useMemoizedFn, useMount } from 'ahooks'
 import { Input, Space } from 'antd'
 import { useSnapshot } from 'valtio'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
-import { useOnRefresh, useRecSelfContext } from '$components/Recommends/rec.shared'
+import { useOnRefresh } from '$components/Recommends/rec.shared'
 import { AntdTooltip } from '$modules/antd/custom'
 import { usePopupContainer } from '$modules/rec-services/_base'
 import { settings, useSettingsSnapshot } from '$modules/settings'
@@ -19,7 +19,6 @@ export function SpaceUploadTabbarView() {
     spaceUpload: { useSyncFilterTextFromSearchText },
   } = useSettingsSnapshot()
   const onRefresh = useOnRefresh()
-  const { recSharedEmitter } = useRecSelfContext()
   const { ref, getPopupContainer } = usePopupContainer()
   const { popoverTrigger } = usePopoverRelated({ onRefresh, getPopupContainer })
 

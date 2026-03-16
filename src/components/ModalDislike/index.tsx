@@ -1,16 +1,18 @@
 /* eslint-disable require-await */
 
-import { useKeyPress, useLockFn, useMemoizedFn, useRequest } from 'ahooks'
+import { useHotkey, type NumberKey } from '@tanstack/react-hotkeys'
+import { useCreation, useLockFn, useMemoizedFn, useRequest } from 'ahooks'
 import { Button, Spin } from 'antd'
 import { clsx } from 'clsx'
 import Emittery from 'emittery'
+import { assert } from 'es-toolkit'
 import { useLayoutEffect, useRef, useState, type MouseEvent } from 'react'
 import { useSnapshot } from 'valtio'
+import { useEmitterOn } from '$common/hooks/useEmitter'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { antSpinIndicator } from '$components/fragments'
 import { IconAnimatedChecked, IconForDislike } from '$modules/icon'
-import { shouldDisableShortcut } from '$utility/dom'
 import { wrapComponent } from '$utility/global-component'
 import { assertNever } from '$utility/type'
 import { normalizeDislikeReason, type DislikeReason, type OkAction } from './types'
@@ -46,7 +48,7 @@ export const useModalDislikeVisible = function () {
 
 export function ModalDislike({ show, reasons, onHide, okAction }: typeof defaultProps) {
   const modalBodyRef = useRef<HTMLDivElement>(null)
-  const keyPressEnabled = () => !!show && !!reasons?.length
+  const hotkeyEnabled = !!(show && reasons?.length)
 
   const $req = useRequest(async (reason: DislikeReason) => okAction?.(reason), { manual: true })
   const okActionLoading = $req.loading
@@ -64,32 +66,22 @@ export function ModalDislike({ show, reasons, onHide, okAction }: typeof default
     }
   }, [reasons])
 
-  const KEYS = ['1', '2', '3', '4', '5', '6']
-  useKeyPress(KEYS, (e) => {
-    if (!keyPressEnabled()) return
-    if (!KEYS.includes(e.key)) return
-    if (!reasons?.length) return
-
-    const index = Number(e.key) - 1
-    if (!(index >= 0 && index < reasons.length)) return
-
-    setActiveIndex(index)
+  const numberKeyEmitter = useCreation(() => new Emittery<{ click: number }>(), [])
+  useEmitterOn(numberKeyEmitter, 'click', ({ data: num }) => {
+    //
   })
 
   const increaseIndex = useMemoizedFn((by: number) => {
-    if (!keyPressEnabled()) return
-    if (shouldDisableShortcut()) return
     const len = reasons.length
     let newIndex = activeIndex + by
     if (newIndex < 0) newIndex = (newIndex % len) + len
     if (newIndex > len - 1) newIndex = newIndex % len
     setActiveIndex(newIndex)
   })
-  useKeyPress('uparrow', () => increaseIndex(-1), { exactMatch: true })
-  useKeyPress('downarrow', () => increaseIndex(1), { exactMatch: true })
+  useHotkey('ArrowUp', () => increaseIndex(-1), { enabled: hotkeyEnabled })
+  useHotkey('ArrowDown', () => increaseIndex(1), { enabled: hotkeyEnabled })
 
   const onOk = useLockFn(async (e: KeyboardEvent | MouseEvent) => {
-    if (!keyPressEnabled()) return
     if (activeIndex < 0 || activeIndex > reasons.length - 1) return
     const reason = reasons[activeIndex]
     if (!reason) return
@@ -99,7 +91,7 @@ export function ModalDislike({ show, reasons, onHide, okAction }: typeof default
     const result = await $req.runAsync(reason)
     if (result) onHide()
   })
-  useKeyPress('enter', onOk, { exactMatch: true })
+  useHotkey('Enter', onOk, { enabled: hotkeyEnabled })
 
   return (
     <BaseModal
@@ -133,6 +125,7 @@ export function ModalDislike({ show, reasons, onHide, okAction }: typeof default
             {reasons.map((reason, index) => {
               const active = index === activeIndex
               const { reasonId, text } = normalizeDislikeReason(reason)
+              const num = index + 1
               return (
                 <button
                   key={reasonId}
@@ -151,7 +144,8 @@ export function ModalDislike({ show, reasons, onHide, okAction }: typeof default
                     data-cls='reason-no'
                     className='size-20px flex flex-none items-center justify-center rounded-full bg-gate-primary text-13px color-white'
                   >
-                    {index + 1}
+                    <DislikeReasonHotkeySetup num={num} enabled={hotkeyEnabled} onPress={() => setActiveIndex(index)} />
+                    {num}
                   </span>
                   <span className='flex-1 px-4px text-14px'>{text}</span>
                   <span className='size-20px flex-none'>
@@ -172,4 +166,21 @@ export function ModalDislike({ show, reasons, onHide, okAction }: typeof default
       </div>
     </BaseModal>
   )
+}
+
+/**
+ * use useHotkey hook in a loop
+ */
+function DislikeReasonHotkeySetup({
+  num,
+  onPress,
+  enabled,
+}: {
+  num: number
+  onPress: (e: KeyboardEvent) => void
+  enabled?: boolean
+}) {
+  assert(num >= 1 && num <= 9, 'num must be between 1 and 9')
+  useHotkey(`${num}` as NumberKey, onPress, { enabled })
+  return null
 }
