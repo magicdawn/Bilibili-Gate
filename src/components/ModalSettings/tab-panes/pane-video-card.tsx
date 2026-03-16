@@ -3,6 +3,7 @@ import { Divider, Select, Slider, Tag } from 'antd'
 import { isEqual, pick } from 'es-toolkit'
 import { useMemo } from 'react'
 import { HelpInfo } from '$components/_base/HelpInfo'
+import { HotkeyDisplay } from '$components/fragments'
 import { EVideoLinkOpenMode, VideoLinkOpenModeConfig } from '$components/VideoCard/index.shared'
 import { antMessage } from '$modules/antd'
 import { settings, updateSettings, useSettingsSnapshot, type Settings } from '$modules/settings'
@@ -114,7 +115,7 @@ export function TabPaneVideoCard() {
                 勾选后, 视频卡片会有边框包裹, 更像是一个卡片~ <br />
                 整个卡片区域可点击 / 可触发预览 / 可使用右键菜单 <br />
                 否则只是封面区域可以 <br />
-                使用快捷键 <Tag color='green'>shift+b</Tag> 切换状态 <br />
+                使用快捷键 <HotkeyDisplay k='Shift+B' /> 切换状态 <br />
                 {borderCycleListLabels.map((label) => (
                   <Tag color='success' key={label} className='mx-1'>
                     {label}
@@ -165,7 +166,7 @@ export function TabPaneVideoCard() {
             tooltip={
               <>
                 {explainForFlag('鼠标悬浮后自动开始预览, 不跟随鼠标位置', '预览进度跟随鼠标位置(百分比)')}
-                切换设置快捷键: <Tag color='green'>shift+m</Tag>
+                切换设置快捷键: <HotkeyDisplay k='Shift+M' />
               </>
             }
           />
@@ -187,8 +188,8 @@ export function TabPaneVideoCard() {
             label='键盘选中后自动开始'
             tooltip={
               <>
-                手动预览快捷键: <Tag color='green'>.</Tag> or <Tag color='green'>p</Tag> <br />
-                切换设置快捷键: <Tag color='green'>shift+p</Tag>
+                手动预览快捷键: <HotkeyDisplay k='.' /> or <HotkeyDisplay k='P' /> <br />
+                切换设置快捷键: <HotkeyDisplay k='Shift+P' />
               </>
             }
           />

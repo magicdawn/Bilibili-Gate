@@ -1,4 +1,5 @@
 import { bv2av } from '@mgdn/bvid'
+import { matchesKeyboardEvent } from '@tanstack/react-hotkeys'
 import { delay } from 'es-toolkit'
 import ms from 'ms'
 import { baseDebug } from '$common'
@@ -129,35 +130,44 @@ function registerAddToFavCommand() {
   GM.registerMenuCommand?.('⭐️ 加入收藏', () => addToFav())
 }
 async function setupCustomFavPicker() {
-  if (!settings.fav.useCustomFavPicker.onPlayPage) return
   if (!getCurrentPageBvid()) return
+  const willUseCustomFavPicker = () => settings.fav.useCustomFavPicker.onPlayPage
+
+  // setup keyboard shortcut
+  //  Shift+E: always on
+  //  E: only when willUseCustomFavPicker
   document.addEventListener(
     'keydown',
     (e) => {
-      if (e.key !== 'e') return
-      if (shouldDisableShortcut()) return
-      const target = e.target as HTMLElement
-      if (target.closest('bili-comments')) return // emit from a <bili-comments> element
-      e.stopImmediatePropagation()
-      e.preventDefault()
-      addToFav()
+      if (matchesKeyboardEvent(e, 'Shift+E') || (willUseCustomFavPicker() && matchesKeyboardEvent(e, 'E'))) {
+        if (!getCurrentPageBvid()) return
+        if (shouldDisableShortcut()) return
+        const target = e.target as HTMLElement
+        if (target.closest('bili-comments')) return // emit from a <bili-comments> element
+        e.stopImmediatePropagation()
+        e.preventDefault()
+        addToFav()
+      }
     },
     { capture: true },
   )
 
-  const el = await poll(() => document.querySelector<HTMLDivElement>('.video-fav.video-toolbar-left-item'), {
-    interval: 100,
-    timeout: 5_000,
-  })
-  el?.addEventListener(
-    'click',
-    (e) => {
-      e.stopImmediatePropagation()
-      e.preventDefault()
-      addToFav()
-    },
-    { capture: true },
-  )
+  if (willUseCustomFavPicker()) {
+    const el = await poll(() => document.querySelector<HTMLDivElement>('.video-fav.video-toolbar-left-item'), {
+      interval: 100,
+      timeout: 5_000,
+    })
+    el?.addEventListener(
+      'click',
+      (e) => {
+        if (!willUseCustomFavPicker() || !getCurrentPageBvid()) return
+        e.stopImmediatePropagation()
+        e.preventDefault()
+        addToFav()
+      },
+      { capture: true },
+    )
+  }
 }
 
 async function addToFav(sourceFavFolderIds?: number[] | undefined) {

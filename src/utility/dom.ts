@@ -100,18 +100,29 @@ export async function tryToRemove(
 }
 
 /**
- * input 输入中, 用于拦截快捷键处理
+ * from https://github.com/TanStack/hotkeys/blob/%40tanstack/react-hotkeys%400.4.1/packages/hotkeys/src/manager.utils.ts#L48
+ * it's not exported
  */
+export function isInputElement(element: EventTarget | null): boolean {
+  if (!element) {
+    return false
+  }
 
-export function shouldDisableShortcut() {
-  // if activeElement is input, disable shortcut
-  const activeTagName = document.activeElement?.tagName?.toLowerCase() ?? ''
-  if (['input', 'textarea'].includes(activeTagName)) {
+  if (element instanceof HTMLInputElement) {
+    const type = element.type.toLowerCase()
+    if (type === 'button' || type === 'submit' || type === 'reset') {
+      return false
+    }
     return true
   }
 
-  // if search panel is open, disable shortcut
-  if (document.querySelector('.center-search__bar.is-focus')) {
+  if (element instanceof HTMLTextAreaElement || element instanceof HTMLSelectElement) {
+    return true
+  }
+
+  // Check for contenteditable elements (includes "true", "", "plaintext-only",
+  // and inherited contenteditable from ancestor elements)
+  if (element instanceof HTMLElement && element.isContentEditable) {
     return true
   }
 
@@ -119,9 +130,16 @@ export function shouldDisableShortcut() {
 }
 
 /**
+ * input 输入中, 用于拦截快捷键处理
+ */
+export function shouldDisableShortcut() {
+  if (isInputElement(document.activeElement)) return true
+  return false
+}
+
+/**
  * https://youmightnotneedjquery.com/#offset
  */
-
 export function getElementOffset(el: HTMLElement, rect?: DOMRect) {
   rect ??= el.getBoundingClientRect()
   const docElem = document.documentElement

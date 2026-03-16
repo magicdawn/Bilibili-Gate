@@ -3,11 +3,10 @@ import { InputNumber, Radio, Space, type CheckboxOptionType, type RadioChangeEve
 import { useMemo } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
 import { useSnapshot } from 'valtio'
-import { CustomKbd } from '$components/fragments'
+import { HotkeyDisplay } from '$components/fragments'
 import { EGridDisplayMode } from '$enums'
 import { AntdTooltip } from '$modules/antd/custom'
 import { settings } from '$modules/settings'
-import { isMac } from '$ua'
 import { TwoColumnModeAlignSwitcher } from './two-column-mode'
 
 export function gridDisplayModeChecker(x: EGridDisplayMode) {
@@ -118,8 +117,9 @@ export function GridTemplateColumnsConfig({ className }: { className?: string })
                   自适应: 指按照「卡片最小宽度」自适应 <br />
                   如果期望显示更多的列, 可以调小「卡片最小宽度」; <br />
                   如果期望显示更少的列, 可以调大「卡片最小宽度」; <br />
-                  Tip: 先点击输入框, 再移动鼠标到透视按钮, 然后使用键盘{' '}
-                  <CustomKbd>{isMac ? 'Option' : 'Alt'}</CustomKbd> + <CustomKbd>上下键</CustomKbd>调整
+                  Tip: 先点击输入框, 再移动鼠标到透视按钮, 然后使用键盘
+                  <HotkeyDisplay k='Alt+ArrowUp' className='mx-1' />
+                  <HotkeyDisplay k='Alt+ArrowDown' className='mx-1' /> 调整
                 </>
               }
             >

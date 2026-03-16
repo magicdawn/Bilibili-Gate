@@ -1,5 +1,5 @@
 import { APP_NAME } from '$common'
-import { CustomKbd } from '$components/fragments'
+import { HotkeyDisplay } from '$components/fragments'
 import { CheckboxSettingItem } from '../setting-item'
 import { ResetPartialSettingsButton, SettingsGroup, sharedClassNames } from './shared'
 
@@ -24,8 +24,14 @@ export function TabPaneOtherPages() {
                 <li>
                   <span className='flex-v-center'>
                     支持从收藏夹图标 或 快捷键
-                    <CustomKbd className='mx-1 h-14px py-0 line-height-13px'>e</CustomKbd>
+                    <HotkeyDisplay k='E' className='mx-1 h-14px py-0 line-height-13px' />
                     触发
+                  </span>
+                </li>
+                <li>
+                  <span className='flex-v-center'>
+                    <HotkeyDisplay k='Shift+E' className='mx-1 h-14px flex py-0 line-height-13px' />
+                    无视此开关, 总是生效
                   </span>
                 </li>
               </ul>
