@@ -1,6 +1,6 @@
 import { formatForDisplay, type Hotkey } from '@tanstack/react-hotkeys'
+import { useMemo, type ComponentProps } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
-import type { ComponentProps } from 'react'
 
 export const kbdClassName =
   'inline-block cursor-pointer rounded bg-gate-primary-lv-3 px-6px text-white line-height-tight tracking-1 font-mono'
@@ -10,7 +10,8 @@ export function CustomKbd({ className, ...restProps }: ComponentProps<'kbd'>) {
 }
 
 export function HotkeyDisplay({ k, ...restProps }: Omit<ComponentProps<'kbd'>, 'children'> & { k: Hotkey }) {
-  return <CustomKbd {...restProps}>{formatForDisplay(k)}</CustomKbd>
+  const content = useMemo(() => formatForDisplay(k), [k])
+  return <CustomKbd {...restProps}>{content}</CustomKbd>
 }
 
 export const antSpinIndicator = (
