@@ -161,17 +161,6 @@ export function TabPaneVideoCard() {
         <div className={sharedClassNames.settingsLine}>
           <CheckboxSettingItem
             disabled={!imgPreviewEnabled}
-            configPath='videoCard.imgPreview.autoPreviewWhenHover'
-            label='鼠标悬浮后自动开始'
-            tooltip={
-              <>
-                {explainForFlag('鼠标悬浮后自动开始预览, 不跟随鼠标位置', '预览进度跟随鼠标位置(百分比)')}
-                切换设置快捷键: <HotkeyDisplay k='Shift+P' />
-              </>
-            }
-          />
-          <CheckboxSettingItem
-            disabled={!imgPreviewEnabled}
             configPath='videoCard.imgPreview.disableWhenMultiSelecting'
             label='多选时禁用'
             tooltip={explainForFlag('多选开启时, 禁用快照预览', '不禁用')}
@@ -184,8 +173,19 @@ export function TabPaneVideoCard() {
           />
           <CheckboxSettingItem
             disabled={!imgPreviewEnabled}
+            configPath='videoCard.imgPreview.autoPreviewWhenHover'
+            label='自动预览: 鼠标悬浮'
+            tooltip={
+              <>
+                {explainForFlag('鼠标悬浮后自动开始预览, 不跟随鼠标位置', '预览进度跟随鼠标位置(百分比)')}
+                切换设置快捷键: <HotkeyDisplay k='Shift+P' />
+              </>
+            }
+          />
+          <CheckboxSettingItem
+            disabled={!imgPreviewEnabled}
             configPath='videoCard.imgPreview.autoPreviewWhenKeyboardSelect'
-            label='键盘选中后自动开始'
+            label='自动预览: 键盘选中'
             tooltip={
               <>
                 手动预览快捷键: <HotkeyDisplay k='.' /> or <HotkeyDisplay k='P' />

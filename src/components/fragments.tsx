@@ -3,7 +3,7 @@ import { useMemo, type ComponentProps } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
 
 export const kbdClassName =
-  'inline-block cursor-pointer rounded bg-gate-primary-lv-3 px-6px text-white line-height-tight tracking-1 font-mono'
+  'inline-block cursor-pointer rounded bg-gate-primary-lv-3 px-6px text-white line-height-1.2em tracking-1 font-mono'
 
 export function CustomKbd({ className, ...restProps }: ComponentProps<'kbd'>) {
   return <kbd {...restProps} className={useUnoMerge(kbdClassName, className)} />

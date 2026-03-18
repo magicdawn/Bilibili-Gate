@@ -7,7 +7,6 @@ import { __PROD__ } from '$common'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { antMessage } from '$modules/antd'
 import { IconForConfig } from '$modules/icon'
-import { multiSelectStore, toggleMultiSelecting } from '$modules/multi-select/store'
 import { settings, type BooleanSettingsPath } from '$modules/settings'
 import { TabPaneAdvance } from './tab-panes/pane-advance'
 import { TabPaneBasic } from './tab-panes/pane-basic'
@@ -23,7 +22,7 @@ function useHotkeyForConfig(hotkey: RegisterableHotkey, configPath: BooleanSetti
     const current = Boolean(get(settings, configPath))
     const newValue = !current
     set(settings, configPath, newValue)
-    antMessage.success(`已${newValue ? '启用' : '禁用'}「${label}」`)
+    antMessage.success({ content: `已${newValue ? '启用' : '禁用'}「${label}」`, key: `hotkey-${hotkey}` })
   })
 }
 
@@ -45,16 +44,7 @@ const modalSettingsStore = proxy({ tab })
 
 // empty component for conditional render
 export function ModalSettingsHotkey() {
-  const { showIcon: multiSelectShowIcon } = useSnapshot(settings.multiSelect)
-  useHotkeyForConfig('Shift+P', 'videoCard.imgPreview.autoPreviewWhenHover', '鼠标悬浮后自动开始预览')
-  useHotkey(
-    'Shift+M',
-    () => {
-      toggleMultiSelecting(false)
-      antMessage.success(`已${multiSelectStore.multiSelecting ? '启用' : '退出'}「多选」`)
-    },
-    { enabled: multiSelectShowIcon },
-  )
+  useHotkeyForConfig('Shift+P', 'videoCard.imgPreview.autoPreviewWhenHover', '自动预览: 鼠标悬浮')
   useHotkeyForConfigBorder()
   return null
 }

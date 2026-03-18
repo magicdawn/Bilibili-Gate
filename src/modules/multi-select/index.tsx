@@ -1,9 +1,10 @@
+import { formatKeyForDebuggingDisplay } from '@tanstack/react-hotkeys'
 import { Button, Divider, Popover } from 'antd'
 import clsx from 'clsx'
 import { useSnapshot } from 'valtio'
 import { proxySet } from 'valtio/utils'
 import { usePopoverBorderColor } from '$common/emotion-css'
-import { HotkeyDisplay, kbdClassName } from '$components/fragments'
+import { CustomKbd, HotkeyDisplay } from '$components/fragments'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { getCurrentGridItems } from '$components/RecGrid/rec-grid-state'
 import { AntdTooltip } from '$modules/antd/custom'
@@ -11,6 +12,26 @@ import { IconForDelete, IconForInfo } from '$modules/icon'
 import { CopyBvidButtons } from '$modules/rec-services/_shared/copy-bvid-buttons'
 import { exitMultiSelecting, multiSelectStore, toggleMultiSelecting } from './store'
 import type { ReactNode } from 'react'
+
+const toggleMultiSelectingTip = (
+  <>
+    使用 <HotkeyDisplay k='Shift+M' /> 切换多选状态
+  </>
+)
+const shiftKey = (
+  <CustomKbd className='mx-1 tracking-normal word-spacing-1'>{formatKeyForDebuggingDisplay('Shift')}</CustomKbd>
+)
+const shiftSelectTip = (
+  <span className='break-all'>
+    使用{shiftKey}键扩选: 切换选中状态后, 按住{shiftKey}键再选择区间终点,整个区间会与起点选中状态同步.
+  </span>
+)
+const wrapIconForTip = (tip: ReactNode) => (
+  <div className='flex items-start gap-x-6px'>
+    <IconForInfo className='mt-1 size-14px' />
+    <div className='flex-1'>{tip}</div>
+  </div>
+)
 
 export function MultiSelectButton({
   iconOnly,
@@ -39,15 +60,10 @@ export function MultiSelectButton({
         styles={{ container: { border: `1px solid ${popoverBorderColor}` } }}
         content={
           <div className='max-w-288px'>
-            <div className='flex items-start gap-x-6px'>
-              <IconForInfo className='mt-1 size-14px' />
-              <div className='flex-1 break-all'>
-                使用 <kbd className={clsx(kbdClassName, 'mx-1')}>Shift</kbd> 键扩选: 切换选中状态后, 按住{' '}
-                <kbd className={clsx(kbdClassName, 'mx-1')}>Shift</kbd>键再选择区间终点, 整个区间会与起点选中状态同步.
-              </div>
-            </div>
-
+            {wrapIconForTip(toggleMultiSelectingTip)}
+            {wrapIconForTip(shiftSelectTip)}
             <Divider variant='solid' className='my-7px' />
+
             <div className='flex flex-wrap items-center gap-x-15px gap-y-2px'>
               <Button className='inline-flex items-center' onClick={() => multiSelectStore.selectedIdSet.clear()}>
                 <IconForDelete className='size-18px' />

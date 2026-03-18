@@ -13,10 +13,12 @@ import { ModalSettingsHotkey } from '$components/ModalSettings'
 import { useOnRefresh, useRecSelfContext } from '$components/Recommends/rec.shared'
 import { ETab } from '$enums'
 import { $headerHeight, $usingEvolevdHeader } from '$header'
+import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
 import { useIsDarkMode } from '$modules/dark-mode'
 import { IconForConfig } from '$modules/icon'
 import { MultiSelectButton } from '$modules/multi-select'
+import { multiSelectStore, toggleMultiSelecting } from '$modules/multi-select/store'
 import { isRecTab } from '$modules/rec-services/service-map'
 import { useSettingsSnapshot } from '$modules/settings'
 import { isMac, isSafari } from '$ua'
@@ -64,11 +66,23 @@ export function RecHeader({ tab, leftSlot, rightSlot, shortcutEnabled, ref }: Re
     </>
   ) : undefined
 
-  // ModalSettings hotkey shift+,
+  // `shift+,`: open ModalSettings
   useHotkey(
     { shift: true, key: '<' },
     toggleModalSettings,
     { eventType: 'keyup' }, // keydown 与 Bilibili-Evolved 不能一起工作, 不知道为什么
+  )
+  // `shift+m`: toggle multi-select
+  useHotkey(
+    'Shift+M',
+    () => {
+      toggleMultiSelecting(false)
+      antMessage.success({
+        key: 'multi-select-state-changed',
+        content: `已${multiSelectStore.multiSelecting ? '进入' : '退出'}「多选」`,
+      })
+    },
+    { enabled: multiSelectShowIcon },
   )
 
   const [stickyRef, sticky] = useSticky<HTMLDivElement>()
