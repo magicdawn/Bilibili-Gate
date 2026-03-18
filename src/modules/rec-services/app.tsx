@@ -133,13 +133,13 @@ export class AppRecService extends BaseTabService<RecItemType> {
   override async restore(): Promise<void> {
     super.restore()
     // prefill fetched videoDetail
-    if (this.qs.bufferQueue.some((item) => AppRecService.isNormalVideoFromFollowedUp(item))) {
+    if (this.qs.bufferQueue.some((item) => AppRecService.isNormalVideoFromFollowedUp(item) && !item.videoDetail)) {
       this.qs.bufferQueue = await pmap(
         this.qs.bufferQueue,
         async (item) => {
-          if (AppRecService.isNormalVideoFromFollowedUp(item)) {
+          if (AppRecService.isNormalVideoFromFollowedUp(item) && !item.videoDetail) {
             const { bvid } = normalizeCardData(item)
-            if (bvid) return { ...item, videoDetail: await getVideoDetail.queryCache(bvid!) }
+            if (bvid) return { ...item, videoDetail: await getVideoDetail.queryCache(bvid) }
           }
           return item
         },
@@ -192,8 +192,11 @@ export class AppRecService extends BaseTabService<RecItemType> {
   }
 
   // 已关注的 UP 的视频
-  static isNormalVideoFromFollowedUp(item: RecItemType, cardData?: IVideoCardData | undefined) {
-    return (
+  static isNormalVideoFromFollowedUp(
+    item: RecItemType,
+    cardData?: IVideoCardData | undefined,
+  ): item is AppRecItemExtend {
+    return !!(
       isAppRecommend(item) &&
       AppRecService.isNormalVideo(item) &&
       (cardData ||= normalizeCardData(item)) &&
@@ -296,11 +299,14 @@ class AppRecInnerService implements IService {
  * 已关注, 使用详情 API 补充时间
  */
 export async function fetchAppRecommendFollowedPubDate(item: RecItemType, cardData: IVideoCardData) {
-  const { pubts, bvid } = cardData
-  if (pubts) return // no need
-  if (!AppRecService.isNormalVideoFromFollowedUp(item, cardData)) return // entry check
-  if (!bvid) return // just for type safety
-  const detail = await getVideoDetail(bvid)
+  // no need
+  if (cardData.pubts) return
+  if (isAppRecommend(item) && item.videoDetail?.pubdate) return item.videoDetail.pubdate
+  // entry check
+  if (!AppRecService.isNormalVideoFromFollowedUp(item, cardData)) return
+
+  if (!cardData.bvid) return // just for type safety
+  const detail = await getVideoDetail(cardData.bvid)
   const ts = detail?.pubdate
   return ts
 }
