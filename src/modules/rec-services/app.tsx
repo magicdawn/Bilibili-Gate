@@ -1,5 +1,7 @@
+import { av2bv } from '@mgdn/bvid'
 import { delay, randomInt, range, shuffle, uniqBy } from 'es-toolkit'
 import { times } from 'es-toolkit/compat'
+import pmap from 'promise.map'
 import { HOST_APP } from '$common'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { useOnRefresh, type RefreshFn } from '$components/Recommends/rec.shared'
@@ -8,6 +10,7 @@ import { EApiType, ETab } from '$enums'
 import { AntdTooltip } from '$modules/antd/custom'
 import { getVideoDetail } from '$modules/bilibili/video/video-detail'
 import { getFollowedStatus } from '$modules/filter'
+import { normalizeCardData, type IVideoCardData } from '$modules/filter/normalize'
 import { IconForLike } from '$modules/icon'
 import { getSettingsSnapshot, useSettingsSnapshot } from '$modules/settings'
 import { gmrequest } from '$request'
@@ -21,7 +24,6 @@ import { FavItemsOrder } from './fav/fav-enum'
 import { WatchlaterRecService } from './watchlater'
 import { WatchlaterItemsOrder } from './watchlater/watchlater-enum'
 import type { ipad } from '$define/app-recommend.ipad'
-import type { IVideoCardData } from '$modules/filter/normalize'
 
 type AppRecServiceConfig = ReturnType<typeof getAppRecServiceConfig>
 
@@ -128,6 +130,24 @@ export class AppRecService extends BaseTabService<RecItemType> {
     this.allServices = shuffle(allServices)
   }
 
+  override async restore(): Promise<void> {
+    super.restore()
+    // prefill fetched videoDetail
+    if (this.qs.bufferQueue.some((item) => AppRecService.isNormalVideoFromFollowedUp(item))) {
+      this.qs.bufferQueue = await pmap(
+        this.qs.bufferQueue,
+        async (item) => {
+          if (AppRecService.isNormalVideoFromFollowedUp(item)) {
+            const { bvid } = normalizeCardData(item)
+            if (bvid) return { ...item, videoDetail: await getVideoDetail.queryCache(bvid!) }
+          }
+          return item
+        },
+        100,
+      )
+    }
+  }
+
   override get hasMore() {
     return !!this.qs.bufferQueue.length || this.innerService.hasMore || this.otherTabServices.some((s) => s.hasMore)
   }
@@ -165,6 +185,22 @@ export class AppRecService extends BaseTabService<RecItemType> {
     if (this.qs.bufferQueue.length < AppRecService.PAGE_SIZE) {
       this.qs.bufferQueue.push(...(await this._fetchFromApi(abortSignal, times)))
     }
+  }
+
+  static isNormalVideo(item: AppRecItem) {
+    return item.goto === 'av'
+  }
+
+  // 已关注的 UP 的视频
+  static isNormalVideoFromFollowedUp(item: RecItemType, cardData?: IVideoCardData | undefined) {
+    return (
+      isAppRecommend(item) &&
+      AppRecService.isNormalVideo(item) &&
+      (cardData ||= normalizeCardData(item)) &&
+      cardData &&
+      cardData.bvid &&
+      getFollowedStatus(cardData.recommendReason)
+    )
   }
 }
 
@@ -233,13 +269,24 @@ class AppRecInnerService implements IService {
 
     // add uuid
     // add api
-    const extendedList = list.map((item) => {
-      return {
-        ...item,
-        api: EApiType.AppRecommend,
-        uniqId: `${EApiType.AppRecommend}:${item.param}`,
-      } satisfies AppRecItemExtend
-    })
+    // add videoDetail (cache only)
+    const extendedList = await pmap(
+      list,
+      async (item) => {
+        let bvid: string | undefined
+        const videoDetail =
+          AppRecService.isNormalVideo(item) && (bvid = item.bvid || av2bv(Number(item.param)))
+            ? await getVideoDetail.queryCache(bvid)
+            : undefined
+        return {
+          ...item,
+          api: EApiType.AppRecommend,
+          uniqId: `${EApiType.AppRecommend}:${item.param}`,
+          videoDetail,
+        } satisfies AppRecItemExtend
+      },
+      10,
+    )
 
     return extendedList
   }
@@ -249,11 +296,10 @@ class AppRecInnerService implements IService {
  * 已关注, 使用详情 API 补充时间
  */
 export async function fetchAppRecommendFollowedPubDate(item: RecItemType, cardData: IVideoCardData) {
-  const { bvid, goto, recommendReason } = cardData
-  const isNormalVideo = goto === 'av'
-  const shouldFetch = isAppRecommend(item) && isNormalVideo && !!bvid && getFollowedStatus(recommendReason)
-  if (!shouldFetch) return
-
+  const { pubts, bvid } = cardData
+  if (pubts) return // no need
+  if (!AppRecService.isNormalVideoFromFollowedUp(item, cardData)) return // entry check
+  if (!bvid) return // just for type safety
   const detail = await getVideoDetail(bvid)
   const ts = detail?.pubdate
   return ts

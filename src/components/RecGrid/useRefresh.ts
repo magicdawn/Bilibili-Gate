@@ -180,7 +180,7 @@ export function useRefresh({
 
     if (existingService) {
       // cache
-      existingService.restore()
+      await existingService.restore()
       const cachedItems = filterRecItems(existingService.qs.bufferQueue, tab).slice(0, getGridRefreshCount())
       self.setStore({ items: cachedItems })
       const success = !!(await doFetch(existingService))

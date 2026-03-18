@@ -20,7 +20,6 @@ import type { ReactNode } from 'react'
 import type {
   AppRecItemExtend,
   DynamicFeedItemExtend,
-  IpadAppRecItemExtend,
   LikedItemExtend,
   LiveItemExtend,
   PcRecItemExtend,
@@ -141,7 +140,7 @@ function apiAppAdapter(item: AppRecItemExtend): IVideoCardData {
   return apiIpadAppAdapter(item)
 }
 
-function apiIpadAppAdapter(item: IpadAppRecItemExtend): IVideoCardData {
+function apiIpadAppAdapter(item: AppRecItemExtend): IVideoCardData {
   const extractCountFor = (target: StatItemField) => {
     const { cover_left_text_1, cover_left_text_2, cover_left_text_3 } = item
     const arr = [cover_left_text_1, cover_left_text_2, cover_left_text_3].filter(Boolean)
@@ -168,8 +167,8 @@ function apiIpadAppAdapter(item: IpadAppRecItemExtend): IVideoCardData {
   }
 
   const avid = item.param
-  const bvid = item.bvid || av2bv(Number(item.param))
-  const cid = item.player_args?.cid
+  const bvid = item.bvid || item.videoDetail?.bvid || av2bv(Number(item.param))
+  const cid = item.videoDetail?.cid || item.player_args?.cid
 
   const href = (() => {
     // valid uri
@@ -226,9 +225,9 @@ function apiIpadAppAdapter(item: IpadAppRecItemExtend): IVideoCardData {
     href,
     title: item.title,
     cover: item.cover,
-    pubts: undefined,
+    pubts: item.videoDetail?.pubdate || undefined,
     pubdateDisplay: descDate,
-    duration: item.player_args?.duration || 0,
+    duration: item.videoDetail?.duration || item.player_args?.duration || 0,
     durationStr: formatDuration(item.player_args?.duration),
     recommendReason: item.bottom_rcmd_reason || item.top_rcmd_reason,
 

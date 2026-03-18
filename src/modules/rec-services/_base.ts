@@ -29,7 +29,7 @@ export abstract class BaseTabService<T extends RecItemTypeOrSeparator = RecItemT
     return !!this.qs.bufferQueue.length || this.hasMoreExceptQueue
   }
 
-  restore(): void {
+  restore(): void | Promise<void> {
     this.qs.restore()
   }
 

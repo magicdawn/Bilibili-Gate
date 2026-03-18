@@ -28,14 +28,13 @@ export type { PcRecItem, PcRecommendJson } from './pc-recommend'
 /**
  * app
  */
-export type IpadAppRecItem = ipad.AppRecItem
-export interface IpadAppRecItemExtend extends ipad.AppRecItem {
+export type AppRecommendJson = ipad.AppRecommendJson
+export type AppRecItem = ipad.AppRecItem
+export interface AppRecItemExtend extends AppRecItem {
   uniqId: string
   api: EApiType.AppRecommend
+  videoDetail?: VideoDetailData // previously fetched
 }
-export type AppRecItem = IpadAppRecItem
-export type AppRecItemExtend = IpadAppRecItemExtend
-export type AppRecommendJson = ipad.AppRecommendJson
 
 export type RecItemTypeOrSeparator = RecItemType | ItemsSeparator
 
@@ -45,7 +44,7 @@ export type ItemsSeparator = { uniqId: string; api: EApiType.Separator; content:
  * ItemExtend
  */
 export type RecItemType =
-  | IpadAppRecItemExtend
+  | AppRecItemExtend
   | PcRecItemExtend
   | DynamicFeedItemExtend
   | WatchlaterItemExtend
