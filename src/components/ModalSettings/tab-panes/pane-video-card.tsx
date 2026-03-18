@@ -166,7 +166,7 @@ export function TabPaneVideoCard() {
             tooltip={
               <>
                 {explainForFlag('鼠标悬浮后自动开始预览, 不跟随鼠标位置', '预览进度跟随鼠标位置(百分比)')}
-                切换设置快捷键: <HotkeyDisplay k='Shift+M' />
+                切换设置快捷键: <HotkeyDisplay k='Shift+P' />
               </>
             }
           />
@@ -188,8 +188,7 @@ export function TabPaneVideoCard() {
             label='键盘选中后自动开始'
             tooltip={
               <>
-                手动预览快捷键: <HotkeyDisplay k='.' /> or <HotkeyDisplay k='P' /> <br />
-                切换设置快捷键: <HotkeyDisplay k='Shift+P' />
+                手动预览快捷键: <HotkeyDisplay k='.' /> or <HotkeyDisplay k='P' />
               </>
             }
           />

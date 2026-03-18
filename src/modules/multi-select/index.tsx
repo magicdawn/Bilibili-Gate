@@ -1,17 +1,15 @@
-import { useMemoizedFn } from 'ahooks'
 import { Button, Divider, Popover } from 'antd'
 import clsx from 'clsx'
 import { useSnapshot } from 'valtio'
 import { proxySet } from 'valtio/utils'
 import { usePopoverBorderColor } from '$common/emotion-css'
-import { kbdClassName } from '$components/fragments'
+import { HotkeyDisplay, kbdClassName } from '$components/fragments'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { getCurrentGridItems } from '$components/RecGrid/rec-grid-state'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconForDelete, IconForInfo } from '$modules/icon'
 import { CopyBvidButtons } from '$modules/rec-services/_shared/copy-bvid-buttons'
-import { settings } from '$modules/settings'
-import { multiSelectStore } from './store'
+import { exitMultiSelecting, multiSelectStore, toggleMultiSelecting } from './store'
 import type { ReactNode } from 'react'
 
 export function MultiSelectButton({
@@ -24,24 +22,11 @@ export function MultiSelectButton({
   const { multiSelecting } = useSnapshot(multiSelectStore)
   const popoverBorderColor = usePopoverBorderColor()
 
-  const exitCheck = useMemoizedFn(() => {
-    const isExit = !multiSelectStore.multiSelecting
-    if (!isExit) return
-    // reset
-    multiSelectStore.shiftMultiSelectAnchorUniqId = undefined
-    if (settings.multiSelect.clearWhenExit) {
-      multiSelectStore.selectedIdSet.clear()
-    }
-  })
-
   const btn: ReactNode = (
     <Button
       type={multiSelecting ? 'primary' : 'default'}
       className={clsx(iconOnly ? 'icon-only-round-button' : 'inline-flex-center')}
-      onClick={() => {
-        multiSelectStore.multiSelecting = !multiSelectStore.multiSelecting
-        exitCheck()
-      }}
+      onClick={() => toggleMultiSelecting()}
     >
       <IconBiUiChecksGrid className='size-12px' />
       {!iconOnly && <>多选{multiSelectStore.multiSelecting ? '中' : ''}</>}
@@ -93,20 +78,20 @@ export function MultiSelectButton({
 
               <div className='flex-basis-100%' />
 
-              <Button
-                className='inline-flex items-center'
-                onClick={() => {
-                  multiSelectStore.multiSelecting = false
-                  exitCheck()
-                }}
-              >
+              <Button className='inline-flex items-center' onClick={() => exitMultiSelecting()}>
                 <IconIonExitOutline className='size-18px' />
                 退出
               </Button>
               <CheckboxSettingItem
                 configPath='multiSelect.clearWhenExit'
                 label='退出时清空'
-                tooltip='退出多选时, 清空所有已选择项'
+                tooltip={
+                  <>
+                    退出多选时, 清空所有已选择项 <br />
+                    仅点击「退出」按钮时生效 <br />
+                    使用快捷键 <HotkeyDisplay k='Shift+M' /> 时总是保持选择状态
+                  </>
+                }
               />
             </div>
 

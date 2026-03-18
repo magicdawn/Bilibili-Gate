@@ -7,6 +7,7 @@ import { __PROD__ } from '$common'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { antMessage } from '$modules/antd'
 import { IconForConfig } from '$modules/icon'
+import { multiSelectStore, toggleMultiSelecting } from '$modules/multi-select/store'
 import { settings, type BooleanSettingsPath } from '$modules/settings'
 import { TabPaneAdvance } from './tab-panes/pane-advance'
 import { TabPaneBasic } from './tab-panes/pane-basic'
@@ -44,8 +45,16 @@ const modalSettingsStore = proxy({ tab })
 
 // empty component for conditional render
 export function ModalSettingsHotkey() {
-  useHotkeyForConfig('Shift+P', 'videoCard.imgPreview.autoPreviewWhenKeyboardSelect', '键盘选中后自动开始预览')
-  useHotkeyForConfig('Shift+M', 'videoCard.imgPreview.autoPreviewWhenHover', '鼠标悬浮后自动开始预览')
+  const { showIcon: multiSelectShowIcon } = useSnapshot(settings.multiSelect)
+  useHotkeyForConfig('Shift+P', 'videoCard.imgPreview.autoPreviewWhenHover', '鼠标悬浮后自动开始预览')
+  useHotkey(
+    'Shift+M',
+    () => {
+      toggleMultiSelecting(false)
+      antMessage.success(`已${multiSelectStore.multiSelecting ? '启用' : '退出'}「多选」`)
+    },
+    { enabled: multiSelectShowIcon },
+  )
   useHotkeyForConfigBorder()
   return null
 }
