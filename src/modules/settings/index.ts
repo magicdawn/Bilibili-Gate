@@ -370,7 +370,7 @@ async function _saveToGmStorage(snap: ReadonlyDeep<PartialDeep<Settings>>) {
   await GM.setValue(storageKey, snap)
 }
 
-// #region! modify settings
+// #region modify settings
 export function updateSettings(payload: PartialDeep<Settings>) {
   const { pickedPaths } = pickSettings(payload, allowedLeafSettingsPaths)
   for (const p of pickedPaths) {
@@ -384,7 +384,7 @@ export function resetSettings() {
 }
 // #endregion
 
-// #region! helper
+// #region helper
 
 /**
  * this function mutates `val`

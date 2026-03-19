@@ -7,6 +7,7 @@
 - [ ] 稍后再看, 可以批量收藏, 方便整理之前想收藏, 但只能加入稍后再看的项.
 - [ ] ModalFavManager: 显示拼音首字母. 可能引入的库比较大...
 - [ ] space upload 显示充电专属标记
+- [ ] 动态 / space-upload, 共创标记
 
 # Completed
 

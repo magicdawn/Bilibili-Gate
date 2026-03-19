@@ -13,7 +13,7 @@ import { TabPaneBasic } from './tab-panes/pane-basic'
 import { TabPaneFilter } from './tab-panes/pane-filter'
 import { TabPaneOtherPages } from './tab-panes/pane-other-pages'
 import { TabPaneRecTabsConfig } from './tab-panes/pane-rec-tab-config'
-import { TabPaneVideoCard, useHotkeyForConfigBorder } from './tab-panes/pane-video-card'
+import { TabPaneVideoCard, useVideoCardBorderHotkeySetup } from './tab-panes/pane-video-card'
 import { sharedClassNames } from './tab-panes/shared'
 import { ThemesSelect } from './theme'
 
@@ -45,7 +45,7 @@ const modalSettingsStore = proxy({ tab })
 // empty component for conditional render
 export function ModalSettingsHotkey() {
   useHotkeyForConfig('Shift+P', 'videoCard.imgPreview.autoPreviewWhenHover', '自动预览: 鼠标悬浮')
-  useHotkeyForConfigBorder()
+  useVideoCardBorderHotkeySetup()
   return null
 }
 

@@ -207,8 +207,9 @@ export const RecGrid = memo(function RecGrid({
   const loadMore = useMemoizedFn(async () => {
     if (!loadMorePrecheck()) return
 
-    const startingRefreshTs = self.store.refreshTs
-    self.lock(startingRefreshTs)
+    const getLockKey = (): number => self.store.refreshTs
+    const currentLockKey = getLockKey()
+    self.lock(currentLockKey)
 
     let newItems = self.store.items
     let newHasMore = true
@@ -222,8 +223,17 @@ export const RecGrid = memo(function RecGrid({
     } catch (e) {
       err = e
     }
+
+    // loadMore 发出请求了, 但稍候重新刷新了, setItems 以及后续操作应该 abort
+    if (currentLockKey !== getLockKey()) {
+      debug('loadMore: skip update for lockKey mismatch, expect %o but found %o', currentLockKey, getLockKey())
+      self.unlock(currentLockKey)
+      return
+    }
+
+    // error
     if (err) {
-      self.unlock(startingRefreshTs)
+      self.unlock(currentLockKey)
       antNotification.error({
         title: '加载失败',
         description: err.message || err.stack,
@@ -231,21 +241,10 @@ export const RecGrid = memo(function RecGrid({
       throw err
     }
 
-    // loadMore 发出请求了, 但稍候重新刷新了, setItems 以及后续操作应该 abort
-    {
-      const currentRefreshTs = self.store.refreshTs
-      if (startingRefreshTs !== currentRefreshTs) {
-        debug('loadMore: skip update for mismatch refreshTs, %o != %o', startingRefreshTs, currentRefreshTs)
-        self.unlock(startingRefreshTs)
-        return
-      }
-    }
-
     self.loadedPage++
     debug('loadMore: loadedPage(%s) len(%s -> %s)', self.loadedPage, self.store.items.length, newItems.length)
     self.setStore({ hasMore: newHasMore, items: newItems })
-    self.unlock(startingRefreshTs)
-
+    self.unlock(currentLockKey)
     // check
     checkShouldLoadMore()
   })

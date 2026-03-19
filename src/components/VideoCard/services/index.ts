@@ -75,7 +75,7 @@ export function isImagePreviewDataValid(data?: ImagePreviewData) {
 }
 // #endregion
 
-// #region! VideoPreview
+// #region VideoPreview
 export type VideoPreviewData = {
   playUrls?: string[]
   dimension?: VideoPage['dimension']

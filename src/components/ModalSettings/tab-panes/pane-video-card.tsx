@@ -18,7 +18,7 @@ const borderCycleList: CardBorderState[] = [
   { useBorder: true, useBorderOnlyOnHover: false }, // always
 ]
 const borderCycleListLabels = ['「卡片边框」: 禁用', '「卡片边框」: 仅在悬浮时显示', '「卡片边框」: 总是显示']
-export function useHotkeyForConfigBorder() {
+export function useVideoCardBorderHotkeySetup() {
   return useHotkey('Shift+B', (e) => {
     const curState: CardBorderState = pick(settings.style.videoCard, ['useBorder', 'useBorderOnlyOnHover'])
     const curIndex = borderCycleList.findIndex((state) => {
@@ -31,7 +31,7 @@ export function useHotkeyForConfigBorder() {
     Object.assign(settings.style.videoCard, nextState)
 
     const nextLabel = borderCycleListLabels[nextIndex]
-    antMessage.success(nextLabel)
+    antMessage.success({ key: 'hotkey-border', content: nextLabel })
   })
 }
 
