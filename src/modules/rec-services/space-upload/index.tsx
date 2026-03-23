@@ -1,4 +1,4 @@
-import { assert, once, orderBy, uniq } from 'es-toolkit'
+import { assert, groupBy, once, orderBy, uniq } from 'es-toolkit'
 import pmap from 'promise.map'
 import QuickLRU from 'quick-lru'
 import { snapshot } from 'valtio'
@@ -112,6 +112,7 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
   private async fetchFollowState(mids: number[]) {
     await pmap(mids, trySetFollowedMidSet, 3)
   }
+
   private pageTitleSet = false
   private async setPageTitle() {
     if (this.pageTitleSet) return
@@ -121,17 +122,22 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
     if (this.filterText) prefixes.push(`⏳【${this.filterText}】`)
 
     let author: string
+    let shouldReRunSetTitle = false
     if (this.mids.length) {
       const nicknames = await pmap(this.mids, getUserNickname, 3)
       author = nicknames
         .map((x) => x?.trim())
         .filter(Boolean)
-        .map((name) => `「${name}」`)
+        .map((name) => `【${name}】`)
         .join('、')
+      if (!author) {
+        author = '【未知UP】'
+        shouldReRunSetTitle = true
+      }
     } else {
       const tags = await getAllFollowGroups()
       const name = tags.find((x) => x.tagid === this.groupId)?.name || ''
-      author = name ? `「${name}」` : ''
+      author = name ? `【${name}】` : ''
     }
 
     const title = [prefixes.join(''), `${author}的投稿`]
@@ -140,7 +146,7 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
       .join(' - ')
 
     setPageTitle(title)
-    this.pageTitleSet = true
+    if (!shouldReRunSetTitle) this.pageTitleSet = true
   }
   /* #endregion */
 
@@ -217,11 +223,15 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
     }
 
     if (this.filterText) {
-      const { includes, excludes } = parseAdvancedFilter(this.filterText)
+      // oxlint-disable-next-line no-warning-comments
+      // TODO: add ignoreCase config inside `parseAdvancedFilter`
+      let { includes, excludes } = parseAdvancedFilter(this.filterText)
+      includes = includes.map((x) => x.toLowerCase())
+      excludes = excludes.map((x) => x.toLowerCase())
       list = list.filter((item) => {
+        const title = item.title.toLowerCase()
         return (
-          includes.every((include) => item.title.includes(include)) &&
-          excludes.every((exclude) => !item.title.includes(exclude))
+          includes.every((include) => title.includes(include)) && excludes.every((exclude) => !title.includes(exclude))
         )
       })
     }
@@ -232,6 +242,16 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
         .map((item) => item.mid)
         .filter(Boolean)
       await Promise.all([this.fetchAvatars(mids), this.fetchFollowState(mids)])
+    }
+    if (!this.pageTitleSet) {
+      const grouped = groupBy(list, (x) => x.mid)
+      for (const [mid, sublist] of Object.entries(grouped)) {
+        const nickname = sublist.find((x) => x.author)?.author
+        if (nickname && !(await getUserNickname.queryCache(mid))) {
+          await getUserNickname.cache.set(mid, { val: nickname, ts: Date.now() })
+        }
+      }
+      await this.setPageTitle()
     }
     /* #endregion */
 

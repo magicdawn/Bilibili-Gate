@@ -60,7 +60,7 @@ type SpaceUploadFilterState = {
 }
 
 const defaultFilterState = {
-  hideChargeOnlyVideos: false,
+  hideChargeOnlyVideos: true,
   filterMinDuration: SpaceUploadVideoMinDuration.All,
 } as const satisfies SpaceUploadFilterState
 

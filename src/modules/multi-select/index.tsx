@@ -1,13 +1,13 @@
-import { formatKeyForDebuggingDisplay } from '@tanstack/react-hotkeys'
 import { Button, Divider, Popover } from 'antd'
 import clsx from 'clsx'
 import { useSnapshot } from 'valtio'
 import { proxySet } from 'valtio/utils'
 import { usePopoverBorderColor } from '$common/emotion-css'
-import { CustomKbd, HotkeyDisplay } from '$components/fragments'
+import { HotkeyDisplay } from '$components/fragments'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { getCurrentGridItems } from '$components/RecGrid/rec-grid-state'
 import { AntdTooltip } from '$modules/antd/custom'
+import { soloShiftKey } from '$modules/hotkey'
 import { IconForDelete, IconForInfo } from '$modules/icon'
 import { CopyBvidButtons } from '$modules/rec-services/_shared/copy-bvid-buttons'
 import { exitMultiSelecting, multiSelectStore, toggleMultiSelecting } from './store'
@@ -18,12 +18,9 @@ const toggleMultiSelectingTip = (
     使用 <HotkeyDisplay k='Shift+M' /> 切换多选状态
   </>
 )
-const shiftKey = (
-  <CustomKbd className='mx-1 tracking-normal word-spacing-1'>{formatKeyForDebuggingDisplay('Shift')}</CustomKbd>
-)
 const shiftSelectTip = (
   <span className='break-all'>
-    使用{shiftKey}键扩选: 切换选中状态后, 按住{shiftKey}键再选择区间终点,整个区间会与起点选中状态同步.
+    使用{soloShiftKey}键扩选: 切换选中状态后, 按住{soloShiftKey}键再选择区间终点,整个区间会与起点选中状态同步.
   </span>
 )
 const wrapIconForTip = (tip: ReactNode) => (

@@ -5,8 +5,9 @@ import { useMemo, useState, type ComponentRef, type MouseEvent, type ReactNode, 
 import { buttonOpenCss, usePopoverBorderStyle } from '$common/emotion-css'
 import { TooltipContentDivider } from '$components/_base'
 import { HelpInfo } from '$components/_base/HelpInfo'
-import { clsAntdButton, kbdClassName } from '$components/fragments'
+import { clsAntdButton } from '$components/fragments'
 import { defineAntMenus } from '$modules/antd'
+import { soloShiftKey } from '$modules/hotkey'
 
 export type GenericOrderSwitcherProps<T extends string | number> = {
   value: T
@@ -91,7 +92,7 @@ export const GenericOrderSwitcher = function <T extends string | number>({
         {extraHelpInfo && <TooltipContentDivider />}
         操作说明: <br />
         1. 点击/下拉切换 <br />
-        2. 按住 <kbd className={kbdClassName}>Shift</kbd> 键点击逆序切换 <br />
+        2. 按住 {soloShiftKey} 键点击逆序切换 <br />
       </HelpInfo>
     </span>
   )

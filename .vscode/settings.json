@@ -3,11 +3,11 @@
     "source.fixAll.eslint": "explicit",
     "source.fixAll.oxc": "explicit"
   },
+  "eslint.codeActionsOnSave.rules": ["!no-debugger", "!no-warning-comments"],
   "eslint.lintTask.enable": true,
-  "scss.validate": true,
-  "typescript.preferences.organizeImports": {
+  "js/ts.preferences.organizeImports": {
     "typeOrder": "last"
   },
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "typescript.tsserver.experimental.enableProjectDiagnostics": true
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "js/ts.tsserver.experimental.enableProjectDiagnostics": true
 }

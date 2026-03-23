@@ -4,11 +4,12 @@
   "rules": {
     "no-unused-vars": "off",
     "no-unused-expressions": "off",
-    "no-debugger": "warn",
     "no-warning-comments": "error",
     "react/jsx-no-undef": "off",
     "react/jsx-no-target-blank": "off",
     "react/exhaustive-deps": "off",
-    "react/rules-of-hooks": "error"
+    "react/rules-of-hooks": "error",
+    // let eslint handle
+    "no-debugger": "off"
   }
 }

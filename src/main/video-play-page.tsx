@@ -194,12 +194,3 @@ async function addToFav(sourceFavFolderIds?: number[] | undefined) {
     return true
   })
 }
-
-function shadowRootQuery(root: Element, selectors: string[]) {
-  let result: Element | undefined = root
-  for (const selector of selectors) {
-    result = result.shadowRoot?.querySelector(selector) ?? undefined
-    if (!result) return
-  }
-  return result
-}
