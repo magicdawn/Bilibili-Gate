@@ -3,7 +3,7 @@
     "source.fixAll.eslint": "explicit",
     "source.fixAll.oxc": "explicit"
   },
-  "eslint.codeActionsOnSave.rules": ["!no-debugger", "!no-warning-comments"],
+  // "eslint.codeActionsOnSave.rules": ["!no-debugger", "!no-warning-comments"],
   "eslint.lintTask.enable": true,
   "js/ts.preferences.organizeImports": {
     "typeOrder": "last"

@@ -5,20 +5,16 @@
     "paths": {
       "$*": ["./src/*"]
     },
-    "target": "ES2024",
+    "target": "es2024",
     "lib": [
-      "ES2023",
       "DOM",
-      "DOM.Iterable",
+      "ES2024",
       "ES2024.Promise", // Promise.withResolvers; Baseline 2024
       "ESNext.Disposable", // DisposableStack; Stage 3; need polyfill
       "ESNext.Collection" // Set.prototype.difference
     ],
-    "module": "ESNext",
-    "moduleResolution": "bundler",
+    "module": "preserve",
     "moduleDetection": "force",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
     "strict": true,
     "noImplicitOverride": true,

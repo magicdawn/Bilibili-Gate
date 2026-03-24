@@ -15,6 +15,7 @@ minimumReleaseAgeExclude:
   - antd
   - react
   - react-dom
+  - typescript
 
 onlyBuiltDependencies:
   - '@biomejs/biome'
