@@ -61,6 +61,7 @@ export function SpaceUploadTabbarView() {
     ignoreInputs: false,
     requireReset: false,
     enabled: shortcutEnabled,
+    conflictBehavior: 'allow',
   })
 
   return (

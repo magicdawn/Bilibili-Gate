@@ -156,7 +156,7 @@ export function useShortcut({
     return videoCardEmitters[activeIndex]
   }
 
-  useCustomHotkey('Escape', clearActiveIndex)
+  useCustomHotkey('Escape', clearActiveIndex, { conflictBehavior: 'allow' })
   useHotkey(
     'Enter',
     (e) => {

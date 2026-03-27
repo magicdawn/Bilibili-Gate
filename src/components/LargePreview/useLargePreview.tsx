@@ -326,7 +326,7 @@ export function useLargePreviewRelated({
   /**
    * trigger by click, more ways to close
    */
-  useHotkey('Escape', hide)
+  useHotkey('Escape', hide, { conflictBehavior: 'allow' })
   useClickAway(
     () => hide(),
     [
