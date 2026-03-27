@@ -111,7 +111,7 @@ export function useRefresh({
     // refresh start
     const start = performance.now()
     recSelf.setStore({ refreshing: true, refreshingTab: tab })
-    self.setStore({ refreshError: undefined, hasMore: true, items: [], refreshTs: Date.now() })
+    self.setStore({ refreshError: undefined, hasMore: true, items: [], refreshKey: Date.now() })
     const abortController = new AbortController()
     const { signal } = abortController
     self.abortController = abortController

@@ -13,6 +13,7 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type Key,
   type ReactNode,
   type Ref,
   type RefObject,
@@ -68,7 +69,7 @@ export class RecGridSelf {
   // render state
   // should be private, but I'm too lazy to add getters and refactor
   store = proxy({
-    refreshTs: -1,
+    refreshKey: -1,
     showSkeleton: false,
     hasMore: true,
     refreshError: undefined as any,
@@ -93,12 +94,12 @@ export class RecGridSelf {
   loadedPage = 0
   abortController = new AbortController()
 
-  private loadMoreLocker: Record<number, boolean> = {}
-  isLocked = (lockKey: number) => !!this.loadMoreLocker[lockKey]
-  lock = (lockKey: number) => void (this.loadMoreLocker = { [lockKey]: true })
-  unlock = (lockKey: number) => void (this.loadMoreLocker[lockKey] = false)
+  private loadMoreLocker: Map<Key, boolean> = new Map()
+  isLocked = (lockKey: Key) => !!this.loadMoreLocker.get(lockKey)
+  lock = (lockKey: Key) => void (this.loadMoreLocker = new Map([[lockKey, true]]))
+  unlock = (lockKey: Key) => void this.loadMoreLocker.set(lockKey, false)
   get loadMoreRunning() {
-    return this.isLocked(this.store.refreshTs)
+    return this.isLocked(this.store.refreshKey)
   }
 }
 
@@ -157,7 +158,7 @@ export const RecGrid = memo(function RecGrid({
 
   useImperativeHandle(ref, () => ({ refresh }), [refresh])
 
-  const { items, hasMore, refreshError, refreshTs, showSkeleton } = self.useStore()
+  const { items, hasMore, refreshError, refreshKey, showSkeleton } = self.useStore()
   useEffect(() => setGlobalGridItems(items), [items])
 
   const goOutAt = useRef<number | undefined>(undefined)
@@ -196,7 +197,7 @@ export const RecGrid = memo(function RecGrid({
       // rec-grid
       self.abortController.signal.aborted ||
       self.loadMoreRunning ||
-      self.store.refreshTs < 0 || // refresh not started yet
+      self.store.refreshKey < 0 || // refresh not started yet
       self.store.refreshError ||
       !self.store.hasMore
     ) {
@@ -207,9 +208,9 @@ export const RecGrid = memo(function RecGrid({
   const loadMore = useMemoizedFn(async () => {
     if (!loadMorePrecheck()) return
 
-    const getLockKey = (): number => self.store.refreshTs
-    const currentLockKey = getLockKey()
-    self.lock(currentLockKey)
+    const getRefreshKey = () => self.store.refreshKey
+    const startingRefreshKey = getRefreshKey()
+    self.lock(startingRefreshKey)
 
     let newItems = self.store.items
     let newHasMore = true
@@ -224,27 +225,34 @@ export const RecGrid = memo(function RecGrid({
       err = e
     }
 
+    // loadMore 发出请求了, 但切 Tab 导致组件 unmount
+    if (unmountedRef.current) {
+      debug('loadMore: skip update for RecGrid unmounted: tab=%s startingRefreshKey=%s', tab, startingRefreshKey)
+      self.unlock(startingRefreshKey)
+      return
+    }
     // loadMore 发出请求了, 但稍候重新刷新了, setItems 以及后续操作应该 abort
-    if (currentLockKey !== getLockKey()) {
-      debug('loadMore: skip update for lockKey mismatch, expect %o but found %o', currentLockKey, getLockKey())
-      self.unlock(currentLockKey)
+    if (startingRefreshKey !== getRefreshKey()) {
+      debug(
+        'loadMore: skip update for refreshKey mismatch, expect %o but found %o',
+        startingRefreshKey,
+        getRefreshKey(),
+      )
+      self.unlock(startingRefreshKey)
       return
     }
 
     // error
     if (err) {
-      self.unlock(currentLockKey)
-      antNotification.error({
-        title: '加载失败',
-        description: err.message || err.stack,
-      })
+      self.unlock(startingRefreshKey)
+      antNotification.error({ title: '加载失败', description: err.message || err.stack })
       throw err
     }
 
     self.loadedPage++
     debug('loadMore: loadedPage(%s) len(%s -> %s)', self.loadedPage, self.store.items.length, newItems.length)
     self.setStore({ hasMore: newHasMore, items: newItems })
-    self.unlock(currentLockKey)
+    self.unlock(startingRefreshKey)
     // check
     checkShouldLoadMore()
   })
@@ -293,7 +301,7 @@ export const RecGrid = memo(function RecGrid({
   })
 
   // emitters
-  const videoCardEmitterCache = useMemo(() => new Map<string, VideoCardEmitter>(), [refreshTs])
+  const videoCardEmitterCache = useMemo(() => new Map<string, VideoCardEmitter>(), [refreshKey])
   const videoCardEmitters = useMemo(() => {
     return videoList.map(({ uniqId }) => {
       const cacheKey = uniqId
