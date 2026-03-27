@@ -8,7 +8,11 @@ export function TabPaneOtherPages() {
     <div className={sharedClassNames.tabPane}>
       <div className='mb-10px flex justify-start'>
         <ResetPartialSettingsButton
-          paths={['fav.useCustomFavPicker.onPlayPage', 'videoCard.videoPreview.addTo.searchPage']}
+          paths={[
+            'fav.useCustomFavPicker.onPlayPage',
+            'videoPlayPage.addQuickLinks',
+            'videoCard.videoPreview.addTo.searchPage',
+          ]}
         />
       </div>
 
@@ -37,6 +41,11 @@ export function TabPaneOtherPages() {
               </ul>
             </>
           }
+        />
+        <CheckboxSettingItem
+          configPath='videoPlayPage.addQuickLinks'
+          label={`添加快速链接`}
+          tooltip={<>添加合集快速链接</>}
         />
       </SettingsGroup>
 

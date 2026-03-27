@@ -5,7 +5,8 @@ import { useSnapshot } from 'valtio/react'
 import { useGridDisplayModeChecker } from '$components/RecGrid/display-mode'
 import { useRecSelfContext } from '$components/Recommends/rec.shared'
 import { EHotSubTab, ETab } from '$enums'
-import { QUERY_DYNAMIC_UP_MID } from '$modules/rec-services/dynamic-feed/store'
+import { SHOW_DYNAMIC_FEED_ONLY } from '$modules/rec-services/dynamic-feed/store'
+import { SHOW_FAV_TAB_ONLY } from '$modules/rec-services/fav/store'
 import { hotStore } from '$modules/rec-services/hot'
 import { useSettingsSnapshot } from '$modules/settings'
 import type { AntMenuItem } from '$modules/antd'
@@ -26,11 +27,16 @@ export function useSidebarVisible(tab: ETab | undefined): boolean {
 
     // tab specific
     if (tab === ETab.DynamicFeed) {
-      if (QUERY_DYNAMIC_UP_MID) return false
+      if (SHOW_DYNAMIC_FEED_ONLY) return false
       return true
     }
-    if (tab === ETab.Hot) return hotSubTab === EHotSubTab.Rank
-    if (tab === ETab.Fav) return true
+    if (tab === ETab.Hot) {
+      return hotSubTab === EHotSubTab.Rank
+    }
+    if (tab === ETab.Fav) {
+      if (SHOW_FAV_TAB_ONLY) return false
+      return true
+    }
     return false
   }, [tab, enableSidebar, hotSubTab, insideModal, usingTwoColumnMode])
 }

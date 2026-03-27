@@ -12,4 +12,5 @@ export default fromSxzz(undefined, ...oxlint.buildFromOxlintConfigFile(import.me
     'warn',
     { unoFunctions: ['clsx', 'unoMerge', 'useUnoMerge'], unoVariables: ['^cls', 'ClassNames?$', '^C$'] },
   ],
+  'unicorn/prefer-modern-dom-apis': 'off',
 })

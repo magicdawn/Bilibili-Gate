@@ -295,6 +295,13 @@ export const initialSettings = {
   },
 
   /**
+   * video-play-page
+   */
+  videoPlayPage: {
+    addQuickLinks: false,
+  },
+
+  /**
    * internal
    */
   __internalEnableCopyBvidInfo: false, // ContextMenu | Button

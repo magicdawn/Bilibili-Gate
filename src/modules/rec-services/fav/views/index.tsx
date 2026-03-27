@@ -10,7 +10,8 @@ import {
   type FavFolderOrder,
 } from '$components/ModalFavManager/fav-folder-order'
 import { useOnRefresh } from '$components/Recommends/rec.shared'
-import { sidebarBottomLine, useRevealMenuSelectedKey } from '$components/RecSidebar/sidebar-shared'
+import { sidebarBottomLine, useRevealMenuSelectedKey, useSidebarVisible } from '$components/RecSidebar/sidebar-shared'
+import { ETab } from '$enums'
 import { defineAntMenus, type AntMenuItem, type PossibleAntMenuItem } from '$modules/antd'
 import { IconForOpenExternalLink } from '$modules/icon'
 import { CopyBvidButtonsTabbarView } from '$modules/rec-services/_shared/copy-bvid-buttons'
@@ -164,7 +165,8 @@ function useScopeMenus(parentView: 'sidebarView' | 'tabbarView', extraOnMenuItem
 }
 
 export function FavTabbarView({ extraContent }: { extraContent?: ReactNode }) {
-  const { fav, enableSidebar } = useSettingsSnapshot()
+  const { fav } = useSettingsSnapshot()
+  const sidebarVisible = useSidebarVisible(ETab.Fav)
   const { selectedFavFolder, selectedFavCollection, selectedLabel, selectedKey } = useSnapshot(favStore)
   const onRefresh = useOnRefresh()
   const { ref, getPopupContainer } = usePopupContainer()
@@ -225,7 +227,7 @@ export function FavTabbarView({ extraContent }: { extraContent?: ReactNode }) {
   return (
     <div ref={ref} className='flex items-center gap-x-10px'>
       {/* scope selction */}
-      {!enableSidebar && scopeSelectionDropdown}
+      {!sidebarVisible && scopeSelectionDropdown}
 
       {/* extra */}
       {extraContent}
