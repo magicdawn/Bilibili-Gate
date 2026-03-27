@@ -1,35 +1,23 @@
-import { bv2av } from '@mgdn/bvid'
-import { matchesKeyboardEvent } from '@tanstack/react-hotkeys'
+/**
+ * 创意来源: https://github.com/hakadao/BewlyBewly/issues/101#issuecomment-1874308120
+ * 试用了下, 感觉不错, 在本脚本里实现了
+ */
+
 import { delay } from 'es-toolkit'
 import ms from 'ms'
 import { baseDebug } from '$common'
-import { handleModifyFavItemToFolder, startModifyFavItemToFolder } from '$components/ModalFavManager'
 import { EForceAutoPlay, EPlayerScreenMode, EQueryKey } from '$components/VideoCard/index.shared'
 import { hasDocumentPictureInPicture, openInPipOrPopup } from '$components/VideoCard/use/useOpenRelated'
-import { antMessage } from '$modules/antd'
 import { getBiliPlayer } from '$modules/bilibili/player'
 import { getBiliPlayerConfigAutoPlay } from '$modules/bilibili/player-config'
-import { getCurrentPageBvid } from '$modules/pages/video-play-page'
-import { UserFavApi } from '$modules/rec-services/fav/api'
-import { settings } from '$modules/settings'
 import { isMac } from '$ua'
-import { poll, shouldDisableShortcut } from '$utility/dom'
-import { setupForNoneHomepage } from './shared'
 
 const debug = baseDebug.extend('main:video-play-page')
 
-export async function initVideoPlayPage() {
-  setupForNoneHomepage()
-  registerGmCommands()
-  setupCustomFavPicker()
-  await handleFullscreen()
-  await handleForceAutoPlay()
-}
-
-function registerGmCommands() {
+export async function setupVideoPlayerState() {
   registerOpenInPipCommand()
   registerOpenInIinaCommand()
-  registerAddToFavCommand()
+  await Promise.all([syncFullscreenState(), syncForceAutoPlayState()])
 }
 
 function registerOpenInPipCommand() {
@@ -48,12 +36,7 @@ function registerOpenInIinaCommand() {
   })
 }
 
-/**
- * 创意来源: https://github.com/hakadao/BewlyBewly/issues/101#issuecomment-1874308120
- * 试用了下, 感觉不错, 在本脚本里实现了
- */
-
-async function handleFullscreen() {
+async function syncFullscreenState() {
   const targetMode = new URL(location.href).searchParams.get(EQueryKey.PlayerScreenMode)
   debug('targetMode=%s', targetMode)
   const next = targetMode === EPlayerScreenMode.WebFullscreen || targetMode === EPlayerScreenMode.Fullscreen
@@ -84,7 +67,7 @@ async function handleFullscreen() {
   // Failed to execute 'requestFullscreen' on 'Element': API can only be initiated by a user gesture.
 }
 
-async function handleForceAutoPlay() {
+async function syncForceAutoPlayState() {
   // already on
   if (getBiliPlayerConfigAutoPlay()) return
   // no need
@@ -101,7 +84,7 @@ async function handleForceAutoPlay() {
     getBiliPlayer()?.play()
     await delay(1000)
   }
-  debug('handleForceAutoPlay complete, playing = %s', playing())
+  debug('syncForceAutoPlayState complete, playing = %s', playing())
 }
 
 function pausePlayingVideo() {
@@ -124,73 +107,4 @@ function openInIina() {
   // open in iina
   const iinaUrl = `iina://open?url=${encodeURIComponent(location.href)}`
   window.open(iinaUrl, '_self')
-}
-
-function registerAddToFavCommand() {
-  GM.registerMenuCommand?.('⭐️ 加入收藏', () => addToFav())
-}
-async function setupCustomFavPicker() {
-  if (!getCurrentPageBvid()) return
-  const willUseCustomFavPicker = () => settings.fav.useCustomFavPicker.onPlayPage
-
-  // setup keyboard shortcut
-  //  Shift+E: always on
-  //  E: only when willUseCustomFavPicker
-  document.addEventListener(
-    'keydown',
-    (e) => {
-      if (matchesKeyboardEvent(e, 'Shift+E') || (willUseCustomFavPicker() && matchesKeyboardEvent(e, 'E'))) {
-        if (!getCurrentPageBvid()) return
-        if (shouldDisableShortcut()) return
-        const target = e.target as HTMLElement
-        if (target.closest('bili-comments')) return // emit from a <bili-comments> element
-        e.stopImmediatePropagation()
-        e.preventDefault()
-        addToFav()
-      }
-    },
-    { capture: true },
-  )
-
-  if (willUseCustomFavPicker()) {
-    const el = await poll(() => document.querySelector<HTMLDivElement>('.video-fav.video-toolbar-left-item'), {
-      interval: 100,
-      timeout: 5_000,
-    })
-    el?.addEventListener(
-      'click',
-      (e) => {
-        if (!willUseCustomFavPicker() || !getCurrentPageBvid()) return
-        e.stopImmediatePropagation()
-        e.preventDefault()
-        addToFav()
-      },
-      { capture: true },
-    )
-  }
-}
-
-async function addToFav(sourceFavFolderIds?: number[] | undefined) {
-  const bvid = getCurrentPageBvid()
-  if (!bvid) return antMessage.error('无法解析视频 BVID !')
-  const avid = bv2av(bvid)
-
-  // !TODO: optimize this
-  if (sourceFavFolderIds === undefined) {
-    const result = await UserFavApi.getVideoFavState(avid)
-    if (result) {
-      sourceFavFolderIds = result.favFolderIds
-    }
-  }
-
-  await startModifyFavItemToFolder(sourceFavFolderIds, async (targetFolder) => {
-    const success = await handleModifyFavItemToFolder(avid, sourceFavFolderIds, targetFolder)
-    if (!success) return
-
-    const nextState = !!targetFolder
-    const el = document.querySelector<HTMLDivElement>('.video-fav.video-toolbar-left-item')
-    el?.classList.toggle('on', nextState)
-
-    return true
-  })
 }
