@@ -8,7 +8,7 @@ import type { PartialDeep, ReadonlyDeep } from 'type-fest'
 let lastBackupVal: PartialDeep<Settings> | undefined
 const setDataThrottled = throttle(articleDraft.setData, ms('5s'))
 
-export async function saveToDraft(val: ReadonlyDeep<PartialDeep<Settings>>) {
+export function saveToDraft(val: ReadonlyDeep<PartialDeep<Settings>>) {
   if (!val.backupSettingsToArticleDraft) return
   if (HAS_RESTORED_SETTINGS) return // skip when `HAS_RESTORED_SETTINGS=true`
 
@@ -20,7 +20,7 @@ export async function saveToDraft(val: ReadonlyDeep<PartialDeep<Settings>>) {
   if (!shouldBackup) return
 
   try {
-    await setDataThrottled(currentBackupVal)
+    setDataThrottled(currentBackupVal)
     lastBackupVal = currentBackupVal
     debug('backup to article draft complete')
   } catch (e: any) {

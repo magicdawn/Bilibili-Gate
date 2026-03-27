@@ -1,15 +1,18 @@
-import axios from 'axios'
-import gmAdapter from 'axios-userscript-adapter'
+import GM_fetch from '@trim21/gm-fetch'
+import axios, { type AxiosError, type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from 'axios'
 import { omit } from 'es-toolkit'
-import { appWarn, HOST_API, OPERATION_FAIL_MSG, TVKeyInfo } from '$common'
+import { fromAsyncThrowable, type ResultAsync } from 'neverthrow'
+import { appWarn, HOST_API, HOST_APP, OPERATION_FAIL_MSG, TVKeyInfo } from '$common'
 import { encWbi } from '$modules/bilibili/risk-control/wbi'
 import { appSign } from '$utility/app-api'
 import { settings } from './modules/settings'
 
-export const request = axios.create({
-  baseURL: HOST_API,
-  withCredentials: true,
-})
+export const request = extendSafeHttpMethods(
+  axios.create({
+    baseURL: HOST_API,
+    withCredentials: true,
+  }),
+)
 
 request.interceptors.request.use(async function (config) {
   config.params ||= {}
@@ -58,10 +61,15 @@ export function toAxiosRequestError(err: any) {
 }
 
 // 可以跨域
-export const gmrequest = axios.create({
-  // @ts-ignore
-  adapter: gmAdapter,
-})
+export const gmrequest = extendSafeHttpMethods(
+  axios.create({
+    baseURL: HOST_APP,
+    adapter: 'fetch',
+    env: {
+      fetch: GM_fetch,
+    },
+  }),
+)
 
 gmrequest.interceptors.request.use(function (config) {
   if (!config.params?.sign) {
@@ -94,3 +102,30 @@ gmrequest.interceptors.response.use((res) => {
   }
   return res
 })
+
+/**
+ * neverthrow Result
+ */
+const httpMethods = ['get', 'delete', 'head', 'options', 'post', 'put', 'patch'] as const
+
+// NOTE: 因为泛型参数的存在, 不能使用 httpMethods 遍历. 不知道如何保持泛型参数...
+interface ExtendedAxiosInstance extends AxiosInstance {
+  safeGet: <T = any, R = AxiosResponse<T>, D = any>(
+    url: string,
+    config?: AxiosRequestConfig<D>,
+  ) => ResultAsync<R, AxiosError | AxiosRequestError>
+  safePost: <T = any, R = AxiosResponse<T>, D = any>(
+    url: string,
+    data?: D,
+    config?: AxiosRequestConfig<D>,
+  ) => ResultAsync<R, AxiosError | AxiosRequestError>
+}
+
+function extendSafeHttpMethods(_instance: AxiosInstance): ExtendedAxiosInstance {
+  const instance = _instance as ExtendedAxiosInstance
+  // @ts-ignore
+  instance.safeGet = fromAsyncThrowable(_instance.get, toAxiosRequestError)
+  // @ts-ignore
+  instance.safePost = fromAsyncThrowable(_instance.post, toAxiosRequestError)
+  return instance
+}

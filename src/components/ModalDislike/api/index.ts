@@ -34,7 +34,7 @@ function appDislikeFactory(action: Action) {
     item: AppRecItem,
     reasonId: number,
   ): Promise<Result<string, AxiosError | AxiosRequestError | OperationFailError>> {
-    const result = await fromAsyncThrowable(gmrequest.get, toAxiosRequestError)(HOST_APP + pathname, {
+    const result = await gmrequest.safeGet(HOST_APP + pathname, {
       responseType: 'json',
       params: {
         goto: item.goto,

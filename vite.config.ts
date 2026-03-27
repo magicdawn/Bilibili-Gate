@@ -208,10 +208,6 @@ export default defineConfig(({ command, mode }) => ({
 
         externalGlobals: {
           'axios': cdn.npmmirror('axios', 'dist/axios.min.js'),
-          // 'axios-userscript-adapter': cdn.npmmirror(
-          //   'axiosGmxhrAdapter',
-          //   'dist/axiosGmxhrAdapter.min.js',
-          // ),
           'ua-parser-js': cdn.npmmirror('UAParser', 'dist/ua-parser.min.js'),
           'localforage': cdn.npmmirror('localforage', 'dist/localforage.min.js'),
           'pinyin-match': cdn.npmmirror('PinyinMatch', 'dist/main.js'),
