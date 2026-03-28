@@ -1,9 +1,11 @@
 import { css } from '@emotion/css'
 import { Button } from 'antd'
-import { useMemo } from 'react'
+import { delay, throttle } from 'es-toolkit'
 import { createRoot } from 'react-dom/client'
+import { proxy, snapshot, useSnapshot } from 'valtio'
 import { APP_NAME, BiliDomain } from '$common'
 import { AppRoot } from '$components/AppRoot'
+import { globalEmitter } from '$main/shared'
 import { AntdTooltip } from '$modules/antd/custom'
 import { FavQueryKey } from '$modules/rec-services/fav/store'
 import { IconForCollection } from '$modules/rec-services/fav/views'
@@ -16,6 +18,7 @@ export function setupQuickLinks() {
 }
 
 async function setupCollectionQuickLink() {
+  await delay(2000) // wait for bilibili default content
   const selector = '.rcmd-tab .video-pod .header-bottom .subscribe-btn'
   const btnSubscribe = await poll(() => document.querySelector<HTMLDivElement>(selector), {
     interval: 100,
@@ -42,22 +45,47 @@ async function setupCollectionQuickLink() {
   )
 }
 
-function CollectionQuickLink() {
-  const href: string | undefined = useMemo(() => {
-    const collectionUrl = document.querySelector('.video-pod .header-top a.title')?.href
+const store = proxy({
+  href: location.href,
+
+  collectionUrl: undefined as string | undefined,
+  queryCollectionUrl: throttle(function () {
+    store.collectionUrl = document.querySelector('.video-pod .header-top a.title')?.href
+  }, 100),
+
+  get gateCollectionUrl() {
+    const { collectionUrl } = this
     if (!collectionUrl) return
 
-    const sid = new URL(collectionUrl, location.href).searchParams.get('sid')
+    const sid = new URL(collectionUrl, this.href).searchParams.get('sid')
     if (!sid) return
 
     return `https://${BiliDomain.Main}/?${FavQueryKey.CollectionId}=${sid}`
-  }, [location.href])
+  },
+})
 
+globalEmitter.on('navigate-success', async () => {
+  const prevSnap = snapshot(store)
+  store.href = location.href
+  store.queryCollectionUrl()
+  // href updated
+  if (store.href !== prevSnap.href) {
+    // wait UI update controlled by other scripts
+    // UGLY code but works
+    for (const d of [100, 200, 400, 1000, 2000, 4000]) {
+      await delay(d)
+      store.queryCollectionUrl()
+    }
+  }
+})
+
+function CollectionQuickLink() {
+  const { gateCollectionUrl } = useSnapshot(store)
   return (
-    !!href && (
+    !!gateCollectionUrl && (
       <AntdTooltip title={<>在「{APP_NAME}」中查看合集 </>}>
-        <Button className='mr-5px icon-only-round-button size-24px' type='link' href={href} target='_blank'>
-          <IconForCollection />
+        <Button className='mr-5px icon-only-round-button size-24px' href={gateCollectionUrl} target='_blank'>
+          <IconForCollection className='size-16px' />
         </Button>
       </AntdTooltip>
     )

@@ -14,7 +14,7 @@ import { antMessage, antModal, defineAntMenus } from '$modules/antd'
 import { IconForDelete, IconForEdit, IconForFav, IconForFaved, IconForOpenExternalLink } from '$modules/icon'
 import { multiSelectStore } from '$modules/multi-select/store'
 import { defaultFavFolderTitle, UserFavApi } from '$modules/rec-services/fav/api'
-import { formatFavCollectionUrl, formatFavFolderUrl } from '$modules/rec-services/fav/fav-url'
+import { formatFavCollectionSelfSpaceUrl, formatFavFolderUrl } from '$modules/rec-services/fav/fav-url'
 import { clearFavFolderAllItemsCache } from '$modules/rec-services/fav/service/fav-folder'
 import { FavQueryKey, favStore } from '$modules/rec-services/fav/store'
 import toast from '$utility/toast'
@@ -271,7 +271,7 @@ export function getFavTabMenus({
           const url =
             tab !== ETab.Fav || (favStore.selectedKey === 'all' && favStore.usingShuffle)
               ? `/?${FavQueryKey.CollectionIdFull}=${id}`
-              : formatFavCollectionUrl(id)
+              : formatFavCollectionSelfSpaceUrl(id)
           window.open(url, getLinkTarget())
         },
       },

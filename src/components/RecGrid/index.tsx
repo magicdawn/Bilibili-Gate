@@ -6,6 +6,7 @@ import Emittery from 'emittery'
 import { attempt, delay } from 'es-toolkit'
 import ms from 'ms'
 import {
+  Fragment,
   memo,
   useEffect,
   useImperativeHandle,
@@ -538,16 +539,8 @@ export const RecGrid = memo(function RecGrid({
 
   const renderItem = (item: RecItemTypeOrSeparator) => {
     if (item.api === EApiType.Separator) {
-      return (
-        <Divider
-          key={item.uniqId}
-          className={clsx(clsGridColSpanFull, clsGateVideoGridDivider)}
-          orientation='horizontal'
-          titlePlacement='left'
-        >
-          {item.content}
-        </Divider>
-      )
+      const shouldWrap = item.wrapWithDivider ?? true
+      return <Fragment key={item.uniqId}>{shouldWrap ? wrapWithDivider(item.content) : item.content}</Fragment>
     } else {
       const index = videoList.findIndex((x) => x.uniqId === item.uniqId)
       const active = index === activeIndex
@@ -579,3 +572,15 @@ export const RecGrid = memo(function RecGrid({
     ),
   })
 })
+
+export function wrapWithDivider(children: ReactNode) {
+  return (
+    <Divider
+      className={clsx(clsGridColSpanFull, clsGateVideoGridDivider)}
+      orientation='horizontal'
+      titlePlacement='left'
+    >
+      {children}
+    </Divider>
+  )
+}

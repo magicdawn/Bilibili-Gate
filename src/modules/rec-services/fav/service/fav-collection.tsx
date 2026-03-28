@@ -1,16 +1,17 @@
+import { Button } from 'antd'
 import { attemptAsync, cloneDeep, countBy, orderBy, shuffle } from 'es-toolkit'
 import { proxy, useSnapshot } from 'valtio'
-import { CustomTargetLink } from '$components/VideoCard/use/useOpenRelated'
+import { useLinkTarget } from '$components/VideoCard/use/useOpenRelated'
 import { EApiType } from '$enums'
-import { AntdTooltip } from '$modules/antd/custom'
 import { getSpaceAccInfo } from '$modules/bilibili/user/space-acc-info'
 import { IconForOpenExternalLink, IconForPlayer } from '$modules/icon'
 import { fetchCollectionDetail } from '../collection/api'
 import { FavItemsOrder, handleItemsOrder } from '../fav-enum'
-import { formatBvidUrl, formatFavCollectionUrl } from '../fav-url'
+import { formatBvidUrl, formatFavCollectionSelfSpaceUrl, formatFavCollectionUpSpaceUrl } from '../fav-url'
 import { favStore } from '../store'
+import { IconForCollection } from '../views'
 import { FavItemsOrderSwitcher } from '../views/fav-items-order'
-import { clsFavSeparatorItem, FAV_PAGE_SIZE } from './_base'
+import { FAV_PAGE_SIZE } from './_base'
 import type { ItemsSeparator } from '$define'
 import type { IFavInnerService } from '../index'
 import type { FavItemExtend } from '../types'
@@ -41,6 +42,7 @@ export class FavCollectionService implements IFavInnerService {
       api: EApiType.Separator,
       uniqId: `${EApiType.Fav}:collection:separator:${this.collectionId}`,
       content: <FavCollectionSeparator service={this} />,
+      wrapWithDivider: false,
     }
   }
 
@@ -144,28 +146,33 @@ export class FavCollectionService implements IFavInnerService {
 
 export function FavCollectionSeparator({ service }: { service: FavCollectionService }) {
   const { firstBvid, info } = useSnapshot(service.state)
+  const target = useLinkTarget()
   return (
-    <>
-      <AntdTooltip
-        title={
-          <>
-            UP: {info?.upper.name} <br />
-            简介: {info?.intro || '无'}
-          </>
-        }
-      >
-        <CustomTargetLink href={formatFavCollectionUrl(service.collectionId)} className={clsFavSeparatorItem}>
+    <div className='col-span-full mb-15px mt-5px flex flex-col gap-y-10px'>
+      <div className='flex-v-center gap-x-1 text-1.6em'>
+        <IconForCollection />
+        合集 · {info?.title}
+      </div>
+      {info?.intro && <div className='text-1em color-$text_1'>{info?.intro}</div>}
+      <div className='text-1em'>合集 {info?.media_count} 个视频</div>
+      <div className='flex-v-center gap-x-10px'>
+        {firstBvid && (
+          <Button href={formatBvidUrl(firstBvid)} target={target}>
+            <IconForPlayer className='size-16px' />
+            播放
+          </Button>
+        )}
+        <Button href={formatFavCollectionSelfSpaceUrl(service.collectionId)} target={target}>
           <IconForOpenExternalLink className='size-16px' />
-          去个人空间查看合集: {info?.title}
-        </CustomTargetLink>
-      </AntdTooltip>
-
-      {firstBvid && (
-        <CustomTargetLink href={formatBvidUrl(firstBvid)} className={clsFavSeparatorItem}>
-          <IconForPlayer className='size-16px' />
-          播放全部
-        </CustomTargetLink>
-      )}
-    </>
+          去「我的空间」查看
+        </Button>
+        {info?.upper.mid && (
+          <Button href={formatFavCollectionUpSpaceUrl(info.upper.mid, service.collectionId)} target={target}>
+            <IconForOpenExternalLink className='size-16px' />
+            去合集发布页
+          </Button>
+        )}
+      </div>
+    </div>
   )
 }

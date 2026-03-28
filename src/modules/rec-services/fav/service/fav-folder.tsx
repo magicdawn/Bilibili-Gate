@@ -1,12 +1,11 @@
 import { useMemoizedFn, useRequest } from 'ahooks'
 import { Button, Input, Popover } from 'antd'
-import clsx from 'clsx'
 import { assert, shuffle } from 'es-toolkit'
 import ms from 'ms'
 import { useState } from 'react'
 import { snapshot, useSnapshot } from 'valtio'
 import { REQUEST_FAIL_MSG } from '$common'
-import { CustomTargetLink } from '$components/VideoCard/use/useOpenRelated'
+import { useLinkTarget } from '$components/VideoCard/use/useOpenRelated'
 import { EApiType } from '$enums'
 import { IconForEdit, IconForOpenExternalLink, IconForPlayer } from '$modules/icon'
 import { isWebApiSuccess, request } from '$request'
@@ -15,9 +14,11 @@ import toast from '$utility/toast'
 import { editFavFolder } from '../api'
 import { FavItemsOrder, handleItemsOrder } from '../fav-enum'
 import { formatFavFolderUrl, formatFavPlaylistUrl } from '../fav-url'
+import { isFavFolderPrivate } from '../fav-util'
 import { favStore, updateFavFolderMediaCount, updateFavList } from '../store'
+import { IconForPrivateFolder, IconForPublicFolder } from '../views'
 import { FavItemsOrderSwitcher } from '../views/fav-items-order'
-import { clsFavSeparatorItem, FAV_PAGE_SIZE } from './_base'
+import { FAV_PAGE_SIZE } from './_base'
 import type { SetNonNullable } from 'type-fest'
 import type { ItemsSeparator } from '$define'
 import type { IFavInnerService } from '../index'
@@ -78,44 +79,50 @@ export function FavFolderRenamePopover({
 export function FavFolderSeparator({ service }: { service: FavFolderBasicService }) {
   const [renamePopoverOpen, setRenamePopoverOpen] = useState(false)
   const { viewingSomeFolder } = useSnapshot(favStore)
+  const target = useLinkTarget()
 
   const { id: folderId, attr: folderAttr, title: folderTitleFromService } = service.entry
   const folderTitle = useSnapshot(favStore.folders).find((f) => f.id === folderId)?.title ?? folderTitleFromService
-
   const clsIcon = 'size-16px'
 
   return (
-    <>
-      <CustomTargetLink href={formatFavFolderUrl(folderId, folderAttr)} className={clsFavSeparatorItem}>
-        <IconForOpenExternalLink className={clsIcon} />
-        去个人空间查看收藏夹: {folderTitle}
-      </CustomTargetLink>
+    <div className='col-span-full mb-15px mt-5px flex flex-col gap-y-10px'>
+      <div className='flex-v-center gap-x-1 text-1.6em'>
+        {isFavFolderPrivate(folderAttr) ? <IconForPrivateFolder /> : <IconForPublicFolder />}
+        收藏夹 · {folderTitle}
+      </div>
+      <div className='flex-v-center gap-x-10px'>
+        <Button href={formatFavPlaylistUrl(folderId)} target={target}>
+          <IconForPlayer className={clsIcon} />
+          播放全部
+        </Button>
 
-      <CustomTargetLink href={formatFavPlaylistUrl(folderId)} className={clsFavSeparatorItem}>
-        <IconForPlayer className={clsIcon} />
-        播放全部
-      </CustomTargetLink>
+        <Button href={formatFavFolderUrl(folderId, folderAttr)} target={target}>
+          <IconForOpenExternalLink className={clsIcon} />
+          去「我的空间」查看
+        </Button>
 
-      {viewingSomeFolder && (
-        <Popover
-          open={renamePopoverOpen}
-          onOpenChange={setRenamePopoverOpen}
-          trigger='click'
-          content={
-            <FavFolderRenamePopover
-              folderId={folderId}
-              currentFolderTitle={folderTitle}
-              onClosePopover={() => setRenamePopoverOpen(false)}
-            />
-          }
-        >
-          <Button className={clsx(clsFavSeparatorItem, 'gap-x-1 px-0 text-15px!')} type='link'>
-            <IconForEdit className={clsIcon} />
-            重命名
-          </Button>
-        </Popover>
-      )}
-    </>
+        {viewingSomeFolder && (
+          <Popover
+            open={renamePopoverOpen}
+            onOpenChange={setRenamePopoverOpen}
+            trigger='click'
+            content={
+              <FavFolderRenamePopover
+                folderId={folderId}
+                currentFolderTitle={folderTitle}
+                onClosePopover={() => setRenamePopoverOpen(false)}
+              />
+            }
+          >
+            <Button className='gap-x-1'>
+              <IconForEdit className={clsIcon} />
+              重命名
+            </Button>
+          </Popover>
+        )}
+      </div>
+    </div>
   )
 }
 
@@ -172,6 +179,7 @@ export class FavFolderService implements IFavInnerService {
       api: EApiType.Separator,
       uniqId: `${EApiType.Fav}:folder:separator:${this.folderId}`,
       content: <FavFolderSeparator service={this.innerService} />,
+      wrapWithDivider: false,
     }
   }
 

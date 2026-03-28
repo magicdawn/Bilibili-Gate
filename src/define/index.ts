@@ -38,7 +38,12 @@ export interface AppRecItemExtend extends AppRecItem {
 
 export type RecItemTypeOrSeparator = RecItemType | ItemsSeparator
 
-export type ItemsSeparator = { uniqId: string; api: EApiType.Separator; content: ReactNode }
+export type ItemsSeparator = {
+  uniqId: string
+  api: EApiType.Separator
+  content: ReactNode
+  wrapWithDivider?: boolean // 使用 Divider 包裹
+}
 
 /**
  * ItemExtend
