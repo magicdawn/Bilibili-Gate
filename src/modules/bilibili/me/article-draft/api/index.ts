@@ -27,9 +27,9 @@ export const ArticleDraft = {
       })
     ).data as DraftViewJson
 
-    const paragraphs = json.data.opus.content.paragraphs
+    const paragraphs = json?.data?.opus?.content?.paragraphs || []
     let p: Paragraph | undefined
-    if (paragraphs.length === 1 && (p = paragraphs[0]) && p.code?.content && p.code?.lang === 'json') {
+    if (paragraphs.length === 1 && (p = paragraphs[0]) && p?.code?.content && p?.code?.lang === 'json') {
       const str = p.code.content
       const [_, parsed] = attempt(() => JSON.parse(str))
       if (parsed) return parsed
