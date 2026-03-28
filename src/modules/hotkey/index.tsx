@@ -1,4 +1,4 @@
-import { formatForDisplay, formatKeyForDebuggingDisplay, type Hotkey } from '@tanstack/react-hotkeys'
+import { formatForDisplay, type Hotkey } from '@tanstack/react-hotkeys'
 import { useMemo, type ComponentProps } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
 
@@ -15,5 +15,5 @@ export function HotkeyDisplay({ k, ...restProps }: Omit<ComponentProps<'kbd'>, '
 }
 
 export const soloShiftKey = (
-  <CustomKbd className='mx-1 tracking-normal word-spacing-1'>{formatKeyForDebuggingDisplay('Shift')}</CustomKbd>
+  <CustomKbd className='mx-1 tracking-normal word-spacing-1'>{formatForDisplay('Shift')}</CustomKbd>
 )

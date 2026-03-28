@@ -8,6 +8,7 @@ minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
   - '@magicdawn/*'
   - '@mgdn/*'
+  - '@tanstack/*hotkeys'
   - '@types/*'
   - '@typescript/native-preview'
   - unocss-merge
