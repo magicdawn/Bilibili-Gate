@@ -1,9 +1,8 @@
 import { css } from '@emotion/css'
 import { Button } from 'antd'
 import { delay, throttle } from 'es-toolkit'
-import { createRoot } from 'react-dom/client'
 import { proxy, snapshot, useSnapshot } from 'valtio'
-import { APP_NAME, BiliDomain } from '$common'
+import { APP_NAME, appWarn, BiliDomain, createReactRoot } from '$common'
 import { AppRoot } from '$components/AppRoot'
 import { globalEmitter } from '$main/shared'
 import { AntdTooltip } from '$modules/antd/custom'
@@ -18,13 +17,15 @@ export function setupQuickLinks() {
 }
 
 async function setupCollectionQuickLink() {
-  await delay(2000) // wait for bilibili default content
-  const selector = '.rcmd-tab .video-pod .header-bottom .subscribe-btn'
-  const btnSubscribe = await poll(() => document.querySelector<HTMLDivElement>(selector), {
-    interval: 100,
-    timeout: 5_000,
+  await delay(2000) // wait for bilibili default content, UGLY code
+  const referenceSelector = '.rcmd-tab .video-pod .header-bottom .subscribe-btn'
+  const btnSubscribe = await poll(() => document.querySelector(referenceSelector), {
+    interval: 250,
+    timeout: 10_000,
   })
-  if (!btnSubscribe) return
+  if (!btnSubscribe) {
+    return appWarn('failed to find .subscribe-btn')
+  }
 
   const div = document.createElement('div')
   btnSubscribe.insertAdjacentElement('afterend', div)
@@ -37,7 +38,7 @@ async function setupCollectionQuickLink() {
     }
   `)
 
-  const root = createRoot(div)
+  const root = createReactRoot(div)
   root.render(
     <AppRoot>
       <CollectionQuickLink />

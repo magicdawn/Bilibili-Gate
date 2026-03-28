@@ -1,7 +1,6 @@
 import { once } from 'es-toolkit'
-import { createRoot } from 'react-dom/client'
 import { proxy, useSnapshot } from 'valtio'
-import { APP_CLS_ROOT } from '$common'
+import { APP_CLS_ROOT, createReactRoot } from '$common'
 import { AppRoot } from '$components/AppRoot'
 import { ModalSettings } from '$components/ModalSettings'
 import { ModalFeed } from '$components/Recommends/ModalFeed'
@@ -53,8 +52,7 @@ const renderOnce = once(function render() {
   const container = document.createElement('div')
   container.classList.add('modals-container', APP_CLS_ROOT)
   document.body.appendChild(container)
-  const r = createRoot(container)
-  r.render(
+  createReactRoot(container).render(
     <AppRoot>
       <ModalsContainer />
     </AppRoot>,

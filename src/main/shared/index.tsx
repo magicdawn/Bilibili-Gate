@@ -1,6 +1,6 @@
 import Emittery from 'emittery'
 import { once } from 'es-toolkit'
-import { createRoot } from 'react-dom/client'
+import { createReactRoot } from '$common'
 import { AppRoot, SetupForPage } from '$components/AppRoot'
 import { registerSettingsGmCommand } from '$components/RecHeader/modals'
 
@@ -12,7 +12,7 @@ export function setupForNoneHomepage() {
 const _setupOnce = once(() => {
   const container = document.createElement('div')
   document.body.appendChild(container)
-  const root = createRoot(container)
+  const root = createReactRoot(container)
   root.render(
     <AppRoot>
       <SetupForPage antd baseGlobalStyle />

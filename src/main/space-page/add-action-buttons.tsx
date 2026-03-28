@@ -1,8 +1,7 @@
 import clsx from 'clsx'
-import { createRoot } from 'react-dom/client'
 import { useUnoMerge } from 'unocss-merge/react'
 import { proxy, useSnapshot } from 'valtio'
-import { APP_NAME, APP_NAMESPACE } from '$common'
+import { APP_NAME, APP_NAMESPACE, createReactRoot } from '$common'
 import { AppRoot } from '$components/AppRoot'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconForDynamicFeed, IconForSpaceUpload } from '$modules/icon'
@@ -33,7 +32,8 @@ export async function addActionButtons() {
       rootEl.id = rootElId
       rootEl.classList.add('mr-24px')
       container.prepend(rootEl)
-      const root = createRoot(rootEl)
+
+      const root = createReactRoot(rootEl)
       root.render(
         <AppRoot>
           <ActionButtons />

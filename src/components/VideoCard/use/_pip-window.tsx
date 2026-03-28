@@ -4,8 +4,7 @@ import { useHover } from 'ahooks'
 import { App, ConfigProvider, Dropdown } from 'antd'
 import clsx from 'clsx'
 import { useMemo, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react'
-import { createRoot } from 'react-dom/client'
-import { APP_CLS_ROOT, APP_NAMESPACE } from '$common'
+import { APP_CLS_ROOT, APP_NAMESPACE, createReactRoot } from '$common'
 import { useLessFrequentFn } from '$common/hooks/useLessFrequentFn'
 import { AppRoot, SetupForPage } from '$components/AppRoot'
 import { defineAntMenus } from '$modules/antd'
@@ -37,8 +36,7 @@ export function renderInPipWindow(newHref: string, pipWindow: Window) {
   container.style.lineHeight = '0'
   pipWindow.document.body.appendChild(container)
 
-  const root = createRoot(container)
-  root.render(
+  createReactRoot(container).render(
     <AppRoot cssInsertContainer={cssInsertContainer} cssInsertContainerEmotionKey='pip-window'>
       <ConfigProvider getPopupContainer={() => pipWindow.document.body} getTargetContainer={() => pipWindow}>
         <App message={{ getContainer: () => pipWindow.document.body }}>

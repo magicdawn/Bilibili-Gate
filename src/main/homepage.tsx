@@ -1,7 +1,6 @@
 import { FloatButton } from 'antd'
 import { delay } from 'es-toolkit'
-import { createRoot, type Root } from 'react-dom/client'
-import { APP_CLS_ROOT, appWarn } from '$common'
+import { APP_CLS_ROOT, appWarn, createReactRoot } from '$common'
 import { AppRoot, SetupForPage } from '$components/AppRoot'
 import { GateFloatEntry } from '$components/GateFloatEntry'
 import { registerSettingsGmCommand } from '$components/RecHeader/modals'
@@ -10,6 +9,7 @@ import { settings } from '$modules/settings'
 import { getOnlyTab, inGateEntry } from '$routes'
 import { isSafari } from '$ua'
 import { poll, tryAction, tryToRemove } from '$utility/dom'
+import type { Root } from 'react-dom/client'
 
 const bewlyEnabledSelector = 'html.bewly-design:not(:has(#i_cecream,#app))'
 function hasBewlyBewly() {
@@ -56,7 +56,7 @@ function initHomepageGateFloatEntry() {
   container.classList.add(APP_CLS_ROOT)
   document.body.append(container)
 
-  root = createRoot(container)
+  root = createReactRoot(container)
   root.render(
     <AppRoot>
       <SetupForPage antd baseGlobalStyle />
@@ -81,7 +81,7 @@ async function initHomepagePureRecommend() {
 
   const container = document.createElement('div')
   biliLayout.append(container)
-  root = createRoot(container)
+  root = createReactRoot(container)
   root.render(
     <AppRoot>
       <SetupForPage antd baseGlobalStyle homePageGlobalStyle />

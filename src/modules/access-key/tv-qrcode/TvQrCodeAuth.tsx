@@ -2,9 +2,8 @@ import { QRCode } from 'antd'
 import clsx from 'clsx'
 import Emittery from 'emittery'
 import { once } from 'es-toolkit'
-import { createRoot } from 'react-dom/client'
 import { proxy, useSnapshot } from 'valtio'
-import { APP_CLS_ROOT } from '$common'
+import { APP_CLS_ROOT, createReactRoot } from '$common'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { AppRoot } from '$components/AppRoot'
 import { qrcodeConfirm } from './api'
@@ -109,7 +108,7 @@ const renderOnce = once(function render() {
   const container = document.createElement('div')
   container.classList.add('modal-tv-qrcode-auth', APP_CLS_ROOT)
   document.body.appendChild(container)
-  const r = createRoot(container)
+  const r = createReactRoot(container)
   r.render(
     <AppRoot>
       <TvQrCodeAuth />

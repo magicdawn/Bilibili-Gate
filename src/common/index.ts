@@ -1,4 +1,5 @@
 import { createDebug } from 'obug'
+import { createRoot, type RootOptions } from 'react-dom/client'
 
 export const APP_NAME = 'Bilibili-Gate' // formal name
 export const APP_NAMESPACE = 'bilibili-gate' // as namespace, kebab-case
@@ -82,4 +83,10 @@ export const appError = logFactory(console.error)
 export enum BiliBrandColor {
   Pink = '#f69',
   Blue = '#00aeec',
+}
+
+export function createReactRoot(container: HTMLElement, options?: RootOptions) {
+  const root = createRoot(container, options)
+  container.dataset.gateReactRoot = 'true'
+  return root
 }

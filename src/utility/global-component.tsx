@@ -1,8 +1,7 @@
 import clsx from 'clsx'
 import { once } from 'es-toolkit'
-import { createRoot } from 'react-dom/client'
 import { proxy, useSnapshot } from 'valtio'
-import { APP_CLS_ROOT } from '$common'
+import { APP_CLS_ROOT, createReactRoot } from '$common'
 import { AppRoot } from '$components/AppRoot'
 import type { ComponentType } from 'react'
 import type { AnyFunction } from './type'
@@ -29,7 +28,9 @@ export function wrapComponent<IProps extends object>({
     const div = document.createElement('div')
     div.className = clsx(APP_CLS_ROOT, containerClassName)
     document.body.appendChild(div)
-    createRoot(div).render(
+
+    const root = createReactRoot(div)
+    root.render(
       <AppRoot>
         <WrappedComponent />
       </AppRoot>,

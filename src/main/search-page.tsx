@@ -2,9 +2,8 @@ import { useHover } from 'ahooks'
 import { throttle } from 'es-toolkit'
 import { useMemo, useRef, type ComponentProps } from 'react'
 import { createPortal } from 'react-dom'
-import { createRoot } from 'react-dom/client'
 import { useUnoMerge } from 'unocss-merge/react'
-import { APP_NAMESPACE } from '$common'
+import { APP_NAMESPACE, createReactRoot } from '$common'
 import { AppRoot } from '$components/AppRoot'
 import { useLargePreviewRelated } from '$components/LargePreview/useLargePreview'
 import { defaultRecSharedEmitter } from '$components/Recommends/rec.shared'
@@ -49,7 +48,7 @@ function addLargePreview(el: HTMLDivElement) {
   processed.add(el)
   el.setAttribute(processedAttr, 'true')
 
-  const root = createRoot(container)
+  const root = createReactRoot(container)
   root.render(
     <AppRoot>
       <LargePreviewSetup el={el} />
