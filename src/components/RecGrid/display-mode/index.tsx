@@ -3,9 +3,9 @@ import { InputNumber, Radio, Space, type CheckboxOptionType, type RadioChangeEve
 import { useMemo } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
 import { useSnapshot } from 'valtio'
-import { HotkeyDisplay } from '$components/fragments'
 import { EGridDisplayMode } from '$enums'
 import { AntdTooltip } from '$modules/antd/custom'
+import { HotkeyDisplay } from '$modules/hotkey'
 import { settings } from '$modules/settings'
 import { TwoColumnModeAlignSwitcher } from './two-column-mode'
 

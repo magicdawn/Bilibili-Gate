@@ -9,10 +9,11 @@ import { useEffect, useMemo, useState } from 'react'
 import { useSnapshot } from 'valtio'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { HelpInfo } from '$components/_base/HelpInfo'
-import { antSpinIndicator, kbdClassName } from '$components/fragments'
+import { antSpinIndicator } from '$components/fragments'
 import { BILI_BRAND_PINK_THEME } from '$components/ModalSettings/theme.shared'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
+import { kbdClassName } from '$modules/hotkey'
 import {
   IconAnimatedChecked,
   IconForConfig,

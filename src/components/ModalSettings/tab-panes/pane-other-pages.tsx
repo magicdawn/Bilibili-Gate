@@ -1,5 +1,5 @@
 import { APP_NAME } from '$common'
-import { HotkeyDisplay } from '$components/fragments'
+import { HotkeyDisplay } from '$modules/hotkey'
 import { CheckboxSettingItem } from '../setting-item'
 import { ResetPartialSettingsButton, SettingsGroup, sharedClassNames } from './shared'
 
