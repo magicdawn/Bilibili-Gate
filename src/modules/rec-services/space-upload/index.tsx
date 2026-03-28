@@ -15,7 +15,7 @@ import { setPageTitle } from '$utility/dom'
 import { parseAdvancedFilter } from '$utility/local-filter'
 import { parseDuration } from '$utility/video'
 import { BaseTabService, type IService } from '../_base'
-import { SpaceUploadOrder, tryGetSpaceUpload } from './api'
+import { DefaultSpaceUploadOrder, SpaceUploadOrder, SpaceUploadOrderConfig, tryGetSpaceUpload } from './api'
 import { QUERY_SPACE_UPLOAD_INITIAL_PAGE, spaceUploadStore, SpaceUploadVideoMinDuration } from './store'
 import { isSpaceUploadItemChargeOnly } from './util'
 import { SpaceUploadTabbarView } from './views'
@@ -117,9 +117,12 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
   private async setPageTitle() {
     if (this.pageTitleSet) return
 
-    const prefixes: string[] = []
-    if (this.searchText) prefixes.push(`🔍【${this.searchText}】`)
-    if (this.filterText) prefixes.push(`⏳【${this.filterText}】`)
+    const textDisplays: string[] = []
+    if (this.searchText) textDisplays.push(`🔍【${this.searchText}】`)
+    if (this.filterText) textDisplays.push(`⏳【${this.filterText}】`)
+
+    const orderDispaly =
+      this.order !== DefaultSpaceUploadOrder ? `🔢【${SpaceUploadOrderConfig[this.order].label}】` : ''
 
     let author: string
     let shouldReRunSetTitle = false
@@ -140,7 +143,7 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
       author = name ? `【${name}】` : ''
     }
 
-    const title = [prefixes.join(''), `${author}的投稿`]
+    const title = [...textDisplays, orderDispaly, `${author}的投稿`]
       .map((x) => x.trim())
       .filter(Boolean)
       .join(' - ')

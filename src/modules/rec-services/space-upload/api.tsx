@@ -13,6 +13,9 @@ export enum SpaceUploadOrder {
   View = 'click',
   Fav = 'stow',
 }
+
+export const DefaultSpaceUploadOrder = SpaceUploadOrder.Latest
+
 export const SpaceUploadOrderConfig: Record<
   SpaceUploadOrder,
   { icon?: ReactNode; label?: ReactNode; helpInfo?: ReactNode }

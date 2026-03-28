@@ -8,6 +8,7 @@ export enum SpaceUploadQueryKey {
   SearchText = 'space-search-text',
   FilterText = 'space-filter-text',
   InitialPage = 'space-initial-page',
+  Order = 'space-order',
 }
 
 export enum SpaceUploadVideoMinDuration {
@@ -38,6 +39,12 @@ export const QUERY_SPACE_UPLOAD_GROUP_ID = searchParams.get(SpaceUploadQueryKey.
 export const QUERY_SPACE_UPLOAD_SEARCH_TEXT = searchParams.get(SpaceUploadQueryKey.SearchText) || undefined
 export const QUERY_SPACE_UPLOAD_FILTER_TEXT = searchParams.get(SpaceUploadQueryKey.FilterText) || undefined
 export const QUERY_SPACE_UPLOAD_INITIAL_PAGE = searchParams.get(SpaceUploadQueryKey.InitialPage) || undefined
+export const QUERY_SPACE_UPLOAD_ORDER = (() => {
+  const val = searchParams.get(SpaceUploadQueryKey.Order)
+  if (!val) return undefined
+  if (!Object.values(SpaceUploadOrder).includes(val as SpaceUploadOrder)) return undefined
+  return val as SpaceUploadOrder
+})()
 
 const mids = (QUERY_SPACE_UPLOAD_MID || '')
   .split(/[,_-]/) // `-` / `_` 不需要 url encode, `,` 需要
@@ -71,7 +78,7 @@ const filterStateMap = (
 const store = proxy({
   mids,
   groupId,
-  order: SpaceUploadOrder.Latest,
+  order: QUERY_SPACE_UPLOAD_ORDER,
   searchText: QUERY_SPACE_UPLOAD_SEARCH_TEXT as string | undefined,
   filterText: QUERY_SPACE_UPLOAD_FILTER_TEXT as string | undefined,
   filterStateMap,

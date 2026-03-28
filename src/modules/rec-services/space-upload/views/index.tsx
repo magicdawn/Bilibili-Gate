@@ -9,11 +9,11 @@ import { useOnRefresh } from '$components/Recommends/rec.shared'
 import { AntdTooltip } from '$modules/antd/custom'
 import { usePopupContainer } from '$modules/rec-services/_base'
 import { settings, useSettingsSnapshot } from '$modules/settings'
-import { CopyBvidButtonsTabbarView } from '../_shared/copy-bvid-buttons'
-import { GenericOrderSwitcher } from '../_shared/generic-order-switcher'
-import { SpaceUploadOrderConfig, type SpaceUploadOrder } from './api'
-import { SpaceUploadQueryKey, spaceUploadStore } from './store'
-import { usePopoverRelated } from './views/popover-related'
+import { CopyBvidButtonsTabbarView } from '../../_shared/copy-bvid-buttons'
+import { GenericOrderSwitcher } from '../../_shared/generic-order-switcher'
+import { DefaultSpaceUploadOrder, SpaceUploadOrderConfig, type SpaceUploadOrder } from '../api'
+import { SpaceUploadQueryKey, spaceUploadStore } from '../store'
+import { usePopoverRelated } from './popover-related'
 
 export function SpaceUploadTabbarView() {
   const { searchText, filterText } = useSnapshot(spaceUploadStore, { sync: true })
@@ -27,7 +27,7 @@ export function SpaceUploadTabbarView() {
 
   const onSyncStoreToUrl = useMemoizedFn(() => {
     syncFilterTextFromSearchText()
-    const { searchText, filterText } = spaceUploadStore
+    const { searchText, filterText, order } = spaceUploadStore
     const currentUrl = location.href
     const u = new URL(currentUrl)
     searchText
@@ -36,6 +36,9 @@ export function SpaceUploadTabbarView() {
     filterText
       ? u.searchParams.set(SpaceUploadQueryKey.FilterText, filterText)
       : u.searchParams.delete(SpaceUploadQueryKey.FilterText)
+    !order || order === DefaultSpaceUploadOrder
+      ? u.searchParams.delete(SpaceUploadQueryKey.Order)
+      : u.searchParams.set(SpaceUploadQueryKey.Order, order)
     if (u.href !== currentUrl) {
       history.replaceState({}, '', u.href)
     }
@@ -72,6 +75,7 @@ export function SpaceUploadTabbarView() {
         listDisplayConfig={SpaceUploadOrderConfig}
         onChange={(value) => {
           spaceUploadStore.order = value
+          onSyncStoreToUrl()
           onRefresh()
         }}
       />
