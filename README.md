@@ -1,0 +1,389 @@
+﻿# Bilibili-Gate
+
+> Bilibili 自定义首页
+
+[![Greasy Fork Version](https://img.shields.io/greasyfork/v/443530?style=flat-square)][gfurl]
+[![Greasy Fork Downloads](https://img.shields.io/greasyfork/dt/443530?style=flat-square)][gfurl]
+[![Greasy Fork Downloads](https://img.shields.io/greasyfork/dd/443530?style=flat-square)][gfurl]
+[![Greasy Fork Rating](https://img.shields.io/greasyfork/rating-count/443530?style=flat-square)][gfurl]
+[![Build Status](https://img.shields.io/github/actions/workflow/status/magicdawn/bilibili-gate/ci.yml?branch=main&style=flat-square&label=CI%20Build)](https://github.com/magicdawn/Bilibili-Gate/actions/workflows/ci.yml)
+
+[gfurl]: https://greasyfork.org/zh-CN/scripts/443530
+
+## 安装
+
+👉 [GreasyFork][gfurl]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+👉 [开发版: 包含未发布的更改](https://github.com/magicdawn/Bilibili-Gate/raw/release-nightly/bilibili-gate.mini.user.js)
+
+## 功能
+
+- [x] App 推荐: 将手机 App 推荐内容搬到桌面
+- [x] App 推荐: 我不想看, 用于推荐系统反馈
+- [x] 视频过滤: 支持按视频属性(播放量 / 时长 / 标题) / 按 UP 过滤推荐视频
+- [x] 视频预览: 支持浮动预览视频; 使用画中画窗口预览 / 观看视频
+- [x] 动态: 分组动态; 动态搜索词过滤; 过滤「全部」动态; 支持缓存全部动态本地快速搜索等
+- [x] 一站式体验, 方便快捷的访问: 动态 / 稍后再看 / 收藏 / 热门等内容
+- [x] 随机: 稍后再看, 收藏, 每周必看等支持随机顺序
+- [x] 主题设置: 预设主题 + color-picker 自定义
+- [x] Bilibili-Evolved 适配: 深色模式 / 自定义顶栏 / 主题色
+- [x] 完善的键盘支持
+- [x] macOS IINA 支持
+
+## 链接
+
+- 源代码 https://github.com/magicdawn/Bilibili-Gate 如果对你有用,请在 GitHub 点个 Star :)
+- 从 GitHub 安装
+  - [Release](https://github.com/magicdawn/Bilibili-Gate/raw/release/bilibili-gate.user.js) (GreasyFork 版本自动同步源)
+  - [Release 最小化版本](https://github.com/magicdawn/Bilibili-Gate/raw/release/bilibili-gate.mini.user.js)
+  - [CI build](https://github.com/magicdawn/Bilibili-Gate/raw/release-nightly/bilibili-gate.mini.user.js)
+
+## 声明
+
+代码 fork 自 [indefined/UserScripts](https://github.com/indefined/UserScripts/tree/master/bilibiliHome)
+
+- https://github.com/indefined/UserScripts/tree/master/bilibiliHome
+- https://github.com/indefined/UserScripts/issues/76
+
+## 杂
+
+### 关于名称 Bilibili-Gate / bilibili-app-recommend
+
+起源于 [Bilibili Home](https://github.com/indefined/UserScripts/issues/76) 的一个 fork, 之前叫 bilibili-app-recommend <br />
+后添加了不少不是推荐相关的功能, 遂更名. <br />
+bilibili-app-recommend 用户可以通过文件导出全部设置迁移到 Bilibili-Gate 中.
+
+### B 站首页版本
+
+支持当前最新首页(bili-feed4). 旧版首页请看这里 https://github.com/indefined/UserScripts/tree/master/bilibiliHome
+
+### 支持的 浏览器 & 脚本管理器 环境
+
+- ✅ Chrome/Edge/Firefox: 支持 ViolentMonkey(我使用的) 和 TamperMonkey.
+- ✅ macOS Safari: [Userscripts](https://itunes.apple.com/us/app/userscripts/id1463298887), iPad Safari 上也可以使用
+- ❌ _**不支持**_ macOS Safari + TamperMonkey. (收费 Safari 插件, 已知不兼容, 请使用上述开源免费的 Userscripts)
+
+### 与 [Bilibili-Evolved](https://github.com/the1812/Bilibili-Evolved) 的兼容性
+
+- ❌ 首页相关 (如清爽首页 / 极简首页)
+- ✅ 深色模式
+- ✅ 自定义顶栏
+- ✅ [自定义字体](https://github.com/the1812/Bilibili-Evolved/discussions/4846)
+
+### 与 [BewlyBewly](https://github.com/hakadao/BewlyBewly) 的兼容性
+
+- ❌ 不兼容, 检测到 BewlyBewly 后, 本脚本会自动退出.
+- 使用特殊的地址强制启用本脚本 https://www.bilibili.com/#/bilibili-gate/
+
+## 介绍
+
+_\* 截图均为不带 access_key 匿名获取, 不代表作者喜好_
+
+### 一站式体验
+
+![image](https://github.com/magicdawn/Bilibili-Gate/assets/4067115/cde676d8-b794-4a6a-a6b9-a813fd97b427)
+
+#### APP 推荐, 默认
+
+- 需要获取 access_key
+- 可以使用标记不喜欢功能
+- 没有视频发布日期
+- 感谢 @Myitian 提供的 v2 API 示例 https://github.com/magicdawn/Bilibili-Gate/issues/18
+
+#### PC 桌面端推荐
+
+- 不需要 access_key 了
+- 标记不喜欢功能没了
+- 和首页自带推荐不一样, 自带推荐有视频预览 / 弹幕预览, 本项目还是鼠标滑动查看快照图片.
+- 首页自带推荐的 API, 貌似不会给你推荐番剧 (没有看见数据, 所以没有兼容)
+- 推荐结果貌似更理想
+- 更快!
+
+#### 已关注
+
+> 基于 PC 桌面端推荐, 筛选出「已关注」，可能会比较慢
+
+#### 动态
+
+> 动态页的解析
+
+#### 稍后再看
+
+> 你添加的稍后再看
+
+#### 收藏
+
+> 收藏夹内容的抓取
+
+#### 综合热门
+
+> 数据来源 https://www.bilibili.com/v/popular/all/
+
+#### 每周必看
+
+> 数据来源 https://www.bilibili.com/v/popular/weekly
+
+#### 自定义
+
+可在 设置-高级设置 隐藏不想使用的 Tab
+
+### 模式
+
+可以基于个人喜好定制
+
+#### 全屏模式
+
+![image](https://github.com/magicdawn/Bilibili-Gate/assets/4067115/4fd66d66-4839-4403-a9e6-6cdd55f0b4a2)
+
+_\* 截图均为不带 access_key 匿名获取, 不代表作者喜好_
+
+- 该模式会去除首页其他所有内容, 仅保留推荐块,
+- 默认开启, 之前版本称为 "纯推荐模式"
+- [x] 支持无限滚动, 加载更多
+- [x] 支持快捷键
+
+推荐操作栏有吸顶效果, 目前
+
+- 与 B 站首页自带顶栏兼容
+- 与 Bilibili-Evolved 的自定义顶栏兼容. (自定义顶栏: 全局固定 / 高度 可自由设置)
+
+#### 全屏模式:关
+
+主页推荐块, 在最顶部, 因历史原因存在.
+![image](https://github.com/magicdawn/Bilibili-Gate/assets/4067115/a3c303c2-bff4-459b-9bd6-5527ef468386)
+![image](https://github.com/magicdawn/Bilibili-Gate/assets/4067115/85b06340-257f-4811-b81d-ee3c2b9aa98f)
+
+### 功能
+
+#### 居中模式
+
+![image](https://user-images.githubusercontent.com/4067115/182653003-e48befbe-c69a-4ccc-9bee-b4fe97149052.png)
+
+- 像手机一样的居中双列
+
+#### 稍候再看
+
+- 视频卡片右上角
+- 快捷键支持
+
+#### 我不想看
+
+![image](https://github.com/magicdawn/Bilibili-Gate/assets/4067115/75516f49-43e0-4827-aa4c-3216b7f51374)
+![image](https://github.com/magicdawn/Bilibili-Gate/assets/4067115/f113f8bd-56bb-4482-a54d-2dbcd3e429c1)
+![image](https://github.com/magicdawn/Bilibili-Gate/assets/4067115/9674e212-9ff9-4d97-a2fd-46561d762b65)
+
+- 仅 APP 推荐 Tab, 获取 access_key 后可用
+
+#### 深色模式兼容
+
+- ✅ B站内测深色模式: 已适配
+- ✅ [Bilibili-Evolved](https://github.com/the1812/Bilibili-Evolved) 深色模式: 已适配
+- 或使用 [Dark Reader](https://chromewebstore.google.com/detail/dark-reader/eimadpbcbfnmbkopoojfekhnkhdbieeh) 扩展: 无适配, 但基本可用.
+
+> [!TIP]
+> 打开B站内测深色模式后启用 Bilibili-Evolved 自定义顶栏, 深色模式冲突时, 需要删除 `theme_style` 这个 cookie. 或修改值 `dark` 为 `light`.
+
+#### 视频过滤
+
+![image](https://github.com/magicdawn/Bilibili-Gate/assets/4067115/69dc596a-b504-47e1-bd3c-809cba99a708)
+
+#### 主题选择
+
+![image](https://github.com/magicdawn/Bilibili-Gate/assets/4067115/3ce3c3f3-3d39-4147-8393-b1b9c0baddde)
+
+### 视频卡片
+
+- [x] 支持鼠标滑动快速预览.
+- [x] 支持右键菜单
+- [ ] 弹幕预览, 个人需求不是很大. (原版有该功能, 可以试试旧版首页)
+
+### 动态
+
+#### 关注分组
+
+机制介绍: 当分组中 UP 较少时, 会使用「拼接时间线」的形式, 否则基于全部动态 + 分组UP过滤.
+
+- 拼接时间线可以理解为: 去看一遍分组所有人的动态, 然后把他们拼起来; 启动慢, 但可以加载所有动态. 详见 [Blog](https://magicdawn.fun/2024/12/01/bilibili-gate-dynamic-feed-merge-timeline/)
+- 基于全部动态过滤时, 过滤后的数量取决于B站记录的"全部"动态范围.
+
+### 视频卡片右键菜单
+
+因 Tab 功能不同有差异
+
+![image](https://github.com/magicdawn/Bilibili-Gate/assets/4067115/b7cbe6de-dc4c-4c45-909a-0392aaa66add)
+![image](https://github.com/magicdawn/Bilibili-Gate/assets/4067115/26053d9c-2543-4ffb-ac20-9b052a6807c2)
+![image](https://github.com/magicdawn/Bilibili-Gate/assets/4067115/451e3705-99a0-422e-8d33-e893bc09be71)
+
+#### 黑名单
+
+推荐类 Tab, 快速拉黑
+
+#### 取消关注
+
+已关注 or 动态 Tab 中会有
+
+#### 动态 Tab
+
+- 快速筛选 UP 的动态
+
+#### 稍后再看 Tab
+
+- 快速收藏
+- 移除稍后再看
+- 重新添加(aka 移到最前)
+
+#### 收藏 Tab
+
+- 浏览收藏夹
+- 移除收藏
+
+### 快捷键说明
+
+#### 全屏模式
+
+- [x] 方向键, 选择视频
+- [x] `Tab` / `Shift + Tab`, 选择视频
+- [x] `Esc`: 清除选中状态
+- [x] 没有选中时, 按方向键, 会选中顶部第一个可见视频
+- [x] `Enter`: 打开选中的视频
+- [x] `Backspace`: 即删除键, 打开标记不喜欢弹窗
+- [x] `r`: 刷新, 效果同顶部 "换一换" 按钮, 取自 `refresh`
+- [x] `s` / `w`: 添加/移除 稍候再看, 取自 `save` / `watch`. `s` 与 Bilibili-Evolved 快捷键冲突, 你可以使用 `w`
+
+#### 各种其他弹窗
+
+- 设置弹窗 / 标记为不喜欢弹窗: 可以通过点击透明区域 or `Esc` 键关闭
+- `shift+,` 打开/关闭设置弹窗.
+
+#### 标记为不喜欢弹窗
+
+- 数字键(1 到 6) 或 方向键选择不喜欢理由
+- 回车键 或 确定按钮提交
+- 默认选中最后一个理由, 通常是「不感兴趣」
+
+## FAQ
+
+### 右键菜单 "查看 UP 的投稿" | "查看 UP 的动态"
+
+- 投稿: 可以查看 UP 投稿, 可以不关注; 已注销用户知道 mid 时也可以查看. `?space-mid=<mid>`
+- 动态: 只能查看已关注的 UP 的动态, 没有关注时结果为空. 当视频卡片来自已关注的 UP 时, 会出现 "查看 UP 的动态" 菜单.
+- 投稿里只会有「投稿视频」, 「动态视频」只有动态下能看到.
+- 投稿 API 支持搜索; 动态不能搜索, 实现了本地过滤, 但不好用, 而且会造成大量无用请求, 小心风控.
+
+## 开发 or 使用源代码构建最新版本
+
+```sh
+git clone git@github.com:magicdawn/Bilibili-Gate.git
+corepack enable # this project use corepack
+pnpm install
+pnpm build # build 完会自动使用 Chrome 打开安装地址
+```
+
+### CI build
+
+- 会使用 main 分支代码自动构建
+- 构建结果: 即上面提到的 [开发版](https://github.com/magicdawn/Bilibili-Gate/raw/release-nightly/bilibili-gate.mini.user.js)
+
+## 支持
+
+- 如果对你有用, 请在 GitHub 点个 Star :)
+- 如果你喜欢这个项目, 可以 「[爱发电](https://afdian.com/a/magicdawn)」 支持一下
+
+![afdian-magicdawn_w375](https://raw.githubusercontent.com/magicdawn/magicdawn/master/images/afdian-magicdawn_w375_v2.jpg)
+
+### 赞助者
+
+感谢这些来自爱发电的赞助者：
+
+<!-- AFDIAN-ACTION:START -->
+
+<a href="https://afdian.com/u/d54b0aae13ac11f196fc52540025c377">
+  <img src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png?imageView2/1/?imageView2/1/w/120/h/120" width="40" height="40" alt="爱发电用户_d54b0" title="爱发电用户_d54b0"/>
+</a>
+<a href="https://afdian.com/u/d47d73e83ce911ed8bb652540025c377">
+  <img src="https://pic1.afdiancdn.com/default/avatar/avatar-blue.png?imageView2/1/w/120/h/120" width="40" height="40" alt="XYR_KTP" title="XYR_KTP"/>
+</a>
+<a href="https://afdian.com/u/12ee531a7a6611f09bd452540025c377">
+  <img src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png?imageView2/1/?imageView2/1/w/120/h/120" width="40" height="40" alt="爱发电用户_12ee5" title="爱发电用户_12ee5"/>
+</a>
+<a href="https://afdian.com/u/19ee38a0244011f09eef5254001e7c00">
+  <img src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png?imageView2/1/?imageView2/1/w/120/h/120" width="40" height="40" alt="爱发电用户_19ee3" title="爱发电用户_19ee3"/>
+</a>
+<a href="https://afdian.com/u/0df3ebccae1b11ee922352540025c377">
+  <img src="https://pic1.afdiancdn.com/user/0df3ebccae1b11ee922352540025c377/avatar/79326c2a4621158f572ea96118c5a2a4_w960_h960_s69.jpeg?imageView2/1/w/120/h/120" width="40" height="40" alt="冫水_块" title="冫水_块"/>
+</a>
+<a href="https://afdian.com/u/0abebc0a557d11ec9e8052540025c377">
+  <img src="https://pic1.afdiancdn.com/default/avatar/avatar-blue.png?imageView2/1/w/120/h/120" width="40" height="40" alt="爱发电用户_ngR9" title="爱发电用户_ngR9"/>
+</a>
+<a href="https://afdian.com/u/7f117ec42b4411eda3e852540025c377">
+  <img src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png?imageView2/1/?imageView2/1/w/120/h/120" width="40" height="40" alt="爱发电用户_7f117" title="爱发电用户_7f117"/>
+</a>
+<a href="https://afdian.com/u/8f4c3df8963211ecb3de52540025c377">
+  <img src="https://pic1.afdiancdn.com/default/avatar/avatar-yellow.png?imageView2/1/w/120/h/120" width="40" height="40" alt="小培lovely" title="小培lovely"/>
+</a>
+<a href="https://afdian.com/u/adde092c531411eeb1b252540025c377">
+  <img src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png?imageView2/1/w/120/h/120" width="40" height="40" alt="璃幻梦" title="璃幻梦"/>
+</a>
+<a href="https://afdian.com/u/30dc989c9f6411efa78152540025c377">
+  <img src="https://pic1.afdiancdn.com/default/avatar/avatar-orange.png?imageView2/1/w/120/h/120" width="40" height="40" alt="HaBoom" title="HaBoom"/>
+</a>
+<a href="https://afdian.com/u/41803a229ed611ed9d9952540025c377">
+  <img src="https://pic1.afdiancdn.com/default/avatar/avatar-yellow.png?imageView2/1/w/120/h/120" width="40" height="40" alt="非法昵称银狼" title="非法昵称银狼"/>
+</a>
+<a href="https://afdian.com/u/e4ba6388815711efb91152540025c377">
+  <img src="https://pic1.afdiancdn.com/default/avatar/avatar-blue.png?imageView2/1/w/120/h/120" width="40" height="40" alt="爱发电用户_PnHy" title="爱发电用户_PnHy"/>
+</a>
+<a href="https://afdian.com/u/50e374f26f8b11ef857252540025c377">
+  <img src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png?imageView2/1/?imageView2/1/w/120/h/120" width="40" height="40" alt="爱发电用户_50e37" title="爱发电用户_50e37"/>
+</a>
+<a href="https://afdian.com/u/4e1781c85d6611ef830f52540025c377">
+  <img src="https://pic1.afdiancdn.com/default/avatar/avatar-yellow.png?imageView2/1/w/120/h/120" width="40" height="40" alt="爱发电用户_Gq7D" title="爱发电用户_Gq7D"/>
+</a>
+<a href="https://afdian.com/u/46feb6722e6811ef999f52540025c377">
+  <img src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png?imageView2/1/?imageView2/1/w/120/h/120" width="40" height="40" alt="爱发电用户_46feb" title="爱发电用户_46feb"/>
+</a>
+<a href="https://afdian.com/u/203aa308254811ef8aba52540025c377">
+  <img src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png?imageView2/1/?imageView2/1/w/120/h/120" width="40" height="40" alt="爱发电用户_203aa" title="爱发电用户_203aa"/>
+</a>
+<a href="https://afdian.com/u/194d3f34910411ee9a5a5254001e7c00">
+  <img src="https://pic1.afdiancdn.com/user/user_upload_osl/5b4d4e90c6dfe4b6a78b65d48fb9a2ef_w132_h132_s0.jpeg?imageView2/1/w/120/h/120" width="40" height="40" alt="xfgy1234" title="xfgy1234"/>
+</a>
+<a href="https://afdian.com/u/17cf949a203d11ef9be652540025c377">
+  <img src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png?imageView2/1/?imageView2/1/w/120/h/120" width="40" height="40" alt="爱发电用户_17cf9" title="爱发电用户_17cf9"/>
+</a>
+<a href="https://afdian.com/u/21b921fa200c11ef91a052540025c377">
+  <img src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png?imageView2/1/?imageView2/1/w/120/h/120" width="40" height="40" alt="爱发电用户_21b92" title="爱发电用户_21b92"/>
+</a>
+<a href="https://afdian.com/u/fde6772e19c011ef819352540025c377">
+  <img src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png?imageView2/1/w/120/h/120" width="40" height="40" alt="hhxc" title="hhxc"/>
+</a>
+<!-- 注意: 尽量将标签前靠,否则经测试可能被 GitHub 解析为代码块 -->
+
+<!-- AFDIAN-ACTION:END -->
+
+## 更新日志
+
+[GitHub Release](https://github.com/magicdawn/Bilibili-Gate/releases)
+
+## ❤️ 参考的项目
+
+代码 / 样式 / 文档
+
+- https://github.com/indefined/UserScripts/tree/master/bilibiliHome
+- https://socialsisteryi.github.io/bilibili-API-collect/
+- https://github.com/hakadao/BewlyBewly/issues/101#issuecomment-1874308120
+- https://greasyfork.org/zh-CN/scripts/415804-%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9-bilibili-com-%E6%92%AD%E6%94%BE%E9%A1%B5%E8%B0%83%E6%95%B4
+- https://github.com/imsyy/SPlayer
+- ...more
+
+## ❤️ 鸣谢
+
+- 以上参考的项目
+- vite & [vite-plugin-monkey](https://github.com/lisonge/vite-plugin-monkey): great DX
+- [icones](https://icones.js.org): 找图标方便多了
+- [valtio](https://github.com/pmndrs/valtio): 状态管理哪家强
+- [ant-design](https://github.com/ant-design/ant-design): <del>燕子, 燕子</del>(antd, antd) 没有你我怎么活啊~
+
+## License
+
+the MIT License http://magicdawn.mit-license.org
