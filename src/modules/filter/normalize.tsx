@@ -7,11 +7,13 @@ import { defineStatItems, type StatItemField, type StatItemType } from '$compone
 import { PcRecGoto } from '$define/pc-recommend'
 import { EApiType, ELiveStatus } from '$enums'
 import { AntdTooltip } from '$modules/antd/custom'
+import { IconFreshSpaceUploadChargeOnly } from '$modules/icon/fresh-space-icons'
 import { normalizeDynamicFeedItem } from '$modules/rec-services/dynamic-feed/api/df-normalize'
 import { isFavFolderPrivate } from '$modules/rec-services/fav/fav-util'
 import { IconForCollection, IconForPrivateFolder, IconForPublicFolder } from '$modules/rec-services/fav/views'
 import { isPgcSeasonRankItem, isPgcWebRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { spaceUploadAvatarCache, spaceUploadFollowedMidSet } from '$modules/rec-services/space-upload'
+import { isSpaceUploadItemChargeOnly } from '$modules/rec-services/space-upload/util'
 import { WatchlaterItemsOrder } from '$modules/rec-services/watchlater/watchlater-enum'
 import { getSettingsSnapshot } from '$modules/settings'
 import { toHttps } from '$utility/url'
@@ -77,7 +79,9 @@ export interface IVideoCardData {
   rankingDesc?: string
   liveExtraDesc?: string
   liveAreaName?: string
-  topMarkIcon?: string
+
+  // general top-mark
+  topMarkIcon?: ReactNode
   topMarkText?: string
 }
 
@@ -627,6 +631,11 @@ function apiSpaceUploadAdapter(item: SpaceUploadItemExtend): IVideoCardData {
     authorFace: spaceUploadAvatarCache.get(item.mid),
     authorMid: item.mid.toString(),
     followed: spaceUploadFollowedMidSet.has(item.mid),
+
+    topMarkText: isSpaceUploadItemChargeOnly(item) ? item.elec_arc_badge : undefined,
+    topMarkIcon: isSpaceUploadItemChargeOnly(item) ? (
+      <IconFreshSpaceUploadChargeOnly className='size-14px' />
+    ) : undefined,
   }
 }
 

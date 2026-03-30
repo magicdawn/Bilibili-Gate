@@ -1,3 +1,4 @@
+import { Picture } from '$components/_base/Picture'
 import { defineStatItems } from '$components/VideoCard/stat-item'
 import { parseCount, parseDuration } from '$utility/video'
 import { DynamicFeedBadgeText } from '../store'
@@ -69,7 +70,10 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
 
       // 「投稿视频」显示 recommendReason, 其他显示 badge
       recommendReason: v.badge.text === DynamicFeedBadgeText.Upload ? v.badge.text : undefined,
-      topMarkIcon: v.badge.text === DynamicFeedBadgeText.Upload ? undefined : (v.badge.icon_url ?? undefined),
+      topMarkIcon:
+        v.badge.text === DynamicFeedBadgeText.Upload ? undefined : v.badge.icon_url ? (
+          <Picture src={`${v.badge.icon_url}@!web-dynamic`} className='size-16px' />
+        ) : undefined,
       topMarkText: v.badge.text === DynamicFeedBadgeText.Upload ? undefined : v.badge.text,
 
       // stat

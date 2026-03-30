@@ -13,6 +13,38 @@ cs = {
   CHARGE_SNEAK: 2
   ORDINARY: 0
 }
+
+function x(){
+  const t = [];
+  return e.is_charging_arc && (
+    e.elec_arc_badge
+      ? t.push(ut.CHARGE)
+      : e.elec_arc_type
+        ? (e.elec_arc_type === Ac.CHARGE_BASE && t.push(ut.CHARGE),
+          e.elec_arc_type === Ac.CHARGE_SNEAK && t.push(ut.SNEAK))
+        : t.push(ut.CHARGE)),
+          e.inter_video && t.push(ut.INTERACTIVE),
+          e.rights.is_cooperation && t.push(ut.UNION),t
+}
+
+[ut.SNEAK]: {
+  priority: 1,
+  tag: {
+      text: "抢先看",
+      class: "sneak-tag",
+      icon: "BDC/battery_charge_simple_fill/3",
+      style: ""
+  }
+},
+[ut.CHARGE]: {
+  priority: 2,
+  tag: {
+      text: "充电专属",
+      class: "charge-tag",
+      icon: "BDC/battery_charge_simple_fill/3",
+      style: ""
+  }
+},
  */
 
 export function isSpaceUploadItemChargeOnly(item: SpaceUploadItem) {

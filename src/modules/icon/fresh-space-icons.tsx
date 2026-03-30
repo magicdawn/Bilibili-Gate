@@ -7,7 +7,7 @@ import { defineSvgComponent } from './util'
 
 export const IconFreshSpaceUploadChargeOnly = defineSvgComponent((props) => {
   return (
-    <svg viewBox='0 0 1024 1024' {...props}>
+    <svg viewBox='0 0 1024 1024' fill='currentColor' {...props}>
       <path d='M427 116L263 545q-7 19 4.5 35.5T299 597h115L308 872q-7 18 3 31t26 15.5q16 2.5 29-12.5l386-451q10-12 9-26t-11-24q-10-10-25-10H607l172-249q9-13 6.5-27T773 95q-10-10-26-10H471q-15 0-27 8.5T427 116z' />
     </svg>
   )

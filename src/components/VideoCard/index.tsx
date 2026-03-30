@@ -472,9 +472,6 @@ const VideoCardInner = memo(function VideoCardInner({
       {/* 我不想看 */}
       {dislikeButtonEl}
 
-      {/* 动态: 充电专属 | 其他  */}
-      {_hasGeneralTopMark && <GeneralTopMark cardData={cardData} />}
-
       {/* 热门: 排行榜 */}
       {_isRank && <RankNumMark item={item} />}
 
@@ -486,6 +483,9 @@ const VideoCardInner = memo(function VideoCardInner({
 
       {/* 显示序号, Tab: 投稿 | 收藏 */}
       {hasVolMark && !!item.vol && <VolMark vol={item.vol} volTooltip={isFav(item) ? item.volTooltip : undefined} />}
+
+      {/* 动态: 充电专属; 投稿: 充电专属;  */}
+      {_hasGeneralTopMark && <GeneralTopMark cardData={cardData} />}
     </>
   )
 

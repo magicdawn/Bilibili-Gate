@@ -2,7 +2,6 @@ import { Dropdown } from 'antd'
 import clsx from 'clsx'
 import { useMemo, type CSSProperties, type ReactNode } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
-import { Picture } from '$components/_base/Picture'
 import { appPrimaryColorValue } from '$components/css-vars'
 import { isDynamicFeed, isFav, isWatchlater, type RankItemExtend, type RecItemType } from '$define'
 import { openNewTab } from '$modules/gm'
@@ -36,7 +35,7 @@ export function GeneralTopMark({ cardData }: { cardData: IVideoCardData }) {
         hasIcon ? 'pl-4px pr-6px' : 'px-4px', // 有图标左边更显空旷
       )}
     >
-      {hasIcon && <Picture src={`${icon}@!web-dynamic`} className='h-16px w-16px' />}
+      {hasIcon && icon}
       {text}
     </SomeBadge>
   )
