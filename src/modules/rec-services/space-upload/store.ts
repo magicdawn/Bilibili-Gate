@@ -1,3 +1,4 @@
+import { isEqual } from 'es-toolkit'
 import { proxy } from 'valtio'
 import { proxyMapWithGmStorage } from '$utility/valtio'
 import { SpaceUploadOrder } from './api'
@@ -72,7 +73,9 @@ const defaultFilterState = {
 } as const satisfies SpaceUploadFilterState
 
 const filterStateMap = (
-  await proxyMapWithGmStorage<SpaceUploadFilterKey, SpaceUploadFilterState>('space-upload:filters')
+  await proxyMapWithGmStorage<SpaceUploadFilterKey, SpaceUploadFilterState>('space-upload:filters', (vals) =>
+    vals.filter(([, state]) => !isEqual(state, defaultFilterState)),
+  )
 ).map
 
 const store = proxy({
