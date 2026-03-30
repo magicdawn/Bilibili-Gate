@@ -7,7 +7,6 @@
 - [ ] 稍后再看, 可以批量收藏, 方便整理之前想收藏, 但只能加入稍后再看的项.
 - [ ] ModalFavManager: 显示拼音首字母. 可能引入的库比较大...
 - [ ] 动态 / space-upload, 共创标记
-- [ ] space-upload: 个人空间页面, 合集变成单个显示了, 调查其影响
 - [ ] space-upload: show up info in [document.title, tabbarView]
 - [ ] 合集: show up info in [document.title, ?]
 - [ ] 合集: 按标题过滤. 搜索 if API 允许.
