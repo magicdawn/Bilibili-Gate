@@ -2,6 +2,16 @@
  * https://socialsisteryi.github.io/bilibili-API-collect/docs/user/space.html#查询用户投稿视频明细
  */
 
+// !TODO: handle empty success response:
+// 添加一种 continue loadMore 机制. 需要改造 RecGrid UI
+// {
+//     "list": {"slist": null,"tlist": null,"vlist": [] },
+//     "page": {"pn": 5,"ps": 40,"count": 0 },
+//     "is_risk": false,
+//     "gaia_res_type": 0,
+//     "gaia_data": null
+// }
+
 import pRetry from 'p-retry'
 import { IconForFav, IconForPlayer, IconForTimestamp } from '$modules/icon'
 import { isWebApiSuccess, request } from '$request'
