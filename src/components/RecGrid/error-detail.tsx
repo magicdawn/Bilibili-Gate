@@ -73,7 +73,7 @@ export class ShowMessageError extends Error {
   }
 }
 
-export function ErrorDetail({ err, tab }: { err: any; tab: ETab }) {
+export function ErrorDetail({ err, tab }: { err: any; tab?: ETab }) {
   const target = useLinkTarget()
   const errLabel = useMemo(() => getErrLabel(err), [err])
   const errDetail = useMemo(() => inspectErrDetail(err), [err])

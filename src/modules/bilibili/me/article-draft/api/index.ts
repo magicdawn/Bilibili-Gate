@@ -4,7 +4,7 @@
 
 import { attempt } from 'es-toolkit'
 import { err, ok, type Result } from 'neverthrow'
-import { isWebApiSuccess, OperationFailError, request } from '$request'
+import { isWebApiSuccess, request, WebApiError } from '$request'
 import { getCsrfToken } from '$utility/cookie'
 import type { DraftAddJson } from './draft-add.api'
 import type { DraftListJson } from './draft-list.api'
@@ -67,7 +67,7 @@ export const ArticleDraft = {
     if (res.isErr()) return err(res.error)
 
     const json = res.value.data as DraftAddJson
-    if (!isWebApiSuccess(json)) return err(new OperationFailError(json))
+    if (!isWebApiSuccess(json)) return err(new WebApiError(json))
 
     const _articleId = json.data.article_id
     return ok(_articleId)

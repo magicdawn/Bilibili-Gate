@@ -1,6 +1,6 @@
 import { arrayMove } from '@dnd-kit/sortable'
 import { useCreation, useEventListener, useLatest, useMemoizedFn, useMount, useUnmountedRef } from 'ahooks'
-import { Divider } from 'antd'
+import { Button, Divider } from 'antd'
 import clsx, { type ClassValue } from 'clsx'
 import Emittery from 'emittery'
 import { attempt, delay } from 'es-toolkit'
@@ -69,13 +69,38 @@ const clsGridColSpanFull = 'grid-col-span-full'
 export class RecGridSelf {
   // render state
   // should be private, but I'm too lazy to add getters and refactor
-  store = proxy({
+  private store = proxy({
     refreshKey: -1,
     showSkeleton: false,
     hasMore: true,
     refreshError: undefined as any,
+    loadMoreError: undefined as any,
     items: [] as RecItemTypeOrSeparator[],
   })
+
+  // #region getters
+  get refreshKey() {
+    return this.store.refreshKey
+  }
+  get refreshKeyValid() {
+    return this.refreshKey > 0
+  }
+  get showSkeleton() {
+    return this.store.showSkeleton
+  }
+  get items() {
+    return this.store.items
+  }
+  get hasMore() {
+    return this.store.hasMore
+  }
+  get refreshError() {
+    return this.store.refreshError
+  }
+  get loadMoreError() {
+    return this.store.loadMoreError
+  }
+  // #endregion
 
   useStore = () => {
     // oxlint-disable-next-line react-hooks/rules-of-hooks
@@ -83,7 +108,7 @@ export class RecGridSelf {
   }
 
   setStore = (payload: Partial<RecGridSelf['store']>) => {
-    const wrapRefKeys: (keyof RecGridSelf['store'])[] = ['items', 'refreshError']
+    const wrapRefKeys: (keyof RecGridSelf['store'])[] = ['items', 'refreshError', 'loadMoreError']
     for (const key of wrapRefKeys) {
       if (typeof payload[key] === 'object') {
         payload[key] = ref(payload[key])
@@ -120,6 +145,7 @@ export const RecGrid = memo(function RecGrid({
   const { refreshing } = recSelf.useStore()
   // rec-grid
   const self = useCreation(() => new RecGridSelf(), [])
+  const { items, hasMore, refreshError, refreshKey, showSkeleton, loadMoreError } = self.useStore()
   const { useCustomGrid, gridDisplayMode, enableForceColumn, forceColumnCount, cardMinWidth } = useSnapshot(
     settings.grid,
   )
@@ -159,7 +185,6 @@ export const RecGrid = memo(function RecGrid({
 
   useImperativeHandle(ref, () => ({ refresh }), [refresh])
 
-  const { items, hasMore, refreshError, refreshKey, showSkeleton } = self.useStore()
   useEffect(() => setGlobalGridItems(items), [items])
 
   const goOutAt = useRef<number | undefined>(undefined)
@@ -192,15 +217,17 @@ export const RecGrid = memo(function RecGrid({
 
   const loadMorePrecheck = useMemoizedFn(() => {
     if (
-      unmountedRef.current ||
       // rec-shared
       recSelf.refreshing ||
       // rec-grid
+      unmountedRef.current ||
       self.abortController.signal.aborted ||
       self.loadMoreRunning ||
-      self.store.refreshKey < 0 || // refresh not started yet
-      self.store.refreshError ||
-      !self.store.hasMore
+      !self.refreshKeyValid || // before-start state
+      !self.hasMore || // after-end state
+      // error
+      self.refreshError ||
+      self.loadMoreError
     ) {
       return false
     }
@@ -209,11 +236,11 @@ export const RecGrid = memo(function RecGrid({
   const loadMore = useMemoizedFn(async () => {
     if (!loadMorePrecheck()) return
 
-    const getRefreshKey = () => self.store.refreshKey
+    const getRefreshKey = () => self.refreshKey
     const startingRefreshKey = getRefreshKey()
     self.lock(startingRefreshKey)
 
-    let newItems = self.store.items
+    let newItems = self.items
     let newHasMore = true
     let err: any
     try {
@@ -227,8 +254,12 @@ export const RecGrid = memo(function RecGrid({
     }
 
     // loadMore 发出请求了, 但切 Tab 导致组件 unmount
-    if (unmountedRef.current) {
-      debug('loadMore: skip update for RecGrid unmounted: tab=%s startingRefreshKey=%s', tab, startingRefreshKey)
+    if (unmountedRef.current || self.abortController.signal.aborted) {
+      debug(
+        'loadMore: skip update for RecGrid unmounted or aborted: tab=%s startingRefreshKey=%s',
+        tab,
+        startingRefreshKey,
+      )
       self.unlock(startingRefreshKey)
       return
     }
@@ -247,15 +278,20 @@ export const RecGrid = memo(function RecGrid({
     if (err) {
       self.unlock(startingRefreshKey)
       antNotification.error({ title: '加载失败', description: err.message || err.stack })
+      self.setStore({ loadMoreError: err })
       throw err
     }
 
     self.loadedPage++
-    debug('loadMore: loadedPage(%s) len(%s -> %s)', self.loadedPage, self.store.items.length, newItems.length)
+    debug('loadMore: loadedPage(%s) len(%s -> %s)', self.loadedPage, self.items.length, newItems.length)
     self.setStore({ hasMore: newHasMore, items: newItems })
     self.unlock(startingRefreshKey)
     // check
     checkShouldLoadMore()
+  })
+  const loadMoreRetry = useMemoizedFn(() => {
+    self.setStore({ loadMoreError: undefined })
+    return loadMore()
   })
 
   const loadToEnd = useMemoizedFn(async () => {
@@ -269,9 +305,9 @@ export const RecGrid = memo(function RecGrid({
     }
 
     if (!querySupportsLoadToEnd()) return error('当前 Tab 不支持加载全部')
-    if (self.store.refreshError) return error('预检查失败: 先前错误')
+    if (self.refreshError) return error('预检查失败: 先前错误')
     // consider `!hasMore` as a success case
-    if (!self.store.hasMore) {
+    if (!self.hasMore) {
       return antNotification.success({ ...notifySuccessArgs, description: '没有更多了' })
     }
     /* #endregion */
@@ -352,7 +388,7 @@ export const RecGrid = memo(function RecGrid({
    */
   type Modifier = (items: RecItemTypeOrSeparator[]) => RecItemTypeOrSeparator[] | undefined
   const modifyItems = useMemoizedFn((fn: Modifier) => {
-    const val = self.store.items
+    const val = self.items
     self.setStore({ items: fn(val) ?? val })
   })
   const handleRemoveCards = useMemoizedFn((uniqIds: string[], titles?: string[], silent?: boolean) => {
@@ -426,18 +462,26 @@ export const RecGrid = memo(function RecGrid({
       ref={footerRef}
       className={clsx(clsGridColSpanFull, 'flex items-center justify-center py-30px text-size-120%')}
     >
-      {!refreshing && (
-        <>
-          {hasMore ? (
-            <>
-              <IconParkOutlineLoading className='mr-10px size-40px animate-spin color-gate-primary' />
-              加载中~
-            </>
-          ) : (
-            <>没有更多了~</>
-          )}
-        </>
-      )}
+      {(() => {
+        if (refreshing) return
+        if (!hasMore) return '没有更多了~'
+        if (loadMoreError) {
+          return (
+            <div className='flex flex-col gap-y-10px'>
+              <ErrorDetail err={loadMoreError} />
+              <div>
+                <Button onClick={loadMoreRetry}>重试</Button>
+              </div>
+            </div>
+          )
+        }
+        return (
+          <>
+            <IconParkOutlineLoading className='mr-10px size-40px animate-spin color-gate-primary' />
+            加载中~
+          </>
+        )
+      })()}
     </div>
   )
 

@@ -2,19 +2,10 @@
  * https://socialsisteryi.github.io/bilibili-API-collect/docs/user/space.html#查询用户投稿视频明细
  */
 
-// !TODO: handle empty success response:
-// 添加一种 continue loadMore 机制. 需要改造 RecGrid UI
-// {
-//     "list": {"slist": null,"tlist": null,"vlist": [] },
-//     "page": {"pn": 5,"ps": 40,"count": 0 },
-//     "is_risk": false,
-//     "gaia_res_type": 0,
-//     "gaia_data": null
-// }
-
+import { isEmpty } from 'es-toolkit/compat'
 import pRetry from 'p-retry'
 import { IconForFav, IconForPlayer, IconForTimestamp } from '$modules/icon'
-import { isWebApiSuccess, request } from '$request'
+import { isWebApiSuccess, request, WebApiError } from '$request'
 import type { ReactNode } from 'react'
 import type { SpaceUploadJson } from './types/space-upload'
 
@@ -44,6 +35,31 @@ export const SpaceUploadOrderConfig: Record<
   },
 }
 
+// Empty success response:
+// {
+//     "list": {"slist": null,"tlist": null,"vlist": [] },
+//     "page": {"pn": 5,"ps": 40,"count": 0 },
+//     "is_risk": false,
+//     "gaia_res_type": 0,
+//     "gaia_data": null
+// }
+export class SpaceUploadEmptySuccessResponseError extends Error {
+  constructor(public rawJson: any) {
+    super()
+    this.name = 'SpaceUploadEmptySuccessResponseError'
+  }
+
+  static isEmptySuccessJson(json: any) {
+    return (
+      isWebApiSuccess(json) &&
+      json?.data?.page?.count === 0 &&
+      isEmpty(json?.data?.list?.slist) &&
+      isEmpty(json?.data?.list?.tlist) &&
+      isEmpty(json?.data?.list?.vlist)
+    )
+  }
+}
+
 // web default: 42
 export const SPACE_UPLOAD_API_PAGE_SIZE = 40
 
@@ -70,7 +86,11 @@ export async function getSpaceUpload({
 
   const json = res.data as SpaceUploadJson
   if (!isWebApiSuccess(json)) {
-    throw new Error(`request json error: ${json.message}`)
+    throw new WebApiError(json)
+  }
+  // NOTE: 我触发不了了...不知道为什么
+  if (SpaceUploadEmptySuccessResponseError.isEmptySuccessJson(json)) {
+    throw new SpaceUploadEmptySuccessResponseError(json)
   }
 
   const items = json.data.list.vlist || []

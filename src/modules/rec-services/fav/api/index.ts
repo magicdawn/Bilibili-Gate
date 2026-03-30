@@ -7,7 +7,7 @@
 
 import { difference } from 'es-toolkit'
 import { OPERATION_FAIL_MSG } from '$common'
-import { isWebApiSuccess, OperationFailError, request } from '$request'
+import { isWebApiSuccess, request, WebApiError } from '$request'
 import { getCsrfToken, getHasLogined, getUid } from '$utility/cookie'
 import toast from '$utility/toast'
 import { formatFavFolderUrl } from '../fav-url'
@@ -170,7 +170,7 @@ export async function getFavFolderInfo(folderId: number) {
     params: { media_id: folderId, web_location: '0.0' },
   })
   const json = res.data as FavFolderInfoJson
-  if (!isWebApiSuccess(json)) throw new OperationFailError(json)
+  if (!isWebApiSuccess(json)) throw new WebApiError(json)
   return json.data
 }
 

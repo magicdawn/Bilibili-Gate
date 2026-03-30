@@ -3,14 +3,7 @@ import { err, fromAsyncThrowable, ok, type Result } from 'neverthrow'
 import { HOST_APP, OPERATION_FAIL_MSG } from '$common'
 import { isAppRecommend, isPcRecommend, type AppRecItem, type PcRecItem, type RecItemType } from '$define'
 import { antMessage } from '$modules/antd'
-import {
-  gmrequest,
-  isWebApiSuccess,
-  OperationFailError,
-  request,
-  toAxiosRequestError,
-  type AxiosRequestError,
-} from '$request'
+import { gmrequest, isWebApiSuccess, request, toAxiosRequestError, WebApiError, type AxiosRequestError } from '$request'
 import { assertNever } from '$utility/type'
 import { calcRecItemDislikedMapKey, delDisliked, dislikedMap } from '../store'
 import { normalizeDislikeReason, type DislikeReason } from '../types'
@@ -33,7 +26,7 @@ function appDislikeFactory(action: Action) {
   return async function (
     item: AppRecItem,
     reasonId: number,
-  ): Promise<Result<string, AxiosError | AxiosRequestError | OperationFailError>> {
+  ): Promise<Result<string, AxiosError | AxiosRequestError | WebApiError>> {
     const result = await gmrequest.safeGet(HOST_APP + pathname, {
       responseType: 'json',
       params: {
@@ -61,7 +54,7 @@ function appDislikeFactory(action: Action) {
       message ||= OPERATION_FAIL_MSG
       message += `(code: ${json?.code})`
       message += '\n请重新获取 access_key 后重试'
-      return err(new OperationFailError(json, message))
+      return err(new WebApiError(json, message))
     }
 
     return ok(message)
@@ -78,7 +71,7 @@ function pcDislikeFactory(action: Action) {
   return async function (
     item: PcRecItem,
     reasonId: number,
-  ): Promise<Result<string, AxiosError | AxiosRequestError | OperationFailError>> {
+  ): Promise<Result<string, AxiosError | AxiosRequestError | WebApiError>> {
     const form = new URLSearchParams({
       app_id: '100',
       platform: '5',
@@ -96,7 +89,7 @@ function pcDislikeFactory(action: Action) {
 
     const json = result.value.data
     const success = isWebApiSuccess(json)
-    if (!success) return err(new OperationFailError(json))
+    if (!success) return err(new WebApiError(json))
 
     return ok(json?.message)
   }

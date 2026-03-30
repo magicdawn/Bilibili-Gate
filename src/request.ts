@@ -2,7 +2,7 @@ import GM_fetch from '@trim21/gm-fetch'
 import axios, { type AxiosError, type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from 'axios'
 import { omit } from 'es-toolkit'
 import { fromAsyncThrowable, type ResultAsync } from 'neverthrow'
-import { appWarn, HOST_API, HOST_APP, OPERATION_FAIL_MSG, TVKeyInfo } from '$common'
+import { appWarn, HOST_API, HOST_APP, TVKeyInfo } from '$common'
 import { encWbi } from '$modules/bilibili/risk-control/wbi'
 import { appSign } from '$utility/app-api'
 import { settings } from './modules/settings'
@@ -34,14 +34,14 @@ export function isWebApiSuccess(json: any) {
 }
 
 // 请求成功了, 但返回的内容表示操作失败
-export class OperationFailError extends Error {
+export class WebApiError extends Error {
   constructor(
     public json: any,
     msg?: string,
   ) {
-    msg ||= `${OPERATION_FAIL_MSG} (code: ${json?.code}, message: ${json?.message})`
+    msg ||= `API 响应错误: (code: ${json?.code}, message: ${json?.message})`
     super(msg)
-    this.name = 'OperationFailError'
+    this.name = 'WebApiError'
   }
 }
 
