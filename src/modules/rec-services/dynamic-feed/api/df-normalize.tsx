@@ -1,8 +1,11 @@
 import { Picture } from '$components/_base/Picture'
+import { defineCardTags } from '$components/VideoCard/card-tags'
 import { defineStatItems } from '$components/VideoCard/stat-item'
+import { EApiType } from '$enums'
 import { parseCount, parseDuration } from '$utility/video'
 import { DynamicFeedBadgeText } from '../store'
 import { DynamicFeedEnums } from './enums'
+import type { ReactNode } from 'react'
 import type { IVideoCardData } from '$modules/filter/normalize'
 import type { DynamicFeedItem } from './types'
 
@@ -52,6 +55,10 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
     recommendReason: author.pub_action,
   } as const satisfies Partial<IVideoCardData>
 
+  const defineSingleCardTag = (text: ReactNode) => {
+    return defineCardTags([{ key: `${EApiType.DynamicFeed}:tag`, text }])
+  }
+
   if (majorType === DynamicFeedEnums.MajorType.Archive && major.archive) {
     const v = major.archive
     return {
@@ -68,13 +75,19 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
       duration: parseDuration(v.duration_text) || 0,
       durationStr: v.duration_text,
 
-      // 「投稿视频」显示 recommendReason, 其他显示 badge
+      // 「投稿视频」显示 recommendReason, 其他显示 tag
       recommendReason: v.badge.text === DynamicFeedBadgeText.Upload ? v.badge.text : undefined,
-      topMarkIcon:
-        v.badge.text === DynamicFeedBadgeText.Upload ? undefined : v.badge.icon_url ? (
-          <Picture src={`${v.badge.icon_url}@!web-dynamic`} className='size-16px' />
-        ) : undefined,
-      topMarkText: v.badge.text === DynamicFeedBadgeText.Upload ? undefined : v.badge.text,
+      cardTags: defineCardTags([
+        v.badge.text === DynamicFeedBadgeText.Upload
+          ? undefined
+          : {
+              key: `${EApiType.DynamicFeed}:tag`,
+              icon: v.badge.icon_url ? (
+                <Picture src={`${v.badge.icon_url}@!web-dynamic`} className='size-14px' />
+              ) : undefined,
+              text: v.badge.text,
+            },
+      ]),
 
       // stat
       statItems: defineStatItems([
@@ -91,7 +104,7 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
     const isReserve = additional?.type === DynamicFeedEnums.AdditionalType.Reserve
     const isLiveReserve = isReserve && /直播预告/.test(additional.reserve.title)
     const hasPic = !!opus.pics?.length
-    const topMarkText: string | undefined = (() => {
+    const cardTagText: string | undefined = (() => {
       if (isLiveReserve) return '直播预告'
       if (isReserve) return additional.reserve.title?.split('：')[0] || '预约'
       // DynamicFeedEnums.ItemType.Draw | Article | Word 不知道有啥区别?
@@ -106,7 +119,7 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
       href: opus.jump_url,
       cover: opus.pics?.[0]?.url,
       title: opus.title || opus.summary?.text || '',
-      topMarkText,
+      cardTags: defineSingleCardTag(cardTagText),
     }
   }
 
@@ -122,7 +135,7 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
         { field: 'play', value: pgc.stat.play },
         { field: 'danmaku', value: pgc.stat.danmaku },
       ]),
-      topMarkText: author.label, // 纪录片
+      cardTags: defineSingleCardTag(author.label), // 纪录片)
       pubts: author.pub_ts, // 0
       pubdateDisplay: author.pub_time, // pub_ts 为 0, 不可用
     }
@@ -149,7 +162,7 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
       danmaku: parseCount(ugc_season.stat.danmaku),
 
       recommendReason: author.pub_action,
-      topMarkText: '合集',
+      cardTags: defineSingleCardTag('合集'),
 
       // AuthorTypeUgcSeason 里 mid 其实是 avid .... 不知道咋整
       authorMid: undefined,

@@ -19,6 +19,7 @@ import { getSettingsSnapshot } from '$modules/settings'
 import { toHttps } from '$utility/url'
 import { formatDuration, formatTimeStamp, getVideoInvalidReason, parseCount, parseDuration } from '$utility/video'
 import type { ReactNode } from 'react'
+import type { CardTag } from '$components/VideoCard/card-tags'
 import type {
   AppRecItemExtend,
   DynamicFeedItemExtend,
@@ -79,10 +80,8 @@ export interface IVideoCardData {
   rankingDesc?: string
   liveExtraDesc?: string
   liveAreaName?: string
-
   // general top-mark
-  topMarkIcon?: ReactNode
-  topMarkText?: string
+  cardTags?: CardTag[]
 }
 
 export type LookintoOptions<T> = {
@@ -631,11 +630,13 @@ function apiSpaceUploadAdapter(item: SpaceUploadItemExtend): IVideoCardData {
     authorFace: spaceUploadAvatarCache.get(item.mid),
     authorMid: item.mid.toString(),
     followed: spaceUploadFollowedMidSet.has(item.mid),
-
-    topMarkText: isSpaceUploadItemChargeOnly(item) ? item.elec_arc_badge : undefined,
-    topMarkIcon: isSpaceUploadItemChargeOnly(item) ? (
-      <IconFreshSpaceUploadChargeOnly className='size-14px' />
-    ) : undefined,
+    cardTags: [
+      {
+        key: `${item.api}:charge-only`,
+        icon: isSpaceUploadItemChargeOnly(item) ? <IconFreshSpaceUploadChargeOnly className='size-14px' /> : undefined,
+        text: isSpaceUploadItemChargeOnly(item) ? item.elec_arc_badge : undefined,
+      },
+    ],
   }
 }
 

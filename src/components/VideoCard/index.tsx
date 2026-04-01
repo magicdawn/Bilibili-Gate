@@ -51,6 +51,7 @@ import { isWebApiSuccess } from '$request'
 import { videoCardBorderRadiusValue } from '../css-vars'
 import { useLargePreviewRelated } from '../LargePreview/useLargePreview'
 import { multiSelectedCss, useBlockedCardCss } from './card-border-css'
+import { ApiTypeTag, GeneralCardTag, isCardTagValid, LiveTag, RankNumTag, VolTag } from './card-tags'
 import { BlockedCard, DislikedCard, SkeletonCard } from './child-components/other-type-cards'
 import { SimpleProgressBar } from './child-components/PreviewImage'
 import { VideoCardActionButton, VideoCardActionsClassNames } from './child-components/VideoCardActions'
@@ -65,7 +66,6 @@ import {
 } from './index.shared'
 import { fetchImagePreviewData, isImagePreviewDataValid, type ImagePreviewData } from './services'
 import { StatItemDisplay } from './stat-item'
-import { ApiTypeTag, GeneralTopMark, hasGeneralTopMark, LiveBadge, RankNumMark, VolMark } from './top-marks'
 import { useDislikeRelated } from './use/useDislikeRelated'
 import { useInitFavContext } from './use/useFavRelated'
 import { useMultiSelectRelated } from './use/useMultiSelect'
@@ -307,6 +307,7 @@ const VideoCardInner = memo(function VideoCardInner({
 
     // update global item data for debug
     setGlobalValue(`${APP_KEY_PREFIX}_activeItem`, item)
+    setGlobalValue(`${APP_KEY_PREFIX}_activeCardData`, cardData)
 
     // 自动开始预览
     if (settings.videoCard.imgPreview.autoPreviewWhenKeyboardSelect) {
@@ -442,7 +443,7 @@ const VideoCardInner = memo(function VideoCardInner({
   /**
    * top marks
    */
-  const _hasGeneralTopMark = hasGeneralTopMark(cardData)
+  const _hasGeneralCardTags = !!cardData.cardTags?.some(isCardTagValid)
   const _isRank = isRank(item)
   const _isStreaming = // 直播中
     (isLive(item) && item.live_status === ELiveStatus.Streaming) ||
@@ -473,19 +474,20 @@ const VideoCardInner = memo(function VideoCardInner({
       {dislikeButtonEl}
 
       {/* 热门: 排行榜 */}
-      {_isRank && <RankNumMark item={item} />}
+      {_isRank && <RankNumTag item={item} />}
 
       {/* 直播: 直播中 */}
-      {_isStreaming && <LiveBadge />}
+      {_isStreaming && <LiveTag />}
 
       {/* App推荐: 来自其他 Tab 的内容 */}
       {hasApiTypeTag && <ApiTypeTag item={item} />}
 
       {/* 显示序号, Tab: 投稿 | 收藏 */}
-      {hasVolMark && !!item.vol && <VolMark vol={item.vol} volTooltip={isFav(item) ? item.volTooltip : undefined} />}
+      {hasVolMark && !!item.vol && <VolTag vol={item.vol} volTooltip={isFav(item) ? item.volTooltip : undefined} />}
 
+      {/* General card-tag */}
       {/* 动态: 充电专属; 投稿: 充电专属;  */}
-      {_hasGeneralTopMark && <GeneralTopMark cardData={cardData} />}
+      {_hasGeneralCardTags && cardData.cardTags?.map((tag) => <GeneralCardTag key={tag.key} tag={tag} />)}
     </>
   )
 
