@@ -123,8 +123,8 @@ importers:
         specifier: ^1.0.41
         version: 1.0.41
       unocss-merge:
-        specifier: ^0.9.0
-        version: 0.9.0(react@19.2.4)
+        specifier: ^0.9.1
+        version: 0.9.1(react@19.2.4)
       valtio:
         specifier: ^2.3.1
         version: 2.3.1(@types/react@19.2.14)(react@19.2.4)
@@ -3815,9 +3815,6 @@ packages:
     resolution: {integrity: sha512-sTSfBjoXBp89JvIKIefqw7U2CCebsc74kiY6awiGogKtoSGbgjYE/G/+l9sF3MWFPNc9IcoOC4ODfKHfxFmp0g==}
     engines: {node: '>= 0.4'}
 
-  get-tsconfig@4.13.0:
-    resolution: {integrity: sha512-1VKTZJCwBrvbd+Wn3AOgQP/2Av+TfTCOlE4AcRJE72W1ksZXbAx8PPBR9RzgTeSPzlPMHrbANMH3LbltH73wxQ==}
-
   get-tsconfig@4.13.7:
     resolution: {integrity: sha512-7tN6rFgBlMgpBML5j8typ92BKFi2sFQvIdpAqLA2beia5avZDrMs0FLZiM5etShWq5irVyGcGMEA1jcDaK7A/Q==}
 
@@ -5297,8 +5294,8 @@ packages:
   unist-util-visit@5.0.0:
     resolution: {integrity: sha512-MR04uvD+07cwl/yhVuVWAtw+3GOR/knlL55Nd/wAdblk27GCVt3lqpTivy/tkJcZoNPzTwS1Y+KMojlLDhoTzg==}
 
-  unocss-merge@0.9.0:
-    resolution: {integrity: sha512-juBa/3N9sle2EQ18ek7dRnYqZuM8S85CudT4gSk+KZkCjHS/Sew5dskn9m0Fo+/7aPjywTCmBx9eIYMLwURZCA==}
+  unocss-merge@0.9.1:
+    resolution: {integrity: sha512-vnr/kc3cxMce+/CzE14q+67aC8bqkpaCWyLlluo+WqNQ6QsNlfcaFZpyun3L09PgxVEXA5xucPmcOL2do0JhBQ==}
     peerDependencies:
       memoize: ^10.2.0
       react: '>=18'
@@ -8744,7 +8741,7 @@ snapshots:
       enhanced-resolve: 5.18.4
       eslint: 10.1.0(jiti@2.6.1)
       eslint-plugin-es-x: 7.8.0(eslint@10.1.0(jiti@2.6.1))
-      get-tsconfig: 4.13.0
+      get-tsconfig: 4.13.7
       globals: 15.15.0
       globrex: 0.1.2
       ignore: 5.3.2
@@ -9064,10 +9061,6 @@ snapshots:
     dependencies:
       dunder-proto: 1.0.1
       es-object-atoms: 1.1.1
-
-  get-tsconfig@4.13.0:
-    dependencies:
-      resolve-pkg-maps: 1.0.0
 
   get-tsconfig@4.13.7:
     dependencies:
@@ -10728,7 +10721,7 @@ snapshots:
       unist-util-is: 6.0.1
       unist-util-visit-parents: 6.0.2
 
-  unocss-merge@0.9.0(react@19.2.4):
+  unocss-merge@0.9.1(react@19.2.4):
     dependencies:
       clsx: 2.1.1
     optionalDependencies:
