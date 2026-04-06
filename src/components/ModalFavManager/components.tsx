@@ -26,16 +26,23 @@ import { favStore, updateFavFolderList } from '$modules/rec-services/fav/store'
 import { useSettingsSnapshot } from '$modules/settings'
 import { getUid } from '$utility/cookie'
 import { proxyWithLocalStorage } from '$utility/valtio'
-import { FavFolderOrderSwitcher, sortFavFolders, type FavFolderOrder } from './fav-folder-order'
+import { FavFolderOrderSwitcher, isValidFavFolderOrder, sortFavFolders, type FavFolderOrder } from './fav-folder-order'
 import type { Promisable } from 'type-fest'
 import type { FavFolder } from '$modules/rec-services/fav/types/folders/list-all-folders'
 
-const localStoreInitial = {
-  modalWidth: 60, // percent
-  favFolderOrder: 'default' as FavFolderOrder,
+type LocalStore = {
+  modalWidth: number
+  favFolderOrder: FavFolderOrder
 }
-
+const localStoreInitial: LocalStore = {
+  modalWidth: 60, // percent
+  favFolderOrder: 'default',
+}
 const localStore = proxyWithLocalStorage({ ...localStoreInitial }, 'modal-fav-manager')
+// reset invalid stored data to `default`
+if (!isValidFavFolderOrder(localStore.favFolderOrder)) {
+  localStore.favFolderOrder = 'default'
+}
 
 function ConfigPopoverContent() {
   const { modalWidth, favFolderOrder } = useSnapshot(localStore)

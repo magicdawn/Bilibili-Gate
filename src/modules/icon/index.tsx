@@ -10,13 +10,27 @@ export const IconForPlayer = IconParkOutlinePlayTwo
 export const IconForOpenExternalLink = IconMaterialSymbolsLightOpenInNew
 
 // general
+
+// #region ↑↓
 export const IconForTimeAsc = IconMdiSortClockDescending
 export const IconForTimeDesc = IconMdiSortClockAscending
+
 // https://github.com/tabler/tabler-icons/issues/1457
 export const IconForAsc = IconTablerSortAscending
 export const IconForDesc = IconTablerSortDescending
 // export const IconForAsc = IconOcticonSortAsc16
 // export const IconForDesc = IconOcticonSortDesc16
+
+// 同类, Mdi 的要清晰一点
+// export const IconForSortAToZ = IconPrimeSortAlphaDown
+// export const IconForSortZToA = IconPrimeSortAlphaAltDown
+// export const IconForSortAToZ = IconMdiSortAlphabeticalAscending
+// export const IconForSortZToA = IconMdiSortAlphabeticalDescending
+export const IconForSortAToZ = IconFluentTextSortAscending16Filled
+export const IconForSortZToA = IconFluentTextSortDescending16Filled
+
+// #endregion
+
 export const IconForInfo = IconParkOutlineInfo
 export { IconAnimatedChecked } from './animated-checked'
 

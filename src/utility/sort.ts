@@ -13,6 +13,9 @@ export function mapNameForSort(name: string) {
 export function zhLocaleComparer(a: string, b: string) {
   return a.localeCompare(b, 'zh-CN')
 }
+export function zhLocaleDescComparer(a: string, b: string) {
+  return zhLocaleComparer(a, b) * -1
+}
 
 export function sortListByName<T extends object>(
   entries: T[],

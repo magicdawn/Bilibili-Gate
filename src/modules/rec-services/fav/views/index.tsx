@@ -6,6 +6,7 @@ import { useSnapshot } from 'valtio'
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import {
   FavFolderOrderSwitcher,
+  isValidFavFolderOrder,
   sortFavFolders,
   type FavFolderOrder,
 } from '$components/ModalFavManager/fav-folder-order'
@@ -36,6 +37,9 @@ const viewLocalStore = proxyWithLocalStorage(
   { sidebarFavFolderOrder: 'default' as FavFolderOrder },
   'fav-rec-service:view',
 )
+if (!isValidFavFolderOrder(viewLocalStore.sidebarFavFolderOrder)) {
+  viewLocalStore.sidebarFavFolderOrder = 'default'
+}
 
 function useScopeMenus(parentView: 'sidebarView' | 'tabbarView', extraOnMenuItemClick?: () => void) {
   const { folders, collections, selectedKey } = useSnapshot(favStore)
@@ -50,11 +54,13 @@ function useScopeMenus(parentView: 'sidebarView' | 'tabbarView', extraOnMenuItem
       let labelAddon: ReactNode
       if (parentView === 'sidebarView') {
         labelAddon = (
-          <FavFolderOrderSwitcher
-            value={sidebarFavFolderOrder}
-            onChange={(v) => (viewLocalStore.sidebarFavFolderOrder = v)}
-            className='ml-4'
-          />
+          <>
+            <FavFolderOrderSwitcher
+              className='ml-4'
+              value={sidebarFavFolderOrder}
+              onChange={(v) => (viewLocalStore.sidebarFavFolderOrder = v)}
+            />
+          </>
         )
         _folders = sortFavFolders(folders, sidebarFavFolderOrder)
       }
