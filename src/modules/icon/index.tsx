@@ -21,7 +21,7 @@ export const IconForDesc = IconTablerSortDescending
 // export const IconForAsc = IconOcticonSortAsc16
 // export const IconForDesc = IconOcticonSortDesc16
 
-// 同类, Mdi 的要清晰一点
+// 同类
 // export const IconForSortAToZ = IconPrimeSortAlphaDown
 // export const IconForSortZToA = IconPrimeSortAlphaAltDown
 // export const IconForSortAToZ = IconMdiSortAlphabeticalAscending

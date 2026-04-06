@@ -5,6 +5,7 @@ import { IconForAsc, IconForDesc, IconForSortAToZ, IconForSortZToA } from '$modu
 import { isFavFolderDefault } from '$modules/rec-services/fav/fav-util'
 import { mapNameForSort, zhLocaleComparer, zhLocaleDescComparer } from '$utility/sort'
 import { assertNever } from '$utility/type'
+import { proxyWithLocalStorage } from '$utility/valtio'
 import type { ReactNode } from 'react'
 import type { FavFolder } from '$modules/rec-services/fav/types/folders/list-all-folders'
 
@@ -47,7 +48,7 @@ export function sortFavFolders(originalFolders: FavFolder[], order: FavFolderOrd
 type ActiveTab = 'default' | 'name' | 'count'
 const TabConfig: Record<
   ActiveTab,
-  { label: ReactNode; iconAsc?: ReactNode; iconDesc?: ReactNode; toggle?: FavFolderOrder[]; default?: FavFolderOrder }
+  { label: ReactNode; iconAsc?: ReactNode; iconDesc?: ReactNode; toggle?: FavFolderOrder[] }
 > = {
   default: {
     label: '默认',
@@ -57,16 +58,19 @@ const TabConfig: Record<
     iconAsc: <IconForSortAToZ className='1em' />,
     iconDesc: <IconForSortZToA className='1em' />,
     toggle: ['name-asc', 'name-desc'],
-    default: 'name-asc',
   },
   count: {
     label: '数量',
     iconAsc: <IconForAsc className='1em' />,
     iconDesc: <IconForDesc className='1em' />,
     toggle: ['count-asc', 'count-desc'],
-    default: 'count-desc',
   },
 }
+
+const defaultOrderStore = proxyWithLocalStorage<{
+  nameDefault: FavFolderOrder
+  countDefault: FavFolderOrder
+}>({ nameDefault: 'name-asc', countDefault: 'count-desc' }, 'FavFolderOrderSwitcher:default-order')
 
 export function FavFolderOrderSwitcher({
   value,
@@ -90,11 +94,22 @@ export function FavFolderOrderSwitcher({
       if (curIndex === -1) return
       const nextIndex = (curIndex + 1) % toggle.length
       const nextVal = toggle[nextIndex]
+      if (tab === 'name') defaultOrderStore.nameDefault = nextVal
+      if (tab === 'count') defaultOrderStore.countDefault = nextVal
       onChange(nextVal)
     }
     // change tab: use configed default
     else {
-      onChange(TabConfig[tab].default ?? 'default')
+      const nextValue: FavFolderOrder | undefined =
+        tab === 'default'
+          ? 'default'
+          : tab === 'name'
+            ? defaultOrderStore.nameDefault
+            : tab === 'count'
+              ? defaultOrderStore.countDefault
+              : undefined
+      if (!nextValue) return
+      onChange(nextValue)
     }
   })
 
