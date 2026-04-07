@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import dayjs from 'dayjs'
 import { assert, memoize, noop, type MemoizeCache } from 'es-toolkit'
 import { appWarn } from '$common'
+import { defineCardTags, type CardTag } from '$components/VideoCard/card-tags'
 import { defineStatItems, type StatItemField, type StatItemType } from '$components/VideoCard/stat-item'
 import { PcRecGoto } from '$define/pc-recommend'
 import { EApiType, ELiveStatus } from '$enums'
@@ -19,7 +20,6 @@ import { getSettingsSnapshot } from '$modules/settings'
 import { toHttps } from '$utility/url'
 import { formatDuration, formatTimeStamp, getVideoInvalidReason, parseCount, parseDuration } from '$utility/video'
 import type { ReactNode } from 'react'
-import type { CardTag } from '$components/VideoCard/card-tags'
 import type {
   AppRecItemExtend,
   DynamicFeedItemExtend,
@@ -630,13 +630,13 @@ function apiSpaceUploadAdapter(item: SpaceUploadItemExtend): IVideoCardData {
     authorFace: spaceUploadAvatarCache.get(item.mid),
     authorMid: item.mid.toString(),
     followed: spaceUploadFollowedMidSet.has(item.mid),
-    cardTags: [
-      {
+    cardTags: defineCardTags([
+      isSpaceUploadItemChargeOnly(item) && {
         key: `${item.api}:charge-only`,
-        icon: isSpaceUploadItemChargeOnly(item) ? <IconFreshSpaceUploadChargeOnly className='size-14px' /> : undefined,
-        text: isSpaceUploadItemChargeOnly(item) ? item.elec_arc_badge : undefined,
+        icon: <IconFreshSpaceUploadChargeOnly className='size-14px' />,
+        text: item.elec_arc_badge,
       },
-    ],
+    ]),
   }
 }
 

@@ -1,9 +1,9 @@
 import { assert } from 'es-toolkit'
-import { err, fromAsyncThrowable, ok, type Result } from 'neverthrow'
+import { err, ok, type Result } from 'neverthrow'
 import { HOST_APP, OPERATION_FAIL_MSG } from '$common'
 import { isAppRecommend, isPcRecommend, type AppRecItem, type PcRecItem, type RecItemType } from '$define'
 import { antMessage } from '$modules/antd'
-import { gmrequest, isWebApiSuccess, request, toAxiosRequestError, WebApiError, type AxiosRequestError } from '$request'
+import { gmrequest, isWebApiSuccess, request, WebApiError, type AxiosRequestError } from '$request'
 import { assertNever } from '$utility/type'
 import { calcRecItemDislikedMapKey, delDisliked, dislikedMap } from '../store'
 import { normalizeDislikeReason, type DislikeReason } from '../types'
@@ -84,7 +84,7 @@ function pcDislikeFactory(action: Action) {
       feedback_page: '1',
       reason_id: reasonId.toString(),
     })
-    const result = await fromAsyncThrowable(request.post, toAxiosRequestError)(pathname, form)
+    const result = await request.safePost(pathname, form)
     if (result.isErr()) return err(result.error)
 
     const json = result.value.data
