@@ -30,7 +30,7 @@ export function defineCardTags(items: (CardTag | false | undefined)[]): CardTag[
 }
 
 export const clsCardTagContainer =
-  'pointer-events-none h-19px flex-center whitespace-nowrap rounded-2px bg-gate-primary px-4px text-center text-12px color-white'
+  'pointer-events-none h-19px flex-center whitespace-nowrap rounded-2px bg-gate-primary px-4px text-center text-13px color-white'
 
 export function BaseTag({ children, className }: { children?: ReactNode; className?: string }) {
   return <span className={useUnoMerge(clsCardTagContainer, className)}>{children}</span>
@@ -60,7 +60,6 @@ function getColor(no: number) {
 }
 export function RankNumTag({ item }: { item: RankItemExtend }) {
   const hasMedal = item.rankingNo <= 3
-  const medalSymbols = ['🥇', '🥈', '🥉'] // emoji builtin, 可以换, 但是丑
   const medalIcon = <IconPhCrownFill />
 
   let hasOthers = false
