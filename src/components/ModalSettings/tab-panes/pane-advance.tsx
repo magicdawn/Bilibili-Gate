@@ -1,4 +1,4 @@
-import { Button, Popconfirm, Space } from 'antd'
+import { Button, Popconfirm } from 'antd'
 import clsx from 'clsx'
 import { difference, startCase } from 'es-toolkit'
 import { useState, type ReactNode } from 'react'
@@ -9,7 +9,7 @@ import { HelpInfo } from '$components/_base/HelpInfo'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
-import { IconForOpenExternalLink } from '$modules/icon'
+import { IconForConfig, IconForOpenExternalLink } from '$modules/icon'
 import {
   allowedLeafSettingsPaths,
   internalBooleanPaths,
@@ -51,57 +51,62 @@ export function TabPaneAdvance() {
 
   return (
     <div className={sharedClassNames.tabPane}>
-      <SettingsGroup title='设置项'>
-        <Space size={20}>
+      <SettingsGroup
+        title={
+          <>
+            <IconForConfig className='mr-4px size-28px' />
+            设置
+          </>
+        }
+      >
+        <div className={clsx(sharedClassNames.settingsLine, 'gap-x-20px')}>
           <Popconfirm title='确定' description='确定恢复默认设置? 此操作不可逆!' onConfirm={onResetSettings}>
             <Button danger type='primary'>
               <IconTablerRestore />
               恢复默认设置
             </Button>
           </Popconfirm>
-
-          <Space size={5}>
-            <AntdTooltip title='导出所有设置项到文件中, 包含 access_key 等数据, 请妥善保存'>
-              <Button onClick={() => exportSettings()}>
-                <IconTablerFileExport />
-                导出设置
-              </Button>
-            </AntdTooltip>
-            <AntdTooltip title='从文件中导入设置项, 将覆盖当前设置, 此操作不可逆!'>
-              <Button onClick={() => importSettings()}>
-                <IconTablerFileImport />
-                导入设置
-              </Button>
-            </AntdTooltip>
-          </Space>
-        </Space>
+          <AntdTooltip title='导出所有设置项到文件中, 包含 access_key 等数据, 请妥善保存'>
+            <Button onClick={() => exportSettings()}>
+              <IconTablerFileExport />
+              导出设置
+            </Button>
+          </AntdTooltip>
+          <AntdTooltip title='从文件中导入设置项, 将覆盖当前设置, 此操作不可逆!'>
+            <Button onClick={() => importSettings()}>
+              <IconTablerFileImport />
+              导入设置
+            </Button>
+          </AntdTooltip>
+        </div>
       </SettingsGroup>
 
       <SettingsGroup
         title={
           <>
             <IconIcOutlineCloud className='mr-4px size-28px' />
-            备份
+            设置备份
+            <HelpInfo>
+              使用专栏草稿箱作为云存储 <br />
+              勾选后可自动备份, 手动恢复
+            </HelpInfo>
           </>
         }
       >
-        <div className='flex items-center gap-x-40px'>
-          <span className='flex items-center gap-x-8px'>
-            <CheckboxSettingItem
-              configPath='backupSettingsToArticleDraft'
-              label='备份设置到专栏草稿箱中'
-              tooltip={`专栏 - 草稿箱 - ${APP_NAME}`}
-            />
-            <a
-              className='inline-flex items-center'
-              href='https://member.bilibili.com/platform/upload/text/draft'
-              target='_blank'
-            >
-              <IconForOpenExternalLink className='mr-4px size-16px' />
-              去草稿箱浏览
-            </a>
-          </span>
-
+        <div className='flex items-center gap-x-20px'>
+          <CheckboxSettingItem
+            configPath='backupSettingsToArticleDraft'
+            label='备份设置到专栏草稿箱中'
+            tooltip={`专栏 - 草稿箱 - ${APP_NAME}`}
+          />
+          <a
+            className='inline-flex items-center'
+            href='https://member.bilibili.com/platform/upload/text/draft'
+            target='_blank'
+          >
+            <IconForOpenExternalLink className='mr-4px size-16px' />
+            去草稿箱浏览
+          </a>
           <Popconfirm title='确定' description='将覆盖本地设置? 此操作不可逆!' onConfirm={onRestoreSettings}>
             <Button danger type='primary'>
               <IconTablerRestore />
@@ -115,7 +120,7 @@ export function TabPaneAdvance() {
         title={
           <>
             其他
-            <HelpInfo>这里是一些作者不愿意解释的设置项 😬</HelpInfo>
+            <HelpInfo>这里是一些实验性设置项, 可能随时会变更或删除</HelpInfo>
             <Button
               onClick={() => setInternalKeysExpanded((v) => !v)}
               className='ml-10px inline-icon-only-round-button'
