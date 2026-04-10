@@ -45,6 +45,7 @@ function useScopeMenus(parentView: 'sidebarView' | 'tabbarView', extraOnMenuItem
   const { folders, collections, selectedKey } = useSnapshot(favStore)
   const { sidebarFavFolderOrder } = useSnapshot(viewLocalStore)
   const onRefresh = useOnRefresh()
+  const needFavFolderOrderSwitcher = parentView === 'sidebarView' && folders.length > 1
 
   const menuItems: AntMenuItem[] = useMemo(() => {
     /* #region fav-folder */
@@ -53,14 +54,12 @@ function useScopeMenus(parentView: 'sidebarView' | 'tabbarView', extraOnMenuItem
       let _folders = folders
       let labelAddon: ReactNode
       if (parentView === 'sidebarView') {
-        labelAddon = (
-          <>
-            <FavFolderOrderSwitcher
-              className='ml-4'
-              value={sidebarFavFolderOrder}
-              onChange={(v) => (viewLocalStore.sidebarFavFolderOrder = v)}
-            />
-          </>
+        labelAddon = needFavFolderOrderSwitcher && (
+          <FavFolderOrderSwitcher
+            className='ml-4'
+            value={sidebarFavFolderOrder}
+            onChange={(v) => (viewLocalStore.sidebarFavFolderOrder = v)}
+          />
         )
         _folders = sortFavFolders(folders, sidebarFavFolderOrder)
       }

@@ -46,6 +46,7 @@ if (!isValidFavFolderOrder(localStore.favFolderOrder)) {
 
 function ConfigPopoverContent() {
   const { modalWidth, favFolderOrder } = useSnapshot(localStore)
+  const needFavFolderOrderSwitcher = useSnapshot(favStore).folders.length > 1
 
   const clsTitle = 'text-1.5em'
   const clsSubTitle = 'text-1.2em'
@@ -75,10 +76,12 @@ function ConfigPopoverContent() {
         />
       </div>
 
-      <div>
-        <div className={clsSubTitle}>收藏夹排序</div>
-        <FavFolderOrderSwitcher value={favFolderOrder} onChange={(v) => (localStore.favFolderOrder = v)} />
-      </div>
+      {needFavFolderOrderSwitcher && (
+        <div>
+          <div className={clsSubTitle}>收藏夹排序</div>
+          <FavFolderOrderSwitcher value={favFolderOrder} onChange={(v) => (localStore.favFolderOrder = v)} />
+        </div>
+      )}
     </div>
   )
 }
