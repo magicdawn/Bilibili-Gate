@@ -49,8 +49,8 @@
 
 ### 关于名称 Bilibili-Gate / bilibili-app-recommend
 
-起源于 [Bilibili Home](https://github.com/indefined/UserScripts/issues/76) 的一个 fork, 之前叫 bilibili-app-recommend <br />
-后添加了不少不是推荐相关的功能, 遂更名. <br />
+曾用名: bilibili-app-recommend, 起初代码改写/ fork 自 [Bilibili Home](https://github.com/indefined/UserScripts/issues/76),
+后添加了许多非推荐相关的功能, 遂更名 <br />
 bilibili-app-recommend 用户可以通过文件导出全部设置迁移到 Bilibili-Gate 中.
 
 ### B 站首页版本
