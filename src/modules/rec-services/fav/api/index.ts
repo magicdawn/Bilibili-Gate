@@ -7,14 +7,11 @@
 
 import { Result } from 'better-result'
 import { difference } from 'es-toolkit'
-import { OPERATION_FAIL_MSG } from '$common'
-import { isWebApiSuccess, request, WebApiError } from '$request'
+import { request, WebApiError } from '$request'
 import { getCsrfToken, getHasLogined, getUid } from '$utility/cookie'
-import toast from '$utility/toast'
 import { formatFavFolderUrl } from '../fav-url'
 import { isFavFolderDefault, isFavFolderPrivate } from '../fav-util'
 import { favStore, updateFavFolderList } from '../store'
-import type { FavFolderInfoJson } from '../types/folders/get-folder-info.api'
 import type { FavFolderListAllJson } from '../types/folders/list-all-folders'
 
 /* #region base */
@@ -40,14 +37,9 @@ async function favDeal({
     gaia_source: 'web_normal',
     csrf: getCsrfToken(),
   })
-
-  const res = await request.safePost('/x/v3/fav/resource/deal', form)
-  if (res.isErr()) return Result.err(res.error)
-
-  const json = res.value.data
-  if (!isWebApiSuccess(json)) throw new WebApiError(json)
-
-  return Result.ok()
+  return (await request.safePost('/x/v3/fav/resource/deal', form))
+    .andThen((resp) => WebApiError.validateAxiosResponse(resp))
+    .andThen((json) => Result.ok())
 }
 /* #endregion */
 
@@ -68,13 +60,9 @@ export async function removeFavs(folderId: number | string, resources: string | 
     platform: 'web',
     csrf: getCsrfToken(),
   })
-  const res = await request.post('/x/v3/fav/resource/batch-del', form)
-  const json = res.data
-  const success = isWebApiSuccess(json)
-  if (!success) {
-    toast(json.message || OPERATION_FAIL_MSG)
-  }
-  return success
+  return (await request.safePost('/x/v3/fav/resource/batch-del', form))
+    .andThen((resp) => WebApiError.validateAxiosResponse(resp, '删除收藏失败'))
+    .andThen((json) => Result.ok(json?.message as string | undefined))
 }
 
 // 移动
@@ -87,13 +75,9 @@ export async function moveFavs(resources: string | string[], src: string | numbe
     platform: 'web',
     csrf: getCsrfToken(),
   })
-  const res = await request.post('/x/v3/fav/resource/move', form)
-  const json = res.data
-  const success = isWebApiSuccess(json)
-  if (!success) {
-    toast(json?.message || 'fav deal api fail')
-  }
-  return success
+  return (await request.safePost('/x/v3/fav/resource/move', form))
+    .andThen((resp) => WebApiError.validateAxiosResponse(resp, '移动收藏失败'))
+    .andThen((json) => Result.ok(json?.message as string | undefined))
 }
 /* #endregion */
 
@@ -160,33 +144,30 @@ function modifyFav(avid: string | number, sourceFolderIds: number[] | undefined,
 }
 
 export async function getFavFolderInfo(folderId: number) {
-  const res = await request.get('/x/v3/fav/folder/info', {
-    params: { media_id: folderId, web_location: '0.0' },
-  })
-  const json = res.data as FavFolderInfoJson
-  if (!isWebApiSuccess(json)) throw new WebApiError(json)
-  return json.data
+  return (
+    await request.safeGet('/x/v3/fav/folder/info', {
+      params: { media_id: folderId, web_location: '0.0' },
+    })
+  )
+    .andThen((resp) => WebApiError.validateAxiosResponse(resp, '获取收藏夹信息失败'))
+    .andThen((json) => Result.ok(json.data))
 }
 
-export async function renameFavFolder(folderId: number, newTitle: string) {
-  const info = await getFavFolderInfo(folderId)
-  if (!info) return
-  const form = new URLSearchParams({
-    media_id: folderId.toString(),
-    title: newTitle,
-    intro: info.intro,
-    cover: info.cover,
-    privacy: isFavFolderPrivate(info.attr) ? '1' : '0', // 0：公开  1：私有
-    csrf: getCsrfToken(),
+export function renameFavFolder(folderId: number, newTitle: string) {
+  return Result.gen(async function* () {
+    const info = yield* await getFavFolderInfo(folderId)
+    if (!info) return Result.err('获取收藏夹信息失败!')
+
+    const form = new URLSearchParams({
+      media_id: folderId.toString(),
+      title: newTitle,
+      intro: info.intro,
+      cover: info.cover,
+      privacy: isFavFolderPrivate(info.attr) ? '1' : '0', // 0：公开  1：私有
+      csrf: getCsrfToken(),
+    })
+    const resp = yield* await request.safePost('/x/v3/fav/folder/edit', form)
+    const json = yield* WebApiError.validateAxiosResponse(resp, '编辑收藏夹失败')
+    return Result.ok()
   })
-  const res = await request.post('/x/v3/fav/folder/edit', form)
-  const json = res.data
-  const success = isWebApiSuccess(json)
-
-  if (!success) {
-    const msg = json.message || '编辑收藏夹失败'
-    toast(msg)
-  }
-
-  return success
 }

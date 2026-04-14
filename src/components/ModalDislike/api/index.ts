@@ -1,9 +1,9 @@
 import { Result } from 'better-result'
 import { assert } from 'es-toolkit'
-import { HOST_APP, OPERATION_FAIL_MSG } from '$common'
+import { HOST_APP } from '$common'
 import { isAppRecommend, isPcRecommend, type AppRecItem, type PcRecItem, type RecItemType } from '$define'
 import { antMessage } from '$modules/antd'
-import { gmrequest, isWebApiSuccess, request, WebApiError, type AxiosRequestError } from '$request'
+import { gmrequest, request, WebApiError, type RequestNoneAxiosError } from '$request'
 import { assertNever } from '$utility/type'
 import { calcRecItemDislikedMapKey, delDisliked, dislikedMap } from '../store'
 import { normalizeDislikeReason, type DislikeReason } from '../types'
@@ -26,38 +26,28 @@ function appDislikeFactory(action: Action) {
   return async function (
     item: AppRecItem,
     reasonId: number,
-  ): Promise<Result<string, AxiosError | AxiosRequestError | WebApiError>> {
-    const result = await gmrequest.safeGet(HOST_APP + pathname, {
-      responseType: 'json',
-      params: {
-        goto: item.goto,
-        id: item.param,
+  ): Promise<Result<string, AxiosError | RequestNoneAxiosError | WebApiError>> {
+    return (
+      await gmrequest.safeGet(HOST_APP + pathname, {
+        responseType: 'json',
+        params: {
+          goto: item.goto,
+          id: item.param,
 
-        // mid: item.mid,
-        // rid: item.tid,
-        // tag_id: item.tag?.tag_id,
-        reason_id: reasonId,
+          // mid: item.mid,
+          // rid: item.tid,
+          // tag_id: item.tag?.tag_id,
+          reason_id: reasonId,
 
-        // other stuffs
-        build: '1',
-        mobi_app: 'android',
-        idx: (Date.now() / 1000).toFixed(0),
-      },
-    })
-    if (result.isErr()) return Result.err(result.error)
-
-    const resp = result.value
-    const json = resp.data
-    let message = json?.message
-    const success = isWebApiSuccess(json)
-    if (!success) {
-      message ||= OPERATION_FAIL_MSG
-      message += `(code: ${json?.code})`
-      message += '\n请重新获取 access_key 后重试'
-      return Result.err(new WebApiError(json, message))
-    }
-
-    return Result.ok(message)
+          // other stuffs
+          build: '1',
+          mobi_app: 'android',
+          idx: (Date.now() / 1000).toFixed(0),
+        },
+      })
+    )
+      .andThen((resp) => WebApiError.validateAxiosResponse(resp, undefined, '\n请重新获取 access_key 后重试'))
+      .andThen((json) => Result.ok(json?.message || ''))
   }
 }
 export const appDislike = appDislikeFactory('dislike')
@@ -71,7 +61,7 @@ function pcDislikeFactory(action: Action) {
   return async function (
     item: PcRecItem,
     reasonId: number,
-  ): Promise<Result<string, AxiosError | AxiosRequestError | WebApiError>> {
+  ): Promise<Result<string, AxiosError | RequestNoneAxiosError | WebApiError>> {
     const form = new URLSearchParams({
       app_id: '100',
       platform: '5',
@@ -84,14 +74,9 @@ function pcDislikeFactory(action: Action) {
       feedback_page: '1',
       reason_id: reasonId.toString(),
     })
-    const result = await request.safePost(pathname, form)
-    if (result.isErr()) return Result.err(result.error)
-
-    const json = result.value.data
-    const success = isWebApiSuccess(json)
-    if (!success) return Result.err(new WebApiError(json))
-
-    return Result.ok(json?.message)
+    return (await request.safePost(pathname, form))
+      .andThen((resp) => WebApiError.validateAxiosResponse(resp))
+      .andThen((json) => Result.ok(json?.message))
   }
 }
 export const pcDislike = pcDislikeFactory('dislike')

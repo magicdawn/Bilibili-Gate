@@ -4,9 +4,8 @@
 
 import { Result } from 'better-result'
 import { attempt } from 'es-toolkit'
-import { isWebApiSuccess, request, WebApiError } from '$request'
+import { request, WebApiError } from '$request'
 import { getCsrfToken } from '$utility/cookie'
-import type { DraftAddJson } from './draft-add.api'
 import type { DraftListJson } from './draft-list.api'
 import type { DraftViewJson, Paragraph } from './draft-view.api'
 
@@ -36,7 +35,7 @@ export const ArticleDraft = {
     }
   },
 
-  async addOrUpdate(articleId: number | undefined, title: string, content: object): Promise<Result<number, Error>> {
+  async addOrUpdate(articleId: number | undefined, title: string, content: object) {
     const codeBlockContent = JSON.stringify(content, null, 2)
     const body = {
       arg: {
@@ -60,16 +59,15 @@ export const ArticleDraft = {
         },
       },
     }
-
-    const res = await request.safePost('/x/dynamic/feed/article/draft/add', body, {
-      params: { csrf: getCsrfToken() },
-    })
-    if (res.isErr()) return Result.err(res.error)
-
-    const json = res.value.data as DraftAddJson
-    if (!isWebApiSuccess(json)) return Result.err(new WebApiError(json))
-
-    const _articleId = json.data.article_id
-    return Result.ok(_articleId)
+    return (
+      await request.safePost('/x/dynamic/feed/article/draft/add', body, {
+        params: { csrf: getCsrfToken() },
+      })
+    )
+      .andThen((resp) => WebApiError.validateAxiosResponse(resp))
+      .andThen((json) => {
+        const id = json?.data?.article_id as number | undefined
+        return Result.ok(id)
+      })
   },
 }

@@ -7,6 +7,7 @@ import { snapshot, useSnapshot } from 'valtio'
 import { REQUEST_FAIL_MSG } from '$common'
 import { useLinkTarget } from '$components/VideoCard/use/useOpenRelated'
 import { EApiType } from '$enums'
+import { antMessage } from '$modules/antd'
 import { IconForEdit, IconForOpenExternalLink, IconForPlayer } from '$modules/icon'
 import { isWebApiSuccess, request } from '$request'
 import { getIdbCache, wrapWithIdbCache } from '$utility/idb'
@@ -40,11 +41,14 @@ export function FavFolderRenamePopover({
   const [folderTitle, setFolderTitle] = useState<string>(currentFolderTitle)
   const handleSubmit = useMemoizedFn(async () => {
     const newTitle = folderTitle.trim()
-    if (!newTitle) return toast('收藏夹名称不能为空!')
-    if (newTitle === currentFolderTitle) return toast('无变更!')
+    if (!newTitle) return antMessage.error('收藏夹名称不能为空!')
+    if (newTitle === currentFolderTitle) return antMessage.warning('无变更!')
 
-    const success = await $req.runAsync(newTitle)
-    if (!success) return
+    const result = await $req.runAsync(newTitle)
+    if (result.isErr()) {
+      const msg = typeof result.error === 'string' ? result.error : result.error.message
+      return antMessage.error(msg)
+    }
 
     onClosePopover()
     // refresh UI state

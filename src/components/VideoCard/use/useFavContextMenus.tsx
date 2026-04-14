@@ -176,14 +176,17 @@ export function getFavTabFavRelatedMenus({
                 [item.folder.id],
                 async (targetFolder) => {
                   assert(targetFolder, 'targetFolder should not be empty')
-                  const success = await UserFavApi.moveFavs(resources, srcFavFolderId, targetFolder.id)
-                  if (!success) return
+                  const result = await UserFavApi.moveFavs(resources, srcFavFolderId, targetFolder.id)
+                  if (result.isErr()) {
+                    antMessage.error(result.error.message)
+                    return false
+                  }
 
                   clearFavFolderAllItemsCache(item.folder.id)
                   clearFavFolderAllItemsCache(targetFolder.id)
                   recSharedEmitter.emit('remove-cards', [uniqIds, titles, true])
                   antMessage.success(`已移动 ${uniqIds.length} 个视频到「${targetFolder.title}」收藏夹`)
-                  return success
+                  return true
                 },
                 false,
               )
@@ -249,8 +252,10 @@ export function getFavTabFavRelatedMenus({
           if (!confirm) return
 
           const resource = `${item.id}:${item.type}`
-          const success = await UserFavApi.removeFavs(item.folder.id, resource)
-          if (!success) return
+          const result = await UserFavApi.removeFavs(item.folder.id, resource)
+          if (result.isErr()) {
+            return antMessage.error(result.error.message)
+          }
 
           clearFavFolderAllItemsCache(item.folder.id)
           onRemoveCurrent?.(item, cardData)

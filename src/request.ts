@@ -43,21 +43,40 @@ export class WebApiError extends Error {
     super(msg)
     this.name = 'WebApiError'
   }
-}
 
-/**
- * request 报错了, 但不是 `[AxiosError, Error]`
- */
-export class AxiosRequestError extends Error {
-  constructor(e: any) {
-    super(`Axios Request Error: ${e?.message || e?.toString()}`, { cause: e })
-    this.name = 'AxiosRequestError'
+  static fromAxiosResponse(resp: AxiosResponse, action?: string, extraMessage?: string) {
+    const json = resp.data
+    const req = `${resp.config?.method?.toUpperCase()} ${resp.config?.url}`
+    const msg =
+      `${action || 'API 响应错误'}: (code: ${json?.code}, message: ${json?.message}, req: ${req})` +
+      (extraMessage || '')
+    return new WebApiError(json, msg)
+  }
+
+  static validateAxiosResponse<TJson = any>(
+    resp: AxiosResponse,
+    action?: string,
+    extraMessage?: string,
+  ): Result<TJson, WebApiError> {
+    const json = resp.data as TJson
+    if (!isWebApiSuccess(json)) return Result.err(WebApiError.fromAxiosResponse(resp, action, extraMessage))
+    return Result.ok(json)
   }
 }
 
-export function toAxiosRequestError(err: any) {
+/**
+ * axios request 报错了, 但不是 `AxiosError | Error`
+ */
+export class RequestNoneAxiosError extends Error {
+  constructor(e: any) {
+    super(`RequestNoneAxiosError: ${e?.message || e?.toString()}`, { cause: e })
+    this.name = 'RequestNoneAxiosError'
+  }
+}
+
+export function toRequestNoneAxiosError(err: any) {
   if (err && err instanceof Error) return err
-  return new AxiosRequestError(err)
+  return new RequestNoneAxiosError(err)
 }
 
 // 可以跨域
@@ -113,21 +132,21 @@ interface ExtendedAxiosInstance extends AxiosInstance {
   safeGet: <T = any, R = AxiosResponse<T>, D = any>(
     url: string,
     config?: AxiosRequestConfig<D>,
-  ) => Promise<Result<R, AxiosError | AxiosRequestError>>
+  ) => Promise<Result<R, AxiosError | RequestNoneAxiosError>>
   safePost: <T = any, R = AxiosResponse<T>, D = any>(
     url: string,
     data?: D,
     config?: AxiosRequestConfig<D>,
-  ) => Promise<Result<R, AxiosError | AxiosRequestError>>
+  ) => Promise<Result<R, AxiosError | RequestNoneAxiosError>>
 }
 
 function safeHttpMethod<TArgs extends any[], R>(
   fn: (...args: TArgs) => Promise<R>,
-): (...args: TArgs) => Promise<Result<R, AxiosError | AxiosRequestError>> {
+): (...args: TArgs) => Promise<Result<R, AxiosError | RequestNoneAxiosError>> {
   return (...args) =>
     Result.tryPromise({
       try: () => fn(...args),
-      catch: toAxiosRequestError,
+      catch: toRequestNoneAxiosError,
     })
 }
 
