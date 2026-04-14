@@ -2,8 +2,8 @@
  * 专栏-草稿管理
  */
 
+import { Result } from 'better-result'
 import { attempt } from 'es-toolkit'
-import { err, ok, type Result } from 'neverthrow'
 import { isWebApiSuccess, request, WebApiError } from '$request'
 import { getCsrfToken } from '$utility/cookie'
 import type { DraftAddJson } from './draft-add.api'
@@ -64,12 +64,12 @@ export const ArticleDraft = {
     const res = await request.safePost('/x/dynamic/feed/article/draft/add', body, {
       params: { csrf: getCsrfToken() },
     })
-    if (res.isErr()) return err(res.error)
+    if (res.isErr()) return Result.err(res.error)
 
     const json = res.value.data as DraftAddJson
-    if (!isWebApiSuccess(json)) return err(new WebApiError(json))
+    if (!isWebApiSuccess(json)) return Result.err(new WebApiError(json))
 
     const _articleId = json.data.article_id
-    return ok(_articleId)
+    return Result.ok(_articleId)
   },
 }

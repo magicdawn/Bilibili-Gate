@@ -1,7 +1,7 @@
 import GM_fetch from '@trim21/gm-fetch'
 import axios, { type AxiosError, type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from 'axios'
+import { Result } from 'better-result'
 import { omit } from 'es-toolkit'
-import { fromAsyncThrowable, type ResultAsync } from 'neverthrow'
 import { appWarn, HOST_API, HOST_APP, TVKeyInfo } from '$common'
 import { encWbi } from '$modules/bilibili/risk-control/wbi'
 import { appSign } from '$utility/app-api'
@@ -104,7 +104,7 @@ gmrequest.interceptors.response.use((res) => {
 })
 
 /**
- * neverthrow Result
+ * better-result Result
  */
 const httpMethods = ['get', 'delete', 'head', 'options', 'post', 'put', 'patch'] as const
 
@@ -113,19 +113,27 @@ interface ExtendedAxiosInstance extends AxiosInstance {
   safeGet: <T = any, R = AxiosResponse<T>, D = any>(
     url: string,
     config?: AxiosRequestConfig<D>,
-  ) => ResultAsync<R, AxiosError | AxiosRequestError>
+  ) => Promise<Result<R, AxiosError | AxiosRequestError>>
   safePost: <T = any, R = AxiosResponse<T>, D = any>(
     url: string,
     data?: D,
     config?: AxiosRequestConfig<D>,
-  ) => ResultAsync<R, AxiosError | AxiosRequestError>
+  ) => Promise<Result<R, AxiosError | AxiosRequestError>>
+}
+
+function safeHttpMethod<TArgs extends any[], R>(
+  fn: (...args: TArgs) => Promise<R>,
+): (...args: TArgs) => Promise<Result<R, AxiosError | AxiosRequestError>> {
+  return (...args) =>
+    Result.tryPromise({
+      try: () => fn(...args),
+      catch: toAxiosRequestError,
+    })
 }
 
 function extendSafeHttpMethods(_instance: AxiosInstance): ExtendedAxiosInstance {
   const instance = _instance as ExtendedAxiosInstance
-  // @ts-ignore
-  instance.safeGet = fromAsyncThrowable(_instance.get, toAxiosRequestError)
-  // @ts-ignore
-  instance.safePost = fromAsyncThrowable(_instance.post, toAxiosRequestError)
+  instance.safeGet = safeHttpMethod(_instance.get.bind(_instance)) as ExtendedAxiosInstance['safeGet']
+  instance.safePost = safeHttpMethod(_instance.post.bind(_instance)) as ExtendedAxiosInstance['safePost']
   return instance
 }

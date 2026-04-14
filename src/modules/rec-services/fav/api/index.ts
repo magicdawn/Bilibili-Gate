@@ -5,8 +5,8 @@
  * https://socialsisteryi.github.io/bilibili-API-collect/docs/video/action.html#%E6%94%B6%E8%97%8F%E8%A7%86%E9%A2%91-%E5%8F%8C%E7%AB%AF
  */
 
+import { Result } from 'better-result'
 import { difference } from 'es-toolkit'
-import { err, ok } from 'neverthrow'
 import { OPERATION_FAIL_MSG } from '$common'
 import { isWebApiSuccess, request, WebApiError } from '$request'
 import { getCsrfToken, getHasLogined, getUid } from '$utility/cookie'
@@ -42,12 +42,12 @@ async function favDeal({
   })
 
   const res = await request.safePost('/x/v3/fav/resource/deal', form)
-  if (res.isErr()) return err(res.error)
+  if (res.isErr()) return Result.err(res.error)
 
   const json = res.value.data
   if (!isWebApiSuccess(json)) throw new WebApiError(json)
 
-  return ok()
+  return Result.ok()
 }
 /* #endregion */
 
@@ -127,13 +127,13 @@ export async function addFav(avid: string | number, folderId?: number) {
     await updateFavFolderList()
     const { folders } = favStore
     const defaultFolder = folders.find((f) => isFavFolderDefault(f.attr)) ?? folders[0]
-    if (!defaultFolder) return err('没有找到默认收藏夹!')
+    if (!defaultFolder) return Result.err('没有找到默认收藏夹!')
     defaultFavFolderId = defaultFolder.id
     defaultFavFolderTitle = defaultFolder.title
   }
 
   folderId ||= defaultFavFolderId
-  if (!folderId) return err('没有找到默认收藏夹!')
+  if (!folderId) return Result.err('没有找到默认收藏夹!')
 
   return await favDeal({ avid, add_media_ids: folderId.toString() })
 }

@@ -50,6 +50,9 @@ importers:
       axios:
         specifier: ^1.15.0
         version: 1.15.0
+      better-result:
+        specifier: ^2.8.2
+        version: 2.8.2
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -74,9 +77,6 @@ importers:
       ms:
         specifier: ^2.1.3
         version: 2.1.3
-      neverthrow:
-        specifier: ^8.2.0
-        version: 8.2.0
       obug:
         specifier: ^2.1.1
         version: 2.1.1
@@ -3023,6 +3023,9 @@ packages:
     resolution: {integrity: sha512-Sg0xJUNDU1sJNGdfGWhVHX0kkZ+HWcvmVymJbj6NSgZZmW/8S9Y2HQ5euytnIgakgxN6papOAWiwDo1ctFDcoQ==}
     hasBin: true
 
+  better-result@2.8.2:
+    resolution: {integrity: sha512-YOf0VSj5nUPI27doTtXF+BBnsiRq3qY7avHqfIWnppxTLGyvkLq1QV2RTxkwoZwJ60ywLfZ0raFF4J/G886i7A==}
+
   binary-extensions@2.3.0:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
@@ -4451,10 +4454,6 @@ packages:
 
   natural-orderby@5.0.0:
     resolution: {integrity: sha512-kKHJhxwpR/Okycz4HhQKKlhWe4ASEfPgkSWNmKFHd7+ezuQlxkA5cM3+XkBPvm1gmHen3w53qsYAv+8GwRrBlg==}
-    engines: {node: '>=18'}
-
-  neverthrow@8.2.0:
-    resolution: {integrity: sha512-kOCT/1MCPAxY5iUV3wytNFUMUolzuwd/VF/1KCx7kf6CutrOsTie+84zTGTpgQycjvfLdBBdvBvFLqFD2c0wkQ==}
     engines: {node: '>=18'}
 
   no-case@3.0.4:
@@ -8257,6 +8256,8 @@ snapshots:
 
   baseline-browser-mapping@2.9.11: {}
 
+  better-result@2.8.2: {}
+
   binary-extensions@2.3.0: {}
 
   birpc@2.9.0: {}
@@ -9928,10 +9929,6 @@ snapshots:
   natural-compare@1.4.0: {}
 
   natural-orderby@5.0.0: {}
-
-  neverthrow@8.2.0:
-    optionalDependencies:
-      '@rollup/rollup-linux-x64-gnu': 4.54.0
 
   no-case@3.0.4:
     dependencies:

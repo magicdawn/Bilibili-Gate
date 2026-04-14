@@ -1,5 +1,5 @@
+import { Result } from 'better-result'
 import { assert } from 'es-toolkit'
-import { err, ok, type Result } from 'neverthrow'
 import { HOST_APP, OPERATION_FAIL_MSG } from '$common'
 import { isAppRecommend, isPcRecommend, type AppRecItem, type PcRecItem, type RecItemType } from '$define'
 import { antMessage } from '$modules/antd'
@@ -44,7 +44,7 @@ function appDislikeFactory(action: Action) {
         idx: (Date.now() / 1000).toFixed(0),
       },
     })
-    if (result.isErr()) return err(result.error)
+    if (result.isErr()) return Result.err(result.error)
 
     const resp = result.value
     const json = resp.data
@@ -54,10 +54,10 @@ function appDislikeFactory(action: Action) {
       message ||= OPERATION_FAIL_MSG
       message += `(code: ${json?.code})`
       message += '\n请重新获取 access_key 后重试'
-      return err(new WebApiError(json, message))
+      return Result.err(new WebApiError(json, message))
     }
 
-    return ok(message)
+    return Result.ok(message)
   }
 }
 export const appDislike = appDislikeFactory('dislike')
@@ -85,13 +85,13 @@ function pcDislikeFactory(action: Action) {
       reason_id: reasonId.toString(),
     })
     const result = await request.safePost(pathname, form)
-    if (result.isErr()) return err(result.error)
+    if (result.isErr()) return Result.err(result.error)
 
     const json = result.value.data
     const success = isWebApiSuccess(json)
-    if (!success) return err(new WebApiError(json))
+    if (!success) return Result.err(new WebApiError(json))
 
-    return ok(json?.message)
+    return Result.ok(json?.message)
   }
 }
 export const pcDislike = pcDislikeFactory('dislike')
