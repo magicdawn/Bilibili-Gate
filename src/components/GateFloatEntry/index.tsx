@@ -9,9 +9,9 @@ import { APP_NAME, appLog } from '$common'
 import { useDelegatedRef } from '$common/hooks/mixed-ref'
 import { $windowSize } from '$common/hooks/useWindowSize'
 import { clsZGateFloatEntry } from '$components/fragments'
-import { toggleModalFeed } from '$components/RecHeader/modals'
+import { showModalFeed, toggleModalSettings } from '$components/RecHeader/modals'
 import { AntdTooltip } from '$modules/antd/custom'
-import { IconForOpenExternalLink } from '$modules/icon'
+import { IconForConfig, IconForOpenExternalLink } from '$modules/icon'
 import { getGateEntryHref } from '$routes'
 import { minmax } from '$utility/num'
 import { proxyWithLocalStorage } from '$utility/valtio'
@@ -91,10 +91,10 @@ function GateFloatEntryInner() {
 
   // width: 48px
   const wrapperClassName = useUnoMerge(
-    'fixed transition-200 transition-ease-in-out transition-property-right,left',
+    'fixed transition-250 transition-ease-in-out transition-property-right,left',
     clsZGateFloatEntry,
-    align === 'right' && 'right--30px pr-6px hover:(right-0)',
-    align === 'left' && 'left--30px pl-6px hover:(left-0)',
+    align === 'right' && 'right--34px pr-10px hover:(right--5px)',
+    align === 'left' && 'left--34px pl-10px hover:(left--5px)',
   )
 
   useMount($windowSize.updateThrottled)
@@ -114,8 +114,13 @@ function GateFloatEntryInner() {
           </Button>
         </AntdTooltip>
         <AntdTooltip title={<>{APP_NAME}: 弹窗打开</>} {...tooltipConfig}>
-          <Button className='icon-only-round-button' onClick={toggleModalFeed}>
+          <Button className='icon-only-round-button' onClick={showModalFeed}>
             <IconParkOutlineRight className={C.buttonIcon} />
+          </Button>
+        </AntdTooltip>
+        <AntdTooltip title={<>{APP_NAME}: 设置</>} {...tooltipConfig}>
+          <Button className='icon-only-round-button' onClick={toggleModalSettings}>
+            <IconForConfig className={C.buttonIcon} />
           </Button>
         </AntdTooltip>
         <Button className='icon-only-round-button cursor-move' {...listeners} {...attributes} ref={setActivatorNodeRef}>

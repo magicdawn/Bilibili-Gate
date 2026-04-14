@@ -55,8 +55,8 @@ function getQuickFavConfig(api: EApiType) {
   return { enable, enableDetailMenu }
 }
 
-// 快速收藏
-export function getQuickFavMenus(ctx: FavContext, item: RecItemType, avid: string | undefined) {
+// 收藏视频
+export function getFavContextMenus(ctx: FavContext, item: RecItemType, avid: string | undefined) {
   if (!avid) return
   const { enable, enableDetailMenu } = getQuickFavConfig(item.api)
   if (!enable) return
@@ -78,9 +78,8 @@ export function getQuickFavMenus(ctx: FavContext, item: RecItemType, avid: strin
         })
       },
     },
-    {
+    enableDetailMenu && {
       // 浏览收藏夹
-      test: enableDetailMenu,
       key: 'quick-fav:faved:browse-fav-folder-in-self-space',
       icon: <IconForOpenExternalLink className={clsContextMenuIcon} />,
       label: '去个人空间查看收藏夹',
@@ -99,9 +98,9 @@ export function getQuickFavMenus(ctx: FavContext, item: RecItemType, avid: strin
       label: '收藏到',
       async onClick() {
         await startPickFavFolder(async (targetFolder) => {
-          const success = await UserFavApi.addFav(avid, targetFolder.id)
-          if (success) antMessage.success(`已加入收藏夹「${targetFolder.title}」`)
-          return success
+          const result = await UserFavApi.addFav(avid, targetFolder.id)
+          if (result.isOk()) antMessage.success(`已加入收藏夹「${targetFolder.title}」`)
+          return result.isOk()
         })
       },
     },
@@ -112,8 +111,9 @@ export function getQuickFavMenus(ctx: FavContext, item: RecItemType, avid: strin
       icon: <IconForFav className={clsContextMenuIcon} />,
       label: '收藏到「默认收藏夹」',
       async onClick() {
-        const success = await UserFavApi.addFav(avid)
-        if (success) antMessage.success(`已加入收藏夹「${defaultFavFolderTitle}」`)
+        const result = await UserFavApi.addFav(avid)
+        if (result.isOk()) return antMessage.success(`已加入收藏夹「${defaultFavFolderTitle}」`)
+        antMessage.error(typeof result.error === 'string' ? result.error : result.error.message)
       },
     },
   ])
@@ -122,7 +122,8 @@ export function getQuickFavMenus(ctx: FavContext, item: RecItemType, avid: strin
   return faved ? favedMenus : unfavedMenus
 }
 
-export function getFavTabMenus({
+// 收藏 Tab 的收藏菜单
+export function getFavTabFavRelatedMenus({
   ctx,
   item,
   cardData,

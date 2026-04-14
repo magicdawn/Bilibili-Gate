@@ -9,6 +9,7 @@ import { useMultiSelecting } from '$modules/multi-select/store'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import toast from '$utility/toast'
 import { usePopupContainer } from '../_base'
+import { BtnAddMultiSelectedToFav } from '../_shared/batch-toolbar-actions'
 import { CopyBvidButtonsTabbarView } from '../_shared/copy-bvid-buttons'
 import { GenericOrderSwitcher } from '../_shared/generic-order-switcher'
 import { removeMultiSelectedWatchlaterItems, type WatchlaterRecService } from './index'
@@ -79,6 +80,8 @@ export function WatchlaterTabbarView({ service }: { service: WatchlaterRecServic
           </Button>
         </AntdTooltip>
       )}
+
+      <BtnAddMultiSelectedToFav />
 
       <CopyBvidButtonsTabbarView />
     </div>

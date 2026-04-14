@@ -6,6 +6,7 @@ import { useMount } from 'ahooks'
 import dayjs from 'dayjs'
 import { fastOrderBy } from 'fast-sort-lens'
 import { copyContent } from '$components/VideoCard/index.shared'
+import { antMessage } from '$modules/antd'
 import { normalizeCardData, type IVideoCardData } from '$modules/filter/normalize'
 import { multiSelectStore } from '$modules/multi-select/store'
 import type { RecItemType } from '$define'
@@ -42,6 +43,16 @@ export function getMultiSelectedItems() {
 }
 export function getMultiSelectedCardDatas() {
   return getMultiSelectedItems().map(normalizeCardData)
+}
+
+export function getMultiSelectedNormalVideoItems() {
+  const selectedVideos = getMultiSelectedItems()
+    .map((item) => ({ item, cardData: normalizeCardData(item) }))
+    .filter((x) => x.cardData.bvid)
+  return selectedVideos
+}
+export function warnNoMultiSelectedNormalVideoItems() {
+  antMessage.warning('没有选中的视频!')
 }
 
 /**

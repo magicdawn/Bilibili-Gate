@@ -68,8 +68,13 @@ export async function handleModifyFavItemToFolder(
     return false
   }
 
-  const success = await UserFavApi.modifyFav(avid, sourceFolderIds, targetFolder?.id)
-  if (!success) return false
+  {
+    const result = await UserFavApi.modifyFav(avid, sourceFolderIds, targetFolder?.id)
+    if (result.isErr()) {
+      antMessage.error(result.error.message)
+      return false
+    }
+  }
 
   const clearQueue = [...(sourceFolderIds ?? []), targetFolder?.id].filter((x) => x !== undefined)
   clearQueue.forEach((fid) => clearFavFolderAllItemsCache(fid))
@@ -82,6 +87,5 @@ export async function handleModifyFavItemToFolder(
     message = `${prefix}「${targetFolder.title}」`
   }
   antMessage.success(message)
-
   return true
 }

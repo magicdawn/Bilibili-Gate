@@ -11,7 +11,7 @@ import { IconForEdit, IconForOpenExternalLink, IconForPlayer } from '$modules/ic
 import { isWebApiSuccess, request } from '$request'
 import { getIdbCache, wrapWithIdbCache } from '$utility/idb'
 import toast from '$utility/toast'
-import { editFavFolder } from '../api'
+import { renameFavFolder } from '../api'
 import { FavItemsOrder, handleItemsOrder } from '../fav-enum'
 import { formatFavFolderUrl, formatFavPlaylistUrl } from '../fav-url'
 import { isFavFolderPrivate } from '../fav-util'
@@ -35,7 +35,7 @@ export function FavFolderRenamePopover({
   currentFolderTitle: string
   onClosePopover: () => void
 }) {
-  const $req = useRequest((newTitle: string) => editFavFolder(folderId, newTitle), { manual: true })
+  const $req = useRequest((newTitle: string) => renameFavFolder(folderId, newTitle), { manual: true })
 
   const [folderTitle, setFolderTitle] = useState<string>(currentFolderTitle)
   const handleSubmit = useMemoizedFn(async () => {

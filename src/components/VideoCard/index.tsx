@@ -67,7 +67,7 @@ import {
 import { fetchImagePreviewData, isImagePreviewDataValid, type ImagePreviewData } from './services'
 import { StatItemDisplay } from './stat-item'
 import { useDislikeRelated } from './use/useDislikeRelated'
-import { useInitFavContext } from './use/useFavRelated'
+import { useInitFavContext } from './use/useFavContextMenus'
 import { useMultiSelectRelated } from './use/useMultiSelect'
 import { getRecItemDimension, useLinkTarget, useOpenRelated } from './use/useOpenRelated'
 import { usePreviewRelated } from './use/usePreviewRelated'

@@ -6,6 +6,7 @@
  */
 
 import { difference } from 'es-toolkit'
+import { err, ok } from 'neverthrow'
 import { OPERATION_FAIL_MSG } from '$common'
 import { isWebApiSuccess, request, WebApiError } from '$request'
 import { getCsrfToken, getHasLogined, getUid } from '$utility/cookie'
@@ -40,13 +41,13 @@ async function favDeal({
     csrf: getCsrfToken(),
   })
 
-  const res = await request.post('/x/v3/fav/resource/deal', form)
-  const json = res.data
-  const success = isWebApiSuccess(json)
-  if (!success) {
-    toast(json?.message || 'fav deal api fail')
-  }
-  return success
+  const res = await request.safePost('/x/v3/fav/resource/deal', form)
+  if (res.isErr()) return err(res.error)
+
+  const json = res.value.data
+  if (!isWebApiSuccess(json)) throw new WebApiError(json)
+
+  return ok()
 }
 /* #endregion */
 
@@ -126,15 +127,13 @@ export async function addFav(avid: string | number, folderId?: number) {
     await updateFavFolderList()
     const { folders } = favStore
     const defaultFolder = folders.find((f) => isFavFolderDefault(f.attr)) ?? folders[0]
-    if (!defaultFolder) return toast('没有找到默认收藏夹!')
+    if (!defaultFolder) return err('没有找到默认收藏夹!')
     defaultFavFolderId = defaultFolder.id
     defaultFavFolderTitle = defaultFolder.title
   }
 
   folderId ||= defaultFavFolderId
-  if (!folderId) {
-    return toast('没有找到默认收藏夹!')
-  }
+  if (!folderId) return err('没有找到默认收藏夹!')
 
   return await favDeal({ avid, add_media_ids: folderId.toString() })
 }
@@ -148,21 +147,16 @@ export async function fetchAllFavFolders() {
   return folders
 }
 
-async function modifyFav(
-  avid: string | number,
-  sourceFolderIds: number[] | undefined,
-  targetFolderId: number | undefined,
-): Promise<boolean> {
+function modifyFav(avid: string | number, sourceFolderIds: number[] | undefined, targetFolderId: number | undefined) {
   const source = (sourceFolderIds ?? []).filter((x) => x !== undefined)
   const target = [targetFolderId].filter((x) => x !== undefined)
   const delArr = difference(source, target)
   const addArr = difference(target, source)
-  const success = await favDeal({
+  return favDeal({
     avid,
     del_media_ids: delArr.length ? delArr.join(',') : undefined,
     add_media_ids: addArr.length ? addArr.join(',') : undefined,
   })
-  return success
 }
 
 export async function getFavFolderInfo(folderId: number) {
@@ -174,7 +168,7 @@ export async function getFavFolderInfo(folderId: number) {
   return json.data
 }
 
-export async function editFavFolder(folderId: number, newTitle: string) {
+export async function renameFavFolder(folderId: number, newTitle: string) {
   const info = await getFavFolderInfo(folderId)
   if (!info) return
   const form = new URLSearchParams({

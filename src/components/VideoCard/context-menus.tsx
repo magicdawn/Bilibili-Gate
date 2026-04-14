@@ -57,7 +57,7 @@ import { settings, updateSettingsInnerArray, useSettingsSnapshot } from '$module
 import toast from '$utility/toast'
 import { copyContent } from './index.shared'
 import { watchlaterAdd } from './services'
-import { getFavTabMenus, getQuickFavMenus, type FavContext } from './use/useFavRelated'
+import { getFavContextMenus, getFavTabFavRelatedMenus, type FavContext } from './use/useFavContextMenus'
 import type { IVideoCardData } from '$modules/filter/normalize'
 import type { WatchlaterRelatedContext } from './use/useWatchlaterRelated'
 
@@ -453,7 +453,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
         },
       },
       // 稍后再看 Tab 的收藏相关
-      ...(getQuickFavMenus(favContext, item, avid) ?? []),
+      ...(getFavContextMenus(favContext, item, avid) ?? []),
     ])
 
     // I don't like this video
@@ -504,7 +504,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
       },
     ])
 
-    const favTabMenus = getFavTabMenus({
+    const favTabMenus = getFavTabFavRelatedMenus({
       ctx: favContext,
       item,
       cardData,

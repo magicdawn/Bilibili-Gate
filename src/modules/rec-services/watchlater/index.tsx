@@ -3,9 +3,11 @@ import pRetry from 'p-retry'
 import { proxy, useSnapshot } from 'valtio'
 import { proxySet } from 'valtio/utils'
 import { appWarn, IN_BILIBILI_HOMEPAGE } from '$common'
-import { getMultiSelectedItems } from '$components/RecGrid/rec-grid-state'
+import {
+  getMultiSelectedNormalVideoItems,
+  warnNoMultiSelectedNormalVideoItems,
+} from '$components/RecGrid/rec-grid-state'
 import { EApiType } from '$enums'
-import { normalizeCardData } from '$modules/filter/normalize'
 import { getHasLogined, getUid } from '$utility/cookie'
 import { whenIdle } from '$utility/dom'
 import toast from '$utility/toast'
@@ -59,17 +61,13 @@ if (IN_BILIBILI_HOMEPAGE) {
  * 批量移除稍后再看
  */
 export async function removeMultiSelectedWatchlaterItems(recSharedEmitter: RecSharedEmitter) {
-  const selected = getMultiSelectedItems()
-    .map((item) => ({ item, cardData: normalizeCardData(item) }))
-    .filter((x) => x.cardData.avid)
-    .map((x) => [x.cardData.avid, x.item.uniqId, x.cardData.title] as [avid: string, uniqId: string, title: string])
-    .filter(Boolean)
-  const avids = selected.map((x) => x[0])
-  const uniqIds = selected.map((x) => x[1])
-  const titles = selected.map((x) => x[2])
-  if (!avids.length) {
-    return toast('没有选中的视频')
-  }
+  const selected = getMultiSelectedNormalVideoItems()
+  if (!selected?.length) return warnNoMultiSelectedNormalVideoItems()
+
+  const avids = selected.map((x) => x.cardData.avid).filter(Boolean)
+  const uniqIds = selected.map((x) => x.item.uniqId)
+  const titles = selected.map((x) => x.cardData.title)
+  if (!avids.length) return warnNoMultiSelectedNormalVideoItems()
 
   const success = await batchRemoveWatchlater(avids)
   if (!success) return
