@@ -1,3 +1,4 @@
+import { Result } from 'better-result'
 import Emittery from 'emittery'
 import { once } from 'es-toolkit'
 import { createReactRoot } from '$common'
@@ -23,13 +24,9 @@ export function setupAppRootForNoneHomepage() {
   _setupOnce()
 }
 
-export function isInIframe() {
-  try {
-    return globalThis.self !== window.top
-  } catch {
-    // 跨域访问被阻止，默认认为在 iframe 中
-    return true
-  }
+export function isInIframe(): boolean {
+  const result = Result.try(() => globalThis.self !== window.top)
+  return result.unwrapOr(true) // error: 跨域访问被阻止，默认认为在 iframe 中
 }
 
 // use a proxy layer for better type safety
