@@ -36,6 +36,8 @@ export const SpaceUploadOrderConfig: Record<
 }
 
 // Empty success response:
+// !TODO: 需排除搜索结果为空的情况
+// !TODO: 需排除就是没有的情况
 // {
 //     "list": {"slist": null,"tlist": null,"vlist": [] },
 //     "page": {"pn": 5,"ps": 40,"count": 0 },
@@ -88,10 +90,11 @@ export async function getSpaceUpload({
   if (!isWebApiSuccess(json)) {
     throw new WebApiError(json)
   }
+
   // NOTE: 我触发不了了...不知道为什么
-  if (SpaceUploadEmptySuccessResponseError.isEmptySuccessJson(json)) {
-    throw new SpaceUploadEmptySuccessResponseError(json)
-  }
+  // if (SpaceUploadEmptySuccessResponseError.isEmptySuccessJson(json)) {
+  //   throw new SpaceUploadEmptySuccessResponseError(json)
+  // }
 
   const items = json.data.list.vlist || []
   const count = json.data.page.count

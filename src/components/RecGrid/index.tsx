@@ -404,12 +404,22 @@ export const RecGrid = memo(function RecGrid({
         const title = titles?.[i]
         if (title) removedTitles.push(title)
 
+        // side effects
         if (tab === ETab.Watchlater) {
           serviceRegistry[tab]?.decreaseTotal()
         }
         if (tab === ETab.Fav) {
           serviceRegistry[tab]?.decreaseTotal()
         }
+      }
+
+      // 稍后再看最近的删完了, 最近的 separator 也删掉
+      if (
+        tab === ETab.Watchlater &&
+        newItems.length > 2 &&
+        newItems.slice(0, 2).every((x) => x.api === EApiType.Separator)
+      ) {
+        newItems.splice(0, 1)
       }
 
       if (!silent && removedTitles.length) {
