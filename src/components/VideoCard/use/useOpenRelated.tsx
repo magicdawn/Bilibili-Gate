@@ -5,7 +5,7 @@ import { baseDebug } from '$common'
 import { EApiType } from '$enums'
 import { getBiliPlayerConfigAutoPlay } from '$modules/bilibili/player-config'
 import { getVideoPageList } from '$modules/bilibili/video/video-detail'
-import { openNewTab } from '$modules/gm'
+import { openNewTab, RUNNING_IN_USERSCRIPTS } from '$modules/gm'
 import { isNormalRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
@@ -87,6 +87,12 @@ export function useOpenRelated({
     const handleCommon = () => {
       const backgroud = mode === Mode.Background || !!(e?.metaKey || e?.ctrlKey)
       const active = !backgroud
+
+      // https://github.com/magicdawn/Bilibili-Gate/issues/230
+      if (RUNNING_IN_USERSCRIPTS && active) {
+        return window.open(newHref, '_blank')
+      }
+
       openNewTab(newHref, active)
     }
 
