@@ -2,11 +2,12 @@
  * indexedDB related
  */
 
+import { Result } from 'better-result'
 import { isNil, throttle } from 'es-toolkit'
 import localforage from 'localforage'
 import pMemoize, { type AnyAsyncFunction } from 'p-memoize'
 import { limitFunction } from 'promise.map'
-import { APP_NAMESPACE } from '$common'
+import { APP_NAMESPACE, appError } from '$common'
 import { whenIdle } from './dom'
 import type { AsyncReturnType } from 'type-fest'
 
@@ -20,8 +21,10 @@ export function getIdbCache<T>(tableName: string) {
   })
   return {
     db,
-    get(key: string | number) {
-      return db.getItem<T>(key.toString())
+    async get(key: string | number) {
+      const result = await Result.tryPromise(() => db.getItem<T>(key.toString()))
+      if (result.isErr()) appError('idb.get error: ', result.error)
+      return result.unwrapOr(undefined) ?? undefined
     },
     set(key: string | number, entry: T) {
       return db.setItem(key.toString(), entry)
