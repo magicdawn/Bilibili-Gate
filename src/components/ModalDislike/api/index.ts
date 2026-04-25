@@ -46,7 +46,10 @@ function appDislikeFactory(action: Action) {
         },
       })
     )
-      .andThen((resp) => WebApiError.validateAxiosResponse(resp, undefined, '\n请重新获取 access_key 后重试'))
+      .andThen((resp) => {
+        const actionText = (action === 'dislike' ? '提交' : '撤销') + '不喜欢失败'
+        return WebApiError.validateAxiosResponse(resp, actionText, '请重新获取 access_key 后重试!')
+      })
       .andThen((json) => Result.ok(json?.message || ''))
   }
 }
@@ -100,9 +103,8 @@ function handlerFactory(action: Action) {
 
     if (result.isErr()) {
       const err = result.error
-      console.error(err?.stack || err)
-      const message = err?.message
-      antMessage.error(message, 8)
+      console.error(err)
+      antMessage.error(err instanceof WebApiError ? err.formatAsReactNode() : err.message, 8)
       return false
     }
 

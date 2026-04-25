@@ -6,6 +6,7 @@ import { appWarn, HOST_API, HOST_APP, TVKeyInfo } from '$common'
 import { encWbi } from '$modules/bilibili/risk-control/wbi'
 import { appSign } from '$utility/app-api'
 import { settings } from './modules/settings'
+import type { ReactNode } from 'react'
 
 export const request = extendSafeHttpMethods(
   axios.create({
@@ -36,30 +37,72 @@ export function isWebApiSuccess(json: any) {
 // 请求成功了, 但返回的内容表示操作失败
 export class WebApiError extends Error {
   constructor(
-    public json: any,
-    msg?: string,
+    public response: AxiosResponse,
+    public requestAction?: string, // request purpose
+    public extraMessage?: string,
   ) {
-    msg ||= `API 响应错误: (code: ${json?.code}, message: ${json?.message})`
-    super(msg)
+    super(WebApiError.getShortMessage(requestAction, response.data))
     this.name = 'WebApiError'
   }
 
-  static fromAxiosResponse(resp: AxiosResponse, action?: string, extraMessage?: string) {
-    const json = resp.data
-    const req = `${resp.config?.method?.toUpperCase()} ${resp.config?.url}`
-    const msg =
-      `${action || 'API 响应错误'}: (code: ${json?.code}, message: ${json?.message}, req: ${req})` +
-      (extraMessage || '')
-    return new WebApiError(json, msg)
+  // 因为在 constructor 中用到, eslint complain using `this` before `super`
+  static getActionText(action?: string) {
+    let actionText = action || 'API 响应错误'
+    if (!/错误|失败$/.test(actionText)) actionText += '错误'
+    return actionText
+  }
+  static getShortMessage(action?: string, json?: any) {
+    const actionText = this.getActionText(action)
+    const msg = json?.message || json?.code
+    return `${actionText}: ${msg}`
   }
 
-  static validateAxiosResponse<TJson = any>(
-    resp: AxiosResponse,
-    action?: string,
+  get details() {
+    const method = this.response.config?.method?.toUpperCase()
+    const url = this.response.config?.url
+    const requestStr = `${method} ${url}`
+
+    const json = this.response.data
+    const jsonSummary = `(code: ${json?.code}, message: ${json?.message})`
+
+    const actionText = WebApiError.getActionText(this.requestAction)
+    const longMessage =
+      `${actionText}: (code: ${json?.code}, message: ${json?.message}, request: ${requestStr})` +
+      (this.extraMessage || '')
+
+    return {
+      message: this.message,
+      requestStr,
+      jsonSummary,
+      extraMessage: this.extraMessage,
+      longMessage,
+    }
+  }
+
+  formatAsReactNode(): ReactNode {
+    const { message, requestStr, jsonSummary, extraMessage } = this.details
+    return (
+      <p className='text-left'>
+        {message} <br />
+        {requestStr} <br />
+        {jsonSummary}
+        {extraMessage && (
+          <>
+            <br />
+            {extraMessage}
+          </>
+        )}
+      </p>
+    )
+  }
+
+  static validateAxiosResponse<JsonType = any>(
+    response: AxiosResponse<JsonType>,
+    requestAction?: string,
     extraMessage?: string,
-  ): Result<TJson, WebApiError> {
-    const json = resp.data as TJson
-    if (!isWebApiSuccess(json)) return Result.err(WebApiError.fromAxiosResponse(resp, action, extraMessage))
+  ): Result<JsonType, WebApiError> {
+    const json = response.data
+    if (!isWebApiSuccess(json)) return Result.err(new WebApiError(response, requestAction, extraMessage))
     return Result.ok(json)
   }
 }

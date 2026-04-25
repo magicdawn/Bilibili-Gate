@@ -7,7 +7,6 @@ import pRetry from 'p-retry'
 import { IconForFav, IconForPlayer, IconForTimestamp } from '$modules/icon'
 import { isWebApiSuccess, request, WebApiError } from '$request'
 import type { ReactNode } from 'react'
-import type { SpaceUploadJson } from './types/space-upload'
 
 export enum SpaceUploadOrder {
   Latest = 'pubdate',
@@ -86,9 +85,9 @@ export async function getSpaceUpload({
     },
   })
 
-  const json = res.data as SpaceUploadJson
-  if (!isWebApiSuccess(json)) {
-    throw new WebApiError(json)
+  {
+    const result = WebApiError.validateAxiosResponse(res, '获取用户投稿失败')
+    if (result.isErr()) throw result.error
   }
 
   // NOTE: 我触发不了了...不知道为什么
@@ -96,6 +95,7 @@ export async function getSpaceUpload({
   //   throw new SpaceUploadEmptySuccessResponseError(json)
   // }
 
+  const json = res.data
   const items = json.data.list.vlist || []
   const count = json.data.page.count
   let hasMore: boolean
