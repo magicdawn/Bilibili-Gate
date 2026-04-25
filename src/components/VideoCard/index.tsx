@@ -575,7 +575,7 @@ const VideoCardInner = memo(function VideoCardInner({
       // display: block; /* firefox need this */
       className={clsx(
         APP_CLS_CARD_COVER,
-        'relative isolate block overflow-hidden',
+        'relative isolate block aspect-16/9 w-100% overflow-hidden',
         shouldMakeCoverClear && 'ring-1px ring-gate-border',
       )}
       css={[coverRoundCss, displayingAsList && displayAsListCss.cover]}
@@ -588,28 +588,24 @@ const VideoCardInner = memo(function VideoCardInner({
         e.preventDefault()
       }}
     >
-      {/* cover */}
-      {/* __image--wrap 上有 padding-top: 56.25% = 9/16, 用于保持高度, 在 firefox 中有明显的文字位移 */}
-      {/* picture: absolute, top:0, left: 0  */}
-      {/* 故加上 aspect-ratio: 16/9 */}
-      <div className='bili-video-card__image' style={{ aspectRatio: '16 / 9' }}>
-        {cover ? (
-          <div className='bili-video-card__image--wrap'>
-            <Picture
-              src={`${cover}@672w_378h_1c_!web-home-common-cover`}
-              className={clsx('bili-video-card__cover v-img')}
-              style={{ borderRadius: 0 }}
-              imgProps={{ alt: title }}
-            />
+      {/* main-content: image or text */}
+      {/* bilibili.com 默认卡片结构 .bili-video-card__image > .bili-video-card__image--wrap > .bili-video-card__cover */}
+      {/* 一堆自认没啥用的结构, 这里不用了! 留下为了查找兼容性问题 */}
+      {/* .bili-video-card__cover 包含 `absolute inset-0 size-full z-1 overflow-hidden object-cover` 等属性 */}
+      {cover ? (
+        <Picture
+          src={`${cover}@672w_378h_1c_!web-home-common-cover`}
+          className='bili-video-card__cover size-full'
+          imgProps={{ alt: title }}
+          style={{ borderRadius: 0 }}
+        />
+      ) : (
+        <div className='size-full flex-center px-4 py-2'>
+          <div className='line-clamp-3 text-center text-1.2em color-gate-text line-height-snug hover:color-gate-primary'>
+            {title}
           </div>
-        ) : (
-          <div className='size-full flex-center px-4 py-2'>
-            <div className='line-clamp-3 text-center text-1.2em color-gate-text line-height-snug hover:color-gate-primary'>
-              {title}
-            </div>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
 
       <div
         className='bili-video-card__stats'
@@ -617,8 +613,6 @@ const VideoCardInner = memo(function VideoCardInner({
           ${clsVideoCardPrefix} & {
             pointer-events: none;
             border-radius: 0;
-            /* padding-top: 5px;
-            height: auto; */
           }
         `}
       >
