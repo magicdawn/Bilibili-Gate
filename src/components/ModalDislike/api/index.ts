@@ -1,9 +1,9 @@
-import { Result } from 'better-result'
+import { Result, type UnhandledException } from 'better-result'
 import { assert } from 'es-toolkit'
 import { HOST_APP } from '$common'
 import { isAppRecommend, isPcRecommend, type AppRecItem, type PcRecItem, type RecItemType } from '$define'
 import { antMessage } from '$modules/antd'
-import { gmrequest, request, WebApiError, type RequestNoneAxiosError } from '$request'
+import { gmrequest, request, WebApiError } from '$request'
 import { assertNever } from '$utility/type'
 import { calcRecItemDislikedMapKey, delDisliked, dislikedMap } from '../store'
 import { normalizeDislikeReason, type DislikeReason } from '../types'
@@ -26,7 +26,7 @@ function appDislikeFactory(action: Action) {
   return async function (
     item: AppRecItem,
     reasonId: number,
-  ): Promise<Result<string, AxiosError | RequestNoneAxiosError | WebApiError>> {
+  ): Promise<Result<string, AxiosError | UnhandledException | WebApiError>> {
     return (
       await gmrequest.safeGet(HOST_APP + pathname, {
         responseType: 'json',
@@ -64,7 +64,7 @@ function pcDislikeFactory(action: Action) {
   return async function (
     item: PcRecItem,
     reasonId: number,
-  ): Promise<Result<string, AxiosError | RequestNoneAxiosError | WebApiError>> {
+  ): Promise<Result<string, AxiosError | UnhandledException | WebApiError>> {
     const form = new URLSearchParams({
       app_id: '100',
       platform: '5',

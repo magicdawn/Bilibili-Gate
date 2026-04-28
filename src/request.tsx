@@ -1,6 +1,6 @@
 import GM_fetch from '@trim21/gm-fetch'
-import axios, { type AxiosError, type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from 'axios'
-import { Result } from 'better-result'
+import axios, { AxiosError, type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from 'axios'
+import { Result, UnhandledException } from 'better-result'
 import { omit } from 'es-toolkit'
 import { appWarn, HOST_API, HOST_APP, TVKeyInfo } from '$common'
 import { encWbi } from '$modules/bilibili/risk-control/wbi'
@@ -107,21 +107,6 @@ export class WebApiError extends Error {
   }
 }
 
-/**
- * axios request 报错了, 但不是 `AxiosError | Error`
- */
-export class RequestNoneAxiosError extends Error {
-  constructor(e: any) {
-    super(`RequestNoneAxiosError: ${e?.message || e?.toString()}`, { cause: e })
-    this.name = 'RequestNoneAxiosError'
-  }
-}
-
-export function toRequestNoneAxiosError(err: any) {
-  if (err && err instanceof Error) return err
-  return new RequestNoneAxiosError(err)
-}
-
 // 可以跨域
 export const gmrequest = extendSafeHttpMethods(
   axios.create({
@@ -175,21 +160,24 @@ interface ExtendedAxiosInstance extends AxiosInstance {
   safeGet: <T = any, R = AxiosResponse<T>, D = any>(
     url: string,
     config?: AxiosRequestConfig<D>,
-  ) => Promise<Result<R, AxiosError | RequestNoneAxiosError>>
+  ) => Promise<Result<R, AxiosError | UnhandledException>>
   safePost: <T = any, R = AxiosResponse<T>, D = any>(
     url: string,
     data?: D,
     config?: AxiosRequestConfig<D>,
-  ) => Promise<Result<R, AxiosError | RequestNoneAxiosError>>
+  ) => Promise<Result<R, AxiosError | UnhandledException>>
 }
 
 function safeHttpMethod<TArgs extends any[], R>(
   fn: (...args: TArgs) => Promise<R>,
-): (...args: TArgs) => Promise<Result<R, AxiosError | RequestNoneAxiosError>> {
+): (...args: TArgs) => Promise<Result<R, AxiosError | UnhandledException>> {
   return (...args) =>
     Result.tryPromise({
       try: () => fn(...args),
-      catch: toRequestNoneAxiosError,
+      catch(err: any) {
+        if (err && err instanceof AxiosError) return err
+        return new UnhandledException({ cause: err })
+      },
     })
 }
 
