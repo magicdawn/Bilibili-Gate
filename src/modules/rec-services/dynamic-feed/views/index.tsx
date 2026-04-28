@@ -9,6 +9,7 @@ import { useEmitterOn } from '$common/hooks/useEmitter'
 import { useOnRefresh, useRecSelfContext } from '$components/Recommends/rec.shared'
 import { sidebarBottomLine, useRevealMenuSelectedKey, useSidebarVisible } from '$components/RecSidebar/sidebar-shared'
 import { ETab } from '$enums'
+import { AntdTooltip } from '$modules/antd/custom'
 import { IconForReset } from '$modules/icon'
 import { CopyBvidButtonsTabbarView } from '$modules/rec-services/_shared/copy-bvid-buttons'
 import { useSettingsSnapshot } from '$modules/settings'
@@ -49,8 +50,9 @@ const clearPayload: Partial<DynamicFeedStore> = {
 }
 
 // who's dynamic-feed
-function useScopeMenus(form: 'dropdown' | 'sidebar') {
-  const { upList, groups, selectedKey } = useSnapshot(dfStore)
+// from: sidebar-menu | dropdown-menu
+function useScopeMenus(form: 'sidebar' | 'dropdown') {
+  const { upList, groups, selectedKey, viewingSomeUp, viewingSomeGroup } = useSnapshot(dfStore)
   const onRefresh = useOnRefresh()
   const {
     followGroup: { enabled: followGroupEnabled },
@@ -122,26 +124,60 @@ function useScopeMenus(form: 'dropdown' | 'sidebar') {
     return [itemAll, ...groupItems, ...items]
   }, [upList, followGroupEnabled, groups, form])
 
+  const btnClearAvailable = viewingSomeUp || viewingSomeGroup
+  const btnClearDisabledWhenUnavailable = (
+    <AntdTooltip title='返回「全部」'>
+      <Button onClick={onClear} className='icon-only-round-button' disabled={!btnClearAvailable}>
+        <IconForReset className='size-14px' />
+      </Button>
+    </AntdTooltip>
+  )
+  const btnClearHiddenWhenUnavailable = btnClearAvailable && (
+    <AntdTooltip title='返回「全部」'>
+      <Button onClick={onClear} className='icon-only-round-button'>
+        <IconForReset className='size-14px' />
+      </Button>
+    </AntdTooltip>
+  )
+
   return {
     menuItems,
     selectedKey,
+    btnClear: btnClearDisabledWhenUnavailable,
     // helper
     onClear,
     onSelect,
   }
 }
 
-export function DynamicFeedTabbarView() {
+function useSharedElements() {
   const {
     dynamicFeed: {
       __internal: { externalFilterInput },
     },
   } = useSettingsSnapshot()
-  const { viewingSomeUp, upName, upFace, selectedGroup } = useSnapshot(dfStore)
-  const onRefresh = useOnRefresh()
+
   const { ref, getPopupContainer } = usePopupContainer()
+  const { popoverTrigger, filterInput } = usePopoverRelated({
+    externalFilterInput,
+    getPopupContainer,
+  })
+
+  return {
+    popoverContainerRef: ref, // bind this ref to the desired popover container
+    getPopupContainer,
+    popoverTrigger,
+    externalFilterInput,
+    filterInput,
+  }
+}
+
+export function DynamicFeedTabbarView() {
+  const { viewingSomeUp, upName, upFace, selectedGroup } = useSnapshot(dfStore)
   const sidebarVisible = useSidebarVisible(ETab.DynamicFeed)
-  const { menuItems, selectedKey, onClear } = useScopeMenus('dropdown')
+  const { menuItems, selectedKey, btnClear } = useScopeMenus('dropdown')
+  const { popoverContainerRef, getPopupContainer, popoverTrigger, externalFilterInput, filterInput } =
+    useSharedElements()
 
   // try update on mount
   useMount(() => {
@@ -183,28 +219,13 @@ export function DynamicFeedTabbarView() {
   )
   // #endregion
 
-  const { popoverTrigger, filterInput } = usePopoverRelated({
-    externalFilterInput,
-    onRefresh,
-    getPopupContainer,
-  })
-
   return (
-    <div ref={ref} className='inline-flex items-center gap-x-8px'>
-      {!sidebarVisible && scopeDropdownMenu}
-
-      {sidebarVisible ? (
-        <Button onClick={onClear} className='gap-0' disabled={!(viewingSomeUp || selectedGroup)}>
-          <IconForReset className='mr-5px size-14px' />
-          <span>清除</span>
-        </Button>
-      ) : (
-        (viewingSomeUp || selectedGroup) && (
-          <Button onClick={onClear} className='gap-0'>
-            <IconForReset className='mr-5px size-14px' />
-            <span>清除</span>
-          </Button>
-        )
+    <div ref={popoverContainerRef} className='inline-flex items-center gap-x-8px'>
+      {sidebarVisible ? undefined : (
+        <>
+          {scopeDropdownMenu}
+          {btnClear}
+        </>
       )}
 
       {popoverTrigger}
@@ -218,13 +239,20 @@ export function DynamicFeedTabbarView() {
 
 export function DynamicFeedSidebarView() {
   const sidebarVisible = useSidebarVisible(ETab.DynamicFeed)
-  const { menuItems, selectedKey } = useScopeMenus('sidebar')
+  const { menuItems, selectedKey, btnClear } = useScopeMenus('sidebar')
   const { menuRef, revealSelected } = useRevealMenuSelectedKey(menuItems, selectedKey)
   const { recSharedEmitter } = useRecSelfContext()
+  const { popoverTrigger, popoverContainerRef } = useSharedElements()
+
   useEmitterOn(recSharedEmitter, 'dynamic-feed:clear', () => void revealSelected(DF_SELECTED_KEY_ALL))
   if (!sidebarVisible) return undefined
+
   return (
     <>
+      <div ref={popoverContainerRef} className='flex flex-row items-center gap-x-2 px-2 py-1'>
+        {btnClear}
+        {popoverTrigger}
+      </div>
       <Menu ref={menuRef} items={menuItems} selectedKeys={[selectedKey]} mode='inline' inlineIndent={10} />
       {sidebarBottomLine}
     </>

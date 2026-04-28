@@ -14,6 +14,7 @@ import { APP_CLS_USE_ANT_LINK_COLOR, buttonOpenCss, usePopoverBorderColor } from
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { appPrimaryColorValue } from '$components/css-vars'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
+import { useOnRefresh, type RefreshFn } from '$components/Recommends/rec.shared'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconForOpenExternalLink } from '$modules/icon'
@@ -50,19 +51,17 @@ import {
 } from '../store'
 import type { CheckboxChangeEvent } from 'antd/es/checkbox'
 import type { Get } from 'type-fest'
-import type { RefreshFn } from '$components/Recommends/rec.shared'
 import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 
 export function usePopoverRelated({
   externalFilterInput,
-  onRefresh,
   getPopupContainer,
 }: {
   externalFilterInput: boolean
-  onRefresh: RefreshFn
   getPopupContainer: (() => HTMLElement) | undefined
 }) {
   const { upMid, dynamicFeedVideoType, filterMinDuration, filterText, hideChargeOnlyVideos } = useSnapshot(dfStore)
+  const onRefresh = useOnRefresh()
 
   const filterInput = (
     <Input.Search
