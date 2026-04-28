@@ -89,7 +89,7 @@
     "@types/react-dom": "^19.2.3",
     "@types/spark-md5": "^3.0.5",
     "@types/ua-parser-js": "^0.7.39",
-    "@typescript/native-preview": "7.0.0-dev.20260426.1",
+    "@typescript/native-preview": "7.0.0-dev.20260427.1",
     "@unocss/eslint-plugin": "^66.6.8",
     "@unocss/preset-rem-to-px": "^66.6.8",
     "@unocss/preset-wind4": "^66.6.8",
