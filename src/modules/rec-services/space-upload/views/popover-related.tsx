@@ -1,11 +1,13 @@
-import { Badge, Button, Checkbox, Popover, Radio } from 'antd'
+import { Badge, Button, Checkbox, Popover } from 'antd'
+import clsx from 'clsx'
 import { useMemo, useState } from 'react'
 import { useSnapshot } from 'valtio'
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
+import { PopoverDurationInput } from '$components/_base/DurationInput'
 import { appPrimaryColorValue } from '$components/css-vars'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconForPopoverTrigger } from '$modules/rec-services/dynamic-feed/shared'
-import { spaceUploadStore, SpaceUploadVideoMinDuration, SpaceUploadVideoMinDurationConfig } from '../store'
+import { spaceUploadStore } from '../store'
 import type { RefreshFn } from '$components/Recommends/rec.shared'
 
 export function usePopoverRelated({
@@ -15,18 +17,21 @@ export function usePopoverRelated({
   onRefresh: RefreshFn
   getPopupContainer: (() => HTMLElement) | undefined
 }) {
-  const { hideChargeOnlyVideos, filterMinDuration } = useSnapshot(spaceUploadStore)
-
-  const popoverContent = <PopoverContent refresh={onRefresh} />
+  const { hideChargeOnlyVideos, filterMinDuration, filterMaxDuration } =
+    useSnapshot(spaceUploadStore).currentFilterState
 
   const [popoverOpen, setPopoverOpen] = useState(false)
 
-  const showPopoverBadge = useMemo(() => {
-    return hideChargeOnlyVideos || filterMinDuration !== SpaceUploadVideoMinDuration.All
-  }, [hideChargeOnlyVideos, filterMinDuration])
+  const popoverContent = <PopoverContent refresh={onRefresh} open={popoverOpen} />
+
+  const showPopoverBadge = useMemo(
+    () => !!(hideChargeOnlyVideos || filterMinDuration || filterMaxDuration),
+    [hideChargeOnlyVideos, filterMinDuration, filterMaxDuration],
+  )
 
   const popoverTrigger = (
     <Popover
+      fresh
       open={popoverOpen}
       onOpenChange={setPopoverOpen}
       arrow={false}
@@ -53,8 +58,12 @@ const classes = {
   sectionContent: 'flex flex-col items-start gap-x-10px gap-y-6px',
 } as const
 
-function PopoverContent({ refresh }: { refresh: RefreshFn | undefined }) {
-  const { hideChargeOnlyVideos, filterMinDuration } = useSnapshot(spaceUploadStore)
+const minDurationPresets = [10, 30, 1 * 60, 2 * 60, 5 * 60] // in seconds
+const maxDurationPresets = [1, 2, 5, 10, 15, 30].map((m) => m * 60) // in seconds
+
+function PopoverContent({ refresh, open }: { refresh: RefreshFn | undefined; open: boolean }) {
+  const { hideChargeOnlyVideos, filterMinDuration, filterMaxDuration } =
+    useSnapshot(spaceUploadStore).currentFilterState
 
   return (
     <div className={classes.wrapper}>
@@ -65,7 +74,8 @@ function PopoverContent({ refresh }: { refresh: RefreshFn | undefined }) {
             className='ml-5px'
             checked={hideChargeOnlyVideos}
             onChange={(e) => {
-              spaceUploadStore.setHideChargeOnlyVideos(e.target.checked)
+              const checked = e.target.checked
+              spaceUploadStore.updateCurrentFilterState({ hideChargeOnlyVideos: checked })
               refresh?.()
             }}
           >
@@ -77,26 +87,36 @@ function PopoverContent({ refresh }: { refresh: RefreshFn | undefined }) {
       </div>
 
       <div className={classes.section}>
-        <div className={classes.sectionTilte}>最短时长</div>
-        <div>
-          <Radio.Group
-            className='overflow-hidden [&_.ant-radio-button-wrapper]:px-7px'
-            buttonStyle='solid'
-            value={filterMinDuration}
-            onChange={(v) => {
-              spaceUploadStore.setFilterMinDuration(v.target.value)
-              refresh?.()
-            }}
-          >
-            {Object.values(SpaceUploadVideoMinDuration).map((k) => {
-              const { label } = SpaceUploadVideoMinDurationConfig[k]
-              return (
-                <Radio.Button key={k} value={k}>
-                  {label}
-                </Radio.Button>
-              )
-            })}
-          </Radio.Group>
+        <div className={classes.sectionTilte}>按时长过滤</div>
+        <div className={classes.sectionContent}>
+          <div className='flex items-center gap-x-8px'>
+            <span className={clsx(filterMinDuration && 'color-gate-primary')}>最短时长</span>
+            <PopoverDurationInput
+              parentOpen={open}
+              title='编辑「最短时长」'
+              value={filterMinDuration}
+              presets={minDurationPresets}
+              classNames={{ popoverRoot: 'w-202px', numberInput: 'w-80px' }}
+              onChange={(v) => {
+                spaceUploadStore.setFilterMinDuration(v)
+                refresh?.()
+              }}
+            />
+          </div>
+          <div className='flex items-center gap-x-8px'>
+            <span className={clsx(filterMaxDuration && 'color-gate-primary')}>最长时长</span>
+            <PopoverDurationInput
+              parentOpen={open}
+              title='编辑「最长时长」'
+              value={filterMaxDuration}
+              presets={maxDurationPresets}
+              classNames={{ popoverRoot: 'w-202px', numberInput: 'w-80px' }}
+              onChange={(v) => {
+                spaceUploadStore.setFilterMaxDuration(v)
+                refresh?.()
+              }}
+            />
+          </div>
         </div>
       </div>
 

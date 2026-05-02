@@ -16,7 +16,7 @@ import { parseAdvancedFilter } from '$utility/local-filter'
 import { parseDuration } from '$utility/video'
 import { BaseTabService, type IService } from '../_base'
 import { DefaultSpaceUploadOrder, SpaceUploadOrder, SpaceUploadOrderConfig, tryGetSpaceUpload } from './api'
-import { QUERY_SPACE_UPLOAD_INITIAL_PAGE, spaceUploadStore, SpaceUploadVideoMinDuration } from './store'
+import { QUERY_SPACE_UPLOAD_INITIAL_PAGE, spaceUploadStore } from './store'
 import { isSpaceUploadItemChargeOnly } from './util'
 import { SpaceUploadTabbarView } from './views'
 import type { ReactNode } from 'react'
@@ -43,8 +43,8 @@ type SpaceUploadServiceConfig = {
   filterText: string | undefined
   initialPage: number | undefined
   hideChargeOnlyVideos: boolean
-  filterMinDuration: SpaceUploadVideoMinDuration
-  filterMinDurationValue: number
+  filterMinDurationValue: number | undefined
+  filterMaxDurationValue: number | undefined
 }
 export function getSpaceUploadServiceConfig(): SpaceUploadServiceConfig {
   const snap = snapshot(spaceUploadStore) as WritableDeep<typeof spaceUploadStore>
@@ -55,9 +55,9 @@ export function getSpaceUploadServiceConfig(): SpaceUploadServiceConfig {
     searchText: snap.searchText,
     filterText: snap.filterText,
     initialPage: QUERY_SPACE_UPLOAD_INITIAL_PAGE ? Number(QUERY_SPACE_UPLOAD_INITIAL_PAGE) : undefined,
-    hideChargeOnlyVideos: snap.hideChargeOnlyVideos,
-    filterMinDuration: snap.filterMinDuration,
-    filterMinDurationValue: snap.filterMinDurationValue,
+    hideChargeOnlyVideos: snap.currentFilterState.hideChargeOnlyVideos,
+    filterMinDurationValue: snap.currentFilterState.filterMinDuration,
+    filterMaxDurationValue: snap.currentFilterState.filterMaxDuration,
   }
 }
 
@@ -72,8 +72,8 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
   filterText: string | undefined
   initialPage: number | undefined
   hideChargeOnlyVideos: boolean
-  filterMinDuration: SpaceUploadVideoMinDuration
-  filterMinDurationValue: number
+  filterMinDurationValue: number | undefined
+  filterMaxDurationValue: number | undefined
 
   override sidebarView = undefined
 
@@ -83,8 +83,8 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
     this.mids = config.mids
     this.order = config.order
     this.hideChargeOnlyVideos = config.hideChargeOnlyVideos
-    this.filterMinDuration = config.filterMinDuration
     this.filterMinDurationValue = config.filterMinDurationValue
+    this.filterMaxDurationValue = config.filterMaxDurationValue
     assert(this.mids.length || this.groupId !== undefined, 'mid & groupId can not both be empty')
     this.searchText = this.searchText?.trim()
     if (this.initialPage && (this.groupId !== undefined || this.mids.length > 1)) {
@@ -218,10 +218,19 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
       list = list.filter((item) => !isSpaceUploadItemChargeOnly(item))
     }
     // 最短时长
-    if (this.filterMinDuration !== SpaceUploadVideoMinDuration.All) {
+    if (this.filterMinDurationValue !== undefined) {
+      const minDuration = this.filterMinDurationValue
       list = list.filter((item) => {
         const duration = parseDuration(item.length)
-        return duration >= this.filterMinDurationValue
+        return duration >= minDuration
+      })
+    }
+    // 最长时长
+    if (this.filterMaxDurationValue !== undefined) {
+      const maxDuration = this.filterMaxDurationValue
+      list = list.filter((item) => {
+        const duration = parseDuration(item.length)
+        return duration <= maxDuration
       })
     }
 

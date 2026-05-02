@@ -1,4 +1,4 @@
-import { isEqual } from 'es-toolkit'
+import { isEqual, pick } from 'es-toolkit'
 import { proxy } from 'valtio'
 import { proxyMapWithGmStorage } from '$utility/valtio'
 import { SpaceUploadOrder } from './api'
@@ -10,28 +10,6 @@ export enum SpaceUploadQueryKey {
   FilterText = 'space-filter-text',
   InitialPage = 'space-initial-page',
   Order = 'space-order',
-}
-
-export enum SpaceUploadVideoMinDuration {
-  All = 'all',
-  _5m = '5min',
-  _2m = '2min',
-  _1m = '1min',
-  _30s = '30s',
-  _10s = '10s',
-}
-
-export const SpaceUploadVideoMinDurationConfig: Record<
-  SpaceUploadVideoMinDuration,
-  { label: string; duration: number }
-> = {
-  // 及以上
-  [SpaceUploadVideoMinDuration.All]: { label: '全部时长', duration: 0 },
-  [SpaceUploadVideoMinDuration._5m]: { label: '5分钟', duration: 5 * 60 },
-  [SpaceUploadVideoMinDuration._2m]: { label: '2分钟', duration: 2 * 60 },
-  [SpaceUploadVideoMinDuration._1m]: { label: '1分钟', duration: 60 },
-  [SpaceUploadVideoMinDuration._30s]: { label: '30秒', duration: 30 },
-  [SpaceUploadVideoMinDuration._10s]: { label: '10秒', duration: 10 },
 }
 
 const searchParams = new URLSearchParams(location.search)
@@ -64,12 +42,14 @@ export type SpaceUploadFilterKey =
 
 type SpaceUploadFilterState = {
   hideChargeOnlyVideos: boolean
-  filterMinDuration: SpaceUploadVideoMinDuration
+  filterMinDuration: number | undefined
+  filterMaxDuration: number | undefined
 }
 
 const defaultFilterState = {
   hideChargeOnlyVideos: true,
-  filterMinDuration: SpaceUploadVideoMinDuration.All,
+  filterMinDuration: undefined,
+  filterMaxDuration: undefined,
 } as const satisfies SpaceUploadFilterState
 
 const filterStateMap = (
@@ -108,34 +88,43 @@ const store = proxy({
     return `${SpaceUploadFilterKeyPrefixUp}unknown`
   },
   get currentFilterState(): SpaceUploadFilterState {
-    return (this.filterStateMap.get(this.currentFilterKey) ?? defaultFilterState) as SpaceUploadFilterState
+    const state = (this.filterStateMap.get(this.currentFilterKey) ?? {}) as Partial<SpaceUploadFilterState>
+    return { ...defaultFilterState, ...state }
   },
 
-  get hideChargeOnlyVideos() {
-    return this.currentFilterState.hideChargeOnlyVideos
-  },
-  get filterMinDuration() {
-    return this.currentFilterState.filterMinDuration
-  },
-  get filterMinDurationValue() {
-    const key = this.currentFilterState.filterMinDuration as SpaceUploadVideoMinDuration
-    return SpaceUploadVideoMinDurationConfig[key].duration
-  },
-
-  setHideChargeOnlyVideos(val: boolean) {
-    this.filterStateMap.set(this.currentFilterKey, {
-      ...this.currentFilterState,
-      hideChargeOnlyVideos: val,
-    })
-  },
-  setFilterMinDuration(val: SpaceUploadVideoMinDuration) {
-    this.filterStateMap.set(this.currentFilterKey, {
-      ...this.currentFilterState,
-      filterMinDuration: val,
-    })
-  },
   resetCurrentFilterState() {
     this.filterStateMap.set(this.currentFilterKey, { ...defaultFilterState })
+  },
+
+  updateCurrentFilterState(payload: Partial<SpaceUploadFilterState>) {
+    this.filterStateMap.set(this.currentFilterKey, { ...this.currentFilterState, ...payload })
+  },
+
+  _setDurationValue(target: 'min' | 'max', value: number | undefined) {
+    const payload: Pick<SpaceUploadFilterState, 'filterMinDuration' | 'filterMaxDuration'> = {
+      ...pick(this.currentFilterState, ['filterMinDuration', 'filterMaxDuration']),
+      ...(target === 'min' && { filterMinDuration: value }),
+      ...(target === 'max' && { filterMaxDuration: value }),
+    }
+    // zero to undefined
+    payload.filterMinDuration ||= undefined
+    payload.filterMaxDuration ||= undefined
+    // boundary check
+    if (
+      payload.filterMaxDuration &&
+      payload.filterMinDuration &&
+      payload.filterMinDuration >= payload.filterMaxDuration // invalid case
+    ) {
+      if (target === 'min') payload.filterMaxDuration = undefined
+      if (target === 'max') payload.filterMinDuration = undefined
+    }
+    this.updateCurrentFilterState(payload)
+  },
+  setFilterMinDuration(val: number | undefined) {
+    return this._setDurationValue('min', val)
+  },
+  setFilterMaxDuration(val: number | undefined) {
+    return this._setDurationValue('max', val)
   },
 })
 
