@@ -127,9 +127,20 @@ export async function proxySetWithGmStorage<T>(storageKey: string) {
   }
 }
 
-export async function proxyMapWithGmStorage<K, V>(storageKey: string, beforeSave?: (vals: [K, V][]) => [K, V][]) {
+export async function proxyMapWithGmStorage<K, V>(
+  storageKey: string,
+  {
+    beforeLoad,
+    beforeSave,
+  }: {
+    beforeLoad?: (loaded: [K, V][]) => [K, V][] // loaded from storage
+    beforeSave?: (vals: [K, V][]) => [K, V][] // save to storage
+  } = {},
+) {
   const load = async (): Promise<[K, V][]> => (await GM.getValue(storageKey)) || []
-  const p = proxyMap<K, V>(await load())
+  const rawLoaded = await load()
+  const loaded = beforeLoad ? beforeLoad(rawLoaded) : rawLoaded
+  const p = proxyMap<K, V>(loaded)
   const replaceAllWith = (newVal: Iterable<[K, V]>) => {
     const newMap = new Map(newVal)
     for (const [k, v] of [...p, ...newMap]) {

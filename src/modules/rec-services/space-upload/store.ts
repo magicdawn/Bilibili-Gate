@@ -53,9 +53,20 @@ const defaultFilterState = {
 } as const satisfies SpaceUploadFilterState
 
 const filterStateMap = (
-  await proxyMapWithGmStorage<SpaceUploadFilterKey, SpaceUploadFilterState>('space-upload:filters', (vals) =>
-    vals.filter(([, state]) => !isEqual(state, defaultFilterState)),
-  )
+  await proxyMapWithGmStorage<SpaceUploadFilterKey, SpaceUploadFilterState>('space-upload:filters', {
+    beforeLoad(vals) {
+      // 历史数据: 存的是 string 如 `1min`
+      vals.forEach(([_, state]) => {
+        if (state.filterMinDuration && typeof state.filterMinDuration !== 'number') state.filterMinDuration = undefined
+        if (state.filterMaxDuration && typeof state.filterMaxDuration !== 'number') state.filterMaxDuration = undefined
+      })
+      return vals
+    },
+    // 不存储 `默认值`
+    beforeSave(vals) {
+      return vals.filter(([, state]) => !isEqual(state, defaultFilterState))
+    },
+  })
 ).map
 
 const store = proxy({
