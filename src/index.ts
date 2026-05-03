@@ -23,7 +23,7 @@ import { initHomepage } from '$main/homepage'
 import { initSearchPage } from '$main/search-page'
 import { initSpacePage } from '$main/space-page'
 import { initVideoPlayPage } from '$main/video-play-page'
-import { IN_BILIBILI_VIDEO_PLAY_PAGE } from '$modules/pages/video-play-page'
+import { IN_BILIBILI_VIDEO_PLAY_PAGE } from '$main/video-play-page/util'
 
 dayjs.extend(duration)
 

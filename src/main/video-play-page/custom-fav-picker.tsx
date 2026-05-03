@@ -2,10 +2,10 @@ import { bv2av } from '@mgdn/bvid'
 import { matchesKeyboardEvent } from '@tanstack/react-hotkeys'
 import { handleModifyFavItemToFolder, startModifyFavItemToFolder } from '$components/ModalFavManager'
 import { antMessage } from '$modules/antd'
-import { getCurrentPageBvid } from '$modules/pages/video-play-page'
 import { UserFavApi } from '$modules/rec-services/fav/api'
 import { settings } from '$modules/settings'
 import { poll, shouldDisableShortcut } from '$utility/dom'
+import { getCurrentPageBvid } from './util'
 
 export async function setupCustomFavPicker() {
   GM.registerMenuCommand?.('⭐️ 加入收藏', () => addToFav())
