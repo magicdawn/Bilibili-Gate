@@ -104,6 +104,7 @@
     "knip": "^6.9.0",
     "lint-staged": "^16.4.0",
     "node-cjs-interop": "^0.1.7",
+    "oxfmt": "^0.47.0",
     "oxlint": "^1.62.0",
     "postcss-media-minmax": "^5.0.0",
     "prettier": "^3.8.3",
