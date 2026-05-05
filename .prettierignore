@@ -1,5 +1,3 @@
-dist/
-node_modules/
-*.module.less.d.ts
+# contents not in .gitignore
 auto-imports.d.ts
 pnpm-lock.yaml
