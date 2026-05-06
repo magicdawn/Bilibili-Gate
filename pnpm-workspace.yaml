@@ -25,3 +25,4 @@ onlyBuiltDependencies:
   - esbuild
   - oxc-resolver
   - unrs-resolver
+  - '@magicdawn/eslint-config'
