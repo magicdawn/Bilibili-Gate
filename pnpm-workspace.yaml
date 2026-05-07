@@ -1,6 +1,13 @@
 overrides:
   vite-plugin-importer>babel-plugin-import: ^1.13.8
 
+allowBuilds:
+  '@parcel/watcher': true
+  '@swc/core': true
+  esbuild: true
+  oxc-resolver: true
+  unrs-resolver: true
+  '@magicdawn/eslint-config': true
 allowedDeprecatedVersions:
   axios-userscript-adapter: '0'
 
@@ -17,12 +24,3 @@ minimumReleaseAgeExclude:
   - react
   - react-dom
   - typescript
-
-onlyBuiltDependencies:
-  - '@biomejs/biome'
-  - '@parcel/watcher'
-  - '@swc/core'
-  - esbuild
-  - oxc-resolver
-  - unrs-resolver
-  - '@magicdawn/eslint-config'
