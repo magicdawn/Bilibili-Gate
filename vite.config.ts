@@ -1,6 +1,7 @@
 import { execSync } from 'node:child_process'
 import process from 'node:process'
-import babelPlugin, { defineRolldownBabelPreset } from '@rolldown/plugin-babel'
+import babelPlugin from '@rolldown/plugin-babel'
+import emotion from '@rolldown/plugin-emotion'
 import react from '@vitejs/plugin-react'
 import { interopImportCJSDefault } from 'node-cjs-interop'
 import postcssMediaMinmax from 'postcss-media-minmax'
@@ -9,7 +10,7 @@ import UnoCSS from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 import Icons from 'unplugin-icons/vite'
-import { defineConfig, type ConfigEnv } from 'vite'
+import { defineConfig } from 'vite'
 import { analyzer } from 'vite-bundle-analyzer'
 import Inspect from 'vite-plugin-inspect'
 import monkey, { cdn } from 'vite-plugin-monkey'
@@ -81,6 +82,13 @@ if (isDev) {
   updateURL = `${baseUrl}${metaFileName}`
 }
 
+// use @vitejs/plugin-react in build
+// for use emotion babel plugin
+// https://emotion.sh/docs/babel#features-which-are-enabled-with-the-babel-plugin
+const babel = babelPlugin({
+  plugins: ['@emotion/babel-plugin'],
+})
+
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => ({
   define: {
@@ -141,13 +149,12 @@ export default defineConfig(({ command, mode }) => ({
         }),
       ],
     }),
+    Icons({ compiler: 'jsx', jsx: 'react' }),
 
-    Icons({
-      compiler: 'jsx',
-      jsx: 'react',
-    }),
-    ...getReactPlugin(command),
+    react({ jsxImportSource: '@emotion/react' }),
+    emotion(),
     UnoCSS(),
+
     monkey({
       entry: './src/index.ts',
       userscript: {
@@ -259,29 +266,3 @@ export default defineConfig(({ command, mode }) => ({
     mode === 'development' && Inspect(),
   ].filter(Boolean),
 }))
-
-function getReactPlugin(command: ConfigEnv['command']) {
-  const _react = react({ jsxImportSource: '@emotion/react' })
-
-  // use @vitejs/plugin-react in build
-  // for use emotion babel plugin
-  // https://emotion.sh/docs/babel#features-which-are-enabled-with-the-babel-plugin
-  const _babel = babelPlugin({
-    // plugins: ['@emotion/babel-plugin'],
-    presets: [
-      defineRolldownBabelPreset({
-        preset: [{ plugins: ['@emotion/babel-plugin'] }],
-        rolldown: {
-          filter: {
-            moduleType: ['js', 'jsx', 'ts', 'tsx'],
-            code: /from '@emotion\/(?:react|core)'/,
-          },
-        },
-      }),
-    ],
-  })
-
-  // 经测试: @swc/plugin-emotion 达不到 @emotion/babel-plugin 的效果
-  // data-role="preview", @swc/plugin-emotion 没有在编译时 parse
-  return [_react, command === 'build' ? _babel : undefined].filter(Boolean)
-}

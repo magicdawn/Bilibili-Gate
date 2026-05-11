@@ -168,6 +168,9 @@ importers:
       '@rolldown/plugin-babel':
         specifier: ^0.2.3
         version: 0.2.3(@babel/core@7.29.0)(@babel/runtime@7.29.2)(rolldown@1.0.0-rc.18)(vite@8.0.11(@types/node@25.6.2)(esbuild@0.17.19)(jiti@2.7.0)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.4))
+      '@rolldown/plugin-emotion':
+        specifier: ^0.1.2
+        version: 0.1.2(rolldown@1.0.0-rc.18)(vite@8.0.11(@types/node@25.6.2)(esbuild@0.17.19)(jiti@2.7.0)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.4))
       '@styled/typescript-styled-plugin':
         specifier: ^1.0.1
         version: 1.0.1
@@ -2022,6 +2025,16 @@ packages:
         optional: true
       '@babel/runtime':
         optional: true
+      vite:
+        optional: true
+
+  '@rolldown/plugin-emotion@0.1.2':
+    resolution: {integrity: sha512-COoG52mP3zeo0EQr8EvG71hLx7hgODRuKoVvqZsjRfxQ+znUX9CMl92E2/eRfA7joYjADevoVON4RedXtHgjxg==}
+    engines: {node: '>=22.12.0 || ^24.0.0'}
+    peerDependencies:
+      rolldown: ^1.0.0-rc.9
+      vite: ^8.0.0
+    peerDependenciesMeta:
       vite:
         optional: true
 
@@ -4630,6 +4643,15 @@ packages:
   ring-buffer-ts@1.2.0:
     resolution: {integrity: sha512-dkGqA7YHZgXp1dWwcNIsmt+4EgHK1RmY9sp7eqHLLfTkhYhQQ4agAwqgED7hJakELMaXkBgZ5568vqaI3/wV6Q==}
 
+  rolldown-string@0.3.0:
+    resolution: {integrity: sha512-qGhBPNSv/27uzFBQdO+Cs4YAXC/1PKznD7Jz5Fl7NIAIlteuTPBTBWBhCpJ2AFTqLsoKvvUr7wSjqSUip0Fkpg==}
+    engines: {node: '>=20.19.0'}
+    peerDependencies:
+      rolldown: '*'
+    peerDependenciesMeta:
+      rolldown:
+        optional: true
+
   rolldown@1.0.0-rc.18:
     resolution: {integrity: sha512-phmyKBpuBdRYDf4hgyynGAYn/rDDe+iZXKVJ7WX5b1zQzpLkP5oJRPGsfJuHdzPMlyyEO/4sPW6yfSx2gf7lVg==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -6957,6 +6979,15 @@ snapshots:
       rolldown: 1.0.0-rc.18
     optionalDependencies:
       '@babel/runtime': 7.29.2
+      vite: 8.0.11(@types/node@25.6.2)(esbuild@0.17.19)(jiti@2.7.0)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.4)
+
+  '@rolldown/plugin-emotion@0.1.2(rolldown@1.0.0-rc.18)(vite@8.0.11(@types/node@25.6.2)(esbuild@0.17.19)(jiti@2.7.0)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.4))':
+    dependencies:
+      '@emotion/hash': 0.9.2
+      '@jridgewell/gen-mapping': 0.3.13
+      rolldown: 1.0.0-rc.18
+      rolldown-string: 0.3.0(rolldown@1.0.0-rc.18)
+    optionalDependencies:
       vite: 8.0.11(@types/node@25.6.2)(esbuild@0.17.19)(jiti@2.7.0)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.4)
 
   '@rolldown/pluginutils@1.0.0-rc.18': {}
@@ -9946,6 +9977,12 @@ snapshots:
   rfdc@1.4.1: {}
 
   ring-buffer-ts@1.2.0: {}
+
+  rolldown-string@0.3.0(rolldown@1.0.0-rc.18):
+    dependencies:
+      magic-string: 0.30.21
+    optionalDependencies:
+      rolldown: 1.0.0-rc.18
 
   rolldown@1.0.0-rc.18:
     dependencies:

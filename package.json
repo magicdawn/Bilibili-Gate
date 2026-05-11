@@ -80,6 +80,7 @@
     "@magicdawn/prettier-config": "^0.1.0",
     "@prettier/plugin-oxc": "^0.1.4",
     "@rolldown/plugin-babel": "^0.2.3",
+    "@rolldown/plugin-emotion": "^0.1.2",
     "@styled/typescript-styled-plugin": "^1.0.1",
     "@svgr/core": "^8.1.0",
     "@svgr/plugin-jsx": "^8.1.0",
