@@ -24,3 +24,4 @@ minimumReleaseAgeExclude:
   - react
   - react-dom
   - typescript
+  - vite-plugin-monkey
