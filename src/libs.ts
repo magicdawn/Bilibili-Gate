@@ -1,1 +1,2 @@
-export { default as axios } from 'axios'
+// oxlint-disable unicorn/no-empty-file
+// libs

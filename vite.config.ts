@@ -1,6 +1,6 @@
 import { execSync } from 'node:child_process'
 import process from 'node:process'
-import babelPlugin from '@rolldown/plugin-babel'
+import babelPlugin, { defineRolldownBabelPreset } from '@rolldown/plugin-babel'
 import react from '@vitejs/plugin-react'
 import { interopImportCJSDefault } from 'node-cjs-interop'
 import postcssMediaMinmax from 'postcss-media-minmax'
@@ -261,18 +261,27 @@ export default defineConfig(({ command, mode }) => ({
 }))
 
 function getReactPlugin(command: ConfigEnv['command']) {
+  const _react = react({ jsxImportSource: '@emotion/react' })
+
   // use @vitejs/plugin-react in build
   // for use emotion babel plugin
   // https://emotion.sh/docs/babel#features-which-are-enabled-with-the-babel-plugin
-  const _react = react({ jsxImportSource: '@emotion/react' })
-
-  const _babel = babelPlugin({ plugins: ['@emotion/babel-plugin'] })
+  const _babel = babelPlugin({
+    // plugins: ['@emotion/babel-plugin'],
+    presets: [
+      defineRolldownBabelPreset({
+        preset: [{ plugins: ['@emotion/babel-plugin'] }],
+        rolldown: {
+          filter: {
+            moduleType: ['js', 'jsx', 'ts', 'tsx'],
+            code: /from '@emotion\/(?:react|core)'/,
+          },
+        },
+      }),
+    ],
+  })
 
   // 经测试: @swc/plugin-emotion 达不到 @emotion/babel-plugin 的效果
   // data-role="preview", @swc/plugin-emotion 没有在编译时 parse
-  return [
-    //
-    _react,
-    // command === 'build' ? _babel : undefined,
-  ].filter(Boolean)
+  return [_react, command === 'build' ? _babel : undefined].filter(Boolean)
 }

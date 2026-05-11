@@ -83,7 +83,6 @@
     "@styled/typescript-styled-plugin": "^1.0.1",
     "@svgr/core": "^8.1.0",
     "@svgr/plugin-jsx": "^8.1.0",
-    "@swc/plugin-emotion": "^14.9.0",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/babel__core": "^7.20.5",
     "@types/ms": "^2.1.0",
@@ -98,7 +97,6 @@
     "@unocss/preset-wind4": "^66.6.8",
     "@violentmonkey/types": "^0.3.3",
     "@vitejs/plugin-react": "^6.0.1",
-    "@vitejs/plugin-react-swc": "^4.3.0",
     "@vitest/ui": "^4.1.5",
     "concurrently": "^9.2.1",
     "eslint": "^10.3.0",
@@ -124,7 +122,6 @@
     "vite-plugin-importer": "^0.2.5",
     "vite-plugin-inspect": "^11.3.3",
     "vite-plugin-monkey": "^8.0.3",
-    "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.5",
     "zod": "^4.4.3"
   },
