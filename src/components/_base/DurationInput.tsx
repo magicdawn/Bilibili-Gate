@@ -4,14 +4,21 @@ import clsx from 'clsx'
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
 import { IconForDelete, IconForEdit } from '$modules/icon'
-import { formatDuration } from '$utility/video'
-
-const normalizeDurationValue = (value?: number) => Math.max(0, Math.floor(value ?? 0))
 
 function normalizePresets(presets?: number[]) {
   if (!presets?.length) return []
-  const list = presets.map((x) => normalizeDurationValue(x)).filter((x) => Number.isFinite(x))
+  const list = presets.map((x) => Math.max(x, 0)).filter((x) => Number.isFinite(x))
   return [...new Set(list)]
+}
+
+export function splitDuration(numInSeconds: number) {
+  return { minutes: Math.floor(numInSeconds / 60), seconds: numInSeconds % 60 }
+}
+
+export function durationDisplay(numInSeconds: number) {
+  const { minutes, seconds } = splitDuration(numInSeconds)
+  const [m, s] = [minutes, seconds].map((x) => x.toString().padStart(2, '0'))
+  return `${m}:${s}`
 }
 
 type DurationInputClassNames = {
@@ -38,17 +45,18 @@ export function DurationInputEditing({
   style?: CSSProperties
   classNames?: DurationInputClassNames
 }) {
-  const [minuteValue, setMinuteValue] = useState<number>(Math.floor(normalizeDurationValue(value) / 60))
-  const [secondValue, setSecondValue] = useState<number>(normalizeDurationValue(value) % 60)
-  const triggerOnChange = useMemoizedFn(() => {
-    onChange?.(minuteValue * 60 + secondValue)
-  })
+  const val = useMemo(() => Math.max(0, value || 0), [value])
+  const { minutes, seconds } = useMemo(() => {
+    return {
+      minutes: Math.floor(val / 60),
+      seconds: val % 60,
+    }
+  }, [val])
 
-  useEffect(() => {
-    const safe = normalizeDurationValue(value)
-    setMinuteValue(Math.floor(safe / 60))
-    setSecondValue(safe % 60)
-  }, [value])
+  const triggerOnChange = useMemoizedFn((field: 'minutes' | 'seconds', num: number) => {
+    const nextValue = field === 'minutes' ? num * 60 + seconds : minutes * 60 + num
+    onChange?.(nextValue)
+  })
 
   const normalizedPresets = useMemo(() => normalizePresets(presets), [presets])
 
@@ -67,29 +75,27 @@ export function DurationInputEditing({
       <Space.Compact>
         <InputNumber
           size='small'
-          value={minuteValue}
+          value={minutes}
           min={0}
           step={1}
           disabled={disabled}
           className={_numberInputClassName}
           onChange={(next) => {
             if (typeof next !== 'number') return
-            setMinuteValue(next)
-            triggerOnChange()
+            triggerOnChange('minutes', next)
           }}
         />
         <Space.Addon>分</Space.Addon>
         <InputNumber
           size='small'
-          value={secondValue}
+          value={seconds}
           min={0}
           step={1}
           disabled={disabled}
           className={_numberInputClassName}
           onChange={(next) => {
             if (typeof next !== 'number') return
-            setSecondValue(next)
-            triggerOnChange()
+            triggerOnChange('seconds', next)
           }}
         />
         <Space.Addon>秒</Space.Addon>
@@ -105,7 +111,7 @@ export function DurationInputEditing({
                 onChange?.(preset)
               }}
             >
-              {formatDuration(preset)}
+              {durationDisplay(preset)}
             </Tag>
           ))}
         </div>
@@ -143,11 +149,11 @@ export function PopoverDurationInput({
     }
   }, [parentOpen])
 
-  const [draftValue, setDraftValue] = useState<number | undefined>(normalizeDurationValue(value))
+  const [draftValue, setDraftValue] = useState<number | undefined>(value)
   const hasValue = !!value
-  const displayText = useMemo(() => (hasValue ? formatDuration(value) : '未启用'), [value, hasValue])
+  const displayText = useMemo(() => (hasValue ? durationDisplay(value) : '未启用'), [value, hasValue])
   useEffect(() => {
-    setDraftValue(normalizeDurationValue(value))
+    setDraftValue(value)
   }, [value, open])
 
   const handleReset = useMemoizedFn(() => {
@@ -202,7 +208,6 @@ export function PopoverDurationInput({
           <IconForEdit className='size-12px' />
         </Button>
       </Popover>
-
       {hasValue && (
         <Button className='icon-only-round-button size-20px'>
           <IconForDelete
