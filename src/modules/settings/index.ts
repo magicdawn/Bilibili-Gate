@@ -458,8 +458,8 @@ export function runSettingsMigration(val: object | undefined) {
     ['dynamicFeed.advancedFilter', 'dynamicFeed.advancedSearch'],
 
     // 2026-05-12: watchlater deep keys
-    ['watchlater.addSeparator', 'watchlater.addSeparator'],
-    ['watchlater.itemsOrder', 'watchlater.itemsOrder'],
+    ['watchlater.addSeparator', 'watchlaterAddSeparator'],
+    ['watchlater.itemsOrder', 'watchlaterItemsOrder'],
   ]
   // 伪代码: savedConfig[newName] = savedConfig[legacyName]
   for (const [configPath, legacyConfigPath] of config) {
