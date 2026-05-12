@@ -1,7 +1,9 @@
 import { useUpdateEffect } from 'ahooks'
-import { Button, Input, Tag } from 'antd'
+import { Button, Input, Radio, Tag } from 'antd'
 import { delay } from 'es-toolkit'
 import { useSnapshot } from 'valtio'
+import { explainForFlag } from '$components/ModalSettings/index.shared'
+import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { useOnRefresh, useRecSelfContext } from '$components/Recommends/rec.shared'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconForDelete, IconForShuffle, IconForTimeAsc, IconForTimeDesc } from '$modules/icon'
@@ -19,7 +21,7 @@ import { WatchlaterItemsOrder } from './watchlater-enum'
 import type { ComponentRef, ReactNode } from 'react'
 
 export function WatchlaterTabbarView({ service }: { service: WatchlaterRecService }) {
-  const { watchlaterAddSeparator, watchlaterItemsOrder, watchlaterUseNormalVideoUrl } = useSettingsSnapshot()
+  const { addSeparator, itemsOrder } = useSettingsSnapshot().watchlater
   const onRefresh = useOnRefresh()
   const { searchText } = useSnapshot(watchlaterStore, { sync: true })
   const multiSelecting = useMultiSelecting()
@@ -31,7 +33,7 @@ export function WatchlaterTabbarView({ service }: { service: WatchlaterRecServic
       await delay(100)
       onRefresh()
     })()
-  }, [watchlaterAddSeparator, watchlaterItemsOrder, watchlaterUseNormalVideoUrl])
+  }, [addSeparator, itemsOrder])
 
   const { total } = useSnapshot(service.state)
   const title = searchText ? `共 ${total} 条搜索结果` : `共 ${total} 个视频`
@@ -69,6 +71,8 @@ export function WatchlaterTabbarView({ service }: { service: WatchlaterRecServic
       />
 
       {totalTag}
+
+      {itemsOrder !== WatchlaterItemsOrder.Shuffle && <WatchlaterContinuePlaySettings />}
 
       {multiSelecting && (
         <AntdTooltip arrow={false} title='移除稍后再看 (多选)'>
@@ -131,16 +135,16 @@ const extraHelpInfo = (
 function WatchlaterOrderSwitcher() {
   const onRefresh = useOnRefresh()
   const { ref, getPopupContainer } = usePopupContainer<ComponentRef<'span'>>()
-  const { watchlaterItemsOrder } = useSettingsSnapshot()
+  const { itemsOrder } = useSettingsSnapshot().watchlater
   const { searchText } = useSnapshot(watchlaterStore)
   const disabled = !!searchText
 
   return (
     <GenericOrderSwitcher<WatchlaterItemsOrder>
       disabled={disabled}
-      value={disabled ? WatchlaterItemsOrder.AddTimeDesc : watchlaterItemsOrder}
+      value={disabled ? WatchlaterItemsOrder.AddTimeDesc : itemsOrder}
       onChange={(next) => {
-        settings.watchlaterItemsOrder = next
+        settings.watchlater.itemsOrder = next
         onRefresh()
       }}
       list={list}
@@ -149,5 +153,45 @@ function WatchlaterOrderSwitcher() {
       dropdownProps={{ getPopupContainer }}
       extraHelpInfo={extraHelpInfo}
     />
+  )
+}
+
+export function WatchlaterContinuePlaySettings() {
+  const { continuePlay, continuePlayDirection } = useSnapshot(settings.watchlater)
+  return (
+    <div className='inline-flex-center gap-x-1'>
+      <CheckboxSettingItem
+        configPath='watchlater.continuePlay'
+        label='连续播放'
+        tooltip={explainForFlag('使用自动生成的「稍后再看」列表连续播放', '独立视频链接')}
+      />
+      <Radio.Group
+        size='small'
+        disabled={!continuePlay}
+        value={continuePlayDirection}
+        onChange={(e) => {
+          const val = e.target.value
+          settings.watchlater.continuePlayDirection = val as 'normal' | 'reverse'
+        }}
+      >
+        <AntdTooltip title='逆序播放'>
+          <Radio.Button value='reverse' className='[&_.ant-radio-button-label]:(h-full flex items-center)'>
+            <IconTablerArrowNarrowLeft className='size-14px' />
+          </Radio.Button>
+        </AntdTooltip>
+        <AntdTooltip
+          title={
+            <>
+              顺序播放 (默认) <br />
+              左至右, 上至下
+            </>
+          }
+        >
+          <Radio.Button value='normal' className='[&_.ant-radio-button-label]:(h-full flex items-center)'>
+            <IconTablerArrowNarrowRight className='size-14px' />
+          </Radio.Button>
+        </AntdTooltip>
+      </Radio.Group>
+    </div>
   )
 }

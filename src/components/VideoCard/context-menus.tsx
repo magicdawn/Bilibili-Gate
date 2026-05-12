@@ -112,7 +112,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
 
   /* #region from settings */
   const {
-    watchlaterItemsOrder,
+    watchlater: { itemsOrder: watchlaterItemsOrder },
     filter: {
       dfHideOpusMids: { enabled: dfHideOpusMidsEnabled },
     },

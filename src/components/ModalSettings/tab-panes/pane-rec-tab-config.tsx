@@ -29,6 +29,7 @@ import {
   dfStore,
 } from '$modules/rec-services/dynamic-feed/store'
 import { FollowGroupMechanismNote } from '$modules/rec-services/dynamic-feed/views/popover-related'
+import { WatchlaterContinuePlaySettings } from '$modules/rec-services/watchlater/views'
 import { settings, updateSettings, updateSettingsInnerArray, useSettingsSnapshot } from '$modules/settings'
 import { TagItemDisplay } from '../EditableListSettingItem'
 import { explainForFlag } from '../index.shared'
@@ -62,8 +63,9 @@ export function TabPaneRecTabsConfig() {
           title='更多设置'
           contentClassName='gap-y-15px'
           resetSettingPaths={[
-            'watchlaterAddSeparator',
-            'watchlaterUseNormalVideoUrl',
+            'watchlater.addSeparator',
+            'watchlater.continuePlay',
+            'watchlater.continuePlayDirection',
             'fav.addSeparator',
             'dynamicFeed.followGroup.enabled',
             'dynamicFeed.showLive',
@@ -80,15 +82,11 @@ export function TabPaneRecTabsConfig() {
             </div>
             <div className={sharedClassNames.settingsLine}>
               <CheckboxSettingItem
-                configPath='watchlaterAddSeparator'
+                configPath='watchlater.addSeparator'
                 label='添加分割线'
                 tooltip='添加「近期」「更早」分割线'
               />
-              <CheckboxSettingItem
-                configPath='watchlaterUseNormalVideoUrl'
-                label='使用普通视频链接'
-                tooltip={explainForFlag('使用普通视频链接', '使用「稍后再看」自动列表链接')}
-              />
+              <WatchlaterContinuePlaySettings />
             </div>
           </div>
 
