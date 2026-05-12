@@ -13,14 +13,8 @@ allowedDeprecatedVersions:
 
 minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
+  # my packages
   - '@magicdawn/*'
   - '@mgdn/*'
-  - '@tanstack/*hotkeys'
-  - '@types/*'
-  - '@typescript/native-preview'
-  - unocss-merge
-  - fast-sort-lens
-  - antd
-  - react
-  - react-dom
-  - typescript
+  # - unocss-merge
+  # - fast-sort-lens
