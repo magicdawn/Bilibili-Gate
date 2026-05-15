@@ -10,8 +10,8 @@
 - [ ] space-upload: show up info in [document.title, tabbarView]
 - [ ] 合集: show up info in [document.title, ?]
 - [ ] 合集: 按标题过滤. 搜索 if API 允许.
-- [ ] disable refresh btn click / r refresh when multi-selecting has many selected. possible prevent Browser reload.
-- [ ] space-upload add max-duration filter
+- [ ] multi-select: disable refresh btn click / r refresh when multi-selecting has many selected. possible prevent Browser reload.
+- [ ] multi-select: parse selected state from clipboard
 
 # Completed
 
@@ -21,3 +21,4 @@
 - 单独查看合集: 去掉 separator, 加一个卡片 indicate 合集信息; + 回到视频页, 第一个视频.
 - space upload 显示充电专属标记
 - antd message multiline
+- space-upload add max-duration filter
