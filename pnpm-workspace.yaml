@@ -7,7 +7,7 @@ allowBuilds:
   esbuild: true
   oxc-resolver: true
   unrs-resolver: true
-  '@magicdawn/eslint-config': true
+
 allowedDeprecatedVersions:
   axios-userscript-adapter: '0'
 
@@ -16,5 +16,3 @@ minimumReleaseAgeExclude:
   # my packages
   - '@magicdawn/*'
   - '@mgdn/*'
-  # - unocss-merge
-  # - fast-sort-lens
