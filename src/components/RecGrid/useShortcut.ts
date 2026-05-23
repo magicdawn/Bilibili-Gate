@@ -138,10 +138,10 @@ export function useShortcut({
     return videoCardEmitters[activeIndex]
   }
 
-  const hotkeyOptions: UseHotkeyOptions = {
+  const hotkeyOptions = {
     enabled, // set default `enabled` options
     conflictBehavior: 'allow', // will handle in callback
-  }
+  } satisfies UseHotkeyOptions
 
   // navigation
   useHotkeys(
