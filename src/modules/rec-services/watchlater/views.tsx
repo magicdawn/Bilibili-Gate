@@ -167,6 +167,7 @@ export function WatchlaterContinuePlaySettings() {
       />
       <Radio.Group
         size='small'
+        buttonStyle='solid'
         disabled={!continuePlay}
         value={continuePlayDirection}
         onChange={(e) => {
