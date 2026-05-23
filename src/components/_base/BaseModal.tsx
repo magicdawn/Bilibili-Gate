@@ -89,7 +89,11 @@ export function BaseModal({
       // 这是啥意思, 看不懂以前的注释了: `wait the unpreventable esc handlers run, close in next tick`
       setTimeout(onHide)
     },
-    { enabled: show && hideWhenEsc, conflictBehavior: 'allow' },
+    {
+      enabled: show && hideWhenEsc,
+      conflictBehavior: 'allow',
+      requireReset: true, // 按一次只能关闭一个啊
+    },
   )
 
   const _clsModalMask = useUnoMerge(BaseModalClassNames.modalMask, clsModalMask)

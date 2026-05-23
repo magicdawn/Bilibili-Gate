@@ -1,4 +1,4 @@
-import { useHotkey } from '@tanstack/react-hotkeys'
+import { useHotkeys, type UseHotkeyOptions } from '@tanstack/react-hotkeys'
 import { useMemoizedFn } from 'ahooks'
 import { useState, type RefObject } from 'react'
 import { APP_CLS_CARD, APP_CLS_CARD_ACTIVE, appWarn } from '$common'
@@ -38,12 +38,6 @@ export function useShortcut({
   videoCardEmitters,
   activeLargePreviewItemIndex,
 }: IOptions) {
-  const useCustomHotkey: typeof useHotkey = (hotkey, callback, options) =>
-    useHotkey(hotkey, callback, {
-      enabled, // set default `enabled` options
-      ...options,
-    })
-
   const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined)
   const activeIndexIsValid = useMemoizedFn(() => {
     if (typeof activeIndex !== 'number') return false
@@ -135,18 +129,6 @@ export function useShortcut({
     setActiveIndex(newActiveIndex)
     makeVisible(newActiveIndex)
   }
-
-  // by 1
-  useCustomHotkey('ArrowLeft', addActiveIndex(-1), { requireReset: false })
-  useCustomHotkey('ArrowRight', addActiveIndex(1), { requireReset: false })
-  useCustomHotkey('Tab', addActiveIndex(1), { requireReset: false })
-  useCustomHotkey('Shift+Tab', addActiveIndex(-1), { requireReset: false })
-  // by row
-  // 不使用 getColCount 是因为, Separator 类型导致有空的位置
-  useCustomHotkey('ArrowUp', addActiveIndex('up'), { requireReset: false })
-  useCustomHotkey('ArrowDown', addActiveIndex('down'), { requireReset: false })
-
-  // actions
   const clearActiveIndex = () => {
     if (!enabled) return
     setActiveIndex(undefined)
@@ -156,29 +138,74 @@ export function useShortcut({
     return videoCardEmitters[activeIndex]
   }
 
-  useCustomHotkey('Escape', clearActiveIndex, { conflictBehavior: 'allow' })
-  useHotkey(
-    'Enter',
-    (e) => {
-      if (typeof activeIndex === 'number') {
-        e.preventDefault()
-        return videoCardEmitters[activeIndex]?.emit('open')
-      }
+  const hotkeyOptions: UseHotkeyOptions = {
+    enabled, // set default `enabled` options
+    conflictBehavior: 'allow', // will handle in callback
+  }
 
-      if (typeof activeLargePreviewItemIndex === 'number') {
-        e.preventDefault()
-        return videoCardEmitters[activeLargePreviewItemIndex]?.emit('open-with-large-preview-visible')
-      }
+  // navigation
+  useHotkeys(
+    [
+      // by 1
+      { hotkey: 'ArrowLeft', callback: addActiveIndex(-1) },
+      { hotkey: 'ArrowRight', callback: addActiveIndex(1) },
+      { hotkey: 'Shift+Tab', callback: addActiveIndex(-1) },
+      { hotkey: 'Tab', callback: addActiveIndex(1) },
+      // by row
+      // 不使用 getColCount 是因为, Separator 类型导致有空的位置
+      { hotkey: 'ArrowUp', callback: addActiveIndex('up') },
+      { hotkey: 'ArrowDown', callback: addActiveIndex('down') },
+      // clear
+      { hotkey: 'Escape', callback: clearActiveIndex },
+    ],
+    {
+      ...hotkeyOptions,
+      requireReset: false, // quick nav
     },
-    { enabled },
   )
-  useCustomHotkey('X', () => getActiveEmitter()?.emit('open-in-popup'))
-  useCustomHotkey('Backspace', () => getActiveEmitter()?.emit('trigger-dislike'))
-  // 稍候再看, s 与 BILIBILI-Envoled 快捷键冲突
-  useCustomHotkey('S', () => getActiveEmitter()?.emit('toggle-watch-later'))
-  useCustomHotkey('W', () => getActiveEmitter()?.emit('toggle-watch-later'))
-  useCustomHotkey('.', () => getActiveEmitter()?.emit('hotkey-preview-animation'))
-  useCustomHotkey('P', () => getActiveEmitter()?.emit('hotkey-preview-animation'))
+
+  // open
+  useHotkeys(
+    [
+      {
+        hotkey: 'Enter',
+        callback: (e) => {
+          if (typeof activeIndex === 'number') {
+            e.preventDefault()
+            return videoCardEmitters[activeIndex]?.emit('open')
+          }
+          if (typeof activeLargePreviewItemIndex === 'number') {
+            e.preventDefault()
+            return videoCardEmitters[activeLargePreviewItemIndex]?.emit('open-with-large-preview-visible')
+          }
+        },
+      },
+      {
+        hotkey: 'X',
+        callback: () => getActiveEmitter()?.emit('open-in-popup'),
+      },
+    ],
+    {
+      ...hotkeyOptions,
+      requireReset: false, // may lost focus
+    },
+  )
+
+  // more actions
+  useHotkeys(
+    [
+      { hotkey: 'Backspace', callback: () => getActiveEmitter()?.emit('trigger-dislike') },
+      // 稍候再看, s 与 BILIBILI-Envoled 快捷键冲突
+      { hotkey: 'S', callback: () => getActiveEmitter()?.emit('toggle-watch-later') },
+      { hotkey: 'W', callback: () => getActiveEmitter()?.emit('toggle-watch-later') },
+      { hotkey: '.', callback: () => getActiveEmitter()?.emit('hotkey-preview-animation') },
+      { hotkey: 'P', callback: () => getActiveEmitter()?.emit('hotkey-preview-animation') },
+    ],
+    {
+      ...hotkeyOptions,
+      requireReset: true, // one press one action
+    },
+  )
 
   function getInitialIndex() {
     const scrollerRect = getScrollerRect()
