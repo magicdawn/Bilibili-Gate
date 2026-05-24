@@ -1,4 +1,4 @@
-import { attemptAsync } from 'es-toolkit'
+import { Result } from 'better-result'
 import ms from 'ms'
 import QuickLRU from 'quick-lru'
 import { baseDebug } from '$common'
@@ -118,17 +118,17 @@ export const fetchVideoPreviewData = reusePendingPromise(
       }
     }
 
-    const [err, playUrls] = await attemptAsync(() => getVideoPlayUrl(bvid, cid, useMp4, usePreferredCdn))
-    debug('playUrl: bvid=%s cid=%s %s', bvid, cid, playUrls)
-    if (err) {
-      antNotification.error({ title: '获取视频播放地址失败', description: (err as any).message || err })
+    const playUrlResult = await Result.tryPromise(() => getVideoPlayUrl(bvid, cid, useMp4, usePreferredCdn))
+    debug('playUrl: bvid=%s cid=%s %o', bvid, cid, playUrlResult)
+    if (playUrlResult.isErr()) {
+      const err = playUrlResult.error.cause as any
+      antNotification.error({ title: '获取视频播放地址失败', description: err.message || err })
       throw err
     }
-    if (playUrls?.length) {
-      videoPreviewCache.set(cacheKey, { playUrls, dimension })
-    }
 
-    return { playUrls: playUrls ?? undefined, dimension }
+    const playUrls = playUrlResult.value
+    if (playUrls.length) videoPreviewCache.set(cacheKey, { playUrls, dimension })
+    return { playUrls, dimension }
   },
 )
 

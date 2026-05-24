@@ -1,9 +1,10 @@
 import { arrayMove } from '@dnd-kit/sortable'
 import { useCreation, useEventListener, useLatest, useMemoizedFn, useMount, useUnmountedRef } from 'ahooks'
 import { Button, Divider } from 'antd'
+import { Result } from 'better-result'
 import clsx, { type ClassValue } from 'clsx'
 import Emittery from 'emittery'
-import { attempt, delay } from 'es-toolkit'
+import { delay } from 'es-toolkit'
 import ms from 'ms'
 import {
   Fragment,
@@ -461,7 +462,7 @@ export const RecGrid = memo(function RecGrid({
     onChange(inView) {
       if (inView) {
         debug('footerInView change to visible')
-        attempt(() => (footerInViewRef.current = true))
+        Result.try(() => (footerInViewRef.current = true))
         checkShouldLoadMore()
       }
     },

@@ -1,5 +1,6 @@
 import { useMemoizedFn, useMount, useUnmount } from 'ahooks'
-import { assert, attempt, attemptAsync, isEqual } from 'es-toolkit'
+import { Result } from 'better-result'
+import { assert, isEqual } from 'es-toolkit'
 import { RingBuffer } from 'ring-buffer-ts'
 import { useEmitterOn } from '$common/hooks/useEmitter'
 import { TabConfig } from '$components/RecHeader/tab-config'
@@ -76,8 +77,8 @@ export function useRefresh({
   tab: ETab
   debug: Debugger
   fetcher: (opts: FetcherOptions) => Promise<RecItemTypeOrSeparator[]>
-  preAction?: () => void | Promise<void>
-  postAction?: () => void | Promise<void>
+  preAction?: (signal: AbortSignal) => void | Promise<void>
+  postAction?: (signal: AbortSignal) => void | Promise<void>
   updateViewFromService?: () => void
   self: RecGridSelf
 }) {
@@ -85,7 +86,7 @@ export function useRefresh({
   const { serviceRegistry } = recSelf
 
   useMount(() => {
-    // Q: why `true`   A: when switch tab, set reuse to `true`
+    // reuse service when switch tab
     refresh('reuse')
   })
   // switch away
@@ -110,36 +111,53 @@ export function useRefresh({
 
     // refresh start
     const start = performance.now()
+
+    // #region abort-controller
+    //  - 往 self / recSelf 上写 state 前需确保 `!signal.aborted`
+    //  - async code 后需要判断 `signal.aborted` early return
+    self.abortController.abort()
+    self.abortController = new AbortController()
+    const { signal } = self.abortController
+    // #endregion
+
     recSelf.setStore({ refreshing: true, refreshingTab: tab })
     self.setStore({ refreshError: undefined, hasMore: true, items: [], refreshKey: Date.now() })
-    const abortController = new AbortController()
-    const { signal } = abortController
-    self.abortController = abortController
-
-    await preAction?.()
+    await preAction?.(signal)
+    if (signal.aborted) return
 
     function _onAny() {
+      if (signal.aborted) return
       recSelf.setStore({ refreshing: false, refreshingTab: undefined })
       self.setStore({ showSkeleton: false })
     }
     function onError(err: any) {
+      if (signal.aborted) return
       _onAny()
       self.setStore({ refreshError: err })
       console.error(err)
     }
     function onSuccess() {
+      if (signal.aborted) return
       _onAny()
       self.setStore({ hasMore: getServiceFromRegistry(serviceRegistry, tab).hasMore })
     }
 
     async function doFetch(service: BaseTabService, firstFetch?: boolean) {
-      const [err, currentItems] = await attemptAsync(() => fetcher({ tab, service, abortSignal: signal, firstFetch }))
-      // explicit aborted
-      if (signal.aborted) return debug('refresh(): tab=%s [aborted], ignoring rest code', tab)
-      if (err) return onError(err)
-
-      self.setStore({ items: currentItems ?? [] })
-      return true // mark success
+      const result = await Result.tryPromise(() => fetcher({ tab, service, abortSignal: signal, firstFetch }))
+      // aborted
+      if (signal.aborted) {
+        return false
+      }
+      // err
+      if (result.isErr()) {
+        onError(result.error.cause) // 拆包 UnhandledException
+        return false
+      }
+      // success
+      else {
+        self.setStore({ items: result.value })
+        return true
+      }
     }
 
     let existingService: (typeof serviceRegistry)[ETab]
@@ -178,27 +196,32 @@ export function useRefresh({
         break
     }
 
+    // cached
     if (existingService) {
-      // cache
       await existingService.restore()
       const cachedItems = filterRecItems(existingService.qs.bufferQueue, tab).slice(0, getGridRefreshCount())
+      if (signal.aborted) return
       self.setStore({ items: cachedItems })
-      const success = !!(await doFetch(existingService))
+      const success = await doFetch(existingService)
+      if (signal.aborted) return
       // swr?
       willRecreateService ??= success && !!TabConfig[tab].swr
     }
     // create new service
     else {
+      if (signal.aborted) return
       self.setStore({ showSkeleton: true })
       willRecreateService = true
     }
 
     if (willRecreateService) {
-      const [err, service] = attempt(() => createServiceMap[tab]({ existingService }))
-      if (err) return onError(err)
+      const result = Result.try(() => createServiceMap[tab]({ existingService }))
+      if (result.isErr()) return onError(result.error.cause)
 
       // save services
+      const service = result.value
       const firstFetch = serviceRegistry[tab] ? undefined : true // no previous service
+      if (signal.aborted) return
       serviceRegistry[tab] = service as any
       updateViewFromService?.()
       if (isRecTab(tab)) {
@@ -209,12 +232,13 @@ export function useRefresh({
         recSelf.setTabServiceQueueState(tab, { len, cursor: len - 1 })
       }
 
-      const success = await doFetch(service!, firstFetch)
-      if (!success) return
+      const success = await doFetch(service, firstFetch)
+      if (signal.aborted || !success) return
     }
 
+    if (signal.aborted) return
     onSuccess()
-    await postAction?.()
+    await postAction?.(signal)
     const cost = performance.now() - start
     debug('refresh(): tab=%s [success] cost %s ms', tab, cost.toFixed(0))
   })

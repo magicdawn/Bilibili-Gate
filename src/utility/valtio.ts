@@ -1,4 +1,5 @@
-import { attempt, isEqual, isNil, pick, throttle, toMerged } from 'es-toolkit'
+import { Result } from 'better-result'
+import { isEqual, isNil, pick, throttle, toMerged } from 'es-toolkit'
 import { pLimit } from 'promise.map'
 import { proxy, ref, snapshot, subscribe, useSnapshot } from 'valtio'
 import { proxyMap, proxySet } from 'valtio/utils'
@@ -41,22 +42,22 @@ export function subscribeOnKeys<T extends object>(state: T, keys: (keyof T)[], c
 
 export function proxyWithLocalStorage<T extends object>(initialVaue: T, storageKey: string) {
   if (!storageKey.startsWith(APP_NAME)) storageKey = `${APP_NAMESPACE}:${storageKey}`
-  const allowedKeys = Object.keys(initialVaue)
 
-  const [loadErr, savedValue] = attempt(() => {
+  const allowedKeys = Object.keys(initialVaue)
+  const loadResult = Result.try(() => {
     const str = localStorage.getItem(storageKey)
     if (!str) return
     const obj = JSON.parse(str) as any
     return pick(obj, allowedKeys)
   })
-  if (loadErr) {
-    appWarn('failed to load from localStorage key=', storageKey, 'error=', loadErr)
+  let savedValue = undefined
+  if (loadResult.isErr()) {
+    appWarn('failed to load from localStorage key=', storageKey, 'error=', loadResult.error.cause)
+  } else {
+    savedValue = loadResult.value
   }
 
-  const p = proxy<T>({
-    ...initialVaue,
-    ...savedValue,
-  })
+  const p = proxy<T>({ ...initialVaue, ...savedValue })
 
   // start subscribe in nextTick, so value can be changed synchronously without persist
   setTimeout(() => {
