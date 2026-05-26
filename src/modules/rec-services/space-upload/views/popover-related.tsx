@@ -58,8 +58,8 @@ const classes = {
   sectionContent: 'flex flex-col items-start gap-x-10px gap-y-6px',
 } as const
 
-const minDurationPresets = [10, 30, 1 * 60, 2 * 60, 5 * 60] // in seconds
-const maxDurationPresets = [1, 2, 5, 10, 15, 30].map((m) => m * 60) // in seconds
+const minDurationPresets = [10, 30, 1 * 60, 2 * 60, 5 * 60, 10 * 60, 15 * 60, 20 * 60] // in seconds
+const maxDurationPresets = [1, 2, 5, 10, 15, 20, 30, 45, 60].map((m) => m * 60) // in seconds
 
 function PopoverContent({ refresh, open }: { refresh: RefreshFn | undefined; open: boolean }) {
   const { hideChargeOnlyVideos, filterMinDuration, filterMaxDuration } =
@@ -96,7 +96,7 @@ function PopoverContent({ refresh, open }: { refresh: RefreshFn | undefined; ope
               title='编辑「最短时长」'
               value={filterMinDuration}
               presets={minDurationPresets}
-              classNames={{ popoverRoot: 'w-202px', numberInput: 'w-80px' }}
+              classNames={{ popoverRoot: 'w-204px', numberInput: 'w-80px' }}
               onChange={(v) => {
                 spaceUploadStore.setFilterMinDuration(v)
                 refresh?.()
@@ -110,7 +110,7 @@ function PopoverContent({ refresh, open }: { refresh: RefreshFn | undefined; ope
               title='编辑「最长时长」'
               value={filterMaxDuration}
               presets={maxDurationPresets}
-              classNames={{ popoverRoot: 'w-202px', numberInput: 'w-80px' }}
+              classNames={{ popoverRoot: 'w-204px', numberInput: 'w-80px' }}
               onChange={(v) => {
                 spaceUploadStore.setFilterMaxDuration(v)
                 refresh?.()

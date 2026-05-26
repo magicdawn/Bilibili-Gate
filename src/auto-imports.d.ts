@@ -98,6 +98,8 @@ declare global {
   const IconRiFullscreenFill: typeof import('~icons/ri/fullscreen-fill.jsx').default
   const IconSvgSpinnersBarsRotateFade: typeof import('~icons/svg-spinners/bars-rotate-fade.jsx').default
   const IconTablerArrowForwardUp: typeof import('~icons/tabler/arrow-forward-up.jsx').default
+  const IconTablerArrowNarrowLeft: typeof import('~icons/tabler/arrow-narrow-left.jsx').default
+  const IconTablerArrowNarrowRight: typeof import('~icons/tabler/arrow-narrow-right.jsx').default
   const IconTablerCoinYen: typeof import('~icons/tabler/coin-yen.jsx').default
   const IconTablerEyeSearch: typeof import('~icons/tabler/eye-search.jsx').default
   const IconTablerFaceIdError: typeof import('~icons/tabler/face-id-error.jsx').default

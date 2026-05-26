@@ -2,7 +2,7 @@
  * export/bind (functions & variables) to unsafeWindow
  */
 
-import { attempt } from 'es-toolkit'
+import { Result } from 'better-result'
 import { APP_KEY_PREFIX } from '$common'
 import { EApiType } from '$enums'
 import { copyBvidInfos, copyBvidsSingleLine, getGenericCardDatas, setCurrentGridItems } from './rec-grid-state'
@@ -22,7 +22,10 @@ import type { RecItemTypeOrSeparator } from '$define'
 //   - firefox 提供 `cloneInto()` / `exportFunction()`, 在 violentmonkey 中可以使用这俩函数
 //   - chromium 系列只能使用 `window.postMessage` / `window.addEventListener` 通信, 但是脚本管理器没有做这个
 const win = (typeof unsafeWindow !== 'undefined' ? unsafeWindow : globalThis) as any
-export const setGlobalValue = (key: string, val: any) => void attempt(() => (win[key] = val))
+export const setGlobalValue = (key: string, val: any) => {
+  const result = Result.try(() => (win[key] = val))
+  return result.isOk() // success or fail
+}
 
 export const gridItemsKey = `${APP_KEY_PREFIX}_gridItems`
 export function setGlobalGridItems(itemsWithSep: RecItemTypeOrSeparator[]) {

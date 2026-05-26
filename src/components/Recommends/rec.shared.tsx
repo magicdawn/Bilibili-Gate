@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
 /* oxlint-disable react-hooks/rules-of-hooks */
 
-import { useCreation, useLockFn } from 'ahooks'
+import { useCreation, useMemoizedFn } from 'ahooks'
 import Emittery from 'emittery'
 import { createContext, useContext, useMemo, type ReactNode } from 'react'
 import { proxy, ref, snapshot, useSnapshot } from 'valtio'
@@ -115,5 +116,5 @@ export type RefreshFn = (refreshType?: RefreshType) => void | Promise<void>
  */
 export function useOnRefresh() {
   const { recSharedEmitter } = useRecSelfContext()
-  return useLockFn((refreshType?: RefreshType) => recSharedEmitter.emit('refresh', refreshType))
+  return useMemoizedFn((refreshType?: RefreshType) => recSharedEmitter.emit('refresh', refreshType))
 }

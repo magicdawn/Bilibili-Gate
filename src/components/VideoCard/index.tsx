@@ -46,6 +46,7 @@ import { normalizeCardData, type IVideoCardData } from '$modules/filter/normaliz
 import { IconForCopy } from '$modules/icon'
 import { useMultiSelectState } from '$modules/multi-select/store'
 import { useWatchlaterState } from '$modules/rec-services/watchlater'
+import { buildWatchlaterVideoCardUrl } from '$modules/rec-services/watchlater/helper'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { isWebApiSuccess } from '$request'
 import { videoCardBorderRadiusValue } from '../css-vars'
@@ -202,6 +203,7 @@ const VideoCardInner = memo(function VideoCardInner({
       imgPreview: { enabled: imgPreviewEnabled, autoPreviewWhenHover, disableWhenMultiSelecting },
     },
     spaceUpload: { showVol },
+    watchlater: watchlaterSettings,
     __internalEnableCopyBvidInfo,
   } = useSettingsSnapshot()
   const {
@@ -210,7 +212,7 @@ const VideoCardInner = memo(function VideoCardInner({
     bvid,
     cid,
     goto,
-    href,
+    href: _hrefFromNormalize,
     title,
     cover,
     duration,
@@ -231,6 +233,19 @@ const VideoCardInner = memo(function VideoCardInner({
   if (!allowed.includes(goto)) {
     appWarn(`none (${allowed.join(',')}) goto type %s`, goto, item)
   }
+
+  // dynamic href
+  const href = useMemo(() => {
+    if (!isWatchlater(item)) return _hrefFromNormalize
+    if (!item.bvid) return _hrefFromNormalize
+    return buildWatchlaterVideoCardUrl(item.bvid, item.aid, watchlaterSettings)
+  }, [
+    item,
+    _hrefFromNormalize,
+    watchlaterSettings.itemsOrder,
+    watchlaterSettings.continuePlay,
+    watchlaterSettings.continuePlayDirection,
+  ])
 
   const displayingAsList = isDisplayAsList(gridDisplayMode)
   const aspectRatioFromItem = useMemo(() => getRecItemDimension({ item })?.aspectRatio, [item])

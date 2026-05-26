@@ -1,6 +1,5 @@
 import { useMemoizedFn, useMount } from 'ahooks'
 import { Avatar, Badge, Button, Dropdown, Menu } from 'antd'
-import { delay } from 'es-toolkit'
 import { fastSortWithRules } from 'fast-sort-lens'
 import { useMemo, useState, type ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
@@ -59,9 +58,8 @@ function useScopeMenus(form: 'sidebar' | 'dropdown') {
   } = useSettingsSnapshot().dynamicFeed
   const { recSharedEmitter } = useRecSelfContext()
 
-  const onSelect = useMemoizedFn(async (payload: Partial<typeof dfStore>) => {
+  const onSelect = useMemoizedFn((payload: Partial<typeof dfStore>) => {
     dynamicFeedFilterSelectUp(payload)
-    await delay(100)
     onRefresh()
   })
 

@@ -1,4 +1,5 @@
-import { attempt, range, uniqBy } from 'es-toolkit'
+import { Result } from 'better-result'
+import { range, uniqBy } from 'es-toolkit'
 import { baseDebug } from '$common'
 import { PcRecGoto } from '$define/pc-recommend'
 import { EApiType } from '$enums'
@@ -126,8 +127,8 @@ async function getWebInitialRecommendItems(abortSignal: AbortSignal): Promise<Pc
   // wait `window.__pinia`, then use `feed.data.recommend.item`
   const __pinia = await poll(
     () => {
-      const [_, ret] = attempt(() => (unsafeWindow as any).__pinia)
-      return ret
+      const result = Result.try(() => (unsafeWindow as any).__pinia)
+      if (result.isOk()) return result.value
     },
     { interval: 100, timeout: 1_000, abortSignal },
   )
@@ -135,10 +136,9 @@ async function getWebInitialRecommendItems(abortSignal: AbortSignal): Promise<Pc
   debug('initial rec rawList: %o', rawList)
 
   // 不可控, SSR 数据可能会变
-  const [_, list] = attempt(() => {
+  return Result.try(() => {
     const list = processRawList(rawList)
     list.forEach((item) => normalizeCardData(item)) // try normalize
     return list
-  })
-  return list || []
+  }).unwrapOr([])
 }

@@ -1,5 +1,5 @@
 import { av2bv } from '@mgdn/bvid'
-import { attemptAsync } from 'es-toolkit'
+import { Result } from 'better-result'
 import { proxy, useSnapshot } from 'valtio'
 import { EApiType } from '$enums'
 import { antNotification } from '$modules/antd'
@@ -52,16 +52,18 @@ export class LikedRecService extends BaseTabService {
     }
 
     const { count, item: list } = json.data
-    const [_, detailList] = await attemptAsync(() =>
+
+    const detailResult = await Result.tryPromise(() =>
       // `x.state = false`: 表示已失效, 请求详情也是报错...
       Promise.all(list.map((x) => (x.state ? getVideoDetail(av2bv(x.param)) : undefined))),
     )
+    const detailList = detailResult.unwrapOr([])
     const extendedList: LikedItemExtend[] = list.map((item, index) => {
       return {
         ...item,
         api: EApiType.Liked,
         uniqId: `${EApiType.Liked}:${item.param}`,
-        videoDetail: detailList?.[index],
+        videoDetail: detailList[index],
       }
     })
 
