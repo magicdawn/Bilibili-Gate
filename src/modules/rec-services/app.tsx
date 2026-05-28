@@ -71,7 +71,8 @@ function AppRecTabbarView() {
 }
 
 export class AppRecService extends BaseTabService<RecItemType> {
-  static readonly PAGE_SIZE = 20
+  // 无法指定, 根据返回观察得到; 20 / 16 不定
+  static readonly PAGE_SIZE = 16
 
   override tabbarView = (<AppRecTabbarView />)
   override sidebarView = undefined
@@ -208,8 +209,6 @@ export class AppRecService extends BaseTabService<RecItemType> {
 }
 
 class AppRecInnerService implements IService {
-  // 无法指定, 16 根据返回得到
-  static PAGE_SIZE = 16
   hasMore = true
 
   private async getRecommend() {
