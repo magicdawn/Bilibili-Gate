@@ -1,15 +1,7 @@
-overrides:
-  vite-plugin-importer>babel-plugin-import: ^1.13.8
-
 allowBuilds:
-  '@parcel/watcher': true
-  '@swc/core': true
+  '@parcel/watcher': false
   esbuild: true
   oxc-resolver: true
-  unrs-resolver: true
-
-allowedDeprecatedVersions:
-  axios-userscript-adapter: '0'
 
 minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
