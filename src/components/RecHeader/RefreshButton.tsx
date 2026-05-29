@@ -47,13 +47,16 @@ export function RefreshButton({ className = '', style, tab, refreshHotkeyEnabled
   // refresh
   useHotkey('R', click, { enabled: refreshHotkeyEnabled })
 
-  const { watchlaterItemsOrder, popularWeeklyUseShuffle } = useSettingsSnapshot()
+  const {
+    watchlater: { itemsOrder },
+    popularWeeklyUseShuffle,
+  } = useSettingsSnapshot()
   const { usingShuffle: favUsingShuffle } = useSnapshot(favStore)
   const text =
     tab === ETab.AppRecommend ||
     tab === ETab.PcRecommend ||
     tab === ETab.KeepFollowOnly ||
-    (tab === ETab.Watchlater && watchlaterItemsOrder === WatchlaterItemsOrder.Shuffle) ||
+    (tab === ETab.Watchlater && itemsOrder === WatchlaterItemsOrder.Shuffle) ||
     (tab === ETab.Fav && favUsingShuffle) ||
     (tab === ETab.Hot && isHotTabUsingShuffle(popularWeeklyUseShuffle))
       ? '换一换'

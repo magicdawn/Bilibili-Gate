@@ -1,7 +1,7 @@
 import { assert } from 'es-toolkit'
 import { snapshot } from 'valtio'
 import { ETab } from '$enums'
-import { settings } from '$modules/settings'
+import { getSettingsSnapshot } from '$modules/settings'
 import { AppRecService, getAppRecServiceConfig } from './app'
 import { DynamicFeedRecService, getDynamicFeedServiceConfig } from './dynamic-feed'
 import { FavRecService, getFavServiceConfig } from './fav'
@@ -28,17 +28,13 @@ export const createServiceMap = {
   [ETab.KeepFollowOnly]: () => new PcRecService(true),
   [ETab.DynamicFeed]: () => new DynamicFeedRecService(getDynamicFeedServiceConfig()),
   [ETab.Watchlater]: ({ existingService }) => {
-    const { watchlaterAddSeparator, watchlaterItemsOrder } = settings
+    const { addSeparator, itemsOrder } = getSettingsSnapshot().watchlater
+    const { searchText } = snapshot(watchlaterStore)
     const prevShuffleBvidIndexMap =
       existingService && existingService instanceof WatchlaterRecService
         ? existingService.getServiceSnapshot().bvidIndexMap
         : undefined
-    return new WatchlaterRecService(
-      watchlaterItemsOrder,
-      watchlaterAddSeparator,
-      prevShuffleBvidIndexMap,
-      snapshot(watchlaterStore).searchText,
-    )
+    return new WatchlaterRecService(itemsOrder, addSeparator, prevShuffleBvidIndexMap, searchText)
   },
   [ETab.Fav]: () => new FavRecService(getFavServiceConfig()),
   [ETab.Hot]: () => new HotRecService(),

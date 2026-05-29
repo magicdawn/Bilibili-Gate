@@ -133,9 +133,15 @@ export const initialSettings = {
   /**
    * tab=watchlater
    */
-  watchlaterAddSeparator: true, // 添加 "近期" / "更早" 分割线
-  watchlaterItemsOrder: WatchlaterItemsOrder.AddTimeDesc, // 顺序
-  watchlaterUseNormalVideoUrl: false, // 稍后再看默认 url 为 https://www.bilibili.com/list/watchlater?bvid=&oid=
+  watchlater: {
+    // grid display
+    addSeparator: true, // 添加 "近期" / "更早" 分割线
+    itemsOrder: WatchlaterItemsOrder.AddTimeDesc, // 顺序
+
+    // continue play
+    continuePlay: true, // 连续播放; https://www.bilibili.com/list/watchlater?bvid=&oid=
+    continuePlayDirection: 'normal' as 'normal' | 'reverse',
+  },
 
   /**
    * tab=fav
@@ -450,6 +456,10 @@ export function runSettingsMigration(val: object | undefined) {
     // 2026-01-06: unify term to `filter` for client side (filter / search etc)
     ['dynamicFeed.advancedFilter', 'dynamicFeedAdvancedSearch'],
     ['dynamicFeed.advancedFilter', 'dynamicFeed.advancedSearch'],
+
+    // 2026-05-12: watchlater deep keys
+    ['watchlater.addSeparator', 'watchlaterAddSeparator'],
+    ['watchlater.itemsOrder', 'watchlaterItemsOrder'],
   ]
   // 伪代码: savedConfig[newName] = savedConfig[legacyName]
   for (const [configPath, legacyConfigPath] of config) {

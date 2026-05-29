@@ -48,3 +48,15 @@ useKeyPress(
 - ✅ enabled option, 不用在逻辑里 check 了
 - ✅ ignoreInputs 内置默认行为, 不需要 `shouldDisableShortcut`
 - ✅ typesafe key
+
+### `@tanstack/react-hotkeys` `requireReset` 问题
+
+`requireReset`: 默认 `false`; 防止 keydown 多次触发
+
+1. 在 keydown 中执行 callback;
+2. 设置 registration.fired = true
+3. 在 keyup 中执行 registration.fired = false, 即为 reset
+
+但在快捷键打开 new tab, 打开 pip window 的情况下, document keyup 事件无法触发, 无法 reset;
+造成需要按两次才能触发. https://github.com/magicdawn/Bilibili-Gate/issues/235
+默认值: lib 层: `false`, Provider 层; 需要 open/失去焦点 的场景需要明确 `requireReset: false`

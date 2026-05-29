@@ -7,21 +7,12 @@ allowBuilds:
   esbuild: true
   oxc-resolver: true
   unrs-resolver: true
-  '@magicdawn/eslint-config': true
+
 allowedDeprecatedVersions:
   axios-userscript-adapter: '0'
 
 minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
+  # my packages
   - '@magicdawn/*'
   - '@mgdn/*'
-  - '@tanstack/*hotkeys'
-  - '@types/*'
-  - '@typescript/native-preview'
-  - unocss-merge
-  - fast-sort-lens
-  - antd
-  - react
-  - react-dom
-  - typescript
-  - vite-plugin-monkey

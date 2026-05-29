@@ -1,5 +1,6 @@
+import { Result } from 'better-result'
 import dayjs from 'dayjs'
-import { attempt, trim } from 'es-toolkit'
+import { trim } from 'es-toolkit'
 import ms from 'ms'
 import { APP_NAME } from '$common'
 import { toastAndReload } from '$components/ModalSettings/index.shared'
@@ -27,7 +28,7 @@ export class ObjectUrl {
   revoke = () => {
     if (this.revokeTimer !== undefined) clearTimeout(this.revokeTimer)
     this.revokeTimer = undefined
-    if (this.url) attempt(() => URL.revokeObjectURL(this.url!))
+    if (this.url) Result.try(() => URL.revokeObjectURL(this.url!))
     this.url = undefined
   }
 }

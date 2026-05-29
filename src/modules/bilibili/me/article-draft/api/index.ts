@@ -3,7 +3,6 @@
  */
 
 import { Result } from 'better-result'
-import { attempt } from 'es-toolkit'
 import { request, WebApiError } from '$request'
 import { getCsrfToken } from '$utility/cookie'
 import type { DraftListJson } from './draft-list.api'
@@ -30,8 +29,8 @@ export const ArticleDraft = {
     let p: Paragraph | undefined
     if (paragraphs.length === 1 && (p = paragraphs[0]) && p?.code?.content && p?.code?.lang === 'json') {
       const str = p.code.content
-      const [_, parsed] = attempt(() => JSON.parse(str))
-      if (parsed) return parsed
+      const result = Result.try(() => JSON.parse(str))
+      if (result.isOk()) return result.value as object
     }
   },
 

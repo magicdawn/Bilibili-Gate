@@ -4,7 +4,8 @@
 
 import { useMemoizedFn } from 'ahooks'
 import { Button } from 'antd'
-import { attemptAsync, delay } from 'es-toolkit'
+import { Result } from 'better-result'
+import { delay } from 'es-toolkit'
 import pRetry from 'p-retry'
 import { useSnapshot } from 'valtio'
 import { startPickFavFolder } from '$components/ModalFavManager'
@@ -33,7 +34,7 @@ export function BtnAddMultiSelectedToFav() {
       const failed: Record<string, boolean | any> = {}
       for (const [index, avid] of avids.entries()) {
         if (index !== 0) await delay(500) // 请求频率过高, 我也没办法喽~
-        const [err, success] = await attemptAsync(() =>
+        const result = await Result.tryPromise(() =>
           pRetry(
             async () => {
               const result = await UserFavApi.addFav(avid, targetFolder.id)
@@ -43,11 +44,11 @@ export function BtnAddMultiSelectedToFav() {
             { retries: 3 },
           ),
         )
-        if (success) {
+        if (result.isOk()) {
           successAvids.push(avid)
           continue
         } else {
-          failed[avid] = err ?? success
+          failed[avid] = result.error.cause
           continue
         }
       }

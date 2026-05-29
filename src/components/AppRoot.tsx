@@ -1,7 +1,6 @@
 import { StyleProvider } from '@ant-design/cssinjs'
 import createEmotion from '@emotion/css/create-instance'
 import { CacheProvider } from '@emotion/react'
-import { HotkeysProvider } from '@tanstack/react-hotkeys'
 import { ConfigProvider, theme } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
 import { assert } from 'es-toolkit'
@@ -51,17 +50,6 @@ export function AppRoot({
 
     // antd style
     !!cssInsertContainer && ((c) => <StyleProvider container={cssInsertContainer}>{c}</StyleProvider>),
-
-    // @tanstack/react-hotkey default options
-    (c) => (
-      <HotkeysProvider
-        defaultOptions={{
-          hotkey: { requireReset: true },
-        }}
-      >
-        {c}
-      </HotkeysProvider>
-    ),
 
     // antd config
     (c) => (
