@@ -2,10 +2,9 @@ import { execSync } from 'node:child_process'
 import process from 'node:process'
 import babelPlugin from '@rolldown/plugin-babel'
 import emotion from '@rolldown/plugin-emotion'
+import typedScssModules from '@tsjam/typed-scss-modules'
 import react from '@vitejs/plugin-react'
-import { interopImportCJSDefault } from 'node-cjs-interop'
 import postcssMediaMinmax from 'postcss-media-minmax'
-import typedScssModulesOriginal from 'typed-scss-modules'
 import UnoCSS from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import IconsResolver from 'unplugin-icons/resolver'
@@ -17,7 +16,6 @@ import monkey, { cdn } from 'vite-plugin-monkey'
 import z from 'zod'
 import { name as packageName, version as packageVersion } from './package.json'
 
-const typedScssModules = interopImportCJSDefault(typedScssModulesOriginal)
 const isDev = process.env.NODE_ENV === 'development'
 if (isDev) {
   // only needed in dev mode
