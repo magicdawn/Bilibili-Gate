@@ -4,7 +4,3 @@ allowBuilds:
   oxc-resolver: true
 
 minimumReleaseAge: 1440
-minimumReleaseAgeExclude:
-  # my packages
-  - '@magicdawn/*'
-  - '@mgdn/*'
