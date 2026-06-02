@@ -124,12 +124,8 @@
     "zod": "^4.4.3"
   },
   "lint-staged": {
-    "*.?(c|m)(j|t)s?(x)": [
-      "oxlint",
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{json,y?(a)ml}": [
+    "*.{?(c|m)(j|t)s?(x),json,y?(a)ml}": [
+      "oxlint --no-error-on-unmatched-pattern",
       "eslint --fix",
       "prettier --write"
     ],
