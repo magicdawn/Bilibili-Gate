@@ -23,12 +23,15 @@ export const getBackupOmitPaths: () => LeafSettingsPath[] = () => [
   'watchlater.itemsOrder',
 
   'popularWeeklyUseShuffle',
+
+  // 匿名
   'popularGeneralUseAnonymous',
+  'appRecommend.anonymousFetch',
+  'pcRecommend.anonymousFetch',
 ]
 
 export const restoreOmitPaths: LeafSettingsPath[] = [
   ...privateKeys,
-
   // the flag
   'backupSettingsToArticleDraft',
 ]

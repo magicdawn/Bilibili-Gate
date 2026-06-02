@@ -1,8 +1,8 @@
 import { av2bv } from '@mgdn/bvid'
-import { delay, randomInt, range, shuffle, uniqBy } from 'es-toolkit'
+import { randomInt, range, shuffle, uniqBy } from 'es-toolkit'
 import { times } from 'es-toolkit/compat'
 import pmap from 'promise.map'
-import { HOST_APP } from '$common'
+import { explainForFlag } from '$components/ModalSettings/index.shared'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { useOnRefresh, type RefreshFn } from '$components/Recommends/rec.shared'
 import { isAppRecommend, type AppRecItem, type AppRecItemExtend, type RecItemType } from '$define'
@@ -13,7 +13,7 @@ import { getFollowedStatus } from '$modules/filter'
 import { normalizeCardData, type IVideoCardData } from '$modules/filter/normalize'
 import { IconForLike } from '$modules/icon'
 import { getSettingsSnapshot, useSettingsSnapshot } from '$modules/settings'
-import { gmrequest } from '$request'
+import { anonymousFlag, gmrequest } from '$request'
 import { GateQueryKey } from '$routes'
 import { getHasLogined } from '$utility/cookie'
 import { BaseTabService, type IService } from './_base'
@@ -28,16 +28,14 @@ import type { ipad } from '$define/app-recommend.ipad'
 type AppRecServiceConfig = ReturnType<typeof getAppRecServiceConfig>
 
 export function getAppRecServiceConfig() {
-  const snap = getSettingsSnapshot().appRecommend
-  return {
-    addOtherTabContents: snap.addOtherTabContents,
-  }
+  const { addOtherTabContents, anonymousFetch } = getSettingsSnapshot().appRecommend
+  return { addOtherTabContents, anonymousFetch }
 }
 
 export const appRecShowContentFromOtherTabEl = (refresh?: RefreshFn) => (
   <CheckboxSettingItem
     configPath='appRecommend.addOtherTabContents'
-    label='显示来自其他 Tab 的内容'
+    label='加入来自其他 Tab 的内容'
     tooltip={
       <>
         显示来自其他 Tab 的内容 <br />
@@ -45,10 +43,22 @@ export const appRecShowContentFromOtherTabEl = (refresh?: RefreshFn) => (
         但是: 刷新时间会更长
       </>
     }
-    extraAction={async () => {
-      await delay(100)
-      refresh?.()
-    }}
+    extraAction={() => refresh?.()}
+  />
+)
+
+export const appRecAnonymousFetchEl = (refresh?: RefreshFn, disabled?: boolean) => (
+  <CheckboxSettingItem
+    disabled={disabled}
+    configPath={'appRecommend.anonymousFetch'}
+    label='匿名获取推荐'
+    tooltip={
+      <>
+        {explainForFlag('使用游客身份获取推荐', '使用登录身份获取个性化推荐')}
+        注意: 勾选时,「我不想看」之后还可能还会刷到!
+      </>
+    }
+    extraAction={() => refresh?.()}
   />
 )
 
@@ -58,7 +68,6 @@ function AppRecTabbarView() {
   const showLikedEntry = hidingTabKeys.includes(ETab.Liked)
   return (
     <div className='flex items-center gap-x-10px'>
-      {appRecShowContentFromOtherTabEl(onRefresh)}
       {showLikedEntry && (
         <AntdTooltip title='查看「我」点赞的视频'>
           <a href={`/?${GateQueryKey.Tab}=${ETab.Liked}`} target='_blank'>
@@ -66,6 +75,8 @@ function AppRecTabbarView() {
           </a>
         </AntdTooltip>
       )}
+      {appRecShowContentFromOtherTabEl(onRefresh)}
+      {appRecAnonymousFetchEl(onRefresh)}
     </div>
   )
 }
@@ -82,7 +93,7 @@ export class AppRecService extends BaseTabService<RecItemType> {
   otherTabServices: IService[] = []
   constructor(public config: AppRecServiceConfig) {
     super(AppRecService.PAGE_SIZE)
-    this.innerService = new AppRecInnerService()
+    this.innerService = new AppRecInnerService(config.anonymousFetch)
     this.allServices = [this.innerService]
     this.initOtherTabServices()
   }
@@ -209,14 +220,16 @@ export class AppRecService extends BaseTabService<RecItemType> {
 }
 
 class AppRecInnerService implements IService {
+  constructor(public anonymousFetch = false) {}
+
   hasMore = true
 
   private async getRecommend() {
-    // /x/feed/index
-    const res = await gmrequest.get(`${HOST_APP}/x/v2/feed/index`, {
+    const res = await gmrequest.get('/x/v2/feed/index', {
       timeout: 20_000,
       responseType: 'json',
       params: {
+        [anonymousFlag]: this.anonymousFetch,
         build: '1',
         mobi_app: 'iphone',
         device: 'pad',

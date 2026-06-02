@@ -24,8 +24,16 @@ export function isRecTab(tab: ETab): tab is RecTab {
 
 export const createServiceMap = {
   [ETab.AppRecommend]: () => new AppRecService(getAppRecServiceConfig()),
-  [ETab.PcRecommend]: () => new PcRecService(false),
-  [ETab.KeepFollowOnly]: () => new PcRecService(true),
+  [ETab.PcRecommend]: () =>
+    new PcRecService({
+      isKeepFollowOnly: false,
+      anonymousFetch: getSettingsSnapshot().pcRecommend.anonymousFetch,
+    }),
+  [ETab.KeepFollowOnly]: () =>
+    new PcRecService({
+      isKeepFollowOnly: true,
+      anonymousFetch: false,
+    }),
   [ETab.DynamicFeed]: () => new DynamicFeedRecService(getDynamicFeedServiceConfig()),
   [ETab.Watchlater]: ({ existingService }) => {
     const { addSeparator, itemsOrder } = getSettingsSnapshot().watchlater

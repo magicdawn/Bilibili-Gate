@@ -118,6 +118,12 @@ export const gmrequest = extendSafeHttpMethods(
   }),
 )
 
+export const anonymousFlag = '__anonymous__'
+
+function isAnonymouse(val: boolean | string | null | undefined) {
+  return val?.toString() === 'true'
+}
+
 gmrequest.interceptors.request.use(function (config) {
   if (!config.params?.sign) {
     const { appkey, appsec } = TVKeyInfo
@@ -126,6 +132,14 @@ gmrequest.interceptors.request.use(function (config) {
       access_key: settings.accessKey || '',
       ...omit(config.params, ['sign']),
     }
+
+    // handle anonymous
+    if (isAnonymouse(config.params[anonymousFlag])) {
+      delete config.params[anonymousFlag]
+      delete config.params.access_key
+    }
+
+    // sign
     config.params.sign = appSign(config.params, appkey, appsec)
   }
 
