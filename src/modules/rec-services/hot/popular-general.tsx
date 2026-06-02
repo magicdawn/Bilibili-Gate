@@ -12,7 +12,7 @@ import type { IService } from '../_base'
 export class PopularGeneralRecService implements IService {
   hasMore = true
   page = 1
-  tabbarView = (<PopularGeneralTabbarView />)
+  tabbarView = <PopularGeneralTabbarView />
 
   constructor(private anonymous: boolean) {}
 

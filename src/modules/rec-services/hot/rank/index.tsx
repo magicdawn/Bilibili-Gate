@@ -22,8 +22,8 @@ import type { RankItem } from './types'
 export class RankRecService implements IService {
   loaded = false
   qs = new QueueStrategy<RankItemExtend>(20)
-  tabbarView = (<RankTabbarView />)
-  sidebarView = (<RankSidebarView />)
+  tabbarView = <RankTabbarView />
+  sidebarView = <RankSidebarView />
 
   constructor(private slug: string) {}
 

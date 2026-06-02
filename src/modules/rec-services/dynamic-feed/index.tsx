@@ -100,8 +100,8 @@ type AllowedItemType = DynamicFeedItemExtend | LiveItemExtend | ItemsSeparator
 export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
   static PAGE_SIZE = 15
 
-  override tabbarView = (<DynamicFeedTabbarView />)
-  override sidebarView = (<DynamicFeedSidebarView />)
+  override tabbarView = <DynamicFeedTabbarView />
+  override sidebarView = <DynamicFeedSidebarView />
   override hasMoreExceptQueue = true
   override get hasMore() {
     if (this.qs.bufferQueue.length) return true

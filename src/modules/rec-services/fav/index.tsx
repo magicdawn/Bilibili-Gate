@@ -75,7 +75,7 @@ export class FavRecService extends BaseTabService<FavItemExtend | ItemsSeparator
     return <FavTabbarView extraContent={extraTabbarView} />
   }
 
-  override sidebarView = (<FavSidebarView />)
+  override sidebarView = <FavSidebarView />
 
   override get hasMoreExceptQueue() {
     return this.innerService.hasMore

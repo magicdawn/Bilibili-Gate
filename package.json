@@ -23,7 +23,8 @@
     "preview": "vite preview",
     "test": "vitest --run",
     "test:ui": "vitest --ui",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "codefix": "pnpm oxlint --no-error-on-unmatched-pattern . && pnpm eslint --fix . && pnpm oxfmt --write --no-error-on-unmatched-pattern ."
   },
   "dependencies": {
     "@ant-design/cssinjs": "^2.1.2",
@@ -128,10 +129,10 @@
     "*.{?(c|m)(j|t)s?(x),json,y?(a)ml}": [
       "oxlint --no-error-on-unmatched-pattern",
       "eslint --fix",
-      "prettier --write"
+      "oxfmt --write --no-error-on-unmatched-pattern"
     ],
     "!*.{?(c|m)(j|t)s?(x),json,y?(a)ml}": [
-      "prettier --write --ignore-unknown"
+      "oxfmt --write --no-error-on-unmatched-pattern"
     ]
   }
 }

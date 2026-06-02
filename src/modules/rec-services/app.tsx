@@ -85,7 +85,7 @@ export class AppRecService extends BaseTabService<RecItemType> {
   // 无法指定, 根据返回观察得到; 20 / 16 不定
   static readonly PAGE_SIZE = 16
 
-  override tabbarView = (<AppRecTabbarView />)
+  override tabbarView = <AppRecTabbarView />
   override sidebarView = undefined
 
   innerService: AppRecInnerService

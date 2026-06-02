@@ -14,4 +14,5 @@ export default fromSxzz(undefined, ...oxlint.buildFromOxlintConfigFile(import.me
   ],
   'unicorn/prefer-modern-dom-apis': 'off',
   'unicorn/prefer-default-parameters': 'off',
+  'baseline-js/use-baseline': 'off',
 })

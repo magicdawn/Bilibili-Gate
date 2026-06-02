@@ -92,7 +92,7 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
     }
   }
 
-  override tabbarView: ReactNode = (<SpaceUploadTabbarView />)
+  override tabbarView: ReactNode = <SpaceUploadTabbarView />
 
   override get hasMoreExceptQueue(): boolean {
     if (!this.service) return true

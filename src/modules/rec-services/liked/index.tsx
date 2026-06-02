@@ -20,7 +20,7 @@ export class LikedRecService extends BaseTabService {
     super(LikedRecService.PAGE_SIZE)
   }
 
-  override tabbarView = (<LikedTabbarView service={this} />)
+  override tabbarView = <LikedTabbarView service={this} />
   override sidebarView?: ReactNode
   override get hasMoreExceptQueue() {
     if (this.errorJson) return false
