@@ -120,7 +120,7 @@ export const gmrequest = extendSafeHttpMethods(
 
 export const anonymousFlag = '__anonymous__'
 
-function isAnonymouse(val: boolean | string | null | undefined) {
+function isAnonymous(val: boolean | string | null | undefined) {
   return val?.toString() === 'true'
 }
 
@@ -134,7 +134,7 @@ gmrequest.interceptors.request.use(function (config) {
     }
 
     // handle anonymous
-    if (isAnonymouse(config.params[anonymousFlag])) {
+    if (isAnonymous(config.params[anonymousFlag])) {
       delete config.params[anonymousFlag]
       delete config.params.access_key
     }
