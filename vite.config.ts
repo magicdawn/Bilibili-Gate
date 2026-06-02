@@ -1,23 +1,21 @@
 import { execSync } from 'node:child_process'
 import process from 'node:process'
+import babelPlugin from '@rolldown/plugin-babel'
+import emotion from '@rolldown/plugin-emotion'
+import typedScssModules from '@tsjam/typed-scss-modules'
 import react from '@vitejs/plugin-react'
-import reactSwc from '@vitejs/plugin-react-swc'
-import { interopImportCJSDefault } from 'node-cjs-interop'
 import postcssMediaMinmax from 'postcss-media-minmax'
-import typedScssModulesOriginal from 'typed-scss-modules'
 import UnoCSS from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 import Icons from 'unplugin-icons/vite'
-import { defineConfig, type ConfigEnv } from 'vite'
+import { defineConfig } from 'vite'
 import { analyzer } from 'vite-bundle-analyzer'
 import Inspect from 'vite-plugin-inspect'
 import monkey, { cdn } from 'vite-plugin-monkey'
-import tsconfigPaths from 'vite-tsconfig-paths'
 import z from 'zod'
 import { name as packageName, version as packageVersion } from './package.json'
 
-const typedScssModules = interopImportCJSDefault(typedScssModulesOriginal)
 const isDev = process.env.NODE_ENV === 'development'
 if (isDev) {
   // only needed in dev mode
@@ -82,10 +80,21 @@ if (isDev) {
   updateURL = `${baseUrl}${metaFileName}`
 }
 
+// use @vitejs/plugin-react in build
+// for use emotion babel plugin
+// https://emotion.sh/docs/babel#features-which-are-enabled-with-the-babel-plugin
+const babel = babelPlugin({
+  plugins: ['@emotion/babel-plugin'],
+})
+
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => ({
   define: {
     __SCRIPT_VERSION__: JSON.stringify(scriptVersion),
+  },
+
+  resolve: {
+    tsconfigPaths: true,
   },
 
   css: {
@@ -107,14 +116,8 @@ export default defineConfig(({ command, mode }) => ({
     },
   },
 
-  // Vite ignores the target value in the tsconfig.json, following the same behavior as esbuild.
-  // To specify the target in dev, the `esbuild.target` option can be used, which defaults to `esnext` for minimal transpilation.
-  // In builds, the `build.target` option takes higher priority over `esbuild.target` and can also be set if needed.
-  esbuild: {
-    target: 'es2022', // transform explicit-resource-management, current stage 3
-  },
-
   build: {
+    // target: 'es2025',
     emptyOutDir: process.env.CI || process.env.KEEP_DIST ? false : true,
     minify,
     cssMinify: minify,
@@ -125,8 +128,6 @@ export default defineConfig(({ command, mode }) => ({
   // preview: { host: true },
 
   plugins: [
-    tsconfigPaths(),
-
     AutoImport({
       dts: 'src/auto-imports.d.ts',
       // targets to transform
@@ -146,13 +147,12 @@ export default defineConfig(({ command, mode }) => ({
         }),
       ],
     }),
+    Icons({ compiler: 'jsx', jsx: 'react' }),
 
-    Icons({
-      compiler: 'jsx',
-      jsx: 'react',
-    }),
-    getReactPlugin(command),
+    react({ jsxImportSource: '@emotion/react' }),
+    emotion(),
     UnoCSS(),
+
     monkey({
       entry: './src/index.ts',
       userscript: {
@@ -264,27 +264,3 @@ export default defineConfig(({ command, mode }) => ({
     mode === 'development' && Inspect(),
   ].filter(Boolean),
 }))
-
-function getReactPlugin(command: ConfigEnv['command']) {
-  const swc = reactSwc({
-    jsxImportSource: '@emotion/react',
-    plugins: [
-      //
-      ['@swc/plugin-emotion', {}],
-    ],
-  })
-
-  // use @vitejs/plugin-react in build
-  // for use emotion babel plugin
-  // https://emotion.sh/docs/babel#features-which-are-enabled-with-the-babel-plugin
-  const babel = react({
-    jsxImportSource: '@emotion/react',
-    babel: {
-      plugins: ['@emotion/babel-plugin'],
-    },
-  })
-
-  // 经测试: @swc/plugin-emotion 达不到 @emotion/babel-plugin 的效果
-  // data-role="preview", @swc/plugin-emotion 没有在编译时 parse
-  return command === 'serve' ? swc : babel
-}

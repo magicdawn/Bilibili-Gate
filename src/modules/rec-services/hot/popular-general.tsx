@@ -48,7 +48,7 @@ export class PopularGeneralRecService implements IService {
 function PopularGeneralTabbarView() {
   const onRefresh = useOnRefresh()
 
-  const tooltip = <>✅ 匿名访问: 使用游客身份访问</>
+  const tooltip = <>✅ 匿名获取: 使用游客身份获取</>
   const extraAction = async () => {
     await delay(100)
     onRefresh()
@@ -57,8 +57,8 @@ function PopularGeneralTabbarView() {
   const _switch = (
     <SwitchSettingItem
       configPath={'popularGeneralUseAnonymous'}
-      checkedChildren='匿名访问: 开'
-      unCheckedChildren='匿名访问: 关'
+      checkedChildren='匿名获取: 开'
+      unCheckedChildren='匿名获取: 关'
       tooltip={tooltip}
       extraAction={extraAction}
     />
@@ -68,7 +68,7 @@ function PopularGeneralTabbarView() {
     <CheckboxSettingItem
       configPath={'popularGeneralUseAnonymous'}
       tooltip={tooltip}
-      label='匿名访问'
+      label='匿名获取'
       extraAction={extraAction}
     />
   )

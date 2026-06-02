@@ -16,7 +16,7 @@ import { ETab } from '$enums'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
 import { getUserNickname } from '$modules/bilibili/user/nickname'
-import { appRecShowContentFromOtherTabEl } from '$modules/rec-services/app'
+import { appRecAnonymousFetchEl, appRecShowContentFromOtherTabEl } from '$modules/rec-services/app'
 import {
   formatFollowGroupUrl,
   formatSpaceUrl,
@@ -29,6 +29,7 @@ import {
   dfStore,
 } from '$modules/rec-services/dynamic-feed/store'
 import { FollowGroupMechanismNote } from '$modules/rec-services/dynamic-feed/views/popover-related'
+import { pcRecAnonymousFetchEl } from '$modules/rec-services/pc'
 import { WatchlaterContinuePlaySettings } from '$modules/rec-services/watchlater/views'
 import { settings, updateSettings, updateSettingsInnerArray, useSettingsSnapshot } from '$modules/settings'
 import { TagItemDisplay } from '../EditableListSettingItem'
@@ -61,7 +62,7 @@ export function TabPaneRecTabsConfig() {
 
         <SettingsGroup
           title='更多设置'
-          contentClassName='gap-y-15px'
+          contentClassName='gap-y-10px'
           resetSettingPaths={[
             'watchlater.addSeparator',
             'watchlater.continuePlay',
@@ -72,6 +73,8 @@ export function TabPaneRecTabsConfig() {
             'dynamicFeed.videoOnly',
             'dynamicFeed.whenViewAll.enableHideSomeContents',
             'appRecommend.addOtherTabContents',
+            'appRecommend.anonymousFetch',
+            'pcRecommend.anonymousFetch',
           ]}
         >
           {/* watchlater */}
@@ -167,15 +170,25 @@ export function TabPaneRecTabsConfig() {
             </div>
           </div>
 
-          {/* recommend */}
+          {/* app-recommend */}
           <div style={getCssOrderStyle(ETab.AppRecommend)}>
             <div className='flex items-center text-size-1.3em'>
               <TabIcon tabKey={ETab.AppRecommend} className='mr-5px' />
               App 推荐
             </div>
             <div className={sharedClassNames.settingsLine}>
-              <div className='flex items-center'>{appRecShowContentFromOtherTabEl()}</div>
+              {appRecShowContentFromOtherTabEl()}
+              {appRecAnonymousFetchEl()}
             </div>
+          </div>
+
+          {/* pc-recommend */}
+          <div style={getCssOrderStyle(ETab.PcRecommend)}>
+            <div className='flex items-center text-size-1.3em'>
+              <TabIcon tabKey={ETab.PcRecommend} className='mr-5px' />
+              PC 推荐
+            </div>
+            <div className={sharedClassNames.settingsLine}>{pcRecAnonymousFetchEl()}</div>
           </div>
         </SettingsGroup>
       </div>

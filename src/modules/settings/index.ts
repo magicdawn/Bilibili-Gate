@@ -25,10 +25,18 @@ export const initialSettings = {
   pureRecommend: true,
 
   /**
-   * tab = app-recommend
+   * ETab.app-recommend
    */
   appRecommend: {
     addOtherTabContents: false, // this flag will results MUCH more requests
+    anonymousFetch: false,
+  },
+
+  /**
+   * ETab.pc-recommend
+   */
+  pcRecommend: {
+    anonymousFetch: false,
   },
 
   /**

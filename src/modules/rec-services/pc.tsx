@@ -1,6 +1,9 @@
 import { Result } from 'better-result'
 import { range, uniqBy } from 'es-toolkit'
 import { baseDebug } from '$common'
+import { explainForFlag } from '$components/ModalSettings/index.shared'
+import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
+import { useOnRefresh, type RefreshFn } from '$components/Recommends/rec.shared'
 import { PcRecGoto } from '$define/pc-recommend'
 import { EApiType } from '$enums'
 import { normalizeCardData } from '$modules/filter/normalize'
@@ -11,6 +14,26 @@ import { BaseTabService } from './_base'
 import type { PcRecItem, PcRecItemExtend, PcRecommendJson } from '$define'
 
 const debug = baseDebug.extend('modules:rec-services:pc')
+
+export const pcRecAnonymousFetchEl = (refresh?: RefreshFn, disabled?: boolean) => (
+  <CheckboxSettingItem
+    disabled={disabled}
+    configPath={'pcRecommend.anonymousFetch'}
+    label='匿名获取推荐'
+    tooltip={
+      <>
+        {explainForFlag('使用游客身份获取推荐', '使用登录身份获取个性化推荐')}
+        注意: 勾选时,「我不想看」之后还可能还会刷到!
+      </>
+    }
+    extraAction={() => refresh?.()}
+  />
+)
+
+function PcRecTabbarView() {
+  const onRefresh = useOnRefresh()
+  return <>{pcRecAnonymousFetchEl(onRefresh)}</>
+}
 
 /**
  * 使用 web api 获取推荐
@@ -25,15 +48,26 @@ const debug = baseDebug.extend('modules:rec-services:pc')
  *    - https://api.bilibili.com/pgc/web/timeline/v2?day_before=4&day_after=2&season_type=1&web_location=333.1007
  */
 
+export type PcRecServiceConfig = {
+  isKeepFollowOnly: boolean
+  anonymousFetch: boolean
+}
+
 export class PcRecService extends BaseTabService<PcRecItemExtend> {
   static PAGE_SIZE = 30 // 默认为 12, 留空即最大值为 30; 这里指定为 30
 
-  override tabbarView = undefined
+  override get tabbarView() {
+    return this.isKeepFollowOnly ? undefined : <PcRecTabbarView />
+  }
   override sidebarView = undefined
   override hasMoreExceptQueue = true
 
-  constructor(public isKeepFollowOnly: boolean) {
+  constructor(public config: PcRecServiceConfig) {
     super(PcRecService.PAGE_SIZE)
+  }
+
+  get isKeepFollowOnly() {
+    return this.config.isKeepFollowOnly
   }
 
   override fetchMore(abortSignal: AbortSignal): Promise<PcRecItemExtend[] | undefined> {
@@ -75,7 +109,11 @@ export class PcRecService extends BaseTabService<PcRecItemExtend> {
       homepage_ver: 1,
     }
 
-    const res = await request.get(url, { signal: abortSignal, params })
+    const res = await request.get(url, {
+      params,
+      signal: abortSignal,
+      withCredentials: !this.config.anonymousFetch,
+    })
     const json = res.data as PcRecommendJson
 
     if (

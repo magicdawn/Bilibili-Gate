@@ -17,7 +17,7 @@ import { SettingsGroup, sharedClassNames } from './shared'
 import type { ComponentProps } from 'react'
 
 const C = {
-  blockContainer: 'b-1px b-gate-border rounded-lg b-solid p-x-2 p-y-1 light:hover:b-gate-primary',
+  blockContainer: 'b-1px b-gate-border rounded-lg b-solid px-2 py-1 light:hover:b-gate-primary',
 }
 
 export function TabPaneFilter() {
