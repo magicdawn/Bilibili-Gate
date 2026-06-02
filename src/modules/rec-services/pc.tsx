@@ -53,6 +53,8 @@ export type PcRecServiceConfig = {
   anonymousFetch: boolean
 }
 
+let idx = 1
+
 export class PcRecService extends BaseTabService<PcRecItemExtend> {
   static PAGE_SIZE = 30 // 默认为 12, 留空即最大值为 30; 这里指定为 30
 
@@ -93,16 +95,15 @@ export class PcRecService extends BaseTabService<PcRecItemExtend> {
     return processRawList(list)
   }
 
-  page = 0
   private getRecommend = async (abortSignal: AbortSignal) => {
-    const curpage = ++this.page // this has parallel call, can not ++ after success
+    const currentIdx = ++idx // this has parallel call, can not ++ after success
 
     // https://socialsisteryi.github.io/bilibili-API-collect/docs/video/recommend.html#获取首页视频推荐列表-web端
     const url = '/x/web-interface/wbi/index/top/feed/rcmd'
     const params = {
       fresh_type: 8, // num	相关性	非必要	默认为 4, 值越大推荐内容越相关
-      fresh_idx_1h: curpage,
-      fresh_idx: curpage,
+      fresh_idx_1h: currentIdx, // 匿名访问时 idx=1 总是返回一样的内容, 无法达成 "换一换" 的目的
+      fresh_idx: currentIdx,
       ps: PcRecService.PAGE_SIZE,
       web_location: 1430650,
       feed_version: 'V8',
