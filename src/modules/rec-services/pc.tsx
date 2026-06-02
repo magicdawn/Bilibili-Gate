@@ -53,7 +53,7 @@ export type PcRecServiceConfig = {
   anonymousFetch: boolean
 }
 
-let idx = 1
+let idx = 0
 
 export class PcRecService extends BaseTabService<PcRecItemExtend> {
   static PAGE_SIZE = 30 // 默认为 12, 留空即最大值为 30; 这里指定为 30
