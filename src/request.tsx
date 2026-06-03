@@ -125,6 +125,7 @@ function isAnonymous(val: boolean | string | null | undefined) {
 }
 
 gmrequest.interceptors.request.use(function (config) {
+  // 有 sign 时, 保留原始 params
   if (!config.params?.sign) {
     const { appkey, appsec } = TVKeyInfo
     config.params = {
@@ -134,10 +135,8 @@ gmrequest.interceptors.request.use(function (config) {
     }
 
     // handle anonymous
-    if (isAnonymous(config.params[anonymousFlag])) {
-      delete config.params[anonymousFlag]
-      delete config.params.access_key
-    }
+    if (isAnonymous(config.params[anonymousFlag])) delete config.params.access_key
+    delete config.params[anonymousFlag]
 
     // sign
     config.params.sign = appSign(config.params, appkey, appsec)
