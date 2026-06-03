@@ -1,5 +1,8 @@
 # Todos
 
+- [ ] 专栏草稿箱报错
+- [ ] 充电专属, 浮动预览无响应, 增加提示.
+
 # Ideas
 
 - [ ] reconsider `fav:context-menu`, 把 fav-folder 想做 tag, 一个视频包含在多个收藏夹其实是合理的.
