@@ -52,7 +52,8 @@ export function defineAntMenus(arr: PossibleAntMenuItem[]): AntMenuItem[] {
     .filter((x) => {
       if (x.test === undefined) return true
       if (typeof x.test === 'boolean') return x.test
-      return x.test()
+      if (typeof x.test === 'function') return x.test() // no need for TypeScript, but stronger runtime logic
+      return Boolean(x.test)
     })
     .map((x) => omit(x, ['test']) as AntMenuItem)
 }
