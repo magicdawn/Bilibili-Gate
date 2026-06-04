@@ -38,22 +38,11 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
   const additional = item.modules.module_dynamic.additional
   const majorType = major.type
 
-  const followed = (() => {
-    // 之前是 boolean,
-    if (typeof author.following === 'boolean') return author.following
-
-    // 2026-06-03 发现改为了 1 和 0
-    // see https://github.com/magicdawn/Bilibili-Gate/issues/240
-    if (typeof author.following === 'number') return Boolean(author.following)
-
-    // 动态默认为已关注
-    return true
-  })()
   const sharedCardData = {
     authorName: author.name,
     authorFace: author.face,
     authorMid: author.mid.toString(),
-    followed,
+    followed: Boolean(author.following),
     pubts: author.pub_ts,
 
     // 动态自身的 stat

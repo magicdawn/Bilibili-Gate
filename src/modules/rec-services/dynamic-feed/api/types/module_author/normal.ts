@@ -6,7 +6,7 @@ export interface AuthorTypeNormal {
   decorate: Decorate
   face: string
   face_nft: boolean
-  following: boolean
+  following: boolean | number
   jump_url: string
   label: string
   mid: number
