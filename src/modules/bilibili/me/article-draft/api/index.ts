@@ -3,7 +3,7 @@
  */
 
 import { Result } from 'better-result'
-import { request, WebApiError } from '$request'
+import { request, wbiFlag, WebApiError } from '$request'
 import { getCsrfToken } from '$utility/cookie'
 import type { DraftListJson } from './draft-list.api'
 import type { DraftViewJson, Paragraph } from './draft-view.api'
@@ -36,30 +36,38 @@ export const ArticleDraft = {
 
   async addOrUpdate(articleId: number | undefined, title: string, content: object) {
     const codeBlockContent = JSON.stringify(content, null, 2)
+    // payload 以及 version 变化太快了...
     const body = {
       arg: {
         type: 4,
         template_id: 1,
         category_id: 15,
-        article_id: articleId || undefined, // is undefined acceptable?
-        title,
         private_pub: 1,
         reprint: 1,
         original: 0,
         list_id: 0,
+        comment_selected: 0,
+        up_closed_reply: 0,
+        timer_pub_time: 0,
+        only_fans_level: 0,
+        only_fans_dnd: 0,
+
+        article_id: articleId || undefined, // is undefined acceptable?
+        title,
         summary: title,
         opus: {
           opus_source: 2,
           title,
-          content: {
-            paragraphs: [{ para_type: 8, code: { lang: 'json', content: codeBlockContent } }],
-          },
-          pub_info: { editor_version: 'eva3-2.0.1' },
+          content: { paragraphs: [{ para_type: 8, code: { lang: 'json', content: codeBlockContent } }] },
+          pub_info: { editor_version: 'eva3-3.0.0' },
+          attachments: { is_aigc: 0 },
         },
       },
     }
+
     return (
       await request.safePost('/x/dynamic/feed/article/draft/add', body, {
+        [wbiFlag]: true,
         params: { csrf: getCsrfToken() },
       })
     )

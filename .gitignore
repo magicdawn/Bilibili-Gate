@@ -14,8 +14,11 @@ vite.config.ts.timestamp*
 /stats.html
 /stats.*
 
-# play
-/demo/
 # privacy
 src/define/watchlater-full.json
 *.api.json
+
+# play
+/demo/
+api-debug/
+debug-api/

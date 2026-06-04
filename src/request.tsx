@@ -8,6 +8,19 @@ import { appSign } from '$utility/app-api'
 import { settings } from './modules/settings'
 import type { ReactNode } from 'react'
 
+// custom request flag, used in request interceptor
+export const anonymousFlag = Symbol('anonymous')
+export const wbiFlag = Symbol('wbi-sign')
+
+declare module 'axios' {
+  export interface AxiosRequestConfig {
+    /** gmrequest exclude access_key */
+    [anonymousFlag]?: boolean
+    /** wbi sign: 增加 wts + w_rid */
+    [wbiFlag]?: boolean
+  }
+}
+
 export const request = extendSafeHttpMethods(
   axios.create({
     baseURL: HOST_API,
@@ -18,9 +31,10 @@ export const request = extendSafeHttpMethods(
 request.interceptors.request.use(async function (config) {
   config.params ||= {}
 
-  // wbi sign when needed
-  if (config.url?.includes('/wbi/') && !(config.params.w_rid || config.params.wts)) {
-    config.params = await encWbi(config.params)
+  // wbi sign
+  const needWbiSign = config[wbiFlag] ?? (config.url?.includes('/wbi/') && !(config.params.w_rid || config.params.wts))
+  if (needWbiSign) {
+    config.params = await encWbi(omit(config.params, ['w_rid', 'wts']))
   }
 
   return config
@@ -112,17 +126,9 @@ export const gmrequest = extendSafeHttpMethods(
   axios.create({
     baseURL: HOST_APP,
     adapter: 'fetch',
-    env: {
-      fetch: GM_fetch,
-    },
+    env: { fetch: GM_fetch },
   }),
 )
-
-export const anonymousFlag = '__anonymous__'
-
-function isAnonymous(val: boolean | string | null | undefined) {
-  return val?.toString() === 'true'
-}
 
 gmrequest.interceptors.request.use(function (config) {
   // 有 sign 时, 保留原始 params
@@ -135,8 +141,7 @@ gmrequest.interceptors.request.use(function (config) {
     }
 
     // handle anonymous
-    if (isAnonymous(config.params[anonymousFlag])) delete config.params.access_key
-    delete config.params[anonymousFlag]
+    if (config[anonymousFlag]) delete config.params.access_key
 
     // sign
     config.params.sign = appSign(config.params, appkey, appsec)

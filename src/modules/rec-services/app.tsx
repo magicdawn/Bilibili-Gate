@@ -228,8 +228,8 @@ class AppRecInnerService implements IService {
     const res = await gmrequest.get('/x/v2/feed/index', {
       timeout: 20_000,
       responseType: 'json',
+      [anonymousFlag]: this.anonymousFetch,
       params: {
-        [anonymousFlag]: this.anonymousFetch,
         build: '1',
         mobi_app: 'iphone',
         device: 'pad',
