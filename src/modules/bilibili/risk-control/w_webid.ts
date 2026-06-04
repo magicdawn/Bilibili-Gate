@@ -16,7 +16,9 @@ const cache = dailyCache<string>('w_webid')
 export const get_w_webId = reusePendingPromise(async () => {
   const cached = await cache.get()
   if (cached) return cached
-  return fetch_w_webId()
+  const id = await fetch_w_webId()
+  if (id) await cache.set(id)
+  return id
 })
 
 async function fetch_w_webId() {
@@ -36,7 +38,5 @@ async function fetch_w_webId() {
   if (!jsonText) return
 
   const id = (JSON.parse(jsonText) as any)?.access_id as string | undefined
-  if (id) await cache.set(id)
-
   return id
 }

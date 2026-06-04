@@ -41,17 +41,6 @@ export async function encWbi(_params: Record<string, any>) {
   }
 }
 
-type Keys = { img_key: string; sub_key: string }
-const keysCache = dailyCache<{ val: Keys; ts: number }>('wbi-keys')
-
-// 获取最新的 img_key 和 sub_key
-const getWbiKeys = reusePendingPromise(async function (): Promise<Keys> {
-  const cached = await keysCache.get()
-  const shouldReuse = cached?.val && cached?.ts && Date.now() - cached.ts <= ms('6h')
-  if (shouldReuse) return cached.val
-  return fetchWbiKeys()
-})
-
 async function fetchWbiKeys() {
   // 直接用 axios, 防止与 $request 循环依赖
   const res = await axios.get('/x/web-interface/nav', { baseURL: HOST_API })
@@ -62,10 +51,21 @@ async function fetchWbiKeys() {
     img_key: img_url.slice(img_url.lastIndexOf('/') + 1, img_url.lastIndexOf('.')),
     sub_key: sub_url.slice(sub_url.lastIndexOf('/') + 1, sub_url.lastIndexOf('.')),
   }
-  // save cache
-  await keysCache.set({ val: keys, ts: Date.now() })
   return keys
 }
+
+type Keys = { img_key: string; sub_key: string }
+const keysCache = dailyCache<{ val: Keys; ts: number }>('wbi-keys')
+
+// 获取最新的 img_key 和 sub_key
+const getWbiKeys = reusePendingPromise(async (): Promise<Keys> => {
+  const cached = await keysCache.get()
+  const shouldReuse = !!cached?.val && !!cached?.ts && Date.now() - cached.ts <= ms('6h')
+  if (shouldReuse) return cached.val
+  const keys = await fetchWbiKeys()
+  await keysCache.set({ val: keys, ts: Date.now() }) // save cache
+  return keys
+})
 
 // 对 imgKey 和 subKey 进行字符顺序打乱编码
 const mixinKeyEncTab = [
