@@ -2,17 +2,22 @@ import GM_fetch from '@trim21/gm-fetch'
 import axios, { AxiosError, type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from 'axios'
 import { Result, UnhandledException } from 'better-result'
 import { omit } from 'es-toolkit'
-import { appWarn, HOST_API, HOST_APP, TVKeyInfo } from '$common'
+import { APP_KEY_PREFIX, appWarn, HOST_API, HOST_APP, TVKeyInfo } from '$common'
 import { encWbi } from '$modules/bilibili/risk-control/wbi'
 import { appSign } from '$utility/app-api'
 import { settings } from './modules/settings'
 import type { ReactNode } from 'react'
 
-// custom request flag, used in request interceptor
+// #region custom request flag, used in request interceptor
+
+// 使用 Symbol 最好, 但 axios mergeConfig 使用 Object.keys (owned + enumerable + string), 会忽略 symbol keys
+// https://github.com/axios/axios/blob/v1.17.0/lib/core/mergeConfig.js#L114
+
 /** gmrequest exclude access_key */
-export const anonymousFlag = Symbol('anonymous')
+export const anonymousFlag = `${APP_KEY_PREFIX}_anonymous`
+
 /** wbi sign: 增加 wts + w_rid */
-export const wbiFlag = Symbol('wbi-sign')
+export const wbiFlag = `${APP_KEY_PREFIX}_wbi_sign`
 
 declare module 'axios' {
   export interface AxiosRequestConfig {
@@ -20,6 +25,7 @@ declare module 'axios' {
     [wbiFlag]?: boolean
   }
 }
+// #endregion
 
 export const request = extendSafeHttpMethods(
   axios.create({
