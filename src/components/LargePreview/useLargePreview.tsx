@@ -56,6 +56,7 @@ type UseLargePreviewOptions = {
   aspectRatioFromItem?: number
   cover?: string
   videoCardAsTriggerRef?: RefObject<HTMLElement | null>
+  videoTitle?: string
 }
 
 export function useLargePreviewRelated({
@@ -76,6 +77,7 @@ export function useLargePreviewRelated({
   aspectRatioFromItem,
   cover,
   videoCardAsTriggerRef,
+  videoTitle,
 }: UseLargePreviewOptions) {
   const { useMp4, useVideoCardAsTrigger, usePreferredCdn } = useSnapshot(settings.videoCard.videoPreview)
 
@@ -84,6 +86,7 @@ export function useLargePreviewRelated({
     if (!shouldFetchPreviewData) return
     if (isVideoPreviewDataValid(videoPreviewDataBox.val)) return // already fetched
     const data = await fetchVideoPreviewData({
+      videoTitle,
       bvid,
       cid,
       useMp4,
