@@ -9,14 +9,14 @@ import { settings } from './modules/settings'
 import type { ReactNode } from 'react'
 
 // custom request flag, used in request interceptor
+/** gmrequest exclude access_key */
 export const anonymousFlag = Symbol('anonymous')
+/** wbi sign: 增加 wts + w_rid */
 export const wbiFlag = Symbol('wbi-sign')
 
 declare module 'axios' {
   export interface AxiosRequestConfig {
-    /** gmrequest exclude access_key */
     [anonymousFlag]?: boolean
-    /** wbi sign: 增加 wts + w_rid */
     [wbiFlag]?: boolean
   }
 }
