@@ -64,8 +64,18 @@ export class PcRecService extends BaseTabService<PcRecItemExtend> {
   override sidebarView = undefined
   override hasMoreExceptQueue = true
 
+  static hasAuthedFetch = false
+  isFirstAuthedFetch = false
+
   constructor(public config: PcRecServiceConfig) {
     super(PcRecService.PAGE_SIZE)
+
+    const { isKeepFollowOnly, anonymousFetch } = config
+    const currentIsAuthedFetch = !isKeepFollowOnly && !anonymousFetch
+    if (currentIsAuthedFetch && !PcRecService.hasAuthedFetch) {
+      this.isFirstAuthedFetch = true
+      PcRecService.hasAuthedFetch = true
+    }
   }
 
   get isKeepFollowOnly() {

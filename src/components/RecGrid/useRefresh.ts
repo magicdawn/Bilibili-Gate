@@ -142,8 +142,8 @@ export function useRefresh({
       self.setStore({ hasMore: getServiceFromRegistry(serviceRegistry, tab).hasMore })
     }
 
-    async function doFetch(service: BaseTabService, firstFetch?: boolean) {
-      const result = await Result.tryPromise(() => fetcher({ tab, service, abortSignal: signal, firstFetch }))
+    async function doFetch(service: BaseTabService) {
+      const result = await Result.tryPromise(() => fetcher({ tab, service, abortSignal: signal }))
       // aborted
       if (signal.aborted) {
         return false
@@ -232,7 +232,7 @@ export function useRefresh({
         recSelf.setTabServiceQueueState(tab, { len, cursor: len - 1 })
       }
 
-      const success = await doFetch(service, firstFetch)
+      const success = await doFetch(service)
       if (signal.aborted || !success) return
     }
 

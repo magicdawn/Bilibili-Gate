@@ -28,7 +28,7 @@ const willUsePcApi = (tab: ETab): tab is ETab.PcRecommend | ETab.KeepFollowOnly 
   tab === ETab.PcRecommend || tab === ETab.KeepFollowOnly
 
 async function fetchMinCount(count: number, fetcherOptions: FetcherOptions, filterMultiplier = 5) {
-  const { tab, service, abortSignal, firstFetch } = fetcherOptions
+  const { tab, service, abortSignal } = fetcherOptions
 
   let items: RecItemTypeOrSeparator[] = []
   let hasMore = true
@@ -85,7 +85,7 @@ async function fetchMinCount(count: number, fetcherOptions: FetcherOptions, filt
 
     if (willUsePcApi(tab)) {
       const s = service as PcRecService
-      if (firstFetch) await s.preloadPcInitialRecItems(abortSignal)
+      if (s.isFirstAuthedFetch) await s.preloadPcInitialRecItems(abortSignal)
       await s.preloadTimesFromApiIfNeeded(abortSignal, times)
     } else {
       const s = service as AppRecService
