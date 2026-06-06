@@ -26,6 +26,7 @@ import {
   type DynamicFeedStore,
   type DynamicFeedStoreSelectedKey,
 } from '../store'
+import { SelectedGroupExternalLink } from './fragments'
 import { usePopoverRelated } from './popover-related'
 import type { AntMenuItem } from '$modules/antd'
 
@@ -219,7 +220,7 @@ export function DynamicFeedTabbarView() {
 
   return (
     <div ref={popoverContainerRef} className='inline-flex items-center gap-x-8px'>
-      {sidebarVisible ? undefined : (
+      {!sidebarVisible && (
         <>
           {scopeDropdownMenu}
           {btnClear}
@@ -227,6 +228,8 @@ export function DynamicFeedTabbarView() {
       )}
 
       {popoverTrigger}
+
+      {sidebarVisible && <SelectedGroupExternalLink />}
 
       {externalFilterInput && filterInput}
 

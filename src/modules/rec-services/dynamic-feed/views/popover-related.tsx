@@ -10,14 +10,13 @@ import { delay, throttle } from 'es-toolkit'
 import { useCallback, useMemo, useState, type ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
 import { __PROD__ } from '$common'
-import { APP_CLS_USE_ANT_LINK_COLOR, buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
+import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { appPrimaryColorValue } from '$components/css-vars'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { useOnRefresh, type RefreshFn } from '$components/Recommends/rec.shared'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
-import { IconForOpenExternalLink } from '$modules/icon'
 import {
   settings,
   updateSettingsInnerArray,
@@ -34,7 +33,7 @@ import {
   updateLocalDynamicFeedCache,
 } from '../cache'
 import { fetchDynamicFeedsWithCache, FollowGroupMergeTimelineService } from '../group/merge-timeline-service'
-import { formatFollowGroupUrl, IconForPopoverTrigger } from '../shared'
+import { IconForPopoverTrigger } from '../shared'
 import {
   DF_SELECTED_KEY_PREFIX_GROUP,
   DF_SELECTED_KEY_PREFIX_UP,
@@ -49,6 +48,7 @@ import {
   SHOW_DYNAMIC_FEED_ONLY,
   type UpMidType,
 } from '../store'
+import { SelectedGroupExternalLink } from './fragments'
 import type { CheckboxChangeEvent } from 'antd/es/checkbox'
 import type { Get } from 'type-fest'
 import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
@@ -292,20 +292,7 @@ function PopoverContent({
         <div className={classes.sectionTilte}>
           {viewingSomeGroup ? '分组' : viewingSomeUp ? 'UP' : '全部'}
           <HelpInfo>当前{viewingSomeGroup ? '分组' : viewingSomeUp ? 'UP' : '范围'}的一些操作~</HelpInfo>
-          {viewingSomeGroup && selectedGroup && (
-            <span className='ml-15px inline-flex items-center text-size-14px'>
-              (
-              <a
-                href={formatFollowGroupUrl(selectedGroup?.tagid || '')}
-                target='_blank'
-                className={`mx-4px inline-flex items-center text-size-16px ${APP_CLS_USE_ANT_LINK_COLOR}`}
-              >
-                <IconForOpenExternalLink className='mr-2px size-18px' />
-                {selectedGroup?.name}
-              </a>
-              )
-            </span>
-          )}
+          <SelectedGroupExternalLink addParens className='ml-15px' />
         </div>
         <div className={classes.sectionContent}>
           <Checkbox
