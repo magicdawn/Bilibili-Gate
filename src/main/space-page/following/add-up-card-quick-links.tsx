@@ -1,5 +1,5 @@
 import { Button } from 'antd'
-import { throttle } from 'es-toolkit'
+import { debounce, delay } from 'es-toolkit'
 import { APP_NAME, BiliDomain, createReactRoot } from '$common'
 import { AppRoot } from '$components/AppRoot'
 import { globalEmitter } from '$main/shared'
@@ -9,35 +9,32 @@ import { DynamicFeedQueryKey } from '$modules/rec-services/dynamic-feed/store'
 import { SpaceUploadQueryKey } from '$modules/rec-services/space-upload/store'
 
 export function addUpCardQuickLinks() {
-  const fn = throttle(queryAllThenProcess, 250)
-  fn()
-  globalEmitter.on('navigate-success', fn)
+  queryAllThenProcess()
+  globalEmitter.on('navigate-success', () => delay(300).then(queryAllThenProcess))
   const followMain = document.querySelector<HTMLElement>('.follow-main')
   if (followMain) {
-    const ob = new MutationObserver(() => fn())
+    const debounced = debounce(queryAllThenProcess, 100)
+    const ob = new MutationObserver(() => debounced())
     ob.observe(followMain, { childList: true, subtree: true })
   }
 }
 
-const quickLinksAdded = new WeakSet<HTMLElement>()
 const quickLinksAddedAttr = 'gateQuickLinksAdded'
 
 function queryAllThenProcess() {
   const selector = '.follow-main .item .relation-card'
   const cards = document.querySelectorAll<HTMLElement>(selector)
   for (const c of cards) {
-    if (quickLinksAdded.has(c)) continue
     if (c.dataset[quickLinksAddedAttr]) continue
-    quickLinksAdded.add(c)
     c.dataset[quickLinksAddedAttr] = 'true'
     processSingleUpCard(c)
   }
 }
 
-function processSingleUpCard(c: HTMLElement) {
+function processSingleUpCard(card: HTMLElement) {
   const rootEl = document.createElement('div')
-  c.querySelector('.relation-card-info-option .follow-btn')?.insertAdjacentElement('afterend', rootEl)
-  const info = parseUpCard(c)
+  card.querySelector('.relation-card-info-option .follow-btn')?.insertAdjacentElement('afterend', rootEl)
+  const info = parseUpCard(card)
   const root = createReactRoot(rootEl)
   root.render(
     <AppRoot>

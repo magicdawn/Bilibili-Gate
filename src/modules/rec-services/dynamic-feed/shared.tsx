@@ -5,7 +5,7 @@ export const IconForGroup = IconMynauiUsersGroup
 export const IconForPopoverTrigger = IconTablerPlus
 
 export function formatFollowGroupUrl(followGroupId: number | string) {
-  return `https://space.bilibili.com/${getUid()}/fans/follow?tagid=${followGroupId}`
+  return `https://space.bilibili.com/${getUid()}/relation/follow?tagid=${followGroupId}`
 }
 
 export function formatSpaceUrl(mid: number | string) {

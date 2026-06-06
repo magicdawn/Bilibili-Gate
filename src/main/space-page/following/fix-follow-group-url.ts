@@ -1,13 +1,15 @@
-import { delay } from 'es-toolkit'
 import { limitFunction } from 'promise.map'
-import { appLog, baseDebug } from '$common'
+import { baseDebug } from '$common'
 import { globalEmitter } from '$main/shared'
-import { poll } from '$utility/dom'
+import { poll, tryAction } from '$utility/dom'
 import { isViewingFollowGroup } from '.'
 
-const debug = baseDebug.extend('main:space-page:following')
+const debug = baseDebug.extend('main:space-page:following:fix-follow-group-url')
 
-export function fixFollowGroupUrl() {
+export async function fixFollowGroupUrl() {
+  // 先展开
+  await tryAction('.space-follow .relation-collapse-more', (x) => x.click(), { pollTimeout: 1_000 })
+
   const fixFollowGroupUrl = limitFunction(async () => {
     if (!isViewingFollowGroup(location.href)) return
     const tagid = new URLSearchParams(location.search).get('tagid')!
@@ -19,19 +21,16 @@ export function fixFollowGroupUrl() {
 
 async function selectGroupFromQuerystring(tagid: string) {
   if (!tagid) return
-
-  await delay(100)
-  document.querySelector<HTMLDivElement>('.space-follow .relation-collapse-more')?.click()
-  await delay(100)
+  debug('selectGroupFromQuerystring: %s', tagid)
 
   const el = await poll(
     () => document.querySelector<HTMLElement>(`.follow-sidebar-item a[href*="tagid=${tagid}"] .vui_sidebar-item`),
-    { interval: 500, timeout: 5_000 },
+    { interval: 200, timeout: 2_000 },
   )
   if (!el) return
   if (el.classList.contains('.vui_sidebar-item--active')) return
 
-  appLog('click group %s', tagid)
+  debug('click group %s', tagid)
   el.scrollIntoViewIfNeeded?.()
   el.click()
 }
