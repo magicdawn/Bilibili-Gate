@@ -25,9 +25,14 @@ export const getBackupOmitPaths: () => LeafSettingsPath[] = () => [
   'popularWeeklyUseShuffle',
 
   // 匿名
-  'popularGeneralUseAnonymous',
   'appRecommend.anonymousFetch',
   'pcRecommend.anonymousFetch',
+  'popularGeneralUseAnonymous',
+
+  // tabbar quick switch
+  'appRecommend.enableTabbarQuickSwitch',
+  'pcRecommend.enableTabbarQuickSwitch',
+  'watchlater.enableTabbarQuickSwitch',
 ]
 
 export const restoreOmitPaths: LeafSettingsPath[] = [

@@ -8,7 +8,7 @@ import clsx from 'clsx'
 import { useMemo, useState, type CSSProperties } from 'react'
 import { useSnapshot } from 'valtio'
 import { HelpInfo } from '$components/_base/HelpInfo'
-import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
+import { CheckboxSettingItem, SwitchSettingItem } from '$components/ModalSettings/setting-item'
 import { useSortedTabKeys } from '$components/RecHeader/tab'
 import { TabConfig, TabIcon } from '$components/RecHeader/tab-config'
 import { CONFIGURABLE_TAB_KEYS } from '$components/RecHeader/tab-enum'
@@ -64,6 +64,7 @@ export function TabPaneRecTabsConfig() {
           title='更多设置'
           contentClassName='gap-y-10px'
           resetSettingPaths={[
+            'watchlater.enableTabbarQuickSwitch',
             'watchlater.addSeparator',
             'watchlater.continuePlay',
             'watchlater.continuePlayDirection',
@@ -72,8 +73,10 @@ export function TabPaneRecTabsConfig() {
             'dynamicFeed.showLive',
             'dynamicFeed.videoOnly',
             'dynamicFeed.whenViewAll.enableHideSomeContents',
+            'appRecommend.enableTabbarQuickSwitch',
             'appRecommend.addOtherTabContents',
             'appRecommend.anonymousFetch',
+            'pcRecommend.enableTabbarQuickSwitch',
             'pcRecommend.anonymousFetch',
           ]}
         >
@@ -82,6 +85,11 @@ export function TabPaneRecTabsConfig() {
             <div className='flex items-center text-size-1.3em'>
               <TabIcon tabKey={ETab.Watchlater} className='mr-5px mt--1px' />
               稍后再看
+              <SwitchSettingItem
+                className='ml-30px'
+                configPath='watchlater.enableTabbarQuickSwitch'
+                tooltip={<>在 Tab 栏中显示相关设置以快速切换</>}
+              />
             </div>
             <div className={sharedClassNames.settingsLine}>
               <CheckboxSettingItem
@@ -175,6 +183,11 @@ export function TabPaneRecTabsConfig() {
             <div className='flex items-center text-size-1.3em'>
               <TabIcon tabKey={ETab.AppRecommend} className='mr-5px' />
               App 推荐
+              <SwitchSettingItem
+                className='ml-30px'
+                configPath='appRecommend.enableTabbarQuickSwitch'
+                tooltip={<>在 Tab 栏中显示相关设置以快速切换</>}
+              />
             </div>
             <div className={sharedClassNames.settingsLine}>
               {appRecShowContentFromOtherTabEl()}
@@ -187,6 +200,11 @@ export function TabPaneRecTabsConfig() {
             <div className='flex items-center text-size-1.3em'>
               <TabIcon tabKey={ETab.PcRecommend} className='mr-5px' />
               PC 推荐
+              <SwitchSettingItem
+                className='ml-30px'
+                configPath='pcRecommend.enableTabbarQuickSwitch'
+                tooltip={<>在 Tab 栏中显示相关设置以快速切换</>}
+              />
             </div>
             <div className={sharedClassNames.settingsLine}>{pcRecAnonymousFetchEl()}</div>
           </div>

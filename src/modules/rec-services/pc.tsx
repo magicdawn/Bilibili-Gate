@@ -7,6 +7,7 @@ import { useOnRefresh, type RefreshFn } from '$components/Recommends/rec.shared'
 import { PcRecGoto } from '$define/pc-recommend'
 import { EApiType } from '$enums'
 import { normalizeCardData } from '$modules/filter/normalize'
+import { useSettingsSnapshot } from '$modules/settings'
 import { isWebApiSuccess, request } from '$request'
 import { poll } from '$utility/dom'
 import toast from '$utility/toast'
@@ -32,7 +33,8 @@ export const pcRecAnonymousFetchEl = (refresh?: RefreshFn, disabled?: boolean) =
 
 function PcRecTabbarView() {
   const onRefresh = useOnRefresh()
-  return <>{pcRecAnonymousFetchEl(onRefresh)}</>
+  const { enableTabbarQuickSwitch } = useSettingsSnapshot().pcRecommend
+  return <>{enableTabbarQuickSwitch && pcRecAnonymousFetchEl(onRefresh)}</>
 }
 
 /**

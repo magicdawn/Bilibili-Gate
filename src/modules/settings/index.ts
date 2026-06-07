@@ -28,6 +28,7 @@ export const initialSettings = {
    * ETab.app-recommend
    */
   appRecommend: {
+    enableTabbarQuickSwitch: true,
     addOtherTabContents: false, // this flag will results MUCH more requests
     anonymousFetch: false,
   },
@@ -36,6 +37,7 @@ export const initialSettings = {
    * ETab.pc-recommend
    */
   pcRecommend: {
+    enableTabbarQuickSwitch: true,
     anonymousFetch: false,
   },
 
@@ -145,6 +147,7 @@ export const initialSettings = {
     // grid display
     addSeparator: true, // 添加 "近期" / "更早" 分割线
     itemsOrder: WatchlaterItemsOrder.AddTimeDesc, // 顺序
+    enableTabbarQuickSwitch: true,
 
     // continue play
     continuePlay: true, // 连续播放; https://www.bilibili.com/list/watchlater?bvid=&oid=

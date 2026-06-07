@@ -64,8 +64,12 @@ export const appRecAnonymousFetchEl = (refresh?: RefreshFn, disabled?: boolean) 
 
 function AppRecTabbarView() {
   const onRefresh = useOnRefresh()
-  const { hidingTabKeys } = useSettingsSnapshot()
+  const {
+    hidingTabKeys,
+    appRecommend: { enableTabbarQuickSwitch },
+  } = useSettingsSnapshot()
   const showLikedEntry = hidingTabKeys.includes(ETab.Liked)
+
   return (
     <div className='flex items-center gap-x-10px'>
       {showLikedEntry && (
@@ -75,8 +79,12 @@ function AppRecTabbarView() {
           </a>
         </AntdTooltip>
       )}
-      {appRecShowContentFromOtherTabEl(onRefresh)}
-      {appRecAnonymousFetchEl(onRefresh)}
+      {enableTabbarQuickSwitch && (
+        <>
+          {appRecShowContentFromOtherTabEl(onRefresh)}
+          {appRecAnonymousFetchEl(onRefresh)}
+        </>
+      )}
     </div>
   )
 }

@@ -21,7 +21,7 @@ import { WatchlaterItemsOrder } from './watchlater-enum'
 import type { ComponentRef, ReactNode } from 'react'
 
 export function WatchlaterTabbarView({ service }: { service: WatchlaterRecService }) {
-  const { addSeparator, itemsOrder } = useSettingsSnapshot().watchlater
+  const { addSeparator, itemsOrder, enableTabbarQuickSwitch } = useSettingsSnapshot().watchlater
   const onRefresh = useOnRefresh()
   const { searchText } = useSnapshot(watchlaterStore, { sync: true })
   const multiSelecting = useMultiSelecting()
@@ -72,7 +72,7 @@ export function WatchlaterTabbarView({ service }: { service: WatchlaterRecServic
 
       {totalTag}
 
-      {itemsOrder !== WatchlaterItemsOrder.Shuffle && <WatchlaterContinuePlaySettings />}
+      {itemsOrder !== WatchlaterItemsOrder.Shuffle && enableTabbarQuickSwitch && <WatchlaterContinuePlaySettings />}
 
       {multiSelecting && (
         <AntdTooltip arrow={false} title='移除稍后再看 (多选)'>
