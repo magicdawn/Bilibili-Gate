@@ -1,5 +1,6 @@
 import { difference, isEqual, throttle } from 'es-toolkit'
 import ms from 'ms'
+import { appError } from '$common'
 import { allowedLeafSettingsPaths, pickSettings, type Settings } from '.'
 import { articleDraft, debug, getBackupOmitPaths } from './index.shared'
 import { HAS_RESTORED_SETTINGS } from './restore-flag'
@@ -23,7 +24,7 @@ export function saveToDraft(val: ReadonlyDeep<PartialDeep<Settings>>) {
     setDataThrottled(currentBackupVal)
     lastBackupVal = currentBackupVal
     debug('backup to article draft complete')
-  } catch (e: any) {
-    console.error(e.stack || e)
+  } catch (e) {
+    appError(e)
   }
 }

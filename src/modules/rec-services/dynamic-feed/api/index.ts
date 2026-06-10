@@ -1,6 +1,5 @@
-import { baseDebug, REQUEST_FAIL_MSG } from '$common'
-import { isWebApiSuccess, request } from '$request'
-import toast from '$utility/toast'
+import { baseDebug } from '$common'
+import { request, WebApiError } from '$request'
 import { normalizeDynamicFeedItem } from './df-normalize'
 import type { DynamicFeedJson } from '$define'
 import type { UpMidType } from '../store'
@@ -56,23 +55,11 @@ export async function fetchDynamicFeeds({
     // apiPath = '/x/polymer/web-dynamic/v1/feed/space'
   }
 
-  const res = await request.get(apiPath, {
-    signal: abortSignal,
-    params,
-  })
-  const json = res.data as DynamicFeedJson
-
-  // fail
-  if (!isWebApiSuccess(json)) {
-    const msg = json.message || REQUEST_FAIL_MSG
-    toast(msg)
-    // prevent infinite call
-    throw new Error(msg, { cause: json })
-  }
+  const res = await request.get<DynamicFeedJson>(apiPath, { params, signal: abortSignal })
+  const json = WebApiError.validateAxiosResponse(res, '获取动态失败').unwrap()
 
   const data = json.data
   if (data?.items?.length) {
-    // collectData(data) // FIXME: remove this
     data.items = data.items.filter((item) => {
       const valid = !!normalizeDynamicFeedItem(item)
       if (!valid) {

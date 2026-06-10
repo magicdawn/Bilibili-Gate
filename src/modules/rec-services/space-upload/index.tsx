@@ -1,9 +1,9 @@
+import { Panic } from 'better-result'
 import { assert, groupBy, once, orderBy, uniq } from 'es-toolkit'
 import pmap from 'promise.map'
 import QuickLRU from 'quick-lru'
 import { snapshot } from 'valtio'
 import { proxySet } from 'valtio/utils'
-import { ShowMessageError } from '$components/RecGrid/error-detail'
 import { NEED_LOGIN_MESSAGE, toastNeedLogin } from '$components/RecHeader/tab-config'
 import { EApiType } from '$enums'
 import { getAllFollowGroups, getFollowGroupContent } from '$modules/bilibili/me/follow-group'
@@ -190,7 +190,7 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
   override async fetchMore(abortSignal: AbortSignal): Promise<SpaceUploadItemExtend[] | undefined> {
     if (!checkLoginStatus()) {
       this.warnNeedLoginOnce()
-      throw new ShowMessageError(NEED_LOGIN_MESSAGE)
+      throw new Panic({ message: NEED_LOGIN_MESSAGE })
     }
 
     this.setPageTitle()

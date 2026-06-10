@@ -1,16 +1,18 @@
+import { UnhandledException, type InferErr } from 'better-result'
 import { assert, orderBy, shuffle } from 'es-toolkit'
 import pRetry from 'p-retry'
 import { proxy, useSnapshot } from 'valtio'
 import { proxySet } from 'valtio/utils'
-import { appWarn, IN_BILIBILI_HOMEPAGE } from '$common'
+import { appError, appWarn, IN_BILIBILI_HOMEPAGE, REQUEST_FAIL_MSG } from '$common'
 import {
   getMultiSelectedNormalVideoItems,
   warnNoMultiSelectedNormalVideoItems,
 } from '$components/RecGrid/rec-grid-state'
 import { EApiType } from '$enums'
+import { antMessage } from '$modules/antd'
+import { WebApiError } from '$request'
 import { getHasLogined, getUid } from '$utility/cookie'
 import { whenIdle } from '$utility/dom'
-import toast from '$utility/toast'
 import { BaseTabService, type IService } from '../_base'
 import { batchRemoveWatchlater, fetchWatchlaterItems } from './api'
 import { earlierSeparator, getRecentGate, recentSeparator } from './shared'
@@ -41,9 +43,9 @@ function updateWatchlaterStateBvidSet(action: 'add' | 'del', bvid: string) {
 
 async function initWatchlaterState() {
   if (!getHasLogined() || !getUid()) return
-  const { items: allWatchlaterItems = [] } = await fetchWatchlaterItems()
-  if (!allWatchlaterItems.length) return
-  replaceWatchlaterStateBvidSet(allWatchlaterItems.map((x) => x.bvid))
+  const fetchResult = await fetchWatchlaterItems()
+  if (fetchResult.isErr() || !fetchResult.value.items.length) return
+  replaceWatchlaterStateBvidSet(fetchResult.value.items.map((x) => x.bvid))
 }
 if (IN_BILIBILI_HOMEPAGE) {
   void (async () => {
@@ -134,11 +136,17 @@ function extendItem(item: WatchlaterItem): WatchlaterItemExtend {
   }
 }
 
-function showApiRequestError(err: string) {
-  toast(`获取稍后再看失败: ${err}`)
-  throw new Error(`获取稍后再看失败: ${err}`, {
-    cause: err,
-  })
+function showApiRequestError(err: InferErr<Awaited<ReturnType<typeof fetchWatchlaterItems>>>) {
+  appError(err)
+  const content = (() => {
+    if (err instanceof WebApiError) return err.formatAsReactNode()
+    if (UnhandledException.is(err)) {
+      const e = err.cause as any
+      return e?.message || e
+    }
+    return err.message || REQUEST_FAIL_MSG
+  })()
+  antMessage.error(content, 8)
 }
 
 /**
@@ -175,14 +183,15 @@ class ShuffleOrderService implements IService {
 
   currentBvidIndexMap?: BvidIndexMap
   private async fetch(abortSignal: AbortSignal) {
-    const { items: rawItems = [], err } = await fetchWatchlaterItems({
-      asc: false,
-      searchText: undefined,
-      abortSignal,
-    })
-    if (err !== undefined) {
-      showApiRequestError(err)
-    }
+    const { items: rawItems } = (
+      await fetchWatchlaterItems({
+        asc: false,
+        searchText: undefined,
+        abortSignal,
+      })
+    )
+      .tapError(showApiRequestError)
+      .unwrap() // propagate error to RecGrid
 
     // side effects
     replaceWatchlaterStateBvidSet(rawItems.map((x) => x.bvid).filter(Boolean))
@@ -252,27 +261,27 @@ class NormalOrderService implements IService {
   async loadMore() {
     if (!this.hasMore) return
 
-    const result = await fetchWatchlaterItems({
-      asc: this.order === WatchlaterItemsOrder.AddTimeAsc,
-      searchText: this.searchText,
-      extraParams: {
-        need_split: 'true',
-        ps: 20,
-        pn: this.page,
-      },
-    })
-    // error
-    if (result.err !== undefined) {
-      this.hasMore = false
-      showApiRequestError(result.err)
-      return
-    }
+    const { items, total } = (
+      await fetchWatchlaterItems({
+        asc: this.order === WatchlaterItemsOrder.AddTimeAsc,
+        searchText: this.searchText,
+        extraParams: {
+          need_split: 'true',
+          ps: 20,
+          pn: this.page,
+        },
+      })
+    )
+      .tapError((e) => {
+        this.hasMore = false
+        showApiRequestError(e)
+      })
+      .unwrap()
 
-    const { items, total } = result
     const maxPage = Math.ceil(total / 20)
 
     this.firstPageLoaded = true
-    this.state.total = result.total
+    this.state.total = total
     this.hasMore = this.page < maxPage
     this.page++
 

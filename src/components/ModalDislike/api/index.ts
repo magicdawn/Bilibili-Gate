@@ -1,6 +1,6 @@
 import { Result, type UnhandledException } from 'better-result'
 import { assert } from 'es-toolkit'
-import { HOST_APP } from '$common'
+import { appError, HOST_APP } from '$common'
 import { isAppRecommend, isPcRecommend, type AppRecItem, type PcRecItem, type RecItemType } from '$define'
 import { antMessage } from '$modules/antd'
 import { gmrequest, request, WebApiError } from '$request'
@@ -103,7 +103,7 @@ function handlerFactory(action: Action) {
 
     if (result.isErr()) {
       const err = result.error
-      console.error(err)
+      appError(err)
       antMessage.error(err instanceof WebApiError ? err.formatAsReactNode() : err.message, 8)
       return false
     }

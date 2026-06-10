@@ -4,6 +4,7 @@
 
 import { isEmpty } from 'es-toolkit/compat'
 import pRetry from 'p-retry'
+import { appError } from '$common'
 import { IconForFav, IconForPlayer, IconForTimestamp } from '$modules/icon'
 import { isWebApiSuccess, request, WebApiError } from '$request'
 import type { ReactNode } from 'react'
@@ -113,6 +114,6 @@ export async function tryGetSpaceUpload(...args: Parameters<typeof getSpaceUploa
   return await pRetry(() => getSpaceUpload(...args), {
     retries: 5,
     factor: 1.5,
-    onFailedAttempt: (err) => console.error(err),
+    onFailedAttempt: (err) => appError(err),
   })
 }

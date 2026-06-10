@@ -2,6 +2,7 @@ import { useMemoizedFn, useMount, useUnmount } from 'ahooks'
 import { Result } from 'better-result'
 import { assert, isEqual } from 'es-toolkit'
 import { RingBuffer } from 'ring-buffer-ts'
+import { appError } from '$common'
 import { useEmitterOn } from '$common/hooks/useEmitter'
 import { TabConfig } from '$components/RecHeader/tab-config'
 import { useRecSelfContext, type RefreshFn, type RefreshType } from '$components/Recommends/rec.shared'
@@ -134,7 +135,7 @@ export function useRefresh({
       if (signal.aborted) return
       _onAny()
       self.setStore({ refreshError: err })
-      console.error(err)
+      appError(err)
     }
     function onSuccess() {
       if (signal.aborted) return

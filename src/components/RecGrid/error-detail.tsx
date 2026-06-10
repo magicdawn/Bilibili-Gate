@@ -1,3 +1,4 @@
+import { Panic, UnhandledException } from 'better-result'
 import { cloneDeep } from 'es-toolkit'
 import { useMemo, type ReactNode } from 'react'
 import { AccessKeyManage } from '$components/AccessKeyManage'
@@ -19,8 +20,18 @@ function wrapWithParagraph(node: ReactNode) {
 }
 
 function inspectErrDetail(err: any): ReactNode {
-  if (!(err && err instanceof Error)) {
+  if (!err) return
+
+  if (!(err instanceof Error)) {
     return wrapWithParagraph(JSON.stringify(err))
+  }
+
+  // unwrap better-result error when cause has a error stack
+  if (UnhandledException.is(err) || Panic.is(err)) {
+    const inner = err.cause as any
+    if (inner?.stack) {
+      return inspectErrDetail(inner)
+    }
   }
 
   // errors
@@ -61,16 +72,9 @@ function inspectErrDetail(err: any): ReactNode {
 }
 
 function getErrLabel(err: any): ReactNode {
-  if (err && err instanceof ShowMessageError && err.message) return err.message
   if (err && err instanceof NeedValidAccessKeyError) return err.message
+  if (err && Panic.is(err)) return err.message
   return '出错了, 请刷新重试!'
-}
-
-export class ShowMessageError extends Error {
-  constructor(message: string) {
-    super(message)
-    this.name = 'ShowMessageError'
-  }
 }
 
 export function ErrorDetail({ err, tab }: { err: any; tab?: ETab }) {

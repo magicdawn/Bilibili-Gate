@@ -22,7 +22,7 @@ import {
 } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { proxy, ref, useSnapshot } from 'valtio'
-import { APP_CLS_GRID, baseDebug } from '$common'
+import { APP_CLS_GRID, appError, baseDebug } from '$common'
 import { useEmitterOn } from '$common/hooks/useEmitter'
 import { useRecSelfContext, type RefreshFn } from '$components/Recommends/rec.shared'
 import { clsGateVideoGridDivider } from '$components/shared.module.scss'
@@ -576,7 +576,7 @@ export const RecGrid = memo(function RecGrid({
 
   // Shit happens!
   if (refreshError) {
-    console.error('RecGrid.refresh error:', refreshError.stack || refreshError)
+    appError('RecGrid.refresh error:', refreshError)
     return render({ gridSiblings: <ErrorDetail tab={tab} err={refreshError} /> })
   }
 
