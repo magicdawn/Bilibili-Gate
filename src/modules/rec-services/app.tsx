@@ -232,8 +232,9 @@ class AppRecInnerService implements IService {
 
   hasMore = true
 
-  private async getRecommend() {
+  private async getRecommend(abortSignal: AbortSignal) {
     const res = await gmrequest.get('/x/v2/feed/index', {
+      signal: abortSignal,
       timeout: 20_000,
       responseType: 'json',
       [anonymousFlag]: this.anonymousFetch,
@@ -250,11 +251,7 @@ class AppRecInnerService implements IService {
     // request fail
     if (!json.data) {
       throw new Error('Request fail with none invalid json', {
-        cause: {
-          type: 'invalid-json',
-          statusCode: res.status,
-          json,
-        },
+        cause: { type: 'invalid-json', statusCode: res.status, json },
       })
     }
 
@@ -268,7 +265,7 @@ class AppRecInnerService implements IService {
 
   // 一次不够, 多来几次
   async getRecommendTimes(abortSignal: AbortSignal, times: number) {
-    let list: AppRecItem[] = (await Promise.all(range(times).map(() => this.getRecommend()))).flat()
+    let list: AppRecItem[] = (await Promise.all(range(times).map(() => this.getRecommend(abortSignal)))).flat()
 
     // rm ad & unsupported card_type
     list = list.filter((item) => {

@@ -146,19 +146,17 @@ export function useRefresh({
     async function doFetch(service: BaseTabService) {
       const result = await Result.tryPromise(() => fetcher({ tab, service, abortSignal: signal }))
       // aborted
-      if (signal.aborted) {
-        return false
-      }
+      if (signal.aborted) return false
+
       // err
       if (result.isErr()) {
         onError(result.error.cause) // 拆包 UnhandledException
         return false
       }
+
       // success
-      else {
-        self.setStore({ items: result.value })
-        return true
-      }
+      self.setStore({ items: result.value })
+      return true
     }
 
     let existingService: (typeof serviceRegistry)[ETab]

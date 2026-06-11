@@ -112,10 +112,11 @@ async function fetchMinCount(count: number, fetcherOptions: FetcherOptions, filt
       debug('getMinCount: break for tab=%s hasMore=false', tab)
       break
     }
-
     // enough
     const len = items.filter((x) => x.api !== EApiType.Separator).length
-    if (len >= count) break
+    if (len >= count) {
+      break
+    }
 
     await addMore(count - items.length)
   }

@@ -15,7 +15,7 @@ import { getHasLogined, getUid } from '$utility/cookie'
 import { whenIdle } from '$utility/dom'
 import { BaseTabService, type IService } from '../_base'
 import { batchRemoveWatchlater, fetchWatchlaterItems } from './api'
-import { earlierSeparator, getRecentGate, recentSeparator } from './shared'
+import { earlierSeparator, getRecentGate, recentSeparator } from './helper'
 import { WatchlaterTabbarView } from './views'
 import { WatchlaterItemsOrder } from './watchlater-enum'
 import type { RecSharedEmitter } from '$components/Recommends/rec.shared'
@@ -272,10 +272,7 @@ class NormalOrderService implements IService {
         },
       })
     )
-      .tapError((e) => {
-        this.hasMore = false
-        showApiRequestError(e)
-      })
+      .tapError(showApiRequestError)
       .unwrap()
 
     const maxPage = Math.ceil(total / 20)
