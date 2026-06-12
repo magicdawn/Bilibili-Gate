@@ -25,7 +25,7 @@ export function GeneralContinuePlaySwitch({
   normalDirectionTooltip?: React.ReactNode
   reverseDirectionTooltip?: React.ReactNode
 }) {
-  const enabled = !!get(useSettingsSnapshot(), enabledConfigPath, false)
+  const enabled = Boolean(get(useSettingsSnapshot(), enabledConfigPath))
 
   const _normalDirectionTooltip: ReactNode = normalDirectionTooltip ?? (
     <>

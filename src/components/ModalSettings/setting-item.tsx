@@ -9,7 +9,7 @@ import type { CheckboxChangeEvent } from 'antd/es/checkbox'
 
 function useBooleanSettingsPath(configPath: BooleanSettingsPath, extraAction?: (val: boolean) => void) {
   const snap = useSettingsSnapshot()
-  const checked = !!get(snap, configPath, false)
+  const checked = Boolean(get(snap, configPath))
   const onChange = useCallback((val: boolean) => {
     set(settings, configPath, val)
     extraAction?.(val)
