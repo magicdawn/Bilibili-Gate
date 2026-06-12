@@ -14,6 +14,7 @@ import { isFavFolderPrivate } from '$modules/rec-services/fav/fav-util'
 import { IconForCollection, IconForPrivateFolder, IconForPublicFolder } from '$modules/rec-services/fav/views'
 import { isPgcSeasonRankItem, isPgcWebRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { spaceUploadAvatarCache, spaceUploadFollowedMidSet } from '$modules/rec-services/space-upload'
+import { buildSpaceUploadVideoCardUrl } from '$modules/rec-services/space-upload/store'
 import { isSpaceUploadItemChargeOnly } from '$modules/rec-services/space-upload/util'
 import { buildWatchlaterVideoCardUrl } from '$modules/rec-services/watchlater/helper'
 import { toHttps } from '$utility/url'
@@ -592,13 +593,18 @@ function apiSpaceUploadAdapter(item: SpaceUploadItemExtend): IVideoCardData {
   if (recommendReason === '-') recommendReason = undefined
   if (recommendReason && item.title.includes(recommendReason)) recommendReason = undefined
 
+  const authorMid = item.mid.toString()
+  const avid = item.aid.toString()
+  const bvid = item.bvid
+  const href = buildSpaceUploadVideoCardUrl(authorMid, bvid, avid)
+
   return {
     // video
-    avid: item.aid.toString(),
-    bvid: item.bvid,
+    avid,
+    bvid,
     cid: undefined,
     goto: 'av',
-    href: `/video/${item.bvid}/`,
+    href,
     title: item.title,
     cover: item.pic,
     pubts: item.created,
@@ -620,7 +626,7 @@ function apiSpaceUploadAdapter(item: SpaceUploadItemExtend): IVideoCardData {
     // author
     authorName: item.author,
     authorFace: spaceUploadAvatarCache.get(item.mid),
-    authorMid: item.mid.toString(),
+    authorMid,
     followed: spaceUploadFollowedMidSet.has(item.mid),
     cardTags: defineCardTags([
       isSpaceUploadItemChargeOnly(item) && {

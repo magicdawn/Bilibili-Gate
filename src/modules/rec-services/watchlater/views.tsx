@@ -1,9 +1,7 @@
 import { useUpdateEffect } from 'ahooks'
-import { Button, Input, Radio, Tag } from 'antd'
+import { Button, Input, Tag } from 'antd'
 import { delay } from 'es-toolkit'
 import { useSnapshot } from 'valtio'
-import { explainForFlag } from '$components/ModalSettings/index.shared'
-import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { useOnRefresh, useRecSelfContext } from '$components/Recommends/rec.shared'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconForDelete, IconForShuffle, IconForTimeAsc, IconForTimeDesc } from '$modules/icon'
@@ -13,6 +11,7 @@ import toast from '$utility/toast'
 import { usePopupContainer } from '../_base'
 import { BtnAddMultiSelectedToFav } from '../_shared/batch-toolbar-actions'
 import { CopyBvidButtonsTabbarView } from '../_shared/copy-bvid-buttons'
+import { GeneralContinuePlaySwitch } from '../_shared/general-continue-play-switch'
 import { GenericOrderSwitcher } from '../_shared/generic-order-switcher'
 import { removeMultiSelectedWatchlaterItems, type WatchlaterRecService } from './index'
 import { recentGateDescription } from './helper'
@@ -157,42 +156,13 @@ function WatchlaterOrderSwitcher() {
 }
 
 export function WatchlaterContinuePlaySettings() {
-  const { continuePlay, continuePlayDirection } = useSnapshot(settings.watchlater)
+  const { continuePlayDirection } = useSnapshot(settings.watchlater)
   return (
-    <div className='inline-flex-center gap-x-1'>
-      <CheckboxSettingItem
-        configPath='watchlater.continuePlay'
-        label='连续播放'
-        tooltip={explainForFlag('使用自动生成的「稍后再看」列表连续播放', '独立视频链接')}
-      />
-      <Radio.Group
-        size='small'
-        buttonStyle='solid'
-        disabled={!continuePlay}
-        value={continuePlayDirection}
-        onChange={(e) => {
-          const val = e.target.value
-          settings.watchlater.continuePlayDirection = val as 'normal' | 'reverse'
-        }}
-      >
-        <AntdTooltip title='逆序播放'>
-          <Radio.Button value='reverse' className='[&_.ant-radio-button-label]:(h-full flex items-center)'>
-            <IconTablerArrowNarrowLeft className='size-14px' />
-          </Radio.Button>
-        </AntdTooltip>
-        <AntdTooltip
-          title={
-            <>
-              顺序播放 (默认) <br />
-              左至右, 上至下
-            </>
-          }
-        >
-          <Radio.Button value='normal' className='[&_.ant-radio-button-label]:(h-full flex items-center)'>
-            <IconTablerArrowNarrowRight className='size-14px' />
-          </Radio.Button>
-        </AntdTooltip>
-      </Radio.Group>
-    </div>
+    <GeneralContinuePlaySwitch
+      enabledConfigPath={'watchlater.continuePlay'}
+      direction={continuePlayDirection}
+      onDirectionChange={(val) => (settings.watchlater.continuePlayDirection = val)}
+      autoPlaylistName='稍后再看'
+    />
   )
 }

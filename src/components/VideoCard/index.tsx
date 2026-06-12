@@ -13,6 +13,7 @@ import {
   type ReactNode,
 } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
+import { useSnapshot } from 'valtio'
 import { APP_CLS_CARD, APP_CLS_CARD_ACTIVE, APP_CLS_CARD_COVER, APP_CLS_ROOT, APP_KEY_PREFIX, appWarn } from '$common'
 import { useEmitterOn } from '$common/hooks/useEmitter'
 import { isEmptyFragment } from '$common/hooks/useIsEmptyFragment'
@@ -45,6 +46,7 @@ import { useInFilterByAuthorList } from '$modules/filter/block-state'
 import { normalizeCardData, type IVideoCardData } from '$modules/filter/normalize'
 import { IconForCopy } from '$modules/icon'
 import { useMultiSelectState } from '$modules/multi-select/store'
+import { buildSpaceUploadVideoCardUrl, spaceUploadStore } from '$modules/rec-services/space-upload/store'
 import { useWatchlaterState } from '$modules/rec-services/watchlater'
 import { buildWatchlaterVideoCardUrl } from '$modules/rec-services/watchlater/helper'
 import { settings, useSettingsSnapshot } from '$modules/settings'
@@ -202,7 +204,7 @@ const VideoCardInner = memo(function VideoCardInner({
       actions: videoCardActions,
       imgPreview: { enabled: imgPreviewEnabled, autoPreviewWhenHover, disableWhenMultiSelecting },
     },
-    spaceUpload: { showVol },
+    spaceUpload: spaceUploadSettings,
     watchlater: watchlaterSettings,
     __internalEnableCopyBvidInfo,
   } = useSettingsSnapshot()
@@ -235,16 +237,34 @@ const VideoCardInner = memo(function VideoCardInner({
   }
 
   // dynamic href
+
+  const { usingOrder: spaceUploadItemsOrder, isDisplayingSingleUpAllItems: spaceUploadIsDisplayingSingleUpAllItems } =
+    useSnapshot(spaceUploadStore)
+
   const href = useMemo(() => {
-    if (!isWatchlater(item)) return _hrefFromNormalize
-    if (!item.bvid) return _hrefFromNormalize
-    return buildWatchlaterVideoCardUrl(item.bvid, item.aid, watchlaterSettings)
+    if (isWatchlater(item) && item.bvid) {
+      return buildWatchlaterVideoCardUrl(item.bvid, item.aid, watchlaterSettings)
+    }
+    if (isSpaceUpload(item) && authorMid && item.bvid) {
+      return buildSpaceUploadVideoCardUrl(authorMid, item.bvid, item.aid, {
+        continuePlay: spaceUploadSettings.continuePlay,
+        continuePlayDirection: spaceUploadSettings.continuePlayDirection,
+        itemsOrder: spaceUploadItemsOrder,
+        isDisplayingSingleUpAllItems: spaceUploadIsDisplayingSingleUpAllItems,
+      })
+    }
+    return _hrefFromNormalize
   }, [
     item,
+    authorMid,
     _hrefFromNormalize,
     watchlaterSettings.itemsOrder,
     watchlaterSettings.continuePlay,
     watchlaterSettings.continuePlayDirection,
+    spaceUploadSettings.continuePlay,
+    spaceUploadSettings.continuePlayDirection,
+    spaceUploadItemsOrder,
+    spaceUploadIsDisplayingSingleUpAllItems,
   ])
 
   const displayingAsList = isDisplayAsList(gridDisplayMode)
@@ -465,7 +485,8 @@ const VideoCardInner = memo(function VideoCardInner({
     (isLive(item) && item.live_status === ELiveStatus.Streaming) ||
     (isPcRecommend(item) && item.goto === PcRecGoto.Live)
   const hasApiTypeTag = tab === ETab.AppRecommend && !isAppRecommend(item) && !isLive(item)
-  const hasVolMark = (isSpaceUpload(item) && showVol) || (isFav(item) && !!item.vol && !hasApiTypeTag)
+  const hasVolMark =
+    (isSpaceUpload(item) && spaceUploadSettings.showVol) || (isFav(item) && !!item.vol && !hasApiTypeTag)
 
   const copyBvidInfoButtonEl = __internalEnableCopyBvidInfo && bvid && (
     <VideoCardActionButton

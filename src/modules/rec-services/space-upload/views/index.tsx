@@ -8,6 +8,7 @@ import { usePlainShortcutEnabled } from '$components/RecHeader/index.shared'
 import { useOnRefresh } from '$components/Recommends/rec.shared'
 import { AntdTooltip } from '$modules/antd/custom'
 import { usePopupContainer } from '$modules/rec-services/_base'
+import { GeneralContinuePlaySwitch } from '$modules/rec-services/_shared/general-continue-play-switch'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { CopyBvidButtonsTabbarView } from '../../_shared/copy-bvid-buttons'
 import { GenericOrderSwitcher } from '../../_shared/generic-order-switcher'
@@ -17,10 +18,8 @@ import { usePopoverRelated } from './popover-related'
 
 export function SpaceUploadTabbarView() {
   const { searchText, filterText } = useSnapshot(spaceUploadStore, { sync: true })
-  const { allowedOrders, usingOrder } = useSnapshot(spaceUploadStore)
-  const {
-    spaceUpload: { useSyncFilterTextFromSearchText },
-  } = useSettingsSnapshot()
+  const { allowedOrders, usingOrder, isDisplayingSingleUpAllItems } = useSnapshot(spaceUploadStore)
+  const { useSyncFilterTextFromSearchText, continuePlayDirection } = useSettingsSnapshot().spaceUpload
   const onRefresh = useOnRefresh()
   const { ref, getPopupContainer } = usePopupContainer()
   const { popoverTrigger } = usePopoverRelated({ onRefresh, getPopupContainer })
@@ -124,6 +123,16 @@ export function SpaceUploadTabbarView() {
       </Space.Compact>
 
       <CheckboxSettingItem configPath='spaceUpload.showVol' label={'显示序号'} className='flex-none' />
+
+      {isDisplayingSingleUpAllItems && (
+        <GeneralContinuePlaySwitch
+          enabledConfigPath={'spaceUpload.continuePlay'}
+          direction={continuePlayDirection}
+          onDirectionChange={(val) => (settings.spaceUpload.continuePlayDirection = val)}
+          normalDirectionTooltip='降序: 左至右, 上至下'
+          reverseDirectionTooltip='升序: 往回播放'
+        />
+      )}
 
       <CopyBvidButtonsTabbarView />
     </div>

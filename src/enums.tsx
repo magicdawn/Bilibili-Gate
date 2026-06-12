@@ -69,3 +69,8 @@ export enum ELiveStatus {
   Streaming = 1,
   Rolling = 2,
 }
+
+export enum EContinuePlayDirection {
+  Normal = 'normal',
+  Reverse = 'reverse',
+}

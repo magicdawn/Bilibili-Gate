@@ -1,5 +1,7 @@
 import { isEqual, pick } from 'es-toolkit'
-import { proxy } from 'valtio'
+import { proxy, snapshot } from 'valtio'
+import { EContinuePlayDirection } from '$enums'
+import { getSettingsSnapshot, type Settings } from '$modules/settings'
 import { proxyMapWithGmStorage } from '$utility/valtio'
 import { SpaceUploadOrder } from './api'
 
@@ -85,8 +87,11 @@ const store = proxy({
       Boolean,
     )
   },
-  get usingOrder() {
-    return this.allowedOrders.includes(this.order) ? this.order : this.allowedOrders[0]
+  get usingOrder(): SpaceUploadOrder {
+    const fallback = this.allowedOrders[0]
+    if (!this.order) return fallback
+    if (!this.allowedOrders.includes(this.order)) return fallback
+    return this.order
   },
 
   get currentFilterKey(): SpaceUploadFilterKey {
@@ -137,6 +142,55 @@ const store = proxy({
   setFilterMaxDuration(val: number | undefined) {
     return this._setDurationValue('max', val)
   },
+
+  get isDisplayingSingleUpAllItems() {
+    return this.mids.length === 1 && this.groupId === undefined && !this.filterText && !this.searchText
+  },
 })
 
 export { store as spaceUploadStore }
+
+export function buildSpaceUploadVideoCardUrl(
+  mid: string | number | undefined,
+  bvid: string,
+  aid?: string | number,
+  config?: Pick<Settings['spaceUpload'], 'continuePlay' | 'continuePlayDirection'> & {
+    itemsOrder: SpaceUploadOrder
+    isDisplayingSingleUpAllItems: boolean
+  },
+) {
+  const { itemsOrder, continuePlay, continuePlayDirection, isDisplayingSingleUpAllItems } =
+    config ??
+    (() => {
+      const { usingOrder: itemsOrder, isDisplayingSingleUpAllItems } = snapshot(store)
+      return {
+        ...getSettingsSnapshot().spaceUpload,
+        itemsOrder,
+        isDisplayingSingleUpAllItems,
+      }
+    })()
+
+  if (!continuePlay || !isDisplayingSingleUpAllItems) return `https://www.bilibili.com/video/${bvid}/`
+
+  // https://www.bilibili.com/list/:mid/?sort_field=pubtime&tid=0&oid=:avid&bvid=:bvid
+  const params = new URLSearchParams({
+    // 这里 URL 使用的 field 与 API field 不一致, 需要映射
+    sort_field: {
+      [SpaceUploadOrder.Latest]: 'pubtime',
+      [SpaceUploadOrder.View]: 'play',
+      [SpaceUploadOrder.Fav]: 'fav',
+    }[itemsOrder],
+    tid: '0',
+    bvid,
+  })
+
+  if (aid) params.set('oid', String(aid))
+
+  if (continuePlayDirection === EContinuePlayDirection.Reverse) {
+    params.set('desc', '0')
+  } else {
+    // params.set('desc', '1') // default
+  }
+
+  return `https://www.bilibili.com/list/${mid}/?${params.toString()}`
+}

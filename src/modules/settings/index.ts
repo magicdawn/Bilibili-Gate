@@ -3,7 +3,7 @@ import { get, set } from 'es-toolkit/compat'
 import { proxy, snapshot, subscribe, useSnapshot, type UseSnapshotOptions } from 'valtio'
 import { baseDebug, IN_BILIBILI_HOMEPAGE } from '$common'
 import { EVideoLinkOpenMode } from '$components/VideoCard/index.shared'
-import { EGridDisplayMode, ESidebarAlign, ETab, ETwoColumnModeAlign } from '$enums'
+import { EContinuePlayDirection, EGridDisplayMode, ESidebarAlign, ETab, ETwoColumnModeAlign } from '$enums'
 import { reciveGmValueUpdatesFromOtherTab } from '$modules/gm'
 import { WatchlaterItemsOrder } from '$modules/rec-services/watchlater/watchlater-enum'
 import { getLeafPaths, type BooleanPaths, type LeafPaths, type ListPaths } from '$utility/object-paths'
@@ -149,9 +149,9 @@ export const initialSettings = {
     itemsOrder: WatchlaterItemsOrder.AddTimeDesc, // 顺序
     enableTabbarQuickSwitch: true,
 
-    // continue play
-    continuePlay: true, // 连续播放; https://www.bilibili.com/list/watchlater?bvid=&oid=
-    continuePlayDirection: 'normal' as 'normal' | 'reverse',
+    // 连续播放 https://www.bilibili.com/list/watchlater?bvid=&oid=
+    continuePlay: true,
+    continuePlayDirection: EContinuePlayDirection.Normal,
   },
 
   /**
@@ -186,6 +186,9 @@ export const initialSettings = {
   spaceUpload: {
     showVol: false,
     useSyncFilterTextFromSearchText: false,
+    // 连续播放 https://www.bilibili.com/list/:mid/?sort_field=pubtime&tid=0&oid=:avid&bvid=:bvid
+    continuePlay: false,
+    continuePlayDirection: EContinuePlayDirection.Normal,
   },
 
   /**
