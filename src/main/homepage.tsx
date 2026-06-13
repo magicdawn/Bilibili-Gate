@@ -9,6 +9,7 @@ import { settings } from '$modules/settings'
 import { getOnlyTab, inGateEntry } from '$routes'
 import { isSafari } from '$ua'
 import { poll, tryAction, tryToRemove } from '$utility/dom'
+import { initDefaultHomepageLargePreview } from './default-homepage'
 import type { Root } from 'react-dom/client'
 
 const bewlyEnabledSelector = 'html.bewly-design:not(:has(#i_cecream,#app))'
@@ -48,6 +49,9 @@ export async function initHomepage() {
     tryDetectBewlyBewly()
   } else {
     initHomepageGateFloatEntry()
+    if (settings.videoCard.videoPreview.addTo.defaultHomepage) {
+      initDefaultHomepageLargePreview()
+    }
   }
 }
 

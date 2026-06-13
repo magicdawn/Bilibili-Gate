@@ -87,6 +87,7 @@ export const initialSettings = {
       usePreferredCdn: true,
       addTo: {
         searchPage: true,
+        defaultHomepage: true,
       },
     },
 

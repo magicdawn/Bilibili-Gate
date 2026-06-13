@@ -12,6 +12,7 @@ export function TabPaneOtherPages() {
             'fav.useCustomFavPicker.onPlayPage',
             'videoPlayPage.addQuickLinks',
             'videoCard.videoPreview.addTo.searchPage',
+            'videoCard.videoPreview.addTo.defaultHomepage',
           ]}
         />
       </div>
@@ -54,6 +55,14 @@ export function TabPaneOtherPages() {
           configPath='videoCard.videoPreview.addTo.searchPage'
           label='浮动预览: 添加到「搜索页」'
           tooltip={<>在搜索页的视频也添加「浮动预览」</>}
+        />
+      </SettingsGroup>
+
+      <SettingsGroup title='默认首页推荐'>
+        <CheckboxSettingItem
+          configPath='videoCard.videoPreview.addTo.defaultHomepage'
+          label='浮动预览: 添加到「默认首页推荐」'
+          tooltip={<>使用默认首页推荐时, 添加「浮动预览」</>}
         />
       </SettingsGroup>
     </div>

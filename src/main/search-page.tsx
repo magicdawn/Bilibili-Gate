@@ -1,16 +1,4 @@
-import { useHover } from 'ahooks'
-import { throttle } from 'es-toolkit'
-import { useMemo, useRef, type ComponentProps } from 'react'
-import { createPortal } from 'react-dom'
-import { useUnoMerge } from 'unocss-merge/react'
-import { APP_NAMESPACE, createReactRoot } from '$common'
-import { AppRoot } from '$components/AppRoot'
-import { useLargePreviewRelated } from '$components/LargePreview/useLargePreview'
-import { defaultRecSharedEmitter } from '$components/Recommends/rec.shared'
-import {
-  VideoCardActionsClassNames,
-  type VideoCardActionButton,
-} from '$components/VideoCard/child-components/VideoCardActions'
+import { setupLargePreview } from '$components/LargePreview/large-preview-setup'
 import { settings } from '$modules/settings'
 import { isInIframe, setupForNoneHomepage } from './shared'
 
@@ -23,93 +11,6 @@ export function initSearchPage() {
 }
 
 function addLargePreviewForSearchResults() {
-  const run = throttle(() => {
-    const itemsSelector = '.video-list-item:has(> .bili-video-card),div:has(> .bili-video-card)'
-    const list = Array.from(document.querySelectorAll<HTMLDivElement>(itemsSelector))
-    for (const el of list) addLargePreview(el)
-  }, 1000)
-  run()
-  const ob = new MutationObserver(() => run())
-  ob.observe(document.body, { childList: true, subtree: true })
-}
-
-const processed = new WeakSet<HTMLDivElement>()
-const processedAttr = `${APP_NAMESPACE}-add-large-preview-processed`
-
-function addLargePreview(el: HTMLDivElement) {
-  if (processed.has(el)) return
-  if (el.getAttribute(processedAttr)) return
-
-  const prevEl = el.querySelector<HTMLDivElement>('.bili-watch-later--wrap')
-  if (!prevEl) return
-
-  const container = document.createElement('div')
-  prevEl.after(container)
-  processed.add(el)
-  el.setAttribute(processedAttr, 'true')
-
-  const root = createReactRoot(container)
-  root.render(
-    <AppRoot>
-      <LargePreviewSetup el={el} />
-    </AppRoot>,
-  )
-}
-
-const actionButtonProps: Partial<ComponentProps<typeof VideoCardActionButton>> = {
-  useMotion: true,
-  motionProps: {
-    initial: { opacity: 0 },
-    animate: { opacity: 1 },
-    exit: { opacity: 0, transition: { delay: 0 } },
-    transition: { duration: 0.2, ease: 'linear', delay: 0.2 },
-  },
-}
-
-function LargePreviewSetup({ el }: { el: HTMLDivElement }) {
-  const { bvid = '', cover } = useMemo(() => parseCardInfo(el), [el])
-  const cardEl = useMemo(() => el.querySelector<HTMLDivElement>('.bili-video-card') ?? el, [el])
-  const coverEl = useMemo(() => cardEl.querySelector<HTMLAnchorElement>('.bili-video-card__wrap > a'), [el])
-  const hovering = useHover(coverEl)
-  const videoCardAsTriggerRef = useRef<HTMLElement | null>(coverEl)
-
-  const { largePreviewActionButtonEl, largePreviewEl } = useLargePreviewRelated({
-    shouldFetchPreviewData: !!bvid,
-    hasLargePreviewActionButton: true,
-    actionButtonVisible: hovering,
-    actionButtonProps,
-    // required
-    bvid,
-    cid: undefined,
-    uniqId: bvid,
-    recSharedEmitter: defaultRecSharedEmitter,
-    cardTarget: cardEl,
-    // optional
-    cover,
-    videoCardAsTriggerRef,
-  })
-
-  return (
-    <>
-      <div className={useUnoMerge(VideoCardActionsClassNames.top('right'), 'right-[calc(8px+28px+5px)]')}>
-        {largePreviewActionButtonEl}
-      </div>
-      {/* .bili-video-card__wrap 有 z-index: 1, 需要 escape */}
-      {createPortal(largePreviewEl, cardEl)}
-    </>
-  )
-}
-
-function parseCardInfo(el: HTMLDivElement) {
-  let bvid: string | undefined
-  {
-    const link = el.querySelector('.bili-video-card__wrap > a')?.href
-    if (link) {
-      bvid = /^\/video\/(?<bvid>BV\w+)\//i.exec(new URL(link).pathname)?.groups?.bvid
-    }
-  }
-
-  const cover = el.querySelector('picture.v-img.bili-video-card__cover img')?.currentSrc
-
-  return { bvid, cover }
+  const itemsSelector = '.video-list-item:has(> .bili-video-card),div:has(> .bili-video-card)'
+  setupLargePreview({ itemsSelector })
 }
