@@ -6,7 +6,7 @@ import ms from 'ms'
 import { request } from '$request'
 import { reusePendingPromise } from '$utility/async'
 import { getIdbCache, wrapWithIdbCache } from '$utility/idb'
-import type { KvResponseData, KvResponseJson } from './kv-types'
+import type { KvResponseData, KvResponseJson } from './kv.api'
 
 async function fetchKvData({ appKey, nscode, versionId }: { appKey: string; nscode: number; versionId: string }) {
   const params = { appKey, nscode, versionId }

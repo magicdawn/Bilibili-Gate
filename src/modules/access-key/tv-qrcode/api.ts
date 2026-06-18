@@ -8,10 +8,7 @@ import type { PollJson } from './types/poll'
 
 const newSignedForm = (params: Record<string, any>) => {
   const sign = appSign(params, TVKeyInfo.appkey, TVKeyInfo.appsec)
-  return new URLSearchParams({
-    ...params,
-    sign,
-  })
+  return new URLSearchParams({ ...params, sign })
 }
 
 export async function getQrCodeInfo() {
