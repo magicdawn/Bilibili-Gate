@@ -73,7 +73,7 @@ function MultiSelectActions() {
   if (!multiSelecting) return null
   return (
     <>
-      <AntdTooltip title='移除稍后再看 (多选)'>
+      <AntdTooltip title='移除历史记录(多选)'>
         <Button className='icon-only-round-button' onClick={() => removeMultiSelectedHistoryItems(recSharedEmitter)}>
           <IconForDelete />
         </Button>
