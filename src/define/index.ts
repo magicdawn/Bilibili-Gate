@@ -1,6 +1,7 @@
 import { EApiType } from '$enums'
 import type { ReactNode } from 'react'
 import type { VideoDetailData } from '$modules/bilibili/video/types/video-detail'
+import type { HistoryItem } from '$modules/rec-services/history/api/shared.api'
 import type { ERankApiType, IRankTab } from '$modules/rec-services/hot/rank/rank-tab'
 import type { RankItem } from '$modules/rec-services/hot/rank/types'
 import type { LikedItem } from '$modules/rec-services/liked/api/liked.api'
@@ -60,6 +61,7 @@ export type RecItemType =
   | LiveItemExtend
   | SpaceUploadItemExtend
   | LikedItemExtend
+  | HistoryItemExtend
 
 // #region define ItemExtend
 export type PcRecItemExtend = PcRecItem & {
@@ -117,6 +119,11 @@ export type LikedItemExtend = LikedItem & {
   api: EApiType.Liked
   videoDetail?: VideoDetailData
 }
+
+export type HistoryItemExtend = HistoryItem & {
+  uniqId: string
+  api: EApiType.History
+}
 // #endregion
 
 // #region predicates
@@ -152,5 +159,8 @@ export function isSpaceUpload(item: RecItemType): item is SpaceUploadItemExtend 
 }
 export function isLiked(item: RecItemType): item is LikedItemExtend {
   return item.api === EApiType.Liked
+}
+export function isHistory(item: RecItemType): item is HistoryItemExtend {
+  return item.api === EApiType.History
 }
 // #endregion

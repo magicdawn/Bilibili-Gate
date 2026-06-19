@@ -23,6 +23,7 @@ import type { ReactNode } from 'react'
 import type {
   AppRecItemExtend,
   DynamicFeedItemExtend,
+  HistoryItemExtend,
   LikedItemExtend,
   LiveItemExtend,
   PcRecItemExtend,
@@ -121,6 +122,7 @@ export const normalizeCardData = memoize(
       [EApiType.Live]: apiLiveAdapter,
       [EApiType.SpaceUpload]: apiSpaceUploadAdapter,
       [EApiType.Liked]: apiLikedAdapter,
+      [EApiType.History]: apiHistoryAdapter,
     })
 
     // handle mixed content
@@ -672,5 +674,17 @@ function apiLikedAdapter(item: LikedItemExtend): IVideoCardData {
     authorName: item.author,
     authorFace: videoDetail?.owner.face,
     authorMid: videoDetail?.owner.mid?.toString(),
+  }
+}
+
+function apiHistoryAdapter(item: HistoryItemExtend): IVideoCardData {
+  return {
+    cover: item.cover,
+    bvid: item.history.bvid,
+    avid: item.history.oid.toString(),
+    goto: 'av',
+    href: `/video/${item.history.bvid}/`,
+    title: item.title,
+    statItems: defineStatItems([]),
   }
 }

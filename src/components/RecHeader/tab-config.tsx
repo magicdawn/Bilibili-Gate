@@ -101,6 +101,11 @@ export const TabConfig: Record<ETab, TabConfigItem> = {
     label: '赞',
     desc: '「我」的点赞. 使用 App 端个人空间 API, 需要 access_key',
   },
+  [ETab.History]: {
+    icon: <IconForLike className='size-16px' />,
+    label: '历史记录',
+    desc: '历史记录',
+  },
 }
 
 export function TabIcon({ tabKey, active, className }: { tabKey: ETab; active?: boolean; className?: string }) {
