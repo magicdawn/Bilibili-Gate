@@ -49,6 +49,7 @@ export const IconForFav = IconCarbonStar
 export const IconForFaved = IconCarbonStarFilled // faved variant
 export const IconForHot = IconParkOutlineFire
 export const IconForSpaceUpload = IconLineMdUploadingLoop
+export const IconForHistory = IconLucideClock
 
 // actions
 export const IconForBlacklist = IconParkOutlinePeopleDelete

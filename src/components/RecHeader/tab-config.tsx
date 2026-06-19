@@ -5,6 +5,7 @@ import {
   IconForDynamicFeed,
   IconForFav,
   IconForFollowedOnly,
+  IconForHistory,
   IconForHot,
   IconForLike,
   IconForLive,
@@ -100,11 +101,13 @@ export const TabConfig: Record<ETab, TabConfigItem> = {
     icon: <IconForLike className='size-16px' />,
     label: '赞',
     desc: '「我」的点赞. 使用 App 端个人空间 API, 需要 access_key',
+    swr: true,
   },
   [ETab.History]: {
-    icon: <IconForLike className='size-16px' />,
-    label: '历史记录',
-    desc: '历史记录',
+    icon: <IconForHistory className='size-16px' />,
+    label: '历史',
+    desc: '「我」看过的视频',
+    swr: true,
   },
 }
 

@@ -1,7 +1,10 @@
+import { snapshot } from 'valtio'
 import { EApiType } from '$enums'
+import { settings } from '$modules/settings'
 import { BaseTabService } from '../_base'
 import { fetchHistoryCursor, fetchHistorySearch } from './api'
-import { EHistoryDeviceType, EHistoryItemType } from './enums'
+import { EHistoryDeviceType } from './enums'
+import { HistoryTabbarView } from './views'
 import type { ReactNode } from 'react'
 import type { HistoryItemExtend, RecItemTypeOrSeparator } from '$define'
 import type { CursorState } from './api/history-cursor.api'
@@ -10,9 +13,10 @@ import type { HistoryItem } from './api/shared.api'
 export type HistoryRecServiceConfig = ReturnType<typeof getHistoryRecServiceConfig>
 
 export function getHistoryRecServiceConfig() {
+  const { itemType } = snapshot(settings.history)
   return {
     searchText: undefined as string | undefined,
-    itemType: EHistoryItemType.ALL,
+    itemType,
     deviceType: EHistoryDeviceType.ALL,
   }
 }
@@ -26,7 +30,7 @@ export class HistoryRecService extends BaseTabService {
     this.usingCursorApi = !searchText && deviceType === EHistoryDeviceType.ALL
   }
 
-  override tabbarView: ReactNode
+  override tabbarView: ReactNode = <HistoryTabbarView />
   override sidebarView?: ReactNode
   override hasMoreExceptQueue: boolean = true
 

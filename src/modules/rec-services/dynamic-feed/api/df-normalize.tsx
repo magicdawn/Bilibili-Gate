@@ -73,7 +73,7 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
       title: v.title,
       cover: v.cover,
       duration: parseDuration(v.duration_text) || 0,
-      durationStr: v.duration_text,
+      durationDisplay: v.duration_text,
 
       // 「投稿视频」显示 recommendReason, 其他显示 tag
       recommendReason: v.badge.text === DynamicFeedBadgeText.Upload ? v.badge.text : undefined,
@@ -106,7 +106,7 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
     const hasPic = !!opus.pics?.length
     const cardTagText: string | undefined = (() => {
       if (isLiveReserve) return '直播预告'
-      if (isReserve) return additional.reserve.title?.split('：')[0] || '预约'
+      if (isReserve) return additional.reserve.title?.split('：', 1)[0] || '预约'
       // DynamicFeedEnums.ItemType.Draw | Article | Word 不知道有啥区别?
       if (item.type === DynamicFeedEnums.ItemType.Word) return '文字动态'
       if (item.type === DynamicFeedEnums.ItemType.Draw) return hasPic ? '图片' : '文字动态'
@@ -149,7 +149,7 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
       avid: ugc_season.aid.toString(),
       goto: 'av',
       duration: parseDuration(ugc_season.duration_text),
-      durationStr: ugc_season.duration_text,
+      durationDisplay: ugc_season.duration_text,
       cover: ugc_season.cover,
       href: `/video/${ugc_season.bvid}/`,
       title: ugc_season.title,

@@ -12,6 +12,7 @@ import { IconFreshSpaceUploadChargeOnly } from '$modules/icon/fresh-space-icons'
 import { normalizeDynamicFeedItem } from '$modules/rec-services/dynamic-feed/api/df-normalize'
 import { isFavFolderPrivate } from '$modules/rec-services/fav/fav-util'
 import { IconForCollection, IconForPrivateFolder, IconForPublicFolder } from '$modules/rec-services/fav/views'
+import { buildHistoryItemUrl, EHistoryBusiness } from '$modules/rec-services/history/enums'
 import { isPgcSeasonRankItem, isPgcWebRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { spaceUploadAvatarCache, spaceUploadFollowedMidSet } from '$modules/rec-services/space-upload'
 import { buildSpaceUploadVideoCardUrl } from '$modules/rec-services/space-upload/store'
@@ -54,8 +55,11 @@ export interface IVideoCardData {
   pubdateDisplay?: string // for display
   pubdateDisplayForTitleAttr?: string
   duration?: number
-  durationStr?: string
+  durationDisplay?: ReactNode
   recommendReason?: string
+
+  // 视频进度: 0-1
+  watchedProgress?: number
 
   // stat
   statItems: StatItemType[]
@@ -73,6 +77,9 @@ export interface IVideoCardData {
   authorMid?: string
   followed?: boolean // 是否「已关注」
 
+  // general top-mark
+  cardTags?: CardTag[]
+
   /**
    * adpater specific
    */
@@ -81,8 +88,6 @@ export interface IVideoCardData {
   rankingDesc?: string
   liveExtraDesc?: string
   liveAreaName?: string
-  // general top-mark
-  cardTags?: CardTag[]
 }
 
 export type LookintoOptions<T> = {
@@ -233,7 +238,7 @@ function apiIpadAppAdapter(item: AppRecItemExtend): IVideoCardData {
     pubts: item.videoDetail?.pubdate || undefined,
     pubdateDisplay: descDate,
     duration: item.videoDetail?.duration || item.player_args?.duration || 0,
-    durationStr: formatDuration(item.player_args?.duration),
+    durationDisplay: formatDuration(item.player_args?.duration),
     recommendReason: item.bottom_rcmd_reason || item.top_rcmd_reason,
 
     // stat
@@ -272,7 +277,7 @@ function apiPcAdapter(item: PcRecItemExtend): IVideoCardData {
     cover: item.pic,
     pubts: item.pubdate,
     duration: item.duration,
-    durationStr: formatDuration(item.duration),
+    durationDisplay: formatDuration(item.duration),
     recommendReason: _isLive ? item.room_info?.area.area_name : item.rcmd_reason?.content,
 
     // stat
@@ -332,8 +337,9 @@ function apiWatchlaterAdapter(item: WatchlaterItemExtend): IVideoCardData {
       true,
     )} 添加稍后再看`,
     duration: item.duration,
-    durationStr: formatDuration(item.duration),
+    durationDisplay: formatDuration(item.duration),
     recommendReason: `${formatTimeStamp(item.add_at)} · 稍后再看`,
+    watchedProgress: item.progress / item.duration,
 
     // stat
     statItems: defineStatItems([
@@ -393,7 +399,7 @@ function apiFavAdapter(item: FavItemExtend): IVideoCardData {
     cover: item.cover,
     pubts: item.pubtime,
     duration: item.duration,
-    durationStr: formatDuration(item.duration),
+    durationDisplay: formatDuration(item.duration),
     recommendReason: item.from === 'fav-folder' ? `${formatTimeStamp(item.fav_time)} · 收藏` : undefined,
 
     // stat
@@ -425,7 +431,7 @@ function apiPopularGeneralAdapter(item: PopularGeneralItemExtend): IVideoCardDat
     cover: item.pic,
     pubts: item.pubdate,
     duration: item.duration,
-    durationStr: formatDuration(item.duration),
+    durationDisplay: formatDuration(item.duration),
     recommendReason: item.rcmd_reason?.content,
 
     // stat
@@ -459,7 +465,7 @@ function apiPopularWeeklyAdapter(item: PopularWeeklyItemExtend): IVideoCardData 
     cover: item.pic,
     pubts: item.pubdate,
     duration: item.duration,
-    durationStr: formatDuration(item.duration),
+    durationDisplay: formatDuration(item.duration),
     recommendReason: item.rcmd_reason,
 
     // stat
@@ -495,7 +501,7 @@ function apiRankAdapter(item: RankItemExtend): IVideoCardData {
       pubts: undefined,
       pubdateDisplay: undefined,
       duration: 0,
-      durationStr: '',
+      durationDisplay: '',
 
       // stat
       play: item.stat.view,
@@ -527,7 +533,7 @@ function apiRankAdapter(item: RankItemExtend): IVideoCardData {
     cover: item.pic,
     pubts: item.pubdate,
     duration: item.duration,
-    durationStr: formatDuration(item.duration),
+    durationDisplay: formatDuration(item.duration),
     recommendReason,
 
     // stat
@@ -611,7 +617,7 @@ function apiSpaceUploadAdapter(item: SpaceUploadItemExtend): IVideoCardData {
     cover: item.pic,
     pubts: item.created,
     duration,
-    durationStr,
+    durationDisplay: durationStr,
     recommendReason,
 
     // stat
@@ -656,7 +662,7 @@ function apiLikedAdapter(item: LikedItemExtend): IVideoCardData {
     cover: item.cover,
     pubts: videoDetail?.pubdate ?? item.ctime,
     duration: item.duration,
-    durationStr: formatDuration(item.duration),
+    durationDisplay: formatDuration(item.duration),
     recommendReason: undefined,
 
     // stat
@@ -678,13 +684,51 @@ function apiLikedAdapter(item: LikedItemExtend): IVideoCardData {
 }
 
 function apiHistoryAdapter(item: HistoryItemExtend): IVideoCardData {
+  const isVideo = item.history.business === EHistoryBusiness.ARCHIVE
+  const isLive = item.history.business === EHistoryBusiness.LIVE
+  const isArticle = item.history.business === EHistoryBusiness.ARTICLE
+
+  // item.progress = -1, 已看完
+  // 官方页面中使用 item.progress < 0 判断
+  const isVideoFinished = isVideo && item.progress < 0
+  const watchedProgress: number | undefined =
+    isVideo && item.progress && item.duration ? (isVideoFinished ? 1 : item.progress / item.duration) : undefined
+
+  let goto = 'av'
+  if (isLive) goto = 'live'
+  else if (isArticle) goto = 'article'
+
+  let bottomRightInfo: ReactNode
+  if (isVideo) {
+    bottomRightInfo = isVideoFinished ? '已看完' : `${formatDuration(item.progress)} / ${formatDuration(item.duration)}`
+  } else if (isLive) {
+    bottomRightInfo = item.tag_name
+  } else if (isArticle) {
+    //
+  }
+
+  const cardTags = (() => {
+    if (isArticle && item.badge) return defineCardTags([{ key: 'history:article', text: item.badge }])
+  })()
+
   return {
-    cover: item.cover,
-    bvid: item.history.bvid,
-    avid: item.history.oid.toString(),
-    goto: 'av',
-    href: `/video/${item.history.bvid}/`,
+    cover: item.cover || item.covers?.[0] || '',
+    bvid: item.history.bvid || undefined,
+    avid: item.history.oid?.toString() || undefined,
+    goto,
+    href: buildHistoryItemUrl(item),
     title: item.title,
+
+    watchedProgress,
+    durationDisplay: bottomRightInfo,
+
+    // stat & tags
     statItems: defineStatItems([]),
+    cardTags,
+
+    // author
+    authorFace: item.author_face,
+    authorMid: item.author_mid?.toString(),
+    authorName: item.author_name,
   }
 }

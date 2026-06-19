@@ -3,6 +3,7 @@
  */
 
 import { toHttps } from '$utility/url'
+import type { HistoryItem } from './api/shared.api'
 
 // 命名习惯: 原始代码里使用 ALLCAPS, 方便理解, 沿用原始代码
 export enum EHistoryDateRangePreset {
@@ -18,6 +19,13 @@ export enum EHistoryItemType {
   ARCHIVE = 'archive',
   LIVE = 'live',
   ARTICLE = 'article',
+}
+
+export const EHistoryItemTypeConfig: Record<EHistoryItemType, { label: string }> = {
+  [EHistoryItemType.ALL]: { label: '全部' },
+  [EHistoryItemType.ARCHIVE]: { label: '视频' },
+  [EHistoryItemType.LIVE]: { label: '直播' },
+  [EHistoryItemType.ARTICLE]: { label: '专栏' },
 }
 
 export enum EHistoryBusiness {
@@ -83,7 +91,7 @@ export const DeviceTypeIcons = {
 
 // icon: p4[l2[e.history.dt] || cr.UNKNOWN],
 
-export function buildItemUrl(business: EHistoryBusiness, item: any) {
+export function buildHistoryItemUrl(item: HistoryItem) {
   const itemUri = toHttps(item.uri || '')
 
   const withParams = (url: string, params: Record<string, any>) => {
@@ -93,7 +101,7 @@ export function buildItemUrl(business: EHistoryBusiness, item: any) {
   }
 
   const defaultParams = { spm_id_from: '333.1391.0.0' }
-  switch (business) {
+  switch (item.history.business) {
     case EHistoryBusiness.PGC:
     case EHistoryBusiness.ARCHIVE:
       return withParams(itemUri || '//www.bilibili.com/video/'.concat(item.history.bvid, '/'), {
@@ -101,20 +109,20 @@ export function buildItemUrl(business: EHistoryBusiness, item: any) {
         ...(item.history.page > 1 && { p: item.history.page }),
       })
     case EHistoryBusiness.ARTICLE:
-      return withParams(itemUri || '//www.bilibili.com/read/cv'.concat(item.history.oid, '/'), {
+      return withParams(itemUri || '//www.bilibili.com/read/cv'.concat(item.history.oid?.toString(), '/'), {
         ...defaultParams,
       })
     case EHistoryBusiness.ARTICLE_LIST:
-      return withParams(itemUri || '//www.bilibili.com/read/cv'.concat(item.history.cid, '/'), {
+      return withParams(itemUri || '//www.bilibili.com/read/cv'.concat(item.history.cid.toString(), '/'), {
         ...defaultParams,
       })
     case EHistoryBusiness.LIVE:
-      return withParams(itemUri || '//live.bilibili.com/'.concat(item.history.oid, '/'), {
+      return withParams(itemUri || '//live.bilibili.com/'.concat(item.history.oid.toString(), '/'), {
         ...defaultParams,
         live_from: '88001',
       })
     case EHistoryBusiness.CHEESE:
-      return withParams(itemUri || '//www.bilibili.com/cheese/play/ep'.concat(item.history.epid, '/'), {
+      return withParams(itemUri || '//www.bilibili.com/cheese/play/ep'.concat(item.history.epid?.toString(), '/'), {
         ...defaultParams,
         ...(item.progress > 0 && { t: item.progress }),
         csource: 'common_hp_history_null',

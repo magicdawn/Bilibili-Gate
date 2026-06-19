@@ -30,6 +30,7 @@ import { clsGateVideoCardContextMenuRoot } from '$components/shared.module.scss'
 import {
   isAppRecommend,
   isFav,
+  isHistory,
   isLive,
   isPcRecommend,
   isRank,
@@ -61,7 +62,7 @@ import { VideoCardActionButton, VideoCardActionsClassNames } from './child-compo
 import { VideoCardBottom } from './child-components/VideoCardBottom'
 import { showNativeContextMenuWhenAltKeyPressed, useContextMenus } from './context-menus'
 import {
-  clsZWatchlaterProgressBar,
+  clsZWatchedProgressBar,
   copyContent,
   defaultVideoCardEmitter,
   displayAsListCss,
@@ -218,8 +219,9 @@ const VideoCardInner = memo(function VideoCardInner({
     title,
     cover,
     duration,
-    durationStr,
+    durationDisplay,
     recommendReason,
+    watchedProgress,
 
     // stat
     statItems,
@@ -482,7 +484,7 @@ const VideoCardInner = memo(function VideoCardInner({
   const _hasGeneralCardTags = !!cardData.cardTags?.some(isCardTagValid)
   const _isRank = isRank(item)
   const _isStreaming = // 直播中
-    (isLive(item) && item.live_status === ELiveStatus.Streaming) ||
+    ((isLive(item) || isHistory(item)) && item.live_status === ELiveStatus.Streaming) ||
     (isPcRecommend(item) && item.goto === PcRecGoto.Live)
   const hasApiTypeTag = tab === ETab.AppRecommend && !isAppRecommend(item) && !isLive(item)
   const hasVolMark =
@@ -552,13 +554,9 @@ const VideoCardInner = memo(function VideoCardInner({
     multiSelecting && 'gap-x-10px',
   )
 
-  const watchlaterProgressBar =
-    isWatchlater(item) && item.progress > 0 ? (
-      <SimpleProgressBar
-        progress={item.progress / item.duration}
-        className={clsx('h-3px', clsZWatchlaterProgressBar)}
-      />
-    ) : undefined
+  const watchedProgressBar = !!watchedProgress && (
+    <SimpleProgressBar progress={watchedProgress} className={clsx('h-3px', clsZWatchedProgressBar)} />
+  )
 
   // 一堆 selector 增加权重
   const clsVideoCardPrefix = `.${APP_CLS_ROOT} .${APP_CLS_CARD}`
@@ -653,17 +651,19 @@ const VideoCardInner = memo(function VideoCardInner({
           }
         `}
       >
+        {/* 左下角: 统计 */}
         <div className='bili-video-card__stats--left gap-x-4px xl:gap-x-8px'>
           {statItems.map(({ field, value }) => (
             <StatItemDisplay key={field} field={field} value={value} />
           ))}
         </div>
-        {/* 时长 */}
-        {/* 番剧没有 duration 字段 */}
-        <span className='bili-video-card__stats__duration relative top-0.5px'>{isNormalVideo && durationStr}</span>
+        {/* 右下角: 时长 */}
+        {durationDisplay && (
+          <span className='bili-video-card__stats__duration relative top-0.5px'>{durationDisplay}</span>
+        )}
       </div>
 
-      {watchlaterProgressBar}
+      {watchedProgressBar}
       {showPreviewImageEl && previewImageEl}
       {multiSelectBgEl}
 

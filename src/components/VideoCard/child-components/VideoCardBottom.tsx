@@ -15,9 +15,9 @@ import { APP_CLS_CARD_RECOMMEND_REASON } from '$common'
 import { appClsDarkSelector } from '$common/css-vars-export.module.scss'
 import { appPrimaryColorValue } from '$components/css-vars'
 import { isDisplayAsList } from '$components/RecGrid/display-mode'
-import { isLive, isPcRecommend, isRank, type RecItemType } from '$define'
+import { isHistory, isLive, isPcRecommend, isRank, type RecItemType } from '$define'
 import { PcRecGoto } from '$define/pc-recommend'
-import { EApiType, ELiveStatus, type EGridDisplayMode } from '$enums'
+import { ELiveStatus, type EGridDisplayMode } from '$enums'
 import { DESC_SEPARATOR, type IVideoCardData } from '$modules/filter/normalize'
 import { IconForLive } from '$modules/icon'
 import { fetchAppRecommendFollowedPubDate } from '$modules/rec-services/app'
@@ -130,7 +130,7 @@ export const VideoCardBottom = memo(function ({
   // fallback to href
   const authorHref = authorMid ? formatSpaceUrl(authorMid) : href
 
-  const streaming = item.api === EApiType.Live && item.live_status === ELiveStatus.Streaming
+  const streaming = (isLive(item) || isHistory(item)) && item.live_status === ELiveStatus.Streaming
 
   const { data: pubtsFromApi } = useRequest(() => fetchAppRecommendFollowedPubDate(item, cardData), {
     refreshDeps: [item, cardData],

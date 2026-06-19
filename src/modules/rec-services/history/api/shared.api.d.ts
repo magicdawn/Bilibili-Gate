@@ -4,7 +4,7 @@ export interface HistoryItem {
   title: string
   long_title: string
   cover: string
-  covers: null
+  covers: string[] | null
   uri: string
   history: ItemHistoryInfo
   videos: number
