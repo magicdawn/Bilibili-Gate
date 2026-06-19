@@ -20,7 +20,6 @@ export enum EHistoryItemType {
   LIVE = 'live',
   ARTICLE = 'article',
 }
-
 export const EHistoryItemTypeConfig: Record<EHistoryItemType, { label: string }> = {
   [EHistoryItemType.ALL]: { label: '全部' },
   [EHistoryItemType.ARCHIVE]: { label: '视频' },
@@ -56,6 +55,13 @@ export enum EHistoryDeviceType {
   MOBILE,
   PAD,
   TV,
+}
+export const EHistoryDeviceTypeConfig: Record<EHistoryDeviceType, { label: string }> = {
+  [EHistoryDeviceType.ALL]: { label: '全部' },
+  [EHistoryDeviceType.PC]: { label: '电脑' },
+  [EHistoryDeviceType.MOBILE]: { label: '手机' },
+  [EHistoryDeviceType.PAD]: { label: '平板' },
+  [EHistoryDeviceType.TV]: { label: 'TV' },
 }
 
 // `l2`

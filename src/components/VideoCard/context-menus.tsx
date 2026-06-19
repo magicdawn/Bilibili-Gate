@@ -6,6 +6,7 @@ import { useMemoizedFn } from 'ahooks'
 import { isNil } from 'es-toolkit'
 import { useMemo, type MouseEvent } from 'react'
 import { useSnapshot } from 'valtio'
+import { appError } from '$common'
 import {
   copyBvidInfos,
   copyBvidsSingleLine,
@@ -17,6 +18,7 @@ import { useRecSelfContext } from '$components/Recommends/rec.shared'
 import {
   isAppRecommend,
   isDynamicFeed,
+  isHistory,
   isLive,
   isPcRecommend,
   isSpaceUpload,
@@ -51,9 +53,11 @@ import {
   DynamicFeedQueryKey,
   QUERY_DYNAMIC_UP_MID,
 } from '$modules/rec-services/dynamic-feed/store'
+import { HistoryApiService } from '$modules/rec-services/history/api'
 import { SHOW_SPACE_UPLOAD_ONLY, SpaceUploadQueryKey } from '$modules/rec-services/space-upload/store'
 import { WatchlaterItemsOrder } from '$modules/rec-services/watchlater/watchlater-enum'
 import { settings, updateSettingsInnerArray, useSettingsSnapshot } from '$modules/settings'
+import { WebApiError } from '$request'
 import toast from '$utility/toast'
 import { copyContent } from './index.shared'
 import { watchlaterAdd } from './services'
@@ -515,11 +519,41 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
       recSharedEmitter,
     })
 
+    const historyTabMenus = defineAntMenus([
+      {
+        test: isHistory(item),
+        key: 'remove-from-history',
+        label: '删除历史',
+        icon: <IconForDelete className={clsContextMenuIcon} />,
+        async onClick() {
+          if (!isHistory(item)) return
+          const confirm = await antModal.confirm({
+            centered: true,
+            title: '移除历史',
+            content: <>确定从历史记录中移除「{item.title}」</>,
+          })
+          if (!confirm) return
+
+          const result = await HistoryApiService.delete(`${item.history.business}_${item.kid}`)
+          if (result.isErr()) {
+            const err = result.error
+            appError(err)
+            antMessage.error(err instanceof WebApiError ? err.formatAsReactNode() : err.message, 8)
+            return
+          }
+          onRemoveCurrent?.(item, cardData)
+        },
+      },
+    ])
+
     const menus = defineAntMenus([
       ...consistentOpenMenus,
 
       !!copyMenus.length && divider,
       ...copyMenus,
+
+      !!historyTabMenus.length && divider,
+      ...historyTabMenus,
 
       !!interestedMenus.length && divider,
       ...interestedMenus,

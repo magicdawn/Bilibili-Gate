@@ -1,10 +1,17 @@
 import { Result } from 'better-result'
 import { request, WebApiError } from '$request'
+import { getCsrfToken } from '$utility/cookie'
 import type { EHistoryDeviceType, EHistoryItemType } from '../enums'
 import type { CursorState, HistoryCursorJson } from './history-cursor.api'
 import type { HistorySearchJson } from './history-search.api'
 
-export function fetchHistoryCursor({
+export const HistoryApiService = {
+  cursor: fetchHistoryCursor,
+  search: fetchHistorySearch,
+  delete: deleteHistory,
+}
+
+function fetchHistoryCursor({
   itemType,
   cursorState,
   ps = 20,
@@ -27,7 +34,7 @@ export function fetchHistoryCursor({
       },
     })
     const json = yield* WebApiError.validateAxiosResponse(resp)
-    const { cursor, list } = json.data
+    const { cursor, list } = json.data || {}
     return Result.ok({ hasMore: !!list?.length, list: list ?? [], cursor })
   })
 
@@ -37,7 +44,7 @@ export function fetchHistoryCursor({
   // stop condition: (!data.list.length)
 }
 
-export function fetchHistorySearch({
+function fetchHistorySearch({
   itemType,
   keyword,
   deviceType,
@@ -65,7 +72,21 @@ export function fetchHistorySearch({
       },
     })
     const json = yield* WebApiError.validateAxiosResponse(resp)
-    const { has_more, list, page } = json.data || {}
+    let { has_more, list, page } = json.data || {}
+    list ||= []
     return Result.ok({ hasMore: has_more, page, list })
+  })
+}
+
+/**
+ * `:business_:kid` 格式
+ * 多个使用 `,` 分割, 如: `archive_kid,archive_kid`
+ */
+function deleteHistory(kid: string) {
+  return Result.gen(async function* () {
+    const form = new URLSearchParams({ kid, csrf: getCsrfToken() })
+    const resp = yield* await request.safePost<{ code: number; message: string }>('/x/v2/history/delete', form)
+    const json = yield* WebApiError.validateAxiosResponse(resp)
+    return Result.ok(json)
   })
 }

@@ -10,7 +10,7 @@ export interface HistorySearchJson {
 export interface Data {
   has_more: boolean
   page: Page
-  list: HistoryItem[]
+  list: HistoryItem[] | null
 }
 
 export interface Page {

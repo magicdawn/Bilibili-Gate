@@ -1,9 +1,9 @@
 import { snapshot } from 'valtio'
 import { EApiType } from '$enums'
-import { settings } from '$modules/settings'
 import { BaseTabService } from '../_base'
-import { fetchHistoryCursor, fetchHistorySearch } from './api'
+import { HistoryApiService } from './api'
 import { EHistoryDeviceType } from './enums'
+import { historyStore } from './store'
 import { HistoryTabbarView } from './views'
 import type { ReactNode } from 'react'
 import type { HistoryItemExtend, RecItemTypeOrSeparator } from '$define'
@@ -13,12 +13,8 @@ import type { HistoryItem } from './api/shared.api'
 export type HistoryRecServiceConfig = ReturnType<typeof getHistoryRecServiceConfig>
 
 export function getHistoryRecServiceConfig() {
-  const { itemType } = snapshot(settings.history)
-  return {
-    searchText: undefined as string | undefined,
-    itemType,
-    deviceType: EHistoryDeviceType.ALL,
-  }
+  const { itemType, deviceType, searchText } = snapshot(historyStore)
+  return { itemType, deviceType, searchText }
 }
 
 export class HistoryRecService extends BaseTabService {
@@ -52,7 +48,7 @@ export class HistoryRecService extends BaseTabService {
   private cursorState: CursorState | undefined
   async fetchViaCursorApi(abortSignal: AbortSignal) {
     const { hasMore, list, cursor } = (
-      await fetchHistoryCursor({
+      await HistoryApiService.cursor({
         itemType: this.config.itemType,
         cursorState: this.cursorState,
         ps: this.qs.ps,
@@ -67,14 +63,15 @@ export class HistoryRecService extends BaseTabService {
   private searchPage = 1
   async fetchViaSearchApi(abortSignal: AbortSignal) {
     const { hasMore, list, page } = (
-      await fetchHistorySearch({
+      await HistoryApiService.search({
         itemType: this.config.itemType,
         keyword: this.config.searchText || '',
         deviceType: this.config.deviceType,
-        pn: this.searchPage++,
+        pn: this.searchPage,
         abortSignal,
       })
     ).unwrap()
+    this.searchPage++
     this.hasMoreExceptQueue = hasMore
     return HistoryRecService.extendItems(list)
   }

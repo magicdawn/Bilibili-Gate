@@ -74,7 +74,7 @@ export function WatchlaterTabbarView({ service }: { service: WatchlaterRecServic
       {itemsOrder !== WatchlaterItemsOrder.Shuffle && enableTabbarQuickSwitch && <WatchlaterContinuePlaySettings />}
 
       {multiSelecting && (
-        <AntdTooltip arrow={false} title='移除稍后再看 (多选)'>
+        <AntdTooltip title='移除稍后再看 (多选)'>
           <Button
             className='icon-only-round-button'
             onClick={() => removeMultiSelectedWatchlaterItems(recSharedEmitter)}

@@ -10,7 +10,7 @@ export interface HistoryCursorJson {
 export interface Data {
   cursor: CursorState
   tab: Tab[]
-  list: HistoryItem[]
+  list: HistoryItem[] | null
 }
 
 export interface Tab {

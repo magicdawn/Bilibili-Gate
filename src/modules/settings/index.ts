@@ -5,7 +5,6 @@ import { baseDebug, IN_BILIBILI_HOMEPAGE } from '$common'
 import { EVideoLinkOpenMode } from '$components/VideoCard/index.shared'
 import { EContinuePlayDirection, EGridDisplayMode, ESidebarAlign, ETab, ETwoColumnModeAlign } from '$enums'
 import { reciveGmValueUpdatesFromOtherTab } from '$modules/gm'
-import { EHistoryItemType } from '$modules/rec-services/history/enums'
 import { WatchlaterItemsOrder } from '$modules/rec-services/watchlater/watchlater-enum'
 import { getLeafPaths, type BooleanPaths, type LeafPaths, type ListPaths } from '$utility/object-paths'
 import toast from '$utility/toast'
@@ -197,7 +196,7 @@ export const initialSettings = {
    * tab=history
    */
   history: {
-    itemType: EHistoryItemType.ALL,
+    //
   },
 
   /**
