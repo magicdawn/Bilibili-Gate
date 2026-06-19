@@ -1,16 +1,14 @@
-import { UnhandledException, type InferErr } from 'better-result'
 import { assert, orderBy, shuffle } from 'es-toolkit'
 import pRetry from 'p-retry'
 import { proxy, useSnapshot } from 'valtio'
 import { proxySet } from 'valtio/utils'
-import { appError, appWarn, IN_BILIBILI_HOMEPAGE, REQUEST_FAIL_MSG } from '$common'
+import { appWarn, IN_BILIBILI_HOMEPAGE } from '$common'
 import {
   getMultiSelectedNormalVideoItems,
   warnNoMultiSelectedNormalVideoItems,
 } from '$components/RecGrid/rec-grid-state'
 import { EApiType } from '$enums'
-import { antMessage } from '$modules/antd'
-import { WebApiError } from '$request'
+import { handleRequestError } from '$request'
 import { getHasLogined, getUid } from '$utility/cookie'
 import { whenIdle } from '$utility/dom'
 import { BaseTabService, type IService } from '../_base'
@@ -136,19 +134,6 @@ function extendItem(item: WatchlaterItem): WatchlaterItemExtend {
   }
 }
 
-function showApiRequestError(err: InferErr<Awaited<ReturnType<typeof fetchWatchlaterItems>>>) {
-  appError(err)
-  const content = (() => {
-    if (err instanceof WebApiError) return err.formatAsReactNode()
-    if (UnhandledException.is(err)) {
-      const e = err.cause as any
-      return e?.message || e
-    }
-    return err.message || REQUEST_FAIL_MSG
-  })()
-  antMessage.error(content, 8)
-}
-
 /**
  * shuffle pre-requirements: load ALL
  */
@@ -190,7 +175,7 @@ class ShuffleOrderService implements IService {
         abortSignal,
       })
     )
-      .tapError(showApiRequestError)
+      .tapError(handleRequestError)
       .unwrap() // propagate error to RecGrid
 
     // side effects
@@ -272,7 +257,7 @@ class NormalOrderService implements IService {
         },
       })
     )
-      .tapError(showApiRequestError)
+      .tapError(handleRequestError)
       .unwrap()
 
     const maxPage = Math.ceil(total / 20)

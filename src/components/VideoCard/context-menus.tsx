@@ -6,7 +6,6 @@ import { useMemoizedFn } from 'ahooks'
 import { isNil } from 'es-toolkit'
 import { useMemo, type MouseEvent } from 'react'
 import { useSnapshot } from 'valtio'
-import { appError } from '$common'
 import {
   copyBvidInfos,
   copyBvidsSingleLine,
@@ -57,7 +56,7 @@ import { HistoryApiService } from '$modules/rec-services/history/api'
 import { SHOW_SPACE_UPLOAD_ONLY, SpaceUploadQueryKey } from '$modules/rec-services/space-upload/store'
 import { WatchlaterItemsOrder } from '$modules/rec-services/watchlater/watchlater-enum'
 import { settings, updateSettingsInnerArray, useSettingsSnapshot } from '$modules/settings'
-import { WebApiError } from '$request'
+import { handleRequestError } from '$request'
 import toast from '$utility/toast'
 import { copyContent } from './index.shared'
 import { watchlaterAdd } from './services'
@@ -535,13 +534,8 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
           if (!confirm) return
 
           const result = await HistoryApiService.delete(`${item.history.business}_${item.kid}`)
-          if (result.isErr()) {
-            const err = result.error
-            appError(err)
-            antMessage.error(err instanceof WebApiError ? err.formatAsReactNode() : err.message, 8)
-            return
-          }
-          onRemoveCurrent?.(item, cardData)
+          if (result.isErr()) return handleRequestError(result.error)
+          else onRemoveCurrent?.(item, cardData)
         },
       },
     ])

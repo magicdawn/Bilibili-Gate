@@ -2,7 +2,8 @@ import GM_fetch from '@trim21/gm-fetch'
 import axios, { AxiosError, type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from 'axios'
 import { Result, UnhandledException } from 'better-result'
 import { omit } from 'es-toolkit'
-import { APP_KEY_PREFIX, appWarn, HOST_API, HOST_APP, TVKeyInfo } from '$common'
+import { APP_KEY_PREFIX, appError, appWarn, HOST_API, HOST_APP, TVKeyInfo } from '$common'
+import { antMessage } from '$modules/antd'
 import { encWbi } from '$modules/bilibili/risk-control/wbi'
 import { appSign } from '$utility/app-api'
 import { settings } from './modules/settings'
@@ -210,4 +211,10 @@ function extendSafeHttpMethods(_instance: AxiosInstance): ExtendedAxiosInstance 
   instance.safeGet = safeHttpMethod(_instance.get.bind(_instance)) as ExtendedAxiosInstance['safeGet']
   instance.safePost = safeHttpMethod(_instance.post.bind(_instance)) as ExtendedAxiosInstance['safePost']
   return instance
+}
+
+export function handleRequestError(err: AxiosError | WebApiError | UnhandledException) {
+  appError(err)
+  const messageContent = err instanceof WebApiError ? err.formatAsReactNode() : err.message
+  antMessage.error(messageContent, 8)
 }
