@@ -1,5 +1,5 @@
 import { getMultiSelectedItems } from '$components/RecGrid/rec-grid-state'
-import { isHistory, type RecItemType } from '$define'
+import { checkIsHistory, type RecItemType } from '$define'
 import { antMessage, antModal } from '$modules/antd'
 import { normalizeCardData } from '$modules/filter/normalize'
 import { handleRequestError } from '$request'
@@ -7,7 +7,7 @@ import { HistoryApiService } from './api'
 import type { RecSharedEmitter } from '$components/Recommends/rec.shared'
 
 export async function removeSingleHistoryItem(item: RecItemType): Promise<boolean | undefined> {
-  if (!isHistory(item)) return
+  if (!checkIsHistory(item)) return
   const confirm = await antModal.confirm({
     title: '移除历史记录',
     content: (
@@ -25,7 +25,7 @@ export async function removeSingleHistoryItem(item: RecItemType): Promise<boolea
 }
 
 export async function removeMultiSelectedHistoryItems(recSharedEmitter: RecSharedEmitter) {
-  const selected = getMultiSelectedItems().filter((x) => isHistory(x))
+  const selected = getMultiSelectedItems().filter((x) => checkIsHistory(x))
   if (!selected?.length) return antMessage.warning('没有选中项!')
 
   const confirm = await antModal.confirm({

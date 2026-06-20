@@ -736,8 +736,14 @@ function apiHistoryAdapter(item: HistoryItemExtend): IVideoCardData {
   const cardTags = (() => {
     if (!item.badge) return
     if (isVideo) return
-    if (isLive && item.live_status === ELiveStatus.Streaming) return // 直播中会单独处理
-    return defineCardTags([{ key: 'history:badge', text: item.badge }])
+    if (isLive && item.live_status === ELiveStatus.Streaming) return // "直播中" 会单独处理
+
+    let className: string | undefined
+    if (isLive && item.live_status === ELiveStatus.Offline) {
+      className = 'bg-black/50' // 未开播, 灰色 tag
+    }
+
+    return defineCardTags([{ key: 'history:badge', text: item.badge, className }])
   })()
 
   const { DeviceIcon, deviceName } =
@@ -757,7 +763,7 @@ function apiHistoryAdapter(item: HistoryItemExtend): IVideoCardData {
     avid: item.history.oid?.toString() || undefined,
     goto,
     href: buildHistoryItemUrl(item),
-    title: item.title,
+    title: isBangumi ? item.show_title || item.title : item.title,
 
     watchedProgress,
     duration: item.duration,

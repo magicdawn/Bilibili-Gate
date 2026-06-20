@@ -196,7 +196,7 @@ export const initialSettings = {
    * tab=history
    */
   history: {
-    //
+    tabbarViewSmallControlSize: true,
   },
 
   /**

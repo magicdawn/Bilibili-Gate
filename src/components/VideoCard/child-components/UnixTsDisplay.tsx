@@ -16,16 +16,26 @@ document.addEventListener('visibilitychange', () => {
   $now.update()
 })
 
-export const UnixTsDisplay = memo(function UnixTsDisplay({ ts }: { ts: number | undefined }) {
+export const UnixTsDisplay = memo(function UnixTsDisplay({
+  ts,
+  includeTime,
+}: {
+  ts: number | undefined
+  includeTime?: boolean
+}) {
   if (!ts) return null
-  return isRecentTimestamp(ts) ? <ReactiveImpl ts={ts} /> : <PlainImpl ts={ts} />
+  return isRecentTimestamp(ts) ? (
+    <ReactiveImpl ts={ts} includeTime={includeTime} />
+  ) : (
+    <PlainImpl ts={ts} includeTime={includeTime} />
+  )
 })
 
-function PlainImpl({ ts }: { ts: number }) {
-  return useMemo(() => formatRecentTimestamp(ts, true), [ts])
+function PlainImpl({ ts, includeTime }: { ts: number; includeTime?: boolean }) {
+  return useMemo(() => formatRecentTimestamp(ts, true, includeTime ?? false), [ts])
 }
 
-function ReactiveImpl({ ts }: { ts: number }) {
+function ReactiveImpl({ ts, includeTime }: { ts: number; includeTime?: boolean }) {
   const now = $now.use()
-  return <PlainImpl ts={ts} key={now} />
+  return <PlainImpl ts={ts} key={now} includeTime={includeTime} />
 }

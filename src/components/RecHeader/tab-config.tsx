@@ -106,7 +106,7 @@ export const TabConfig: Record<ETab, TabConfigItem> = {
   [ETab.History]: {
     icon: <IconForHistory className='size-16px' />,
     label: '历史',
-    desc: '「我」看过的视频',
+    desc: '「我」看过的内容',
     swr: true,
   },
 }

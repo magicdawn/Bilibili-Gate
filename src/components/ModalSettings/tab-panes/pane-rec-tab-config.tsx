@@ -78,6 +78,7 @@ export function TabPaneRecTabsConfig() {
             'appRecommend.anonymousFetch',
             'pcRecommend.enableTabbarQuickSwitch',
             'pcRecommend.anonymousFetch',
+            'history.tabbarViewSmallControlSize',
           ]}
         >
           {/* watchlater */}
@@ -207,6 +208,26 @@ export function TabPaneRecTabsConfig() {
               />
             </div>
             <div className={sharedClassNames.settingsLine}>{pcRecAnonymousFetchEl()}</div>
+          </div>
+
+          {/* history */}
+          <div style={getCssOrderStyle(ETab.History)}>
+            <div className='flex items-center text-size-1.3em'>
+              <TabIcon tabKey={ETab.History} className='mr-5px' />
+              历史
+            </div>
+            <div className={sharedClassNames.settingsLine}>
+              <CheckboxSettingItem
+                configPath={'history.tabbarViewSmallControlSize'}
+                label='筛选组件使用小尺寸'
+                tooltip={
+                  <>
+                    Tab 栏中历史记录筛选组件
+                    {explainForFlag('使用小尺寸', '使用正常尺寸')}
+                  </>
+                }
+              />
+            </div>
           </div>
         </SettingsGroup>
       </div>

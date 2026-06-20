@@ -15,7 +15,7 @@ import { APP_CLS_CARD_RECOMMEND_REASON } from '$common'
 import { appClsDarkSelector } from '$common/css-vars-export.module.scss'
 import { appPrimaryColorValue } from '$components/css-vars'
 import { isDisplayAsList } from '$components/RecGrid/display-mode'
-import { isHistory, isLive, isPcRecommend, isRank, type RecItemType } from '$define'
+import { checkIsHistory, checkIsLive, checkIsPcRecommend, checkIsRank, type RecItemType } from '$define'
 import { PcRecGoto } from '$define/pc-recommend'
 import { ELiveStatus, type EGridDisplayMode } from '$enums'
 import { DESC_SEPARATOR, type IVideoCardData } from '$modules/filter/normalize'
@@ -132,7 +132,7 @@ export const VideoCardBottom = memo(function ({
   // fallback to href
   const authorHref = authorMid ? formatSpaceUrl(authorMid) : href
 
-  const streaming = (isLive(item) || isHistory(item)) && item.live_status === ELiveStatus.Streaming
+  const streaming = (checkIsLive(item) || checkIsHistory(item)) && item.live_status === ELiveStatus.Streaming
 
   const { data: pubtsFromApi } = useRequest(() => fetchAppRecommendFollowedPubDate(item, cardData), {
     refreshDeps: [item, cardData],
@@ -204,7 +204,7 @@ export const VideoCardBottom = memo(function ({
     }
 
     // history
-    if (isHistory(item)) {
+    if (checkIsHistory(item)) {
       return (
         <>
           {defaultImpl({ withAuthor: true, withDate: false, withRecommendReason: false })}
@@ -215,7 +215,7 @@ export const VideoCardBottom = memo(function ({
               className={_recommendReasonClassName}
               title={formatAccurateTimestamp(item.view_at)}
             >
-              <UnixTsDisplay ts={item.view_at} />
+              <UnixTsDisplay ts={item.view_at} includeTime />
             </span>
           </span>
         </>
@@ -243,12 +243,12 @@ export const VideoCardBottom = memo(function ({
     }
 
     // rank
-    if (isRank(item) && rankingDesc) {
+    if (checkIsRank(item) && rankingDesc) {
       return <div css={descOwnerCss}>{rankingDesc}</div>
     }
 
     // 直播: 关注的直播 | `PC推荐 & goto=live`
-    if (isLive(item) || (isPcRecommend(item) && item.goto === PcRecGoto.Live)) {
+    if (checkIsLive(item) || (checkIsPcRecommend(item) && item.goto === PcRecGoto.Live)) {
       return (
         <>
           <a

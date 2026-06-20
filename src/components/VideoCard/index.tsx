@@ -29,14 +29,14 @@ import { setGlobalValue } from '$components/RecGrid/unsafe-window-export'
 import { defaultRecSharedEmitter, type RecSharedEmitter } from '$components/Recommends/rec.shared'
 import { clsGateVideoCardContextMenuRoot } from '$components/shared.module.scss'
 import {
-  isAppRecommend,
-  isFav,
-  isHistory,
-  isLive,
-  isPcRecommend,
-  isRank,
-  isSpaceUpload,
-  isWatchlater,
+  checkIsAppRecommend,
+  checkIsFav,
+  checkIsHistory,
+  checkIsLive,
+  checkIsPcRecommend,
+  checkIsRank,
+  checkIsSpaceUpload,
+  checkIsWatchlater,
   type PvideoJson,
   type RecItemType,
 } from '$define'
@@ -243,10 +243,10 @@ const VideoCardInner = memo(function VideoCardInner({
   const { usingOrder: spaceUploadItemsOrder, isDisplayingSingleUpAllItems: spaceUploadIsDisplayingSingleUpAllItems } =
     useSnapshot(spaceUploadStore)
   const href = useMemo(() => {
-    if (isWatchlater(item) && item.bvid) {
+    if (checkIsWatchlater(item) && item.bvid) {
       return buildWatchlaterVideoCardUrl(item.bvid, item.aid, watchlaterSettings)
     }
-    if (isSpaceUpload(item) && authorMid && item.bvid) {
+    if (checkIsSpaceUpload(item) && authorMid && item.bvid) {
       return buildSpaceUploadVideoCardUrl(authorMid, item.bvid, item.aid, {
         continuePlay: spaceUploadSettings.continuePlay,
         continuePlayDirection: spaceUploadSettings.continuePlayDirection,
@@ -482,13 +482,13 @@ const VideoCardInner = memo(function VideoCardInner({
    * top marks
    */
   const _hasGeneralCardTags = !!cardData.cardTags?.some(isCardTagValid)
-  const _isRank = isRank(item)
+  const _isRank = checkIsRank(item)
   const _isStreaming = // 直播中
-    ((isLive(item) || isHistory(item)) && item.live_status === ELiveStatus.Streaming) ||
-    (isPcRecommend(item) && item.goto === PcRecGoto.Live)
-  const hasApiTypeTag = tab === ETab.AppRecommend && !isAppRecommend(item) && !isLive(item)
+    ((checkIsLive(item) || checkIsHistory(item)) && item.live_status === ELiveStatus.Streaming) ||
+    (checkIsPcRecommend(item) && item.goto === PcRecGoto.Live)
+  const hasApiTypeTag = tab === ETab.AppRecommend && !checkIsAppRecommend(item) && !checkIsLive(item)
   const hasVolMark =
-    (isSpaceUpload(item) && spaceUploadSettings.showVol) || (isFav(item) && !!item.vol && !hasApiTypeTag)
+    (checkIsSpaceUpload(item) && spaceUploadSettings.showVol) || (checkIsFav(item) && !!item.vol && !hasApiTypeTag)
 
   const copyBvidInfoButtonEl = __internalEnableCopyBvidInfo && bvid && (
     <VideoCardActionButton
@@ -522,7 +522,9 @@ const VideoCardInner = memo(function VideoCardInner({
       {hasApiTypeTag && <ApiTypeTag item={item} />}
 
       {/* 显示序号, Tab: 投稿 | 收藏 */}
-      {hasVolMark && !!item.vol && <VolTag vol={item.vol} volTooltip={isFav(item) ? item.volTooltip : undefined} />}
+      {hasVolMark && !!item.vol && (
+        <VolTag vol={item.vol} volTooltip={checkIsFav(item) ? item.volTooltip : undefined} />
+      )}
 
       {/* General card-tag */}
       {/* 动态: 充电专属; 投稿: 充电专属;  */}
@@ -531,7 +533,7 @@ const VideoCardInner = memo(function VideoCardInner({
   )
 
   const handleRemoveHistory = useLockFn(async (e: MouseEvent) => {
-    if (!isHistory(item)) return
+    if (!checkIsHistory(item)) return
     e.stopPropagation()
     e.preventDefault()
     const success = await removeSingleHistoryItem(item)
@@ -539,7 +541,7 @@ const VideoCardInner = memo(function VideoCardInner({
       onRemoveCurrent?.(item, cardData)
     }
   })
-  const historyTrashBtn: ReactNode = isHistory(item) && (
+  const historyTrashBtn: ReactNode = checkIsHistory(item) && (
     <VideoCardActionButton
       visible={actionButtonVisible}
       inlinePosition='right'

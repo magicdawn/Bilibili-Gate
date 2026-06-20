@@ -4,9 +4,12 @@ import { useOnRefresh, useRecSelfContext } from '$components/Recommends/rec.shar
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconForDelete } from '$modules/icon'
 import { multiSelectStore } from '$modules/multi-select/store'
+import { CopyBvidButtonsTabbarView } from '$modules/rec-services/_shared/copy-bvid-buttons'
+import { settings } from '$modules/settings'
 import { EHistoryDeviceTypeConfig, EHistoryItemTypeConfig } from '../enums'
 import { removeMultiSelectedHistoryItems } from '../helper'
 import { historyStore } from '../store'
+import type { SizeType } from 'antd/es/config-provider/SizeContext'
 
 export function HistoryTabbarView() {
   return (
@@ -15,8 +18,14 @@ export function HistoryTabbarView() {
       <HistoryDeviceTypeSwitch />
       <HistorySearchInput />
       <MultiSelectActions />
+      <CopyBvidButtonsTabbarView />
     </>
   )
+}
+
+function useControlSize(): SizeType {
+  const { tabbarViewSmallControlSize } = useSnapshot(settings.history)
+  return tabbarViewSmallControlSize ? 'small' : undefined
 }
 
 function HistoryItemTypeSwitch() {
@@ -25,7 +34,7 @@ function HistoryItemTypeSwitch() {
   return (
     <Radio.Group
       buttonStyle='solid'
-      size='small'
+      size={useControlSize()}
       value={itemType}
       onChange={(e) => {
         historyStore.itemType = e.target.value
@@ -47,7 +56,7 @@ function HistoryDeviceTypeSwitch() {
   return (
     <Radio.Group
       buttonStyle='solid'
-      size='small'
+      size={useControlSize()}
       value={deviceType}
       onChange={(e) => {
         historyStore.deviceType = e.target.value
@@ -64,7 +73,21 @@ function HistoryDeviceTypeSwitch() {
 }
 
 function HistorySearchInput() {
-  return <Input.Search size='small' className='w-120px' />
+  const { searchText } = useSnapshot(historyStore, { sync: true })
+  const onRefresh = useOnRefresh()
+  return (
+    <Input.Search
+      size={useControlSize()}
+      className='w-120px'
+      allowClear
+      value={searchText}
+      onChange={(e) => (historyStore.searchText = e.target.value)}
+      onSearch={(val) => {
+        historyStore.searchText = val
+        onRefresh()
+      }}
+    />
+  )
 }
 
 function MultiSelectActions() {

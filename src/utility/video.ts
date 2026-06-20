@@ -77,7 +77,7 @@ export function formatTimestamp(unixTs?: number, includeTime = false) {
 
 export function formatAccurateTimestamp(unixTs?: number) {
   if (!unixTs) return ''
-  return dayjs.unix(unixTs).format('YYYY-MM-DD HH:mm:ss')
+  return dayjs.unix(unixTs).format(DayjsFormat.HyphenDateTime)
 }
 
 /**
@@ -90,6 +90,8 @@ export enum DayjsFormat {
   Year = 'YYYY',
   HyphenDate = 'YYYY-MM-DD',
   HyphenDateTime = 'YYYY-MM-DD HH:mm:ss',
+  Time = 'HH:mm',
+  VerboseTime = 'HH:mm:ss',
 
   ZhDisplayDateShort = 'M月D日',
   DisplayDateShort = 'M-D',
@@ -105,7 +107,7 @@ export function isRecentTimestamp(ts: number) {
   return ts >= yesterdayStart
 }
 
-export function formatRecentTimestamp(ts: number, zhDate: boolean) {
+export function formatRecentTimestamp(ts: number, zhDate: boolean, includeTime: boolean) {
   if (!ts) return
   const t = dayjs.unix(ts)
 
@@ -129,10 +131,11 @@ export function formatRecentTimestamp(ts: number, zhDate: boolean) {
   if (isToday) return t.format(DayjsFormat.Today)
   if (isYesterday) return t.format(DayjsFormat.Yesterday)
 
+  const formatSuffix = includeTime ? ' ' + DayjsFormat.Time : ''
   if (isCurrentYear) {
-    return t.format(zhDate ? DayjsFormat.ZhDisplayDateShort : DayjsFormat.DisplayDateShort)
+    return t.format((zhDate ? DayjsFormat.ZhDisplayDateShort : DayjsFormat.DisplayDateShort) + formatSuffix)
   } else {
-    return t.format(zhDate ? DayjsFormat.ZhDisplayDate : DayjsFormat.DisplayDate)
+    return t.format((zhDate ? DayjsFormat.ZhDisplayDate : DayjsFormat.DisplayDate) + formatSuffix)
   }
 }
 
