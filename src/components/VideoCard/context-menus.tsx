@@ -15,11 +15,12 @@ import {
 } from '$components/RecGrid/rec-grid-state'
 import { useRecSelfContext } from '$components/Recommends/rec.shared'
 import {
-  isAppRecommend,
-  isDynamicFeed,
-  isLive,
-  isPcRecommend,
-  isSpaceUpload,
+  checkIsAppRecommend,
+  checkIsDynamicFeed,
+  checkIsHistory,
+  checkIsLive,
+  checkIsPcRecommend,
+  checkIsSpaceUpload,
   type DynamicFeedItemExtend,
   type RecItemType,
 } from '$define'
@@ -51,6 +52,7 @@ import {
   DynamicFeedQueryKey,
   QUERY_DYNAMIC_UP_MID,
 } from '$modules/rec-services/dynamic-feed/store'
+import { removeSingleHistoryItem } from '$modules/rec-services/history/helper'
 import { SHOW_SPACE_UPLOAD_ONLY, SpaceUploadQueryKey } from '$modules/rec-services/space-upload/store'
 import { WatchlaterItemsOrder } from '$modules/rec-services/watchlater/watchlater-enum'
 import { settings, updateSettingsInnerArray, useSettingsSnapshot } from '$modules/settings'
@@ -167,9 +169,9 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
    */
   const followed = (() => {
     if (!isNil(cardData.followed)) return cardData.followed
-    if (tab === ETab.DynamicFeed && isLive(item)) return true // 关注的人的直播; ETab.DynamicFeed 其他 item 使用 cardData.followed
-    if (tab === ETab.Live && isLive(item)) return true // 关注的人的直播
-    if (isAppRecommend(item) || isPcRecommend(item)) return getFollowedStatus(recommendReason)
+    if (tab === ETab.DynamicFeed && checkIsLive(item)) return true // 关注的人的直播; ETab.DynamicFeed 其他 item 使用 cardData.followed
+    if (tab === ETab.Live && checkIsLive(item)) return true // 关注的人的直播
+    if (checkIsAppRecommend(item) || checkIsPcRecommend(item)) return getFollowedStatus(recommendReason)
     return false
   })()
   const hasUnfollowEntry = followed
@@ -209,7 +211,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
 
   // 不再 stick on camelCase 后, 腰不酸了, 腿不疼了~
   const hasEntry_addMidTo_dynamicFeedWhenViewAllHideIds =
-    enableHideSomeContents && isDynamicFeed(item) && dfStore.selectedKey === DF_SELECTED_KEY_ALL && !!authorMid
+    enableHideSomeContents && checkIsDynamicFeed(item) && dfStore.selectedKey === DF_SELECTED_KEY_ALL && !!authorMid
   const onAddMidTo_dynamicFeedWhenViewAllHideIds = useMemoizedFn(async () => {
     if (!hasEntry_addMidTo_dynamicFeedWhenViewAllHideIds) return
     await updateSettingsInnerArray('dynamicFeed.whenViewAll.hideIds', {
@@ -224,7 +226,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
    */
   const hasEntry_hideUpOpusDynamic =
     dfHideOpusMidsEnabled &&
-    isDynamicFeed(item) &&
+    checkIsDynamicFeed(item) &&
     item.modules.module_dynamic.major?.type === DynamicFeedEnums.MajorType.Opus &&
     !!authorMid
   const onAddMidTo_dfHideOpusMids = useMemoizedFn(async () => {
@@ -242,7 +244,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
    * 动态 offset & minId
    */
   const hasEntry_dynamicFeed_offsetAndMinId = !!(
-    isDynamicFeed(item) &&
+    checkIsDynamicFeed(item) &&
     QUERY_DYNAMIC_UP_MID &&
     dfStore.viewingSomeUp &&
     authorMid
@@ -289,7 +291,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
   const spaceUploadViewStartFromHere: AntMenuItem | false = useMemo(
     () =>
       SHOW_SPACE_UPLOAD_ONLY &&
-      isSpaceUpload(item) &&
+      checkIsSpaceUpload(item) &&
       !!item.page && {
         key: 'space-upload-view-start-from-here',
         label: `投稿: 从此页开始查看 (当前第${item.page}页)`,
@@ -303,7 +305,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
     [SHOW_SPACE_UPLOAD_ONLY, item],
   )
 
-  const viewingGroupId = isDynamicFeed(item) || isSpaceUpload(item) ? item.groupId : undefined
+  const viewingGroupId = checkIsDynamicFeed(item) || checkIsSpaceUpload(item) ? item.groupId : undefined
   const viewingSomeGroup = viewingGroupId !== undefined
   const followGroups = useSnapshot(dfStore.groups)
   const viewingGroup = viewingGroupId !== undefined ? followGroups.find((x) => x.tagid === viewingGroupId) : undefined
@@ -515,11 +517,30 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
       recSharedEmitter,
     })
 
+    const historyTabMenus = defineAntMenus([
+      {
+        test: checkIsHistory(item),
+        key: 'remove-from-history',
+        label: '删除历史',
+        icon: <IconForDelete className={clsContextMenuIcon} />,
+        async onClick() {
+          if (!checkIsHistory(item)) return
+          const success = await removeSingleHistoryItem(item)
+          if (success) {
+            onRemoveCurrent?.(item, cardData)
+          }
+        },
+      },
+    ])
+
     const menus = defineAntMenus([
       ...consistentOpenMenus,
 
       !!copyMenus.length && divider,
       ...copyMenus,
+
+      !!historyTabMenus.length && divider,
+      ...historyTabMenus,
 
       !!interestedMenus.length && divider,
       ...interestedMenus,

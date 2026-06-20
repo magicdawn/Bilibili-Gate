@@ -1,6 +1,7 @@
 import { EApiType } from '$enums'
 import type { ReactNode } from 'react'
 import type { VideoDetailData } from '$modules/bilibili/video/types/video-detail'
+import type { HistoryItem } from '$modules/rec-services/history/api/shared.api'
 import type { ERankApiType, IRankTab } from '$modules/rec-services/hot/rank/rank-tab'
 import type { RankItem } from '$modules/rec-services/hot/rank/types'
 import type { LikedItem } from '$modules/rec-services/liked/api/liked.api'
@@ -60,6 +61,7 @@ export type RecItemType =
   | LiveItemExtend
   | SpaceUploadItemExtend
   | LikedItemExtend
+  | HistoryItemExtend
 
 // #region define ItemExtend
 export type PcRecItemExtend = PcRecItem & {
@@ -117,40 +119,48 @@ export type LikedItemExtend = LikedItem & {
   api: EApiType.Liked
   videoDetail?: VideoDetailData
 }
+
+export type HistoryItemExtend = HistoryItem & {
+  uniqId: string
+  api: EApiType.History
+}
 // #endregion
 
 // #region predicates
-export function isAppRecommend(item: RecItemType): item is AppRecItemExtend {
+export function checkIsAppRecommend(item: RecItemType): item is AppRecItemExtend {
   return item.api === EApiType.AppRecommend
 }
-export function isPcRecommend(item: RecItemType): item is PcRecItemExtend {
+export function checkIsPcRecommend(item: RecItemType): item is PcRecItemExtend {
   return item.api === EApiType.PcRecommend
 }
-export function isDynamicFeed(item: RecItemType): item is DynamicFeedItemExtend {
+export function checkIsDynamicFeed(item: RecItemType): item is DynamicFeedItemExtend {
   return item.api === EApiType.DynamicFeed
 }
-export function isWatchlater(item: RecItemType): item is WatchlaterItemExtend {
+export function checkIsWatchlater(item: RecItemType): item is WatchlaterItemExtend {
   return item.api === EApiType.Watchlater
 }
-export function isFav(item: RecItemType): item is FavItemExtend {
+export function checkIsFav(item: RecItemType): item is FavItemExtend {
   return item.api === EApiType.Fav
 }
-export function isPopularGeneral(item: RecItemType): item is PopularGeneralItemExtend {
+export function checkIsPopularGeneral(item: RecItemType): item is PopularGeneralItemExtend {
   return item.api === EApiType.PopularGeneral
 }
-export function isPopularWeekly(item: RecItemType): item is PopularWeeklyItemExtend {
+export function checkIsPopularWeekly(item: RecItemType): item is PopularWeeklyItemExtend {
   return item.api === EApiType.PopularWeekly
 }
-export function isRank(item: RecItemType): item is RankItemExtend {
+export function checkIsRank(item: RecItemType): item is RankItemExtend {
   return item.api === EApiType.Rank
 }
-export function isLive(item: RecItemType): item is LiveItemExtend {
+export function checkIsLive(item: RecItemType): item is LiveItemExtend {
   return item.api === EApiType.Live
 }
-export function isSpaceUpload(item: RecItemType): item is SpaceUploadItemExtend {
+export function checkIsSpaceUpload(item: RecItemType): item is SpaceUploadItemExtend {
   return item.api === EApiType.SpaceUpload
 }
-export function isLiked(item: RecItemType): item is LikedItemExtend {
+export function checkIsLiked(item: RecItemType): item is LikedItemExtend {
   return item.api === EApiType.Liked
+}
+export function checkIsHistory(item: RecItemType): item is HistoryItemExtend {
+  return item.api === EApiType.History
 }
 // #endregion

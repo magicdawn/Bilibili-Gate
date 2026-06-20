@@ -1,9 +1,9 @@
 import { Result, type UnhandledException } from 'better-result'
 import { assert } from 'es-toolkit'
-import { appError, HOST_APP } from '$common'
-import { isAppRecommend, isPcRecommend, type AppRecItem, type PcRecItem, type RecItemType } from '$define'
+import { HOST_APP } from '$common'
+import { checkIsAppRecommend, checkIsPcRecommend, type AppRecItem, type PcRecItem, type RecItemType } from '$define'
 import { antMessage } from '$modules/antd'
-import { gmrequest, request, WebApiError } from '$request'
+import { gmrequest, handleRequestError, request, WebApiError } from '$request'
 import { assertNever } from '$utility/type'
 import { calcRecItemDislikedMapKey, delDisliked, dislikedMap } from '../store'
 import { normalizeDislikeReason, type DislikeReason } from '../types'
@@ -90,11 +90,11 @@ function handlerFactory(action: Action) {
     const { reasonId } = normalizeDislikeReason(reason)
     let result: Awaited<ReturnType<typeof appDislike>>
     if (reason.platform === 'app') {
-      assert(isAppRecommend(item), 'expect app recommend')
+      assert(checkIsAppRecommend(item), 'expect app recommend')
       const fn = action === 'dislike' ? appDislike : appCancelDislike
       result = await fn(item, reasonId)
     } else if (reason.platform === 'pc') {
-      assert(isPcRecommend(item), 'expect pc recommend')
+      assert(checkIsPcRecommend(item), 'expect pc recommend')
       const fn = action === 'dislike' ? pcDislike : pcCancelDislike
       result = await fn(item, reasonId)
     } else {
@@ -102,9 +102,7 @@ function handlerFactory(action: Action) {
     }
 
     if (result.isErr()) {
-      const err = result.error
-      appError(err)
-      antMessage.error(err instanceof WebApiError ? err.formatAsReactNode() : err.message, 8)
+      handleRequestError(result.error)
       return false
     }
 

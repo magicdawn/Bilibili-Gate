@@ -1,0 +1,78 @@
+import { snapshot } from 'valtio'
+import { EApiType } from '$enums'
+import { BaseTabService } from '../_base'
+import { HistoryApiService } from './api'
+import { EHistoryDeviceType } from './enums'
+import { historyStore } from './store'
+import { HistoryTabbarView } from './views'
+import type { ReactNode } from 'react'
+import type { HistoryItemExtend, RecItemTypeOrSeparator } from '$define'
+import type { CursorState } from './api/history-cursor.api'
+import type { HistoryItem } from './api/shared.api'
+
+export type HistoryRecServiceConfig = ReturnType<typeof getHistoryRecServiceConfig>
+
+export function getHistoryRecServiceConfig() {
+  const { itemType, deviceType, searchText } = snapshot(historyStore)
+  return { itemType, deviceType, searchText }
+}
+
+export class HistoryRecService extends BaseTabService {
+  static PAGE_SIZE = 20
+  usingCursorApi: boolean
+  constructor(public config: HistoryRecServiceConfig) {
+    super(HistoryRecService.PAGE_SIZE)
+    const { itemType, searchText, deviceType } = this.config
+    this.usingCursorApi = !searchText && deviceType === EHistoryDeviceType.ALL
+  }
+
+  override tabbarView: ReactNode = <HistoryTabbarView />
+  override sidebarView?: ReactNode
+  override hasMoreExceptQueue: boolean = true
+
+  override fetchMore(abortSignal: AbortSignal): Promise<RecItemTypeOrSeparator[] | undefined> {
+    return this.usingCursorApi ? this.fetchViaCursorApi(abortSignal) : this.fetchViaSearchApi(abortSignal)
+  }
+
+  static extendItems(items: HistoryItem[]): HistoryItemExtend[] {
+    return items.map((item) => {
+      const ret: HistoryItemExtend = {
+        ...item,
+        api: EApiType.History,
+        uniqId: `${item.history.business}_${item.kid}`, // delete 时使用的 kid 参数格式
+      }
+      return ret
+    })
+  }
+
+  private cursorState: CursorState | undefined
+  async fetchViaCursorApi(abortSignal: AbortSignal) {
+    const { hasMore, list, cursor } = (
+      await HistoryApiService.cursor({
+        itemType: this.config.itemType,
+        cursorState: this.cursorState,
+        ps: this.qs.ps,
+        abortSignal,
+      })
+    ).unwrap()
+    this.hasMoreExceptQueue = hasMore
+    this.cursorState = cursor
+    return HistoryRecService.extendItems(list)
+  }
+
+  private searchPage = 1
+  async fetchViaSearchApi(abortSignal: AbortSignal) {
+    const { hasMore, list, page } = (
+      await HistoryApiService.search({
+        itemType: this.config.itemType,
+        keyword: this.config.searchText || '',
+        deviceType: this.config.deviceType,
+        pn: this.searchPage,
+        abortSignal,
+      })
+    ).unwrap()
+    this.searchPage++
+    this.hasMoreExceptQueue = hasMore
+    return HistoryRecService.extendItems(list)
+  }
+}

@@ -1,6 +1,6 @@
 import { uniq } from 'es-toolkit'
 import { baseDebug } from '$common'
-import { isDynamicFeed, type RecItemTypeOrSeparator } from '$define'
+import { checkIsDynamicFeed, type RecItemTypeOrSeparator } from '$define'
 import { EApiType, type ETab } from '$enums'
 import { blacklistMids } from '$modules/bilibili/me/relations/blacklist'
 import { DynamicFeedEnums } from '$modules/rec-services/dynamic-feed/api/enums'
@@ -190,7 +190,7 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
     }
 
     // 动态
-    if (isDynamicFeed(item) && filter.enabled) {
+    if (checkIsDynamicFeed(item) && filter.enabled) {
       const { major } = item.modules.module_dynamic
       const isMajorOpus = major?.type === DynamicFeedEnums.MajorType.Opus
 

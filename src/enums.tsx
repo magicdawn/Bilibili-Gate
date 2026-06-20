@@ -9,6 +9,7 @@ export enum ETab {
   Live = 'live',
   SpaceUpload = 'space-upload',
   Liked = 'liked', // 点赞的视频
+  History = 'history', // 历史记录
 }
 
 export enum EHotSubTab {
@@ -30,6 +31,7 @@ export enum EApiType {
   Live = 'live',
   SpaceUpload = 'space-upload',
   Liked = 'liked',
+  History = 'history',
 }
 
 export enum EAppApiDevice {

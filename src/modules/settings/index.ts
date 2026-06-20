@@ -193,6 +193,13 @@ export const initialSettings = {
   },
 
   /**
+   * tab=history
+   */
+  history: {
+    tabbarViewSmallControlSize: true,
+  },
+
+  /**
    * 过滤器模块
    */
   filter: {

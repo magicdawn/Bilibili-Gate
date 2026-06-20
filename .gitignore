@@ -22,3 +22,6 @@ src/define/watchlater-full.json
 /demo/
 api-debug/
 debug-api/
+
+# svg icons
+/src/modules/icon/assets/

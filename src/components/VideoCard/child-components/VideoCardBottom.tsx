@@ -15,15 +15,16 @@ import { APP_CLS_CARD_RECOMMEND_REASON } from '$common'
 import { appClsDarkSelector } from '$common/css-vars-export.module.scss'
 import { appPrimaryColorValue } from '$components/css-vars'
 import { isDisplayAsList } from '$components/RecGrid/display-mode'
-import { isLive, isPcRecommend, isRank, type RecItemType } from '$define'
+import { checkIsHistory, checkIsLive, checkIsPcRecommend, checkIsRank, type RecItemType } from '$define'
 import { PcRecGoto } from '$define/pc-recommend'
-import { EApiType, ELiveStatus, type EGridDisplayMode } from '$enums'
+import { ELiveStatus, type EGridDisplayMode } from '$enums'
 import { DESC_SEPARATOR, type IVideoCardData } from '$modules/filter/normalize'
 import { IconForLive } from '$modules/icon'
 import { fetchAppRecommendFollowedPubDate } from '$modules/rec-services/app'
 import { formatSpaceUrl } from '$modules/rec-services/dynamic-feed/shared'
 import { settings } from '$modules/settings'
 import { getAvatarSrc } from '$utility/image'
+import { formatAccurateTimestamp } from '$utility/video'
 import { showNativeContextMenuWhenAltKeyPressed } from '../context-menus'
 import { useLinkTarget } from '../use/useOpenRelated'
 import { UnixTsDisplay } from './UnixTsDisplay'
@@ -123,6 +124,7 @@ export const VideoCardBottom = memo(function ({
     appBadgeDesc,
     rankingDesc,
     liveExtraDesc,
+    historyDeviceIcon,
   } = cardData
 
   const isNormalVideo = goto === 'av'
@@ -130,18 +132,12 @@ export const VideoCardBottom = memo(function ({
   // fallback to href
   const authorHref = authorMid ? formatSpaceUrl(authorMid) : href
 
-  const streaming = item.api === EApiType.Live && item.live_status === ELiveStatus.Streaming
+  const streaming = (checkIsLive(item) || checkIsHistory(item)) && item.live_status === ELiveStatus.Streaming
 
   const { data: pubtsFromApi } = useRequest(() => fetchAppRecommendFollowedPubDate(item, cardData), {
     refreshDeps: [item, cardData],
   })
 
-  /**
-   * avatar + line1: title
-   *          line2: desc
-   *                   - when normal video => `author-name + date`
-   *          line3: recommend-reason
-   */
   const descTitleAttribute: string | undefined = useMemo(() => {
     if (isNormalVideo && (authorName || pubts || pubtsFromApi || pubdateDisplay || pubdateDisplayForTitleAttr)) {
       let datePartForTitleAttribute: string | undefined
@@ -156,8 +152,139 @@ export const VideoCardBottom = memo(function ({
 
   const _recommendReasonClassName = useUnoMerge(clsRecommendReason, displayingAsList && clsRecommendReasonInList)
 
+  function renderDesc() {
+    const recommendReasonEl: ReactNode = !!recommendReason && (
+      <div
+        title={recommendReason}
+        css={cssRecommendReason} // background-color
+        className={_recommendReasonClassName}
+      >
+        {recommendReason}
+      </div>
+    )
+    const defaultImpl = ({
+      withAuthor = true,
+      withDate = true,
+      withRecommendReason = true,
+    }: {
+      withAuthor?: boolean
+      withDate?: boolean
+      withRecommendReason?: boolean
+    } = {}) => {
+      let date: ReactNode
+      if (pubts || pubtsFromApi) {
+        date = <UnixTsDisplay ts={pubts || pubtsFromApi} />
+      } else if (pubdateDisplay) {
+        date = pubdateDisplay
+      }
+
+      return (
+        <>
+          {withAuthor && (
+            <a
+              className='bili-video-card__info--owner'
+              href={authorHref}
+              target={target}
+              title={descTitleAttribute}
+              css={descOwnerCss}
+              onContextMenu={showNativeContextMenuWhenAltKeyPressed}
+            >
+              <span className='bili-video-card__info--author'>{authorName}</span>
+              {withDate && !!date && (
+                <span className='bili-video-card__info--date'>
+                  {DESC_SEPARATOR}
+                  {date}
+                </span>
+              )}
+            </a>
+          )}
+          {withRecommendReason && recommendReasonEl}
+        </>
+      )
+    }
+
+    // history
+    if (checkIsHistory(item)) {
+      return (
+        <>
+          {defaultImpl({ withAuthor: true, withDate: false, withRecommendReason: false })}
+          <span className='inline-flex items-center justify-start gap-x-1'>
+            {historyDeviceIcon}
+            <span
+              css={cssRecommendReason} // background-color
+              className={_recommendReasonClassName}
+              title={formatAccurateTimestamp(item.view_at)}
+            >
+              <UnixTsDisplay ts={item.view_at} includeTime />
+            </span>
+          </span>
+        </>
+      )
+    }
+
+    if (isNormalVideo) {
+      return defaultImpl()
+    }
+
+    // app-recommend: bangumi
+    if (appBadge || appBadgeDesc) {
+      return (
+        <a
+          className='bili-video-card__info--owner'
+          css={descOwnerCss}
+          href={href}
+          target={target}
+          onContextMenu={showNativeContextMenuWhenAltKeyPressed}
+        >
+          {!!appBadge && <span css={appBadgeCss}>{appBadge}</span>}
+          {!!appBadgeDesc && <span>{appBadgeDesc}</span>}
+        </a>
+      )
+    }
+
+    // rank
+    if (checkIsRank(item) && rankingDesc) {
+      return <div css={descOwnerCss}>{rankingDesc}</div>
+    }
+
+    // 直播: 关注的直播 | `PC推荐 & goto=live`
+    if (checkIsLive(item) || (checkIsPcRecommend(item) && item.goto === PcRecGoto.Live)) {
+      return (
+        <>
+          <a
+            css={[
+              descOwnerCss,
+              css`
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 1;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100%;
+              `,
+            ]}
+            href={authorHref}
+            target={target}
+            title={(authorName || '') + (liveExtraDesc || '')}
+            onContextMenu={showNativeContextMenuWhenAltKeyPressed}
+          >
+            {authorName}
+            {liveExtraDesc && <span className='ml-4px'>{liveExtraDesc}</span>}
+          </a>
+          {recommendReasonEl}
+        </>
+      )
+    }
+
+    return defaultImpl()
+  }
+
   /**
-   * 带头像, 更分散(recommend-reason 单独一行)
+   * 结构
+   * avatar + line1: title
+   *          line2: desc
+   *                   - when normal video => `author-name + date`
+   *          line3: recommend-reason
    */
   return (
     <div
@@ -230,99 +357,4 @@ export const VideoCardBottom = memo(function ({
       </div>
     </div>
   )
-
-  function renderDesc() {
-    const recommendReasonEl: ReactNode = !!recommendReason && (
-      <div
-        title={recommendReason}
-        css={cssRecommendReason} // background-color
-        className={_recommendReasonClassName}
-      >
-        {recommendReason}
-      </div>
-    )
-
-    const defaultRender = () => {
-      let date: ReactNode
-      if (pubts || pubtsFromApi) {
-        date = <UnixTsDisplay ts={pubts || pubtsFromApi} />
-      } else if (pubdateDisplay) {
-        date = pubdateDisplay
-      }
-      return (
-        <>
-          <a
-            className='bili-video-card__info--owner'
-            href={authorHref}
-            target={target}
-            title={descTitleAttribute}
-            css={descOwnerCss}
-            onContextMenu={showNativeContextMenuWhenAltKeyPressed}
-          >
-            <span className='bili-video-card__info--author'>{authorName}</span>
-            {!!date && (
-              <span className='bili-video-card__info--date'>
-                {DESC_SEPARATOR}
-                {date}
-              </span>
-            )}
-          </a>
-          {recommendReasonEl}
-        </>
-      )
-    }
-
-    if (isNormalVideo) return defaultRender()
-
-    /**
-     * 其他歪瓜
-     */
-    if (appBadge || appBadgeDesc) {
-      return (
-        <a
-          className='bili-video-card__info--owner'
-          css={descOwnerCss}
-          href={href}
-          target={target}
-          onContextMenu={showNativeContextMenuWhenAltKeyPressed}
-        >
-          {!!appBadge && <span css={appBadgeCss}>{appBadge}</span>}
-          {!!appBadgeDesc && <span>{appBadgeDesc}</span>}
-        </a>
-      )
-    }
-    if (isRank(item) && rankingDesc) {
-      return <div css={descOwnerCss}>{rankingDesc}</div>
-    }
-    // 直播: 关注的直播 | `PC推荐 & goto=live`
-    if (isLive(item) || (isPcRecommend(item) && item.goto === PcRecGoto.Live)) {
-      return (
-        <>
-          <a
-            css={[
-              descOwnerCss,
-              css`
-                display: -webkit-box;
-                -webkit-box-orient: vertical;
-                -webkit-line-clamp: 1;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                max-width: 100%;
-              `,
-            ]}
-            href={authorHref}
-            target={target}
-            title={(authorName || '') + (liveExtraDesc || '')}
-            onContextMenu={showNativeContextMenuWhenAltKeyPressed}
-          >
-            {authorName}
-            {liveExtraDesc && <span className='ml-4px'>{liveExtraDesc}</span>}
-          </a>
-          {recommendReasonEl}
-        </>
-      )
-    }
-
-    return defaultRender()
-  }
 })

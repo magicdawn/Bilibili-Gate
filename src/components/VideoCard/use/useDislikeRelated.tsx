@@ -7,7 +7,7 @@ import { pickDislikeReason } from '$components/ModalDislike'
 import { handleDislike } from '$components/ModalDislike/api'
 import { calcRecItemDislikedMapKey, dislikedMap } from '$components/ModalDislike/store'
 import { PcDislikeReasons, type DislikeReason } from '$components/ModalDislike/types'
-import { isAppRecommend, isPcRecommend, type RecItemType } from '$define'
+import { checkIsAppRecommend, checkIsPcRecommend, type RecItemType } from '$define'
 import { antMessage } from '$modules/antd'
 import { IconForDislike } from '$modules/icon'
 import toast from '$utility/toast'
@@ -29,7 +29,8 @@ export function useDislikeRelated({
   // show icon even accessKey not found
   // https://greasyfork.org/zh-CN/scripts/443530-bilibili-gate/discussions/244405
 
-  const hasDislikeEntry = (isAppRecommend(item) && !!item.three_point?.dislike_reasons?.length) || isPcRecommend(item)
+  const hasDislikeEntry =
+    (checkIsAppRecommend(item) && !!item.three_point?.dislike_reasons?.length) || checkIsPcRecommend(item)
 
   const onTriggerDislike = useMemoizedFn(async (e?: MouseEvent) => {
     e?.preventDefault()
@@ -44,11 +45,11 @@ export function useDislikeRelated({
     if (dislikeKey && dislikedMap.has(dislikeKey)) return
 
     let reasons: DislikeReason[]
-    if (isAppRecommend(item)) {
+    if (checkIsAppRecommend(item)) {
       // app
       if (!authed) return toast('请先获取 access_key !')
       reasons = (item.three_point?.dislike_reasons || []).map((x) => ({ platform: 'app' as const, ...x }))
-    } else if (isPcRecommend(item)) {
+    } else if (checkIsPcRecommend(item)) {
       // pc
       reasons = PcDislikeReasons
     } else {

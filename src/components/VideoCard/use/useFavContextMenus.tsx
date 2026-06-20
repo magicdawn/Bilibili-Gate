@@ -8,7 +8,7 @@ import {
   startPickFavFolder,
 } from '$components/ModalFavManager'
 import { getMultiSelectedItems } from '$components/RecGrid/rec-grid-state'
-import { isFav, type RecItemType } from '$define'
+import { checkIsFav, type RecItemType } from '$define'
 import { EApiType, ETab } from '$enums'
 import { antMessage, antModal, defineAntMenus } from '$modules/antd'
 import { IconForDelete, IconForEdit, IconForFav, IconForFaved, IconForOpenExternalLink } from '$modules/icon'
@@ -34,7 +34,7 @@ export function useInitFavContext(item: RecItemType, avid: string | undefined) {
     if (!avid) return
     // 仅在 [收藏Tab | 提供 quick-fav 的地方] 更新收藏状态
     const { enable: enableQuickFav } = getQuickFavConfig(item.api)
-    if (!(enableQuickFav || (isFav(item) && item.from === 'fav-folder'))) return
+    if (!(enableQuickFav || (checkIsFav(item) && item.from === 'fav-folder'))) return
     const result = await UserFavApi.getVideoFavState(avid)
     if (result) {
       setFolderNames(result.favFolderNames)
@@ -142,7 +142,7 @@ export function getFavTabFavRelatedMenus({
   onRemoveCurrent: ((item: RecItemType, data: IVideoCardData, silent?: boolean) => void | Promise<void>) | undefined
   recSharedEmitter: RecSharedEmitter
 }) {
-  if (!isFav(item)) return []
+  if (!checkIsFav(item)) return []
 
   const { avid } = cardData
   const folderNames = ctx.folderNames ?? []
@@ -161,7 +161,7 @@ export function getFavTabFavRelatedMenus({
               if (!multiSelectStore.multiSelecting) return
 
               const selectedFavItems = getMultiSelectedItems()
-                .filter((x) => isFav(x) && x.from === 'fav-folder')
+                .filter((x) => checkIsFav(x) && x.from === 'fav-folder')
                 .toReversed() // gui first item as queue last, keep first in target folder
               const folderIds = new Set(selectedFavItems.map((i) => i.folder.id))
               if (!folderIds.size) return toast('至少选择一项视频')

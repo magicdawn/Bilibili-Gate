@@ -5,6 +5,7 @@ import { getSettingsSnapshot } from '$modules/settings'
 import { AppRecService, getAppRecServiceConfig } from './app'
 import { DynamicFeedRecService, getDynamicFeedServiceConfig } from './dynamic-feed'
 import { FavRecService, getFavServiceConfig } from './fav'
+import { getHistoryRecServiceConfig, HistoryRecService } from './history'
 import { HotRecService } from './hot'
 import { LikedRecService } from './liked'
 import { LiveRecService } from './live'
@@ -49,6 +50,7 @@ export const createServiceMap = {
   [ETab.Live]: () => new LiveRecService(),
   [ETab.SpaceUpload]: () => new SpaceUploadService(getSpaceUploadServiceConfig()),
   [ETab.Liked]: () => new LikedRecService(),
+  [ETab.History]: () => new HistoryRecService(getHistoryRecServiceConfig()),
 } satisfies Record<ETab, (options: { existingService?: BaseTabService }) => BaseTabService>
 
 export type ServiceMapKey = keyof typeof createServiceMap

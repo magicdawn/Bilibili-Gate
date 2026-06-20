@@ -5,7 +5,7 @@ import pmap from 'promise.map'
 import { explainForFlag } from '$components/ModalSettings/index.shared'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { useOnRefresh, type RefreshFn } from '$components/Recommends/rec.shared'
-import { isAppRecommend, type AppRecItem, type AppRecItemExtend, type RecItemType } from '$define'
+import { checkIsAppRecommend, type AppRecItem, type AppRecItemExtend, type RecItemType } from '$define'
 import { EApiType, ETab } from '$enums'
 import { AntdTooltip } from '$modules/antd/custom'
 import { getVideoDetail } from '$modules/bilibili/video/video-detail'
@@ -217,7 +217,7 @@ export class AppRecService extends BaseTabService<RecItemType> {
     cardData?: IVideoCardData | undefined,
   ): item is AppRecItemExtend {
     return !!(
-      isAppRecommend(item) &&
+      checkIsAppRecommend(item) &&
       AppRecService.isNormalVideo(item) &&
       (cardData ||= normalizeCardData(item)) &&
       cardData &&
@@ -318,7 +318,7 @@ class AppRecInnerService implements IService {
 export async function fetchAppRecommendFollowedPubDate(item: RecItemType, cardData: IVideoCardData) {
   // no need
   if (cardData.pubts) return
-  if (isAppRecommend(item) && item.videoDetail?.pubdate) return item.videoDetail.pubdate
+  if (checkIsAppRecommend(item) && item.videoDetail?.pubdate) return item.videoDetail.pubdate
   // entry check
   if (!AppRecService.isNormalVideoFromFollowedUp(item, cardData)) return
 

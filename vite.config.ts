@@ -13,6 +13,7 @@ import { defineConfig } from 'vite'
 import { analyzer } from 'vite-bundle-analyzer'
 import Inspect from 'vite-plugin-inspect'
 import monkey, { cdn } from 'vite-plugin-monkey'
+import svgr from 'vite-plugin-svgr'
 import z from 'zod'
 import { name as packageName, version as packageVersion } from './package.json'
 
@@ -148,6 +149,11 @@ export default defineConfig(({ command, mode }) => ({
       ],
     }),
     Icons({ compiler: 'jsx', jsx: 'react' }),
+    svgr({
+      svgrOptions: {
+        svgProps: { fill: 'currentColor', width: '1em', height: '1em' },
+      },
+    }),
 
     react({ jsxImportSource: '@emotion/react' }),
     emotion(),

@@ -12,17 +12,26 @@ import { IconFreshSpaceUploadChargeOnly } from '$modules/icon/fresh-space-icons'
 import { normalizeDynamicFeedItem } from '$modules/rec-services/dynamic-feed/api/df-normalize'
 import { isFavFolderPrivate } from '$modules/rec-services/fav/fav-util'
 import { IconForCollection, IconForPrivateFolder, IconForPublicFolder } from '$modules/rec-services/fav/views'
+import {
+  ApiDtToDeviceTypeStringMap,
+  buildHistoryItemUrl,
+  EHistoryBusiness,
+  EHistoryDeviceType,
+  EHistoryDeviceTypeConfig,
+  EHistoryDeviceTypeString,
+} from '$modules/rec-services/history/enums'
 import { isPgcSeasonRankItem, isPgcWebRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { spaceUploadAvatarCache, spaceUploadFollowedMidSet } from '$modules/rec-services/space-upload'
 import { buildSpaceUploadVideoCardUrl } from '$modules/rec-services/space-upload/store'
 import { isSpaceUploadItemChargeOnly } from '$modules/rec-services/space-upload/util'
 import { buildWatchlaterVideoCardUrl } from '$modules/rec-services/watchlater/helper'
 import { toHttps } from '$utility/url'
-import { formatDuration, formatTimeStamp, getVideoInvalidReason, parseCount, parseDuration } from '$utility/video'
+import { formatDuration, formatTimestamp, getVideoInvalidReason, parseCount, parseDuration } from '$utility/video'
 import type { ReactNode } from 'react'
 import type {
   AppRecItemExtend,
   DynamicFeedItemExtend,
+  HistoryItemExtend,
   LikedItemExtend,
   LiveItemExtend,
   PcRecItemExtend,
@@ -37,12 +46,24 @@ import type { FavItemExtend } from '$modules/rec-services/fav/types'
 
 export const DESC_SEPARATOR = '·'
 
+export const KNOWN_GOTO = [
+  'av',
+  'bangumi',
+  'live',
+  // 各种形式的专栏
+  'picture',
+  'opus',
+  'article',
+] as const
+
+export type Goto = (typeof KNOWN_GOTO)[number] | (string & {})
+
 export interface IVideoCardData {
   // video
   avid?: string // should be a number, but use string for safety
   bvid?: string
   cid?: number
-  goto: string
+  goto: Goto
   href: string
 
   title: string
@@ -53,8 +74,11 @@ export interface IVideoCardData {
   pubdateDisplay?: string // for display
   pubdateDisplayForTitleAttr?: string
   duration?: number
-  durationStr?: string
+  durationDisplay?: ReactNode
   recommendReason?: string
+
+  // 视频进度: 0-1
+  watchedProgress?: number
 
   // stat
   statItems: StatItemType[]
@@ -72,6 +96,9 @@ export interface IVideoCardData {
   authorMid?: string
   followed?: boolean // 是否「已关注」
 
+  // general top-mark
+  cardTags?: CardTag[]
+
   /**
    * adpater specific
    */
@@ -80,8 +107,7 @@ export interface IVideoCardData {
   rankingDesc?: string
   liveExtraDesc?: string
   liveAreaName?: string
-  // general top-mark
-  cardTags?: CardTag[]
+  historyDeviceIcon?: ReactNode
 }
 
 export type LookintoOptions<T> = {
@@ -121,6 +147,7 @@ export const normalizeCardData = memoize(
       [EApiType.Live]: apiLiveAdapter,
       [EApiType.SpaceUpload]: apiSpaceUploadAdapter,
       [EApiType.Liked]: apiLikedAdapter,
+      [EApiType.History]: apiHistoryAdapter,
     })
 
     // handle mixed content
@@ -231,7 +258,7 @@ function apiIpadAppAdapter(item: AppRecItemExtend): IVideoCardData {
     pubts: item.videoDetail?.pubdate || undefined,
     pubdateDisplay: descDate,
     duration: item.videoDetail?.duration || item.player_args?.duration || 0,
-    durationStr: formatDuration(item.player_args?.duration),
+    durationDisplay: formatDuration(item.player_args?.duration),
     recommendReason: item.bottom_rcmd_reason || item.top_rcmd_reason,
 
     // stat
@@ -270,7 +297,7 @@ function apiPcAdapter(item: PcRecItemExtend): IVideoCardData {
     cover: item.pic,
     pubts: item.pubdate,
     duration: item.duration,
-    durationStr: formatDuration(item.duration),
+    durationDisplay: formatDuration(item.duration),
     recommendReason: _isLive ? item.room_info?.area.area_name : item.rcmd_reason?.content,
 
     // stat
@@ -325,13 +352,14 @@ function apiWatchlaterAdapter(item: WatchlaterItemExtend): IVideoCardData {
     titleRender,
     cover: item.pic,
     pubts: item.pubdate,
-    pubdateDisplayForTitleAttr: `${formatTimeStamp(item.pubdate, true)} 发布, ${formatTimeStamp(
+    pubdateDisplayForTitleAttr: `${formatTimestamp(item.pubdate, true)} 发布, ${formatTimestamp(
       item.add_at,
       true,
     )} 添加稍后再看`,
     duration: item.duration,
-    durationStr: formatDuration(item.duration),
-    recommendReason: `${formatTimeStamp(item.add_at)} · 稍后再看`,
+    durationDisplay: formatDuration(item.duration),
+    recommendReason: `${formatTimestamp(item.add_at)} · 稍后再看`,
+    watchedProgress: item.progress / item.duration,
 
     // stat
     statItems: defineStatItems([
@@ -391,8 +419,8 @@ function apiFavAdapter(item: FavItemExtend): IVideoCardData {
     cover: item.cover,
     pubts: item.pubtime,
     duration: item.duration,
-    durationStr: formatDuration(item.duration),
-    recommendReason: item.from === 'fav-folder' ? `${formatTimeStamp(item.fav_time)} · 收藏` : undefined,
+    durationDisplay: formatDuration(item.duration),
+    recommendReason: item.from === 'fav-folder' ? `${formatTimestamp(item.fav_time)} · 收藏` : undefined,
 
     // stat
     play: item.cnt_info.play,
@@ -423,7 +451,7 @@ function apiPopularGeneralAdapter(item: PopularGeneralItemExtend): IVideoCardDat
     cover: item.pic,
     pubts: item.pubdate,
     duration: item.duration,
-    durationStr: formatDuration(item.duration),
+    durationDisplay: formatDuration(item.duration),
     recommendReason: item.rcmd_reason?.content,
 
     // stat
@@ -457,7 +485,7 @@ function apiPopularWeeklyAdapter(item: PopularWeeklyItemExtend): IVideoCardData 
     cover: item.pic,
     pubts: item.pubdate,
     duration: item.duration,
-    durationStr: formatDuration(item.duration),
+    durationDisplay: formatDuration(item.duration),
     recommendReason: item.rcmd_reason,
 
     // stat
@@ -493,7 +521,7 @@ function apiRankAdapter(item: RankItemExtend): IVideoCardData {
       pubts: undefined,
       pubdateDisplay: undefined,
       duration: 0,
-      durationStr: '',
+      durationDisplay: '',
 
       // stat
       play: item.stat.view,
@@ -525,7 +553,7 @@ function apiRankAdapter(item: RankItemExtend): IVideoCardData {
     cover: item.pic,
     pubts: item.pubdate,
     duration: item.duration,
-    durationStr: formatDuration(item.duration),
+    durationDisplay: formatDuration(item.duration),
     recommendReason,
 
     // stat
@@ -609,7 +637,7 @@ function apiSpaceUploadAdapter(item: SpaceUploadItemExtend): IVideoCardData {
     cover: item.pic,
     pubts: item.created,
     duration,
-    durationStr,
+    durationDisplay: durationStr,
     recommendReason,
 
     // stat
@@ -654,7 +682,7 @@ function apiLikedAdapter(item: LikedItemExtend): IVideoCardData {
     cover: item.cover,
     pubts: videoDetail?.pubdate ?? item.ctime,
     duration: item.duration,
-    durationStr: formatDuration(item.duration),
+    durationDisplay: formatDuration(item.duration),
     recommendReason: undefined,
 
     // stat
@@ -672,5 +700,88 @@ function apiLikedAdapter(item: LikedItemExtend): IVideoCardData {
     authorName: item.author,
     authorFace: videoDetail?.owner.face,
     authorMid: videoDetail?.owner.mid?.toString(),
+  }
+}
+
+function apiHistoryAdapter(item: HistoryItemExtend): IVideoCardData {
+  const isVideo = item.history.business === EHistoryBusiness.ARCHIVE
+  const isLive = item.history.business === EHistoryBusiness.LIVE
+  const isArticle = item.history.business === EHistoryBusiness.ARTICLE
+  const isBangumi = item.history.business === EHistoryBusiness.PGC
+
+  // item.progress = -1, 已看完
+  // 官方页面中使用 item.progress < 0 判断
+  const isVideoFinished = isVideo && item.progress < 0
+  const watchedProgress: number | undefined =
+    isVideo && item.progress && item.duration ? (isVideoFinished ? 1 : item.progress / item.duration) : undefined
+
+  const goto: Goto = (() => {
+    if (isVideo) return 'av'
+    if (isLive) return 'live'
+    if (isArticle) return 'article'
+    if (isBangumi) return 'bangumi'
+    return item.history.business
+  })()
+
+  let bottomRightInfo: ReactNode
+  if (isVideo) {
+    bottomRightInfo = isVideoFinished ? '已看完' : `${formatDuration(item.progress)} / ${formatDuration(item.duration)}`
+  } else if (isLive) {
+    bottomRightInfo = item.tag_name
+  } else if (isArticle) {
+    //
+  }
+
+  const cardTags = (() => {
+    if (!item.badge) return
+    if (isVideo) return
+    if (isLive && item.live_status === ELiveStatus.Streaming) return // "直播中" 会单独处理
+
+    let className: string | undefined
+    if (isLive && item.live_status === ELiveStatus.Offline) {
+      className = 'bg-black/50' // 未开播, 灰色 tag
+    }
+
+    return defineCardTags([{ key: 'history:badge', text: item.badge, className }])
+  })()
+
+  const { DeviceIcon, deviceName } =
+    (() => {
+      const deviceType =
+        ApiDtToDeviceTypeStringMap[item.history.dt as keyof typeof ApiDtToDeviceTypeStringMap] ||
+        EHistoryDeviceTypeString.UNKNOWN // UPPER_CASE_STRING
+      const deviceConfig = EHistoryDeviceTypeConfig[EHistoryDeviceType[deviceType as keyof typeof EHistoryDeviceType]]
+      const DeviceIcon = deviceConfig?.icon
+      const deviceName = deviceConfig?.label
+      return { DeviceIcon, deviceName }
+    })() || {}
+
+  return {
+    cover: item.cover || item.covers?.[0] || '',
+    bvid: item.history.bvid || undefined,
+    avid: item.history.oid?.toString() || undefined,
+    goto,
+    href: buildHistoryItemUrl(item),
+    title: isBangumi ? item.show_title || item.title : item.title,
+
+    watchedProgress,
+    duration: item.duration,
+    durationDisplay: bottomRightInfo,
+
+    // stat & tags
+    statItems: defineStatItems([]),
+    cardTags,
+
+    // author
+    authorFace: item.author_face || undefined,
+    authorMid: (item.author_mid || undefined)?.toString(), // 可能为无意义的 0
+    authorName: item.author_name || undefined,
+
+    // bottom
+    historyDeviceIcon: DeviceIcon && (
+      <span title={deviceName} className='size-1em'>
+        <DeviceIcon className='size-full' />
+      </span>
+    ),
   }
 }

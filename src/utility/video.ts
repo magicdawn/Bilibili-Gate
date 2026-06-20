@@ -63,7 +63,7 @@ export function parseCount(str: string) {
 
 const currentYear = dayjs().format('YYYY')
 
-export function formatTimeStamp(unixTs?: number, includeTime = false) {
+export function formatTimestamp(unixTs?: number, includeTime = false) {
   if (!unixTs) return ''
 
   const t = dayjs.unix(unixTs)
@@ -73,6 +73,11 @@ export function formatTimeStamp(unixTs?: number, includeTime = false) {
   } else {
     return t.format(`YY-M-D${extraFormat}`)
   }
+}
+
+export function formatAccurateTimestamp(unixTs?: number) {
+  if (!unixTs) return ''
+  return dayjs.unix(unixTs).format(DayjsFormat.HyphenDateTime)
 }
 
 /**
@@ -85,6 +90,8 @@ export enum DayjsFormat {
   Year = 'YYYY',
   HyphenDate = 'YYYY-MM-DD',
   HyphenDateTime = 'YYYY-MM-DD HH:mm:ss',
+  Time = 'HH:mm',
+  VerboseTime = 'HH:mm:ss',
 
   ZhDisplayDateShort = 'M月D日',
   DisplayDateShort = 'M-D',
@@ -95,12 +102,12 @@ export enum DayjsFormat {
   Yesterday = '昨天 HH:mm',
 }
 
-export function isRecentTimeStamp(ts: number) {
+export function isRecentTimestamp(ts: number) {
   const yesterdayStart = dayjs().subtract(1, 'day').startOf('day').unix()
   return ts >= yesterdayStart
 }
 
-export function formatRecentTimeStamp(ts: number, zhDate: boolean) {
+export function formatRecentTimestamp(ts: number, zhDate: boolean, includeTime: boolean) {
   if (!ts) return
   const t = dayjs.unix(ts)
 
@@ -124,10 +131,11 @@ export function formatRecentTimeStamp(ts: number, zhDate: boolean) {
   if (isToday) return t.format(DayjsFormat.Today)
   if (isYesterday) return t.format(DayjsFormat.Yesterday)
 
+  const formatSuffix = includeTime ? ' ' + DayjsFormat.Time : ''
   if (isCurrentYear) {
-    return t.format(zhDate ? DayjsFormat.ZhDisplayDateShort : DayjsFormat.DisplayDateShort)
+    return t.format((zhDate ? DayjsFormat.ZhDisplayDateShort : DayjsFormat.DisplayDateShort) + formatSuffix)
   } else {
-    return t.format(zhDate ? DayjsFormat.ZhDisplayDate : DayjsFormat.DisplayDate)
+    return t.format((zhDate ? DayjsFormat.ZhDisplayDate : DayjsFormat.DisplayDate) + formatSuffix)
   }
 }
 

@@ -139,7 +139,7 @@ export const displayAsListCss = {
 }
 
 // video-card 内部 z-index
-export const clsZWatchlaterProgressBar = 'z-2'
+export const clsZWatchedProgressBar = 'z-2'
 export const clsZPreviewImageWrapper = 'z-3'
 export const clsZMultiSelectBg = 'z-4'
 export const clsZLeftMarks = 'z-5' // top-left Marks

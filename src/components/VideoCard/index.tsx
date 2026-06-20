@@ -9,6 +9,7 @@ import {
   type ComponentProps,
   type ComponentRef,
   type CSSProperties,
+  type MouseEvent,
   type MouseEventHandler,
   type ReactNode,
 } from 'react'
@@ -28,13 +29,14 @@ import { setGlobalValue } from '$components/RecGrid/unsafe-window-export'
 import { defaultRecSharedEmitter, type RecSharedEmitter } from '$components/Recommends/rec.shared'
 import { clsGateVideoCardContextMenuRoot } from '$components/shared.module.scss'
 import {
-  isAppRecommend,
-  isFav,
-  isLive,
-  isPcRecommend,
-  isRank,
-  isSpaceUpload,
-  isWatchlater,
+  checkIsAppRecommend,
+  checkIsFav,
+  checkIsHistory,
+  checkIsLive,
+  checkIsPcRecommend,
+  checkIsRank,
+  checkIsSpaceUpload,
+  checkIsWatchlater,
   type PvideoJson,
   type RecItemType,
 } from '$define'
@@ -43,9 +45,10 @@ import { ELiveStatus, ETab, type EGridDisplayMode } from '$enums'
 import { antNotification } from '$modules/antd'
 import { useInBlacklist } from '$modules/bilibili/me/relations/blacklist'
 import { useInFilterByAuthorList } from '$modules/filter/block-state'
-import { normalizeCardData, type IVideoCardData } from '$modules/filter/normalize'
-import { IconForCopy } from '$modules/icon'
+import { KNOWN_GOTO, normalizeCardData, type IVideoCardData } from '$modules/filter/normalize'
+import { IconForCopy, IconForDelete } from '$modules/icon'
 import { useMultiSelectState } from '$modules/multi-select/store'
+import { removeSingleHistoryItem } from '$modules/rec-services/history/helper'
 import { buildSpaceUploadVideoCardUrl, spaceUploadStore } from '$modules/rec-services/space-upload/store'
 import { useWatchlaterState } from '$modules/rec-services/watchlater'
 import { buildWatchlaterVideoCardUrl } from '$modules/rec-services/watchlater/helper'
@@ -61,7 +64,7 @@ import { VideoCardActionButton, VideoCardActionsClassNames } from './child-compo
 import { VideoCardBottom } from './child-components/VideoCardBottom'
 import { showNativeContextMenuWhenAltKeyPressed, useContextMenus } from './context-menus'
 import {
-  clsZWatchlaterProgressBar,
+  clsZWatchedProgressBar,
   copyContent,
   defaultVideoCardEmitter,
   displayAsListCss,
@@ -218,8 +221,9 @@ const VideoCardInner = memo(function VideoCardInner({
     title,
     cover,
     duration,
-    durationStr,
+    durationDisplay,
     recommendReason,
+    watchedProgress,
 
     // stat
     statItems,
@@ -231,21 +235,18 @@ const VideoCardInner = memo(function VideoCardInner({
 
   const authed = !!accessKey
   const isNormalVideo = goto === 'av'
-  const allowed = ['av', 'bangumi', 'picture', 'live', 'opus']
-  if (!allowed.includes(goto)) {
-    appWarn(`none (${allowed.join(',')}) goto type %s`, goto, item)
+  if (!KNOWN_GOTO.includes(goto)) {
+    appWarn(`none (${KNOWN_GOTO.join(',')}) goto type %s`, goto, item)
   }
 
   // dynamic href
-
   const { usingOrder: spaceUploadItemsOrder, isDisplayingSingleUpAllItems: spaceUploadIsDisplayingSingleUpAllItems } =
     useSnapshot(spaceUploadStore)
-
   const href = useMemo(() => {
-    if (isWatchlater(item) && item.bvid) {
+    if (checkIsWatchlater(item) && item.bvid) {
       return buildWatchlaterVideoCardUrl(item.bvid, item.aid, watchlaterSettings)
     }
-    if (isSpaceUpload(item) && authorMid && item.bvid) {
+    if (checkIsSpaceUpload(item) && authorMid && item.bvid) {
       return buildSpaceUploadVideoCardUrl(authorMid, item.bvid, item.aid, {
         continuePlay: spaceUploadSettings.continuePlay,
         continuePlayDirection: spaceUploadSettings.continuePlayDirection,
@@ -286,10 +287,11 @@ const VideoCardInner = memo(function VideoCardInner({
 
   const imagePreviewDataBox = useRefStateBox<ImagePreviewData | undefined>(undefined)
   const tryFetchImagePreviewData = useLockFn(async () => {
+    if (!bvid) return
     if (!shouldFetchPreviewData) return
     if (!showPreviewImageEl) return
     if (isImagePreviewDataValid(imagePreviewDataBox.val)) return // already fetched
-    const data = await fetchImagePreviewData(bvid!)
+    const data = await fetchImagePreviewData(bvid)
     imagePreviewDataBox.set(data)
     if (!isWebApiSuccess(data.videoshotJson)) {
       warnNoPreview(data.videoshotJson!)
@@ -480,13 +482,13 @@ const VideoCardInner = memo(function VideoCardInner({
    * top marks
    */
   const _hasGeneralCardTags = !!cardData.cardTags?.some(isCardTagValid)
-  const _isRank = isRank(item)
+  const _isRank = checkIsRank(item)
   const _isStreaming = // 直播中
-    (isLive(item) && item.live_status === ELiveStatus.Streaming) ||
-    (isPcRecommend(item) && item.goto === PcRecGoto.Live)
-  const hasApiTypeTag = tab === ETab.AppRecommend && !isAppRecommend(item) && !isLive(item)
+    ((checkIsLive(item) || checkIsHistory(item)) && item.live_status === ELiveStatus.Streaming) ||
+    (checkIsPcRecommend(item) && item.goto === PcRecGoto.Live)
+  const hasApiTypeTag = tab === ETab.AppRecommend && !checkIsAppRecommend(item) && !checkIsLive(item)
   const hasVolMark =
-    (isSpaceUpload(item) && spaceUploadSettings.showVol) || (isFav(item) && !!item.vol && !hasApiTypeTag)
+    (checkIsSpaceUpload(item) && spaceUploadSettings.showVol) || (checkIsFav(item) && !!item.vol && !hasApiTypeTag)
 
   const copyBvidInfoButtonEl = __internalEnableCopyBvidInfo && bvid && (
     <VideoCardActionButton
@@ -520,7 +522,9 @@ const VideoCardInner = memo(function VideoCardInner({
       {hasApiTypeTag && <ApiTypeTag item={item} />}
 
       {/* 显示序号, Tab: 投稿 | 收藏 */}
-      {hasVolMark && !!item.vol && <VolTag vol={item.vol} volTooltip={isFav(item) ? item.volTooltip : undefined} />}
+      {hasVolMark && !!item.vol && (
+        <VolTag vol={item.vol} volTooltip={checkIsFav(item) ? item.volTooltip : undefined} />
+      )}
 
       {/* General card-tag */}
       {/* 动态: 充电专属; 投稿: 充电专属;  */}
@@ -528,8 +532,33 @@ const VideoCardInner = memo(function VideoCardInner({
     </>
   )
 
+  const handleRemoveHistory = useLockFn(async (e: MouseEvent) => {
+    if (!checkIsHistory(item)) return
+    e.stopPropagation()
+    e.preventDefault()
+    const success = await removeSingleHistoryItem(item)
+    if (success) {
+      onRemoveCurrent?.(item, cardData)
+    }
+  })
+  const historyTrashBtn: ReactNode = checkIsHistory(item) && (
+    <VideoCardActionButton
+      visible={actionButtonVisible}
+      inlinePosition='right'
+      icon={<IconForDelete className='size-18px' />}
+      tooltip={'移除历史记录'}
+      onClick={handleRemoveHistory}
+    />
+  )
+
   const topRightActionsEl = (
     <>
+      {/* 历史: 移除历史记录 */}
+      {historyTrashBtn}
+
+      {/* 收藏: 取消收藏 */}
+      {/* !TODO: */}
+
       {/* 稍后再看 */}
       {watchlaterButtonEl}
 
@@ -552,13 +581,9 @@ const VideoCardInner = memo(function VideoCardInner({
     multiSelecting && 'gap-x-10px',
   )
 
-  const watchlaterProgressBar =
-    isWatchlater(item) && item.progress > 0 ? (
-      <SimpleProgressBar
-        progress={item.progress / item.duration}
-        className={clsx('h-3px', clsZWatchlaterProgressBar)}
-      />
-    ) : undefined
+  const watchedProgressBar = !!watchedProgress && (
+    <SimpleProgressBar progress={watchedProgress} className={clsx('h-3px', clsZWatchedProgressBar)} />
+  )
 
   // 一堆 selector 增加权重
   const clsVideoCardPrefix = `.${APP_CLS_ROOT} .${APP_CLS_CARD}`
@@ -653,17 +678,19 @@ const VideoCardInner = memo(function VideoCardInner({
           }
         `}
       >
+        {/* 左下角: 统计 */}
         <div className='bili-video-card__stats--left gap-x-4px xl:gap-x-8px'>
           {statItems.map(({ field, value }) => (
             <StatItemDisplay key={field} field={field} value={value} />
           ))}
         </div>
-        {/* 时长 */}
-        {/* 番剧没有 duration 字段 */}
-        <span className='bili-video-card__stats__duration relative top-0.5px'>{isNormalVideo && durationStr}</span>
+        {/* 右下角: 时长 */}
+        {durationDisplay && (
+          <span className='bili-video-card__stats__duration relative top-0.5px'>{durationDisplay}</span>
+        )}
       </div>
 
-      {watchlaterProgressBar}
+      {watchedProgressBar}
       {showPreviewImageEl && previewImageEl}
       {multiSelectBgEl}
 

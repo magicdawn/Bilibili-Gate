@@ -7,7 +7,7 @@ import clsx from 'clsx'
 import { useMemo, type CSSProperties, type Key, type ReactNode } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
 import { appPrimaryColorValue } from '$components/css-vars'
-import { isDynamicFeed, isFav, isWatchlater, type RankItemExtend, type RecItemType } from '$define'
+import { checkIsDynamicFeed, checkIsFav, checkIsWatchlater, type RankItemExtend, type RecItemType } from '$define'
 import { openNewTab } from '$modules/gm'
 import { IconForLive } from '$modules/icon'
 import { isNormalRankItem } from '$modules/rec-services/hot/rank/rank-tab'
@@ -19,6 +19,7 @@ export type CardTag = {
   key: Key
   icon?: ReactNode
   text?: ReactNode
+  className?: string
 }
 
 export function isCardTagValid(x: CardTag) {
@@ -38,13 +39,14 @@ export function BaseTag({ children, className }: { children?: ReactNode; classNa
 
 export function GeneralCardTag({ tag }: { tag: CardTag }) {
   if (!isCardTagValid(tag)) return
-  const { icon, text } = tag
+  const { icon, text, className } = tag
   const hasIcon = !!icon
   return (
     <BaseTag
       className={clsx(
         'min-w-32px',
         hasIcon ? 'pl-4px pr-6px' : 'px-4px', // 有图标左边更显空旷
+        className,
       )}
     >
       {hasIcon && icon}
@@ -136,14 +138,14 @@ export function LiveTag() {
 
 export function ApiTypeTag({ item }: { item: RecItemType }) {
   const text = useMemo(() => {
-    if (isDynamicFeed(item)) return '动态'
-    if (isWatchlater(item)) return '稍后再看'
-    if (isFav(item)) return item.from === 'fav-folder' ? '收藏夹' : '合集'
+    if (checkIsDynamicFeed(item)) return '动态'
+    if (checkIsWatchlater(item)) return '稍后再看'
+    if (checkIsFav(item)) return item.from === 'fav-folder' ? '收藏夹' : '合集'
     return item.api
   }, [item])
 
   const tooltip = useMemo(() => {
-    if (isFav(item) && item.from === 'fav-collection') return item.volTooltip
+    if (checkIsFav(item) && item.from === 'fav-collection') return item.volTooltip
   }, [item])
 
   const { triggerRef, tooltipEl } = useTooltip({

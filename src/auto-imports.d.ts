@@ -27,6 +27,7 @@ declare global {
   const IconLineMdUploadingLoop: typeof import('~icons/line-md/uploading-loop.jsx').default
   const IconLucideCircle: typeof import('~icons/lucide/circle.jsx').default
   const IconLucideCircleCheck: typeof import('~icons/lucide/circle-check.jsx').default
+  const IconLucideClock: typeof import('~icons/lucide/clock.jsx').default
   const IconLucideFolder: typeof import('~icons/lucide/folder.jsx').default
   const IconLucideFolderLock: typeof import('~icons/lucide/folder-lock.jsx').default
   const IconLucideForward: typeof import('~icons/lucide/forward.jsx').default

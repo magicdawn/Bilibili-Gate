@@ -1,7 +1,7 @@
 import { useMemoizedFn, usePrevious, useRequest } from 'ahooks'
 import { delay } from 'es-toolkit'
 import { useMemo, type MouseEvent } from 'react'
-import { isAppRecommend, isPcRecommend, type RecItemType } from '$define'
+import { checkIsAppRecommend, checkIsPcRecommend, type RecItemType } from '$define'
 import { EApiType } from '$enums'
 import { antMessage } from '$modules/antd'
 import { IconAnimatedChecked, IconForDelete, IconForLoading, IconForWatchlater } from '$modules/icon'
@@ -32,7 +32,7 @@ export function useWatchlaterRelated({
   const { avid, bvid } = cardData
 
   const hasWatchlaterEntry = useMemo(() => {
-    if (isAppRecommend(item) || isPcRecommend(item)) {
+    if (checkIsAppRecommend(item) || checkIsPcRecommend(item)) {
       return item.goto === 'av'
     }
     if (item.api === EApiType.Rank) {
@@ -105,7 +105,7 @@ export function useWatchlaterRelated({
 
     if (item.api === EApiType.Watchlater) {
       return watchlaterAdded ? (
-        <IconForDelete className='size-16px' />
+        <IconForDelete className='size-18px' />
       ) : (
         <IconAnimatedChecked size={addedSize} useAnimation={watchlaterAddedPrevious === true} />
       )
