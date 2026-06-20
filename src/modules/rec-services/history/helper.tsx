@@ -9,6 +9,7 @@ import type { RecSharedEmitter } from '$components/Recommends/rec.shared'
 export async function removeSingleHistoryItem(item: RecItemType): Promise<boolean | undefined> {
   if (!checkIsHistory(item)) return
   const confirm = await antModal.confirm({
+    centered: true,
     title: '移除历史记录',
     content: (
       <>

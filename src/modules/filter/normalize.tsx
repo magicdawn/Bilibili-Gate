@@ -108,7 +108,6 @@ export interface IVideoCardData {
   liveExtraDesc?: string
   liveAreaName?: string
   historyDeviceIcon?: ReactNode
-  historyViewAt?: number
 }
 
 export type LookintoOptions<T> = {

@@ -105,7 +105,7 @@ export function useWatchlaterRelated({
 
     if (item.api === EApiType.Watchlater) {
       return watchlaterAdded ? (
-        <IconForDelete className='size-16px' />
+        <IconForDelete className='size-18px' />
       ) : (
         <IconAnimatedChecked size={addedSize} useAnimation={watchlaterAddedPrevious === true} />
       )

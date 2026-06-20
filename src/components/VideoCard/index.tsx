@@ -545,7 +545,7 @@ const VideoCardInner = memo(function VideoCardInner({
     <VideoCardActionButton
       visible={actionButtonVisible}
       inlinePosition='right'
-      icon={<IconForDelete className='14px' />}
+      icon={<IconForDelete className='size-18px' />}
       tooltip={'移除历史记录'}
       onClick={handleRemoveHistory}
     />
