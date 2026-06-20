@@ -2,12 +2,12 @@ import clsx from 'clsx'
 import IconCuidaShuffleOutline from '~icons/cuida/shuffle-outline' // 这个不能自动 import 不知为何
 import { IconFreshSpaceDynamicFeed } from './fresh-space-icons'
 import {
-  IconHistoryRecordDeviceComputer,
-  IconHistoryRecordDevicePhone,
-  IconHistoryRecordLogo,
-  IconHistoryRecordTrash,
+  BiliHistoryIconDeviceComputer,
+  BiliHistoryIconDevicePhone,
+  BiliHistoryIconLogo,
+  BiliHistoryIconTrash,
 } from './history-record-icons'
-import { defineSvgComponent } from './util'
+import { defineSvgFillComponent } from './util'
 
 export const IconForLike = IconPhThumbsUpDuotone
 export const IconForDislike = IconPhThumbsDownDuotone
@@ -48,8 +48,8 @@ export const IconForTimestamp = IconParkOutlineTime
 // Tabs
 // export const IconForPhone = IconParkOutlineIphone
 // export const IconForPc = IconParkOutlineComputer
-export const IconForPhone = IconHistoryRecordDevicePhone
-export const IconForPc = IconHistoryRecordDeviceComputer
+export const IconForPhone = BiliHistoryIconDevicePhone
+export const IconForPc = BiliHistoryIconDeviceComputer
 export const IconForFollowedOnly = IconParkOutlineConcern
 // export const IconForDynamicFeed = IconParkOutlineTumblr
 export const IconForDynamicFeed = IconFreshSpaceDynamicFeed
@@ -58,7 +58,7 @@ export const IconForFaved = IconCarbonStarFilled // faved variant
 export const IconForHot = IconParkOutlineFire
 export const IconForSpaceUpload = IconLineMdUploadingLoop
 // export const IconForHistory = IconLucideClock
-export const IconForHistory = IconHistoryRecordLogo
+export const IconForHistory = BiliHistoryIconLogo
 
 // actions
 export const IconForBlacklist = IconParkOutlinePeopleDelete
@@ -66,7 +66,7 @@ export const IconForReset = IconParkOutlineReturn
 export const IconForCopy = IconParkOutlineCopy
 export const IconForLoading = IconSvgSpinnersBarsRotateFade
 // export const IconForDelete = IconMaterialSymbolsDeleteOutlineRounded
-export const IconForDelete = IconHistoryRecordTrash
+export const IconForDelete = BiliHistoryIconTrash
 export const IconForMove = IconParkOutlineTransferData
 export const IconForEdit = IconParkOutlineWrite
 
@@ -87,24 +87,13 @@ export function IconForLive({
   }
 }
 
-export const IconForWatchlater = defineSvgComponent((props) => {
-  return (
-    <svg viewBox='0 0 20 20' fill='currentColor' {...props}>
-      <path
-        d='M10 3.125a6.875 6.875 0 1 0 4.86 11.737.625.625 0 0 1 .884.884 8.125 8.125 0 1 1 2.331-4.844.625.625 0 1 1-1.242-.138A6.875 6.875 0 0 0 10 3.124z'
-        fill='currentColor'
-      />
-      <path
-        d='M15.391 9.141a.625.625 0 0 1 .884 0l1.225 1.225 1.225-1.225a.625.625 0 1 1 .884.884l-1.52 1.52a.833.833 0 0 1-1.178 0l-1.52-1.52a.625.625 0 0 1 0-.884z'
-        fill='currentColor'
-      />
-      <path
-        d='M12.5 9.278a.833.833 0 0 1 0 1.443l-3.126 1.805a.833.833 0 0 1-1.25-.722V8.195a.833.833 0 0 1 1.25-.721l3.125 1.804z'
-        fill='currentColor'
-      />
-    </svg>
-  )
-})
+export const IconForWatchlater = defineSvgFillComponent(
+  <svg viewBox='0 0 20 20'>
+    <path d='M10 3.125a6.875 6.875 0 1 0 4.86 11.737.625.625 0 0 1 .884.884 8.125 8.125 0 1 1 2.331-4.844.625.625 0 1 1-1.242-.138A6.875 6.875 0 0 0 10 3.124z' />
+    <path d='M15.391 9.141a.625.625 0 0 1 .884 0l1.225 1.225 1.225-1.225a.625.625 0 1 1 .884.884l-1.52 1.52a.833.833 0 0 1-1.178 0l-1.52-1.52a.625.625 0 0 1 0-.884z' />
+    <path d='M12.5 9.278a.833.833 0 0 1 0 1.443l-3.126 1.805a.833.833 0 0 1-1.25-.722V8.195a.833.833 0 0 1 1.25-.721l3.125 1.804z' />
+  </svg>,
+)
 
 export const clsIconTextWrapper = 'inline-flex items-center justify-center line-height-[0]'
 

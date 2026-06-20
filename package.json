@@ -119,7 +119,6 @@
     "vite-bundle-analyzer": "^1.3.8",
     "vite-plugin-inspect": "^11.4.1",
     "vite-plugin-monkey": "^8.0.6",
-    "vite-plugin-svgr": "^5.2.0",
     "vitest": "^4.1.9",
     "zod": "^4.4.3"
   },

@@ -3,10 +3,10 @@
  */
 
 import {
-  IconHistoryRecordDeviceComputer,
-  IconHistoryRecordDevicePad,
-  IconHistoryRecordDevicePhone,
-  IconHistoryRecordDeviceTelevision,
+  BiliHistoryIconDeviceComputer,
+  BiliHistoryIconDevicePad,
+  BiliHistoryIconDevicePhone,
+  BiliHistoryIconDeviceTelevision,
 } from '$modules/icon/history-record-icons'
 import { toHttps } from '$utility/url'
 import type { ComponentProps, ComponentType } from 'react'
@@ -70,10 +70,10 @@ export const EHistoryDeviceTypeConfig: Record<
   { label: string; icon?: ComponentType<ComponentProps<'svg'>> }
 > = {
   [EHistoryDeviceType.ALL]: { label: '全部' },
-  [EHistoryDeviceType.PC]: { label: 'PC', icon: IconHistoryRecordDeviceComputer },
-  [EHistoryDeviceType.MOBILE]: { label: '手机', icon: IconHistoryRecordDevicePhone },
-  [EHistoryDeviceType.PAD]: { label: '平板', icon: IconHistoryRecordDevicePad },
-  [EHistoryDeviceType.TV]: { label: 'TV', icon: IconHistoryRecordDeviceTelevision },
+  [EHistoryDeviceType.PC]: { label: 'PC', icon: BiliHistoryIconDeviceComputer },
+  [EHistoryDeviceType.MOBILE]: { label: '手机', icon: BiliHistoryIconDevicePhone },
+  [EHistoryDeviceType.PAD]: { label: '平板', icon: BiliHistoryIconDevicePad },
+  [EHistoryDeviceType.TV]: { label: 'TV', icon: BiliHistoryIconDeviceTelevision },
 }
 
 // `l2`
