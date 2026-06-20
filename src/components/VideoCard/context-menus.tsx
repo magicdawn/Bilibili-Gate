@@ -52,11 +52,10 @@ import {
   DynamicFeedQueryKey,
   QUERY_DYNAMIC_UP_MID,
 } from '$modules/rec-services/dynamic-feed/store'
-import { HistoryApiService } from '$modules/rec-services/history/api'
+import { removeSingleHistoryItem } from '$modules/rec-services/history/helper'
 import { SHOW_SPACE_UPLOAD_ONLY, SpaceUploadQueryKey } from '$modules/rec-services/space-upload/store'
 import { WatchlaterItemsOrder } from '$modules/rec-services/watchlater/watchlater-enum'
 import { settings, updateSettingsInnerArray, useSettingsSnapshot } from '$modules/settings'
-import { handleRequestError } from '$request'
 import toast from '$utility/toast'
 import { copyContent } from './index.shared'
 import { watchlaterAdd } from './services'
@@ -526,16 +525,10 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
         icon: <IconForDelete className={clsContextMenuIcon} />,
         async onClick() {
           if (!isHistory(item)) return
-          const confirm = await antModal.confirm({
-            centered: true,
-            title: '移除历史',
-            content: <>确定从历史记录中移除「{item.title}」</>,
-          })
-          if (!confirm) return
-
-          const result = await HistoryApiService.delete(`${item.history.business}_${item.kid}`)
-          if (result.isErr()) return handleRequestError(result.error)
-          else onRemoveCurrent?.(item, cardData)
+          const success = await removeSingleHistoryItem(item)
+          if (success) {
+            onRemoveCurrent?.(item, cardData)
+          }
         },
       },
     ])

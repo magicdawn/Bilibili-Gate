@@ -9,6 +9,7 @@ import {
   type ComponentProps,
   type ComponentRef,
   type CSSProperties,
+  type MouseEvent,
   type MouseEventHandler,
   type ReactNode,
 } from 'react'
@@ -45,8 +46,9 @@ import { antNotification } from '$modules/antd'
 import { useInBlacklist } from '$modules/bilibili/me/relations/blacklist'
 import { useInFilterByAuthorList } from '$modules/filter/block-state'
 import { KNOWN_GOTO, normalizeCardData, type IVideoCardData } from '$modules/filter/normalize'
-import { IconForCopy } from '$modules/icon'
+import { IconForCopy, IconForDelete } from '$modules/icon'
 import { useMultiSelectState } from '$modules/multi-select/store'
+import { removeSingleHistoryItem } from '$modules/rec-services/history/helper'
 import { buildSpaceUploadVideoCardUrl, spaceUploadStore } from '$modules/rec-services/space-upload/store'
 import { useWatchlaterState } from '$modules/rec-services/watchlater'
 import { buildWatchlaterVideoCardUrl } from '$modules/rec-services/watchlater/helper'
@@ -528,8 +530,33 @@ const VideoCardInner = memo(function VideoCardInner({
     </>
   )
 
+  const handleRemoveHistory = useLockFn(async (e: MouseEvent) => {
+    if (!isHistory(item)) return
+    e.stopPropagation()
+    e.preventDefault()
+    const success = await removeSingleHistoryItem(item)
+    if (success) {
+      onRemoveCurrent?.(item, cardData)
+    }
+  })
+  const historyTrashBtn: ReactNode = isHistory(item) && (
+    <VideoCardActionButton
+      visible={actionButtonVisible}
+      inlinePosition='right'
+      icon={<IconForDelete className='14px' />}
+      tooltip={'移除历史记录'}
+      onClick={handleRemoveHistory}
+    />
+  )
+
   const topRightActionsEl = (
     <>
+      {/* 历史: 移除历史记录 */}
+      {historyTrashBtn}
+
+      {/* 收藏: 取消收藏 */}
+      {/* !TODO: */}
+
       {/* 稍后再看 */}
       {watchlaterButtonEl}
 
