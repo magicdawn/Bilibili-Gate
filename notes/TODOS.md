@@ -1,5 +1,9 @@
 # Todos
 
+- history: 搜索
+- history: 未开播 card tags, add a dark style
+- history: viewd_at 时间, 只显示日期?
+
 # Ideas
 
 - [ ] reconsider `fav:context-menu`, 把 fav-folder 想做 tag, 一个视频包含在多个收藏夹其实是合理的.
