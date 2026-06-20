@@ -12,14 +12,21 @@ import { IconFreshSpaceUploadChargeOnly } from '$modules/icon/fresh-space-icons'
 import { normalizeDynamicFeedItem } from '$modules/rec-services/dynamic-feed/api/df-normalize'
 import { isFavFolderPrivate } from '$modules/rec-services/fav/fav-util'
 import { IconForCollection, IconForPrivateFolder, IconForPublicFolder } from '$modules/rec-services/fav/views'
-import { buildHistoryItemUrl, EHistoryBusiness } from '$modules/rec-services/history/enums'
+import {
+  ApiDtToDeviceTypeStringMap,
+  buildHistoryItemUrl,
+  EHistoryBusiness,
+  EHistoryDeviceType,
+  EHistoryDeviceTypeConfig,
+  EHistoryDeviceTypeString,
+} from '$modules/rec-services/history/enums'
 import { isPgcSeasonRankItem, isPgcWebRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { spaceUploadAvatarCache, spaceUploadFollowedMidSet } from '$modules/rec-services/space-upload'
 import { buildSpaceUploadVideoCardUrl } from '$modules/rec-services/space-upload/store'
 import { isSpaceUploadItemChargeOnly } from '$modules/rec-services/space-upload/util'
 import { buildWatchlaterVideoCardUrl } from '$modules/rec-services/watchlater/helper'
 import { toHttps } from '$utility/url'
-import { formatDuration, formatTimeStamp, getVideoInvalidReason, parseCount, parseDuration } from '$utility/video'
+import { formatDuration, formatTimestamp, getVideoInvalidReason, parseCount, parseDuration } from '$utility/video'
 import type { ReactNode } from 'react'
 import type {
   AppRecItemExtend,
@@ -39,12 +46,24 @@ import type { FavItemExtend } from '$modules/rec-services/fav/types'
 
 export const DESC_SEPARATOR = '·'
 
+export const KNOWN_GOTO = [
+  'av',
+  'bangumi',
+  'live',
+  // 各种形式的专栏
+  'picture',
+  'opus',
+  'article',
+] as const
+
+export type Goto = (typeof KNOWN_GOTO)[number] | (string & {})
+
 export interface IVideoCardData {
   // video
   avid?: string // should be a number, but use string for safety
   bvid?: string
   cid?: number
-  goto: string
+  goto: Goto
   href: string
 
   title: string
@@ -88,6 +107,8 @@ export interface IVideoCardData {
   rankingDesc?: string
   liveExtraDesc?: string
   liveAreaName?: string
+  historyDeviceIcon?: ReactNode
+  historyViewAt?: number
 }
 
 export type LookintoOptions<T> = {
@@ -332,13 +353,13 @@ function apiWatchlaterAdapter(item: WatchlaterItemExtend): IVideoCardData {
     titleRender,
     cover: item.pic,
     pubts: item.pubdate,
-    pubdateDisplayForTitleAttr: `${formatTimeStamp(item.pubdate, true)} 发布, ${formatTimeStamp(
+    pubdateDisplayForTitleAttr: `${formatTimestamp(item.pubdate, true)} 发布, ${formatTimestamp(
       item.add_at,
       true,
     )} 添加稍后再看`,
     duration: item.duration,
     durationDisplay: formatDuration(item.duration),
-    recommendReason: `${formatTimeStamp(item.add_at)} · 稍后再看`,
+    recommendReason: `${formatTimestamp(item.add_at)} · 稍后再看`,
     watchedProgress: item.progress / item.duration,
 
     // stat
@@ -400,7 +421,7 @@ function apiFavAdapter(item: FavItemExtend): IVideoCardData {
     pubts: item.pubtime,
     duration: item.duration,
     durationDisplay: formatDuration(item.duration),
-    recommendReason: item.from === 'fav-folder' ? `${formatTimeStamp(item.fav_time)} · 收藏` : undefined,
+    recommendReason: item.from === 'fav-folder' ? `${formatTimestamp(item.fav_time)} · 收藏` : undefined,
 
     // stat
     play: item.cnt_info.play,
@@ -687,6 +708,7 @@ function apiHistoryAdapter(item: HistoryItemExtend): IVideoCardData {
   const isVideo = item.history.business === EHistoryBusiness.ARCHIVE
   const isLive = item.history.business === EHistoryBusiness.LIVE
   const isArticle = item.history.business === EHistoryBusiness.ARTICLE
+  const isBangumi = item.history.business === EHistoryBusiness.PGC
 
   // item.progress = -1, 已看完
   // 官方页面中使用 item.progress < 0 判断
@@ -694,9 +716,13 @@ function apiHistoryAdapter(item: HistoryItemExtend): IVideoCardData {
   const watchedProgress: number | undefined =
     isVideo && item.progress && item.duration ? (isVideoFinished ? 1 : item.progress / item.duration) : undefined
 
-  let goto = 'av'
-  if (isLive) goto = 'live'
-  else if (isArticle) goto = 'article'
+  const goto: Goto = (() => {
+    if (isVideo) return 'av'
+    if (isLive) return 'live'
+    if (isArticle) return 'article'
+    if (isBangumi) return 'bangumi'
+    return item.history.business
+  })()
 
   let bottomRightInfo: ReactNode
   if (isVideo) {
@@ -708,8 +734,22 @@ function apiHistoryAdapter(item: HistoryItemExtend): IVideoCardData {
   }
 
   const cardTags = (() => {
-    if (isArticle && item.badge) return defineCardTags([{ key: 'history:article', text: item.badge }])
+    if (!item.badge) return
+    if (isVideo) return
+    if (isLive && item.live_status === ELiveStatus.Streaming) return // 直播中会单独处理
+    return defineCardTags([{ key: 'history:badge', text: item.badge }])
   })()
+
+  const { DeviceIcon, deviceName } =
+    (() => {
+      const deviceType =
+        ApiDtToDeviceTypeStringMap[item.history.dt as keyof typeof ApiDtToDeviceTypeStringMap] ||
+        EHistoryDeviceTypeString.UNKNOWN // UPPER_CASE_STRING
+      const deviceConfig = EHistoryDeviceTypeConfig[EHistoryDeviceType[deviceType as keyof typeof EHistoryDeviceType]]
+      const DeviceIcon = deviceConfig?.icon
+      const deviceName = deviceConfig?.label
+      return { DeviceIcon, deviceName }
+    })() || {}
 
   return {
     cover: item.cover || item.covers?.[0] || '',
@@ -720,6 +760,7 @@ function apiHistoryAdapter(item: HistoryItemExtend): IVideoCardData {
     title: item.title,
 
     watchedProgress,
+    duration: item.duration,
     durationDisplay: bottomRightInfo,
 
     // stat & tags
@@ -727,8 +768,15 @@ function apiHistoryAdapter(item: HistoryItemExtend): IVideoCardData {
     cardTags,
 
     // author
-    authorFace: item.author_face,
-    authorMid: item.author_mid?.toString(),
-    authorName: item.author_name,
+    authorFace: item.author_face || undefined,
+    authorMid: (item.author_mid || undefined)?.toString(), // 可能为无意义的 0
+    authorName: item.author_name || undefined,
+
+    // bottom
+    historyDeviceIcon: DeviceIcon && (
+      <span title={deviceName} className='size-1em'>
+        <DeviceIcon className='size-full' />
+      </span>
+    ),
   }
 }

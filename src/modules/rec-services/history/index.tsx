@@ -35,11 +35,11 @@ export class HistoryRecService extends BaseTabService {
   }
 
   static extendItems(items: HistoryItem[]): HistoryItemExtend[] {
-    return items.map((x) => {
+    return items.map((item) => {
       const ret: HistoryItemExtend = {
-        ...x,
+        ...item,
         api: EApiType.History,
-        uniqId: crypto.randomUUID(), // !TODO: figure out uniqId
+        uniqId: `${item.history.business}_${item.kid}`, // delete 时使用的 kid 参数格式
       }
       return ret
     })

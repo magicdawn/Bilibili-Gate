@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import { describe, expect, it } from 'vitest'
-import { formatCount, formatTimeStamp, parseCount, parseDuration } from './video'
+import { formatCount, formatTimestamp, parseCount, parseDuration } from './video'
 
 describe.concurrent('$utility/video', () => {
   it('.parseDuration', () => {
@@ -27,7 +27,7 @@ describe.concurrent('$utility/video', () => {
 
   it('.formatTimeStamp', () => {
     const cur = Math.floor(Date.now() / 1000)
-    expect(formatTimeStamp(cur)).to.equal(dayjs().format('M-D'))
-    expect(formatTimeStamp(cur, true)).to.equal(dayjs().format('M-D HH:mm'))
+    expect(formatTimestamp(cur)).to.equal(dayjs().format('M-D'))
+    expect(formatTimestamp(cur, true)).to.equal(dayjs().format('M-D HH:mm'))
   })
 })

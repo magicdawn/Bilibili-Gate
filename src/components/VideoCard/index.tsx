@@ -44,7 +44,7 @@ import { ELiveStatus, ETab, type EGridDisplayMode } from '$enums'
 import { antNotification } from '$modules/antd'
 import { useInBlacklist } from '$modules/bilibili/me/relations/blacklist'
 import { useInFilterByAuthorList } from '$modules/filter/block-state'
-import { normalizeCardData, type IVideoCardData } from '$modules/filter/normalize'
+import { KNOWN_GOTO, normalizeCardData, type IVideoCardData } from '$modules/filter/normalize'
 import { IconForCopy } from '$modules/icon'
 import { useMultiSelectState } from '$modules/multi-select/store'
 import { buildSpaceUploadVideoCardUrl, spaceUploadStore } from '$modules/rec-services/space-upload/store'
@@ -233,16 +233,13 @@ const VideoCardInner = memo(function VideoCardInner({
 
   const authed = !!accessKey
   const isNormalVideo = goto === 'av'
-  const allowed = ['av', 'bangumi', 'picture', 'live', 'opus']
-  if (!allowed.includes(goto)) {
-    appWarn(`none (${allowed.join(',')}) goto type %s`, goto, item)
+  if (!KNOWN_GOTO.includes(goto)) {
+    appWarn(`none (${KNOWN_GOTO.join(',')}) goto type %s`, goto, item)
   }
 
   // dynamic href
-
   const { usingOrder: spaceUploadItemsOrder, isDisplayingSingleUpAllItems: spaceUploadIsDisplayingSingleUpAllItems } =
     useSnapshot(spaceUploadStore)
-
   const href = useMemo(() => {
     if (isWatchlater(item) && item.bvid) {
       return buildWatchlaterVideoCardUrl(item.bvid, item.aid, watchlaterSettings)
@@ -288,10 +285,11 @@ const VideoCardInner = memo(function VideoCardInner({
 
   const imagePreviewDataBox = useRefStateBox<ImagePreviewData | undefined>(undefined)
   const tryFetchImagePreviewData = useLockFn(async () => {
+    if (!bvid) return
     if (!shouldFetchPreviewData) return
     if (!showPreviewImageEl) return
     if (isImagePreviewDataValid(imagePreviewDataBox.val)) return // already fetched
-    const data = await fetchImagePreviewData(bvid!)
+    const data = await fetchImagePreviewData(bvid)
     imagePreviewDataBox.set(data)
     if (!isWebApiSuccess(data.videoshotJson)) {
       warnNoPreview(data.videoshotJson!)

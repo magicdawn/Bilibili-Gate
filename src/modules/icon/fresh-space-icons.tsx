@@ -1,8 +1,3 @@
-/**
- * https://iconly.io/tools/font-to-icons-converter
- * https://s1.hdslb.com/bfs/svg-next/font/2025-07-09/freshspace-gux68tajg0n.ttf
- */
-
 import { defineSvgComponent } from './util'
 
 export const IconFreshSpaceUploadChargeOnly = defineSvgComponent((props) => {

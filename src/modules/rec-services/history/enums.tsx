@@ -2,7 +2,14 @@
  * extract from https://s1.hdslb.com/bfs/static/shanks/history-record/assets/index-6ae5fa2d.js
  */
 
+import {
+  IconHistoryRecordDeviceComputer,
+  IconHistoryRecordDevicePad,
+  IconHistoryRecordDevicePhone,
+  IconHistoryRecordDeviceTelevision,
+} from '$modules/icon/history-record-icons'
 import { toHttps } from '$utility/url'
+import type { ComponentProps, ComponentType } from 'react'
 import type { HistoryItem } from './api/shared.api'
 
 // 命名习惯: 原始代码里使用 ALLCAPS, 方便理解, 沿用原始代码
@@ -56,12 +63,17 @@ export enum EHistoryDeviceType {
   PAD,
   TV,
 }
-export const EHistoryDeviceTypeConfig: Record<EHistoryDeviceType, { label: string }> = {
+
+// label 中英混杂, 官方网页就是这样哦~
+export const EHistoryDeviceTypeConfig: Record<
+  EHistoryDeviceType,
+  { label: string; icon?: ComponentType<ComponentProps<'svg'>> }
+> = {
   [EHistoryDeviceType.ALL]: { label: '全部' },
-  [EHistoryDeviceType.PC]: { label: '电脑' },
-  [EHistoryDeviceType.MOBILE]: { label: '手机' },
-  [EHistoryDeviceType.PAD]: { label: '平板' },
-  [EHistoryDeviceType.TV]: { label: 'TV' },
+  [EHistoryDeviceType.PC]: { label: 'PC', icon: IconHistoryRecordDeviceComputer },
+  [EHistoryDeviceType.MOBILE]: { label: '手机', icon: IconHistoryRecordDevicePhone },
+  [EHistoryDeviceType.PAD]: { label: '平板', icon: IconHistoryRecordDevicePad },
+  [EHistoryDeviceType.TV]: { label: 'TV', icon: IconHistoryRecordDeviceTelevision },
 }
 
 // `l2`

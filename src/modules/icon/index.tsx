@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import IconCuidaShuffleOutline from '~icons/cuida/shuffle-outline' // 这个不能自动 import 不知为何
 import { IconFreshSpaceDynamicFeed } from './fresh-space-icons'
+import { IconHistoryRecordLogo } from './history-record-icons'
 import { defineSvgComponent } from './util'
 
 export const IconForLike = IconPhThumbsUpDuotone
@@ -49,7 +50,8 @@ export const IconForFav = IconCarbonStar
 export const IconForFaved = IconCarbonStarFilled // faved variant
 export const IconForHot = IconParkOutlineFire
 export const IconForSpaceUpload = IconLineMdUploadingLoop
-export const IconForHistory = IconLucideClock
+// export const IconForHistory = IconLucideClock
+export const IconForHistory = IconHistoryRecordLogo
 
 // actions
 export const IconForBlacklist = IconParkOutlinePeopleDelete

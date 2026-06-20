@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import { memo, useMemo } from 'react'
 import { valtioFactory } from '$utility/valtio'
-import { formatRecentTimeStamp, isRecentTimeStamp } from '$utility/video'
+import { formatRecentTimestamp, isRecentTimestamp } from '$utility/video'
 
 const $now = valtioFactory(() => Date.now())
 // update every half minute
@@ -18,11 +18,11 @@ document.addEventListener('visibilitychange', () => {
 
 export const UnixTsDisplay = memo(function UnixTsDisplay({ ts }: { ts: number | undefined }) {
   if (!ts) return null
-  return isRecentTimeStamp(ts) ? <ReactiveImpl ts={ts} /> : <PlainImpl ts={ts} />
+  return isRecentTimestamp(ts) ? <ReactiveImpl ts={ts} /> : <PlainImpl ts={ts} />
 })
 
 function PlainImpl({ ts }: { ts: number }) {
-  return useMemo(() => formatRecentTimeStamp(ts, true), [ts])
+  return useMemo(() => formatRecentTimestamp(ts, true), [ts])
 }
 
 function ReactiveImpl({ ts }: { ts: number }) {
