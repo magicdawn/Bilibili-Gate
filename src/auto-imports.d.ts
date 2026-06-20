@@ -13,26 +13,19 @@ declare global {
   const IconEosIconsBackgroundTasks: typeof import('~icons/eos-icons/background-tasks.jsx').default
   const IconFluentSelectAllOn16Regular: typeof import('~icons/fluent/select-all-on16-regular.jsx').default
   const IconFluentTextSortAscending16Filled: typeof import('~icons/fluent/text-sort-ascending16-filled.jsx').default
-  const IconFluentTextSortAscending16Regular: typeof import('~icons/fluent/text-sort-ascending16-regular.jsx').default
   const IconFluentTextSortDescending16Filled: typeof import('~icons/fluent/text-sort-descending16-filled.jsx').default
-  const IconFluentTextSortDescending16Regular: typeof import('~icons/fluent/text-sort-descending16-regular.jsx').default
   const IconIcOutlineCloud: typeof import('~icons/ic/outline-cloud.jsx').default
   const IconIcOutlineSwapHoriz: typeof import('~icons/ic/outline-swap-horiz.jsx').default
   const IconIonExitOutline: typeof import('~icons/ion/exit-outline.jsx').default
   const IconIonLayersOutline: typeof import('~icons/ion/layers-outline.jsx').default
   const IconLetsIconsViewHide: typeof import('~icons/lets-icons/view-hide.jsx').default
-  const IconLineMdArrowDown: typeof import('~icons/line-md/arrow-down.jsx').default
-  const IconLineMdArrowSmallDown: typeof import('~icons/line-md/arrow-small-down.jsx').default
   const IconLineMdDownloadOutlineLoop: typeof import('~icons/line-md/download-outline-loop.jsx').default
   const IconLineMdUploadingLoop: typeof import('~icons/line-md/uploading-loop.jsx').default
   const IconLucideCircle: typeof import('~icons/lucide/circle.jsx').default
   const IconLucideCircleCheck: typeof import('~icons/lucide/circle-check.jsx').default
-  const IconLucideClock: typeof import('~icons/lucide/clock.jsx').default
   const IconLucideFolder: typeof import('~icons/lucide/folder.jsx').default
   const IconLucideFolderLock: typeof import('~icons/lucide/folder-lock.jsx').default
-  const IconLucideForward: typeof import('~icons/lucide/forward.jsx').default
   const IconLucideList: typeof import('~icons/lucide/list.jsx').default
-  const IconLucideMessageCircle: typeof import('~icons/lucide/message-circle.jsx').default
   const IconMaterialSymbolsAlignHorizontalCenter: typeof import('~icons/material-symbols/align-horizontal-center.jsx').default
   const IconMaterialSymbolsAlignHorizontalLeft: typeof import('~icons/material-symbols/align-horizontal-left.jsx').default
   const IconMaterialSymbolsAlignHorizontalRight: typeof import('~icons/material-symbols/align-horizontal-right.jsx').default
@@ -42,17 +35,9 @@ declare global {
   const IconMaterialSymbolsLightOpenInNew: typeof import('~icons/material-symbols-light/open-in-new.jsx').default
   const IconMaterialSymbolsLightOpenInNewOff: typeof import('~icons/material-symbols-light/open-in-new-off.jsx').default
   const IconMdiShuffleDisabled: typeof import('~icons/mdi/shuffle-disabled.jsx').default
-  const IconMdiSortAlphabeticalAscending: typeof import('~icons/mdi/sort-alphabetical-ascending.jsx').default
-  const IconMdiSortAlphabeticalDescending: typeof import('~icons/mdi/sort-alphabetical-descending.jsx').default
   const IconMdiSortClockAscending: typeof import('~icons/mdi/sort-clock-ascending.jsx').default
-  const IconMdiSortClockAscendingOutline: typeof import('~icons/mdi/sort-clock-ascending-outline.jsx').default
   const IconMdiSortClockDescending: typeof import('~icons/mdi/sort-clock-descending.jsx').default
-  const IconMdiSortClockDescendingOutline: typeof import('~icons/mdi/sort-clock-descending-outline.jsx').default
-  const IconMingcuteZaSortAscendingLettersLine: typeof import('~icons/mingcute/za-sort-ascending-letters-line.jsx').default
-  const IconMingcuteZaSortDescendingLettersLine: typeof import('~icons/mingcute/za-sort-descending-letters-line.jsx').default
   const IconMynauiUsersGroup: typeof import('~icons/mynaui/users-group.jsx').default
-  const IconOcticonSortAsc16: typeof import('~icons/octicon/sort-asc16.jsx').default
-  const IconOcticonSortDesc16: typeof import('~icons/octicon/sort-desc16.jsx').default
   const IconParkOutlineAddTwo: typeof import('~icons/icon-park-outline/add-two.jsx').default
   const IconParkOutlineArrowLeft: typeof import('~icons/icon-park-outline/arrow-left.jsx').default
   const IconParkOutlineArrowRight: typeof import('~icons/icon-park-outline/arrow-right.jsx').default
@@ -62,7 +47,6 @@ declare global {
   const IconParkOutlineConfig: typeof import('~icons/icon-park-outline/config.jsx').default
   const IconParkOutlineCopy: typeof import('~icons/icon-park-outline/copy.jsx').default
   const IconParkOutlineDistraughtFace: typeof import('~icons/icon-park-outline/distraught-face.jsx').default
-  const IconParkOutlineDown: typeof import('~icons/icon-park-outline/down.jsx').default
   const IconParkOutlineDownC: typeof import('~icons/icon-park-outline/down-c.jsx').default
   const IconParkOutlineDrag: typeof import('~icons/icon-park-outline/drag.jsx').default
   const IconParkOutlineFire: typeof import('~icons/icon-park-outline/fire.jsx').default
@@ -87,10 +71,6 @@ declare global {
   const IconPhCrownFill: typeof import('~icons/ph/crown-fill.jsx').default
   const IconPhThumbsDownDuotone: typeof import('~icons/ph/thumbs-down-duotone.jsx').default
   const IconPhThumbsUpDuotone: typeof import('~icons/ph/thumbs-up-duotone.jsx').default
-  const IconPrimeSortAlphaAltDown: typeof import('~icons/prime/sort-alpha-alt-down.jsx').default
-  const IconPrimeSortAlphaDown: typeof import('~icons/prime/sort-alpha-down.jsx').default
-  const IconQlementineIconsSortTimeAsc24: typeof import('~icons/qlementine-icons/sort-time-asc24.jsx').default
-  const IconQlementineIconsSortTimeDesc24: typeof import('~icons/qlementine-icons/sort-time-desc24.jsx').default
   const IconRadixIconsCross2: typeof import('~icons/radix-icons/cross2.jsx').default
   const IconRadixIconsLockClosed: typeof import('~icons/radix-icons/lock-closed.jsx').default
   const IconRadixIconsLockOpen1: typeof import('~icons/radix-icons/lock-open1.jsx').default
@@ -113,9 +93,5 @@ declare global {
   const IconTablerPlus: typeof import('~icons/tabler/plus.jsx').default
   const IconTablerRestore: typeof import('~icons/tabler/restore.jsx').default
   const IconTablerSortAscending: typeof import('~icons/tabler/sort-ascending.jsx').default
-  const IconTablerSortAscending2: typeof import('~icons/tabler/sort-ascending2.jsx').default
-  const IconTablerSortAscendingLetters: typeof import('~icons/tabler/sort-ascending-letters.jsx').default
   const IconTablerSortDescending: typeof import('~icons/tabler/sort-descending.jsx').default
-  const IconTablerSortDescending2: typeof import('~icons/tabler/sort-descending2.jsx').default
-  const IconTablerSortDescendingLetters: typeof import('~icons/tabler/sort-descending-letters.jsx').default
 }
