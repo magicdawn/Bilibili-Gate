@@ -3,11 +3,11 @@
  */
 
 import {
-  BiliHistoryIconDeviceComputer,
-  BiliHistoryIconDevicePad,
-  BiliHistoryIconDevicePhone,
-  BiliHistoryIconDeviceTelevision,
-} from '$modules/icon/history-record-icons'
+  BiliHistoryRecordIconDeviceComputer,
+  BiliHistoryRecordIconDevicePad,
+  BiliHistoryRecordIconDevicePhone,
+  BiliHistoryRecordIconDeviceTelevision,
+} from '$modules/icon/bili-history-record-icons'
 import { toHttps } from '$utility/url'
 import type { ComponentProps, ComponentType } from 'react'
 import type { HistoryItem } from './api/shared.api'
@@ -70,10 +70,10 @@ export const EHistoryDeviceTypeConfig: Record<
   { label: string; icon?: ComponentType<ComponentProps<'svg'>> }
 > = {
   [EHistoryDeviceType.ALL]: { label: '全部' },
-  [EHistoryDeviceType.PC]: { label: 'PC', icon: BiliHistoryIconDeviceComputer },
-  [EHistoryDeviceType.MOBILE]: { label: '手机', icon: BiliHistoryIconDevicePhone },
-  [EHistoryDeviceType.PAD]: { label: '平板', icon: BiliHistoryIconDevicePad },
-  [EHistoryDeviceType.TV]: { label: 'TV', icon: BiliHistoryIconDeviceTelevision },
+  [EHistoryDeviceType.PC]: { label: 'PC', icon: BiliHistoryRecordIconDeviceComputer },
+  [EHistoryDeviceType.MOBILE]: { label: '手机', icon: BiliHistoryRecordIconDevicePhone },
+  [EHistoryDeviceType.PAD]: { label: '平板', icon: BiliHistoryRecordIconDevicePad },
+  [EHistoryDeviceType.TV]: { label: 'TV', icon: BiliHistoryRecordIconDeviceTelevision },
 }
 
 // `l2`

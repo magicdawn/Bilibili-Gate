@@ -8,7 +8,7 @@ import { defineStatItems, type StatItemField, type StatItemType } from '$compone
 import { PcRecGoto } from '$define/pc-recommend'
 import { EApiType, ELiveStatus } from '$enums'
 import { AntdTooltip } from '$modules/antd/custom'
-import { IconFreshSpaceUploadChargeOnly } from '$modules/icon/fresh-space-icons'
+import { BiliFreshSpaceIconUploadChargeOnly } from '$modules/icon/bili-fresh-space-icons'
 import { normalizeDynamicFeedItem } from '$modules/rec-services/dynamic-feed/api/df-normalize'
 import { isFavFolderPrivate } from '$modules/rec-services/fav/fav-util'
 import { IconForCollection, IconForPrivateFolder, IconForPublicFolder } from '$modules/rec-services/fav/views'
@@ -659,7 +659,7 @@ function apiSpaceUploadAdapter(item: SpaceUploadItemExtend): IVideoCardData {
     cardTags: defineCardTags([
       isSpaceUploadItemChargeOnly(item) && {
         key: `${item.api}:charge-only`,
-        icon: <IconFreshSpaceUploadChargeOnly className='size-14px' />,
+        icon: <BiliFreshSpaceIconUploadChargeOnly className='size-14px' />,
         text: item.elec_arc_badge,
       },
     ]),

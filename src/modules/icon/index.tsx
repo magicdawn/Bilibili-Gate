@@ -1,12 +1,12 @@
 import clsx from 'clsx'
 import IconCuidaShuffleOutline from '~icons/cuida/shuffle-outline' // 这个不能自动 import 不知为何
-import { IconFreshSpaceDynamicFeed } from './fresh-space-icons'
+import { BiliFreshSpaceIconDynamicFeed } from './bili-fresh-space-icons'
 import {
-  BiliHistoryIconDeviceComputer,
-  BiliHistoryIconDevicePhone,
-  BiliHistoryIconLogo,
-  BiliHistoryIconTrash,
-} from './history-record-icons'
+  BiliHistoryRecordIconDeviceComputer,
+  BiliHistoryRecordIconDevicePhone,
+  BiliHistoryRecordIconLogo,
+  BiliHistoryRecordIconTrash,
+} from './bili-history-record-icons'
 import { defineSvgFillComponent } from './util'
 
 export const IconForLike = IconPhThumbsUpDuotone
@@ -48,17 +48,17 @@ export const IconForTimestamp = IconParkOutlineTime
 // Tabs
 // export const IconForPhone = IconParkOutlineIphone
 // export const IconForPc = IconParkOutlineComputer
-export const IconForPhone = BiliHistoryIconDevicePhone
-export const IconForPc = BiliHistoryIconDeviceComputer
+export const IconForPhone = BiliHistoryRecordIconDevicePhone
+export const IconForPc = BiliHistoryRecordIconDeviceComputer
 export const IconForFollowedOnly = IconParkOutlineConcern
 // export const IconForDynamicFeed = IconParkOutlineTumblr
-export const IconForDynamicFeed = IconFreshSpaceDynamicFeed
+export const IconForDynamicFeed = BiliFreshSpaceIconDynamicFeed
 export const IconForFav = IconCarbonStar
 export const IconForFaved = IconCarbonStarFilled // faved variant
 export const IconForHot = IconParkOutlineFire
 export const IconForSpaceUpload = IconLineMdUploadingLoop
 // export const IconForHistory = IconLucideClock
-export const IconForHistory = BiliHistoryIconLogo
+export const IconForHistory = BiliHistoryRecordIconLogo
 
 // actions
 export const IconForBlacklist = IconParkOutlinePeopleDelete
@@ -66,7 +66,7 @@ export const IconForReset = IconParkOutlineReturn
 export const IconForCopy = IconParkOutlineCopy
 export const IconForLoading = IconSvgSpinnersBarsRotateFade
 // export const IconForDelete = IconMaterialSymbolsDeleteOutlineRounded
-export const IconForDelete = BiliHistoryIconTrash
+export const IconForDelete = BiliHistoryRecordIconTrash
 export const IconForMove = IconParkOutlineTransferData
 export const IconForEdit = IconParkOutlineWrite
 

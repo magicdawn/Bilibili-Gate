@@ -520,8 +520,8 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
     const historyTabMenus = defineAntMenus([
       {
         test: checkIsHistory(item),
-        key: 'remove-from-history',
-        label: '删除历史',
+        key: 'remove-history-record',
+        label: '移除历史记录',
         icon: <IconForDelete className={clsContextMenuIcon} />,
         async onClick() {
           if (!checkIsHistory(item)) return
