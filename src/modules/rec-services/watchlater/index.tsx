@@ -3,20 +3,15 @@ import pRetry from 'p-retry'
 import { proxy, useSnapshot } from 'valtio'
 import { proxySet } from 'valtio/utils'
 import { appWarn, IN_BILIBILI_HOMEPAGE } from '$common'
-import {
-  getMultiSelectedNormalVideoItems,
-  warnNoMultiSelectedNormalVideoItems,
-} from '$components/RecGrid/rec-grid-state'
 import { EApiType } from '$enums'
 import { handleRequestError } from '$request'
 import { getHasLogined, getUid } from '$utility/cookie'
 import { whenIdle } from '$utility/dom'
 import { BaseTabService, type IService } from '../_base'
-import { batchRemoveWatchlater, fetchWatchlaterItems } from './api'
+import { WatchlaterApiService } from './api'
 import { earlierSeparator, getRecentGate, recentSeparator } from './helper'
 import { WatchlaterTabbarView } from './views'
 import { WatchlaterItemsOrder } from './watchlater-enum'
-import type { RecSharedEmitter } from '$components/Recommends/rec.shared'
 import type { ItemsSeparator, WatchlaterItemExtend } from '$define'
 import type { WatchlaterItem } from './types'
 
@@ -41,7 +36,7 @@ function updateWatchlaterStateBvidSet(action: 'add' | 'del', bvid: string) {
 
 async function initWatchlaterState() {
   if (!getHasLogined() || !getUid()) return
-  const fetchResult = await fetchWatchlaterItems()
+  const fetchResult = await WatchlaterApiService.fetchItems()
   if (fetchResult.isErr() || !fetchResult.value.items.length) return
   replaceWatchlaterStateBvidSet(fetchResult.value.items.map((x) => x.bvid))
 }
@@ -55,23 +50,6 @@ if (IN_BILIBILI_HOMEPAGE) {
       },
     })
   })()
-}
-
-/**
- * 批量移除稍后再看
- */
-export async function removeMultiSelectedWatchlaterItems(recSharedEmitter: RecSharedEmitter) {
-  const selected = getMultiSelectedNormalVideoItems()
-  if (!selected?.length) return warnNoMultiSelectedNormalVideoItems()
-
-  const avids = selected.map((x) => x.cardData.avid).filter(Boolean)
-  const uniqIds = selected.map((x) => x.item.uniqId)
-  const titles = selected.map((x) => x.cardData.title)
-  if (!avids.length) return warnNoMultiSelectedNormalVideoItems()
-
-  const success = await batchRemoveWatchlater(avids)
-  if (!success) return
-  recSharedEmitter.emit('remove-cards', [uniqIds, titles])
 }
 
 export class WatchlaterRecService extends BaseTabService<WatchlaterItemExtend | ItemsSeparator> {
@@ -169,7 +147,7 @@ class ShuffleOrderService implements IService {
   currentBvidIndexMap?: BvidIndexMap
   private async fetch(abortSignal: AbortSignal) {
     const { items: rawItems } = (
-      await fetchWatchlaterItems({
+      await WatchlaterApiService.fetchItems({
         asc: false,
         searchText: undefined,
         abortSignal,
@@ -247,7 +225,7 @@ class NormalOrderService implements IService {
     if (!this.hasMore) return
 
     const { items, total } = (
-      await fetchWatchlaterItems({
+      await WatchlaterApiService.fetchItems({
         asc: this.order === WatchlaterItemsOrder.AddTimeAsc,
         searchText: this.searchText,
         extraParams: {

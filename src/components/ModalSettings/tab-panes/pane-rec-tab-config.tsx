@@ -227,6 +227,17 @@ export function TabPaneRecTabsConfig() {
                   </>
                 }
               />
+              <CheckboxSettingItem
+                configPath={'history.confirmBeforeDelete'}
+                label='移除时需要确认'
+                tooltip={
+                  <>
+                    只影响单个移除, 批量移除时总是需要确认 <br />
+                    历史记录移除后无法找回: <br />
+                    {explainForFlag('删除前需要确认', '直接删除!')}
+                  </>
+                }
+              />
             </div>
           </div>
         </SettingsGroup>

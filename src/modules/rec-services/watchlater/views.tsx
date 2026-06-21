@@ -13,11 +13,11 @@ import { BtnAddMultiSelectedToFav } from '../_shared/batch-toolbar-actions'
 import { CopyBvidButtonsTabbarView } from '../_shared/copy-bvid-buttons'
 import { GeneralContinuePlaySwitch } from '../_shared/general-continue-play-switch'
 import { GenericOrderSwitcher } from '../_shared/generic-order-switcher'
-import { removeMultiSelectedWatchlaterItems, type WatchlaterRecService } from './index'
-import { recentGateDescription } from './helper'
+import { recentGateDescription, removeMultiSelectedWatchlaterItems } from './helper'
 import { watchlaterStore } from './store'
 import { WatchlaterItemsOrder } from './watchlater-enum'
 import type { ComponentRef, ReactNode } from 'react'
+import type { WatchlaterRecService } from './index'
 
 export function WatchlaterTabbarView({ service }: { service: WatchlaterRecService }) {
   const { addSeparator, itemsOrder, enableTabbarQuickSwitch } = useSettingsSnapshot().watchlater

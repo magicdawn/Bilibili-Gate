@@ -2,23 +2,27 @@ import { getMultiSelectedItems } from '$components/RecGrid/rec-grid-state'
 import { checkIsHistory, type RecItemType } from '$define'
 import { antMessage, antModal } from '$modules/antd'
 import { normalizeCardData } from '$modules/filter/normalize'
+import { settings } from '$modules/settings'
 import { handleRequestError } from '$request'
 import { HistoryApiService } from './api'
 import type { RecSharedEmitter } from '$components/Recommends/rec.shared'
 
 export async function removeSingleHistoryItem(item: RecItemType): Promise<boolean | undefined> {
   if (!checkIsHistory(item)) return
-  const confirm = await antModal.confirm({
-    centered: true,
-    title: '移除历史记录',
-    content: (
-      <>
-        确定要移除
-        <br />「{item.title}」?
-      </>
-    ),
-  })
-  if (!confirm) return
+
+  if (settings.history.confirmBeforeDelete) {
+    const confirm = await antModal.confirm({
+      centered: true,
+      title: '移除历史记录',
+      content: (
+        <>
+          确定要移除
+          <br />「{item.title}」?
+        </>
+      ),
+    })
+    if (!confirm) return
+  }
 
   const result = await HistoryApiService.delete(`${item.history.business}_${item.kid}`)
   result.tapError(handleRequestError)
@@ -39,10 +43,10 @@ export async function removeMultiSelectedHistoryItems(recSharedEmitter: RecShare
   const result = await HistoryApiService.delete(kid)
   return result.tapBoth({
     err: handleRequestError,
-    ok(val) {
+    ok() {
       const uniqIds = selected.map((x) => x.uniqId)
       const titles = selected.map((x) => normalizeCardData(x).title)
-      recSharedEmitter.emit('remove-cards', [uniqIds, titles])
+      recSharedEmitter.emit('remove-cards', [uniqIds, titles, { itemsDescription: '条历史记录' }])
     },
   })
 }

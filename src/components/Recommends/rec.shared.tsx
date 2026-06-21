@@ -20,7 +20,11 @@ export type RecSharedEmitterEvents = {
   // for grid
   'refresh': Parameters<RefreshFn>[0]
   'load-to-end': undefined
-  'remove-cards': [uniqIds: string[], titles?: string[], silent?: boolean]
+  'remove-cards': [
+    uniqIds: string[],
+    titles?: string[],
+    messageConfig?: { silent?: boolean; itemsDescription?: string },
+  ]
   'move-card-to': [uniqId: string, pos: 'start' | 'end']
 
   // for views: [tabbarView, sidebarView, ...]

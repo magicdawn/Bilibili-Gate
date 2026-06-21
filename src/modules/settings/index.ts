@@ -197,6 +197,7 @@ export const initialSettings = {
    */
   history: {
     tabbarViewSmallControlSize: true,
+    confirmBeforeDelete: true,
   },
 
   /**

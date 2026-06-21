@@ -184,7 +184,7 @@ export function getFavTabFavRelatedMenus({
 
                   clearFavFolderAllItemsCache(item.folder.id)
                   clearFavFolderAllItemsCache(targetFolder.id)
-                  recSharedEmitter.emit('remove-cards', [uniqIds, titles, true])
+                  recSharedEmitter.emit('remove-cards', [uniqIds, titles, { silent: true }])
                   antMessage.success(`已移动 ${uniqIds.length} 个视频到「${targetFolder.title}」收藏夹`)
                   return true
                 },

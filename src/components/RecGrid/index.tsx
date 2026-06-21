@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/no-array-from-fill */
 import { arrayMove } from '@dnd-kit/sortable'
 import { useCreation, useEventListener, useLatest, useMemoizedFn, useMount, useUnmountedRef } from 'ahooks'
 import { Button, Divider } from 'antd'
@@ -204,7 +203,11 @@ export const RecGrid = memo(function RecGrid({
 
       // 场景
       // 当前 Tab: 稍后再看, 点视频进去, 在视频页移除了, 关闭视频页, 回到首页
-      if (tab === ETab.Watchlater && goOutAt.current && Date.now() - goOutAt.current > ms('1h')) {
+      if (
+        (tab === ETab.Watchlater || tab === ETab.History) &&
+        goOutAt.current &&
+        Date.now() - goOutAt.current > ms('30s')
+      ) {
         refresh('reuse')
       }
     },
@@ -393,48 +396,52 @@ export const RecGrid = memo(function RecGrid({
     const val = self.items
     self.setStore({ items: fn(val) ?? val })
   })
-  const handleRemoveCards = useMemoizedFn((uniqIds: string[], titles?: string[], silent?: boolean) => {
-    modifyItems((items) => {
-      const newItems = items.slice()
-      const removedTitles: string[] = []
+  const handleRemoveCards = useMemoizedFn(
+    (uniqIds: string[], titles?: string[], messageConfig?: { silent?: boolean; itemsDescription?: string }) => {
+      modifyItems((items) => {
+        const newItems = items.slice()
+        const removedTitles: string[] = []
 
-      for (const [i, uniqId] of uniqIds.entries()) {
-        const index = newItems.findIndex((x) => x.uniqId === uniqId)
-        if (index === -1) continue
+        for (const [i, uniqId] of uniqIds.entries()) {
+          const index = newItems.findIndex((x) => x.uniqId === uniqId)
+          if (index === -1) continue
 
-        newItems.splice(index, 1)
-        const title = titles?.[i]
-        if (title) removedTitles.push(title)
+          newItems.splice(index, 1)
+          const title = titles?.[i]
+          if (title) removedTitles.push(title)
 
-        // side effects
-        if (tab === ETab.Watchlater) {
-          serviceRegistry[tab]?.decreaseTotal()
+          // side effects
+          if (tab === ETab.Watchlater) {
+            serviceRegistry[tab]?.decreaseTotal()
+          }
+          if (tab === ETab.Fav) {
+            serviceRegistry[tab]?.decreaseTotal()
+          }
         }
-        if (tab === ETab.Fav) {
-          serviceRegistry[tab]?.decreaseTotal()
+
+        // 稍后再看最近的删完了, 最近的 separator 也删掉
+        if (
+          tab === ETab.Watchlater &&
+          newItems.length > 2 &&
+          newItems.slice(0, 2).every((x) => x.api === EApiType.Separator)
+        ) {
+          newItems.splice(0, 1)
         }
-      }
 
-      // 稍后再看最近的删完了, 最近的 separator 也删掉
-      if (
-        tab === ETab.Watchlater &&
-        newItems.length > 2 &&
-        newItems.slice(0, 2).every((x) => x.api === EApiType.Separator)
-      ) {
-        newItems.splice(0, 1)
-      }
-
-      if (!silent && removedTitles.length) {
-        if (removedTitles.length <= 3) {
-          removedTitles.forEach((_t) => antMessage.success(`已移除: ${removedTitles.join(', ')}`))
-        } else {
-          antMessage.success(`已移除: ${removedTitles.length}个视频`)
+        const silent = messageConfig?.silent ?? false
+        const itemsDescription = messageConfig?.itemsDescription ?? '个视频'
+        if (!silent && removedTitles.length) {
+          if (removedTitles.length <= 3) {
+            removedTitles.forEach((t) => antMessage.success(`已移除: ${t}`))
+          } else {
+            antMessage.success(`已移除: ${removedTitles.length}${itemsDescription}`)
+          }
         }
-      }
 
-      return newItems
-    })
-  })
+        return newItems
+      })
+    },
+  )
   const handleMoveCardTo = useMemoizedFn((itemUniqId: string, pos: 'start' | 'end') => {
     modifyItems((items) => {
       const index = items.findIndex((x) => x.uniqId === itemUniqId)
@@ -608,7 +615,7 @@ export const RecGrid = memo(function RecGrid({
           tab={tab}
           item={item}
           active={active}
-          onRemoveCurrent={(item, data, silent) => handleRemoveCards([item.uniqId], [data.title], silent)}
+          onRemoveCurrent={(item, data, silent) => handleRemoveCards([item.uniqId], [data.title], { silent })}
           emitter={videoCardEmitters[index]}
           recSharedEmitter={recSharedEmitter}
           gridDisplayMode={gridDisplayMode}

@@ -1,9 +1,12 @@
 import { Result } from 'better-result'
-import { encWbi } from '$modules/bilibili/risk-control'
-import { isWebApiSuccess, request, wbiFlag, WebApiError } from '$request'
+import { request, wbiFlag, WebApiError } from '$request'
 import { getCsrfToken } from '$utility/cookie'
-import toast from '$utility/toast'
 import type { WatchlaterItem, WatchlaterJson } from './types'
+
+export const WatchlaterApiService = {
+  fetchItems: fetchWatchlaterItems,
+  batchRemove: batchRemoveWatchlater,
+}
 
 /**
  * 一次性获取所有「稍后再看」/x/v2/history/toview/web
@@ -12,7 +15,7 @@ import type { WatchlaterItem, WatchlaterJson } from './types'
  * @history 2024-11-14 间歇性, 有 count, 但内容为空, {count: 123, items: []}
  * @history 2025-04-09 B站新版页面由 toview/v2/list 切回 toview/web, toview/web 也支持分页了
  */
-export function fetchWatchlaterItems({
+function fetchWatchlaterItems({
   asc = false,
   searchText = '',
   abortSignal,
@@ -37,8 +40,8 @@ export function fetchWatchlaterItems({
     })
     const json = yield* WebApiError.validateAxiosResponse(res, '获取稍后再看失败')
     return Result.ok({
-      total: json.data.count,
-      items: filterOutApiReturnedRecent(json.data.list || []),
+      total: json.data?.count || 0,
+      items: filterOutApiReturnedRecent(json.data?.list || []),
     })
   })
 }
@@ -54,16 +57,13 @@ function filterOutApiReturnedRecent(items: WatchlaterItem[]) {
 /**
  * 批量移除稍后再看 API call
  */
-export async function batchRemoveWatchlater(avids: string[]) {
-  const form = new FormData()
-  form.append('resources', avids.join(','))
-  form.append('csrf', getCsrfToken())
-  const params = await encWbi({})
-  const res = await request.post('/x/v2/history/toview/v2/dels', form, { params })
-  const json = res.data
-  if (!isWebApiSuccess(json)) {
-    toast(json?.message || '出错了')
-    return false
-  }
-  return true // success
+function batchRemoveWatchlater(avids: string[]) {
+  return Result.gen(async function* () {
+    const form = new FormData()
+    form.append('resources', avids.join(','))
+    form.append('csrf', getCsrfToken())
+    const res = yield* await request.safePost('/x/v2/history/toview/v2/dels', form, { [wbiFlag]: true, params: {} })
+    const json = yield* WebApiError.validateAxiosResponse(res, '移除稍后再看失败')
+    return Result.ok(json)
+  })
 }
