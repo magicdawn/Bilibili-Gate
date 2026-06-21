@@ -79,6 +79,7 @@ export function TabPaneRecTabsConfig() {
             'pcRecommend.enableTabbarQuickSwitch',
             'pcRecommend.anonymousFetch',
             'history.tabbarViewSmallControlSize',
+            'history.confirmBeforeDelete',
           ]}
         >
           {/* watchlater */}
