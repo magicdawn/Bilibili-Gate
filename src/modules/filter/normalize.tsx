@@ -257,8 +257,8 @@ function apiIpadAppAdapter(item: AppRecItemExtend): IVideoCardData {
     cover: item.cover,
     pubts: item.videoDetail?.pubdate || undefined,
     pubdateDisplay: descDate,
-    duration: item.videoDetail?.duration || item.player_args?.duration || 0,
-    durationDisplay: formatDuration(item.player_args?.duration),
+    duration: item.videoDetail?.duration || item.player_args?.duration || undefined,
+    durationDisplay: item.player_args?.duration ? formatDuration(item.player_args.duration) : undefined,
     recommendReason: item.bottom_rcmd_reason || item.top_rcmd_reason,
 
     // stat
