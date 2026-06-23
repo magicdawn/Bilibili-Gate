@@ -6,9 +6,8 @@ import { baseDebug } from '$common'
 import { antNotification } from '$modules/antd'
 import { getVideoPlayUrl } from '$modules/bilibili/video/play-url'
 import { getVideoPageList } from '$modules/bilibili/video/video-detail'
-import { isWebApiSuccess, request } from '$request'
+import { request, WebApiError } from '$request'
 import { getCsrfToken } from '$utility/cookie'
-import toast from '$utility/toast'
 import { getVideoshotJson, isVideoshotDataValid } from './videoshot'
 import type { PvideoJson } from '$define'
 import type { VideoPage } from '$modules/bilibili/video/types/page-list'
@@ -21,26 +20,22 @@ const debug = baseDebug.extend('VideoCard:services')
  */
 
 function watchlaterFactory(action: 'add' | 'del') {
-  return async function watchlaterOp(avid: string) {
-    const form = new URLSearchParams({
-      aid: avid,
-      csrf: getCsrfToken(),
+  return function watchlaterOp(avid: string) {
+    return Result.gen(async function* () {
+      const form = new URLSearchParams({
+        aid: avid,
+        csrf: getCsrfToken(),
+      })
+      type ResponseJson = {
+        code: number
+        message: string
+        ttl: number
+        [key: string]: any
+      }
+      const resp = yield* await request.safePost<ResponseJson>(`/x/v2/history/toview/${action}`, form)
+      const json = yield* WebApiError.validateAxiosResponse(resp, `${action === 'add' ? '添加' : '移除'}稍后再看失败`)
+      return Result.ok(json)
     })
-    const res = await request.post(`/x/v2/history/toview/${action}`, form)
-
-    // {
-    //     "code": 0,
-    //     "message": "0",
-    //     "ttl": 1
-    // }
-    const json = res.data
-    const success = isWebApiSuccess(json)
-
-    if (!success) {
-      toast(json?.message || '出错了')
-    }
-
-    return success
   }
 }
 

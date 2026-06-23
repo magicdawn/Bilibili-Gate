@@ -451,7 +451,7 @@ const VideoCardInner = memo(function VideoCardInner({
     hideLargePreview()
     onOpenWithMode()
   })
-  useEmitterOn(emitter, 'toggle-watch-later', () => void watchlaterContext.onToggleWatchlater())
+  useEmitterOn(emitter, 'toggle-watch-later', () => void watchlaterContext.handleToggleWatchlater())
   useEmitterOn(emitter, 'trigger-dislike', () => void onTriggerDislike())
   useEmitterOn(emitter, 'start-preview-animation', onStartPreviewAnimation)
   useEmitterOn(emitter, 'hotkey-preview-animation', onHotkeyPreviewAnimation)

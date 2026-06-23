@@ -117,6 +117,12 @@ export class WebApiError extends Error {
     )
   }
 
+  /**
+   * @param response the response
+   * @param requestAction 例如 `获取列表错误`
+   * @param extraMessage 额外信息
+   * @returns a `Result`
+   */
   static validateAxiosResponse<JsonType = any>(
     response: AxiosResponse<JsonType>,
     requestAction?: string,

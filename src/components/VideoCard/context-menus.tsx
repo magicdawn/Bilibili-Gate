@@ -58,7 +58,6 @@ import { WatchlaterItemsOrder } from '$modules/rec-services/watchlater/watchlate
 import { settings, updateSettingsInnerArray, useSettingsSnapshot } from '$modules/settings'
 import toast from '$utility/toast'
 import { copyContent } from './index.shared'
-import { watchlaterAdd } from './services'
 import { getFavContextMenus, getFavTabFavRelatedMenus, type FavContext } from './use/useFavContextMenus'
 import type { IVideoCardData } from '$modules/filter/normalize'
 import type { WatchlaterRelatedContext } from './use/useWatchlaterRelated'
@@ -124,8 +123,8 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
   } = useSettingsSnapshot()
   /* #endregion */
 
-  const watchlaterNewestItemPos = watchlaterItemsOrder === WatchlaterItemsOrder.AddTimeAsc ? 'end' : 'start'
-  const watchlaterNewestItemPosText = watchlaterItemsOrder === WatchlaterItemsOrder.AddTimeAsc ? '移到最后' : '移到最前'
+  const watchlaterReAddItemPos = watchlaterItemsOrder === WatchlaterItemsOrder.AddTimeAsc ? 'end' : 'start'
+  const watchlaterReAddItemPosText = watchlaterItemsOrder === WatchlaterItemsOrder.AddTimeAsc ? '移到最后' : '移到最前'
 
   const { recSharedEmitter } = useRecSelfContext()
 
@@ -313,7 +312,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
   const viewingGroupCount = viewingGroup?.count
 
   return useMemo(() => {
-    const { watchlaterAdded, hasWatchlaterEntry, onToggleWatchlater } = watchlaterContext
+    const { watchlaterAdded, hasWatchlaterEntry, handleToggleWatchlater, handleAddWatchlater } = watchlaterContext
     const divider: AntMenuItem = { type: 'divider' }
     const multiSelectingAppendix = multiSelecting ? ' (多选)' : ''
 
@@ -437,20 +436,20 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
           <IconForWatchlater className={clsContextMenuIcon} />
         ),
         onClick() {
-          onToggleWatchlater()
+          handleToggleWatchlater()
         },
       },
       {
         test: hasWatchlaterEntry && watchlaterAdded,
         key: 'watchlater-readd',
-        label: `重新添加稍候再看${tab === ETab.Watchlater ? ` (${watchlaterNewestItemPosText})` : ''}`,
+        label: `重新添加稍候再看${tab === ETab.Watchlater ? ` (${watchlaterReAddItemPosText})` : ''}`,
         icon: <IconParkOutlineAddTwo className={clsContextMenuIcon} />,
         async onClick() {
-          const { success } = await onToggleWatchlater(undefined, watchlaterAdd)
+          const success = await handleAddWatchlater(true)
           if (!success) return
           antMessage.success('已重新添加')
           if (tab === ETab.Watchlater) {
-            recSharedEmitter.emit('move-card-to', [item.uniqId, watchlaterNewestItemPos])
+            recSharedEmitter.emit('move-card-to', [item.uniqId, watchlaterReAddItemPos])
           }
         },
       },
