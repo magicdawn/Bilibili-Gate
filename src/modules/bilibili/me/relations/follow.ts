@@ -2,8 +2,10 @@
  * user follow services
  */
 
+import { isNotNil } from 'es-toolkit'
 import pMemoize from 'p-memoize'
-import { request } from '$request'
+import { request, WebApiError } from '$request'
+import { getHasLogined } from '$utility/cookie'
 import { modifyRelations } from './common'
 import type { FollowStateJson } from './types/follow-state'
 import type { RelationAttributeEntity } from './types/shared'
@@ -30,16 +32,20 @@ export const UserfollowService = { follow, unfollow }
 
 export function isFollowedFromRelationAttribute(relationAttribute: RelationAttributeEntity) {
   /** 关系属性	0：未关注; 1：悄悄关注（已弃用）; 2：已关注; 6：已互粉; 128：已拉黑 */
-  return [1, 2, 6].includes(relationAttribute.attribute)
+  return !!relationAttribute.attribute && [1, 2, 6].includes(relationAttribute.attribute)
 }
 
-export async function queryFollowState(upMid: string | number) {
-  const res = await request.get('/x/relation', { params: { fid: upMid } })
-  const json = res.data as FollowStateJson
+export async function queryFollowState(upMid: string | number): Promise<RelationAttributeEntity | undefined> {
+  if (!getHasLogined()) return
+  const res = await request.get<FollowStateJson>('/x/relation', { params: { fid: upMid } })
+  const validateResult = WebApiError.validateAxiosResponse(res, '获取关系失败')
+  if (validateResult.isErr()) return
+  const json = validateResult.value
   return json.data
 }
 
 // with memory cache
 export const queryFollowStateMemoized = pMemoize(queryFollowState, {
   cacheKey: ([upMid]) => upMid.toString(),
+  shouldCache: isNotNil,
 })

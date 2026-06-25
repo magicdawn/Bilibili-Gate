@@ -30,7 +30,7 @@ export const spaceUploadFollowedMidSet = proxySet<number>()
 async function trySetFollowedMidSet(upMid: number) {
   if (spaceUploadFollowedMidSet.has(upMid)) return
   const state = await queryFollowStateMemoized(upMid)
-  if (isFollowedFromRelationAttribute(state)) {
+  if (state && isFollowedFromRelationAttribute(state)) {
     spaceUploadFollowedMidSet.add(upMid)
   }
 }

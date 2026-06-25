@@ -114,6 +114,6 @@ export async function tryGetSpaceUpload(...args: Parameters<typeof getSpaceUploa
   return await pRetry(() => getSpaceUpload(...args), {
     retries: 5,
     factor: 1.5,
-    onFailedAttempt: (err) => appError(err),
+    onFailedAttempt: (err) => appError(`tryGetSpaceUpload attempt:${err.attemptNumber} error`, err.error),
   })
 }
