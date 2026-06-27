@@ -28,7 +28,7 @@ export enum EHistoryItemType {
   ARTICLE = 'article',
 }
 export const EHistoryItemTypeConfig: Record<EHistoryItemType, { label: string }> = {
-  [EHistoryItemType.ALL]: { label: '全部' },
+  [EHistoryItemType.ALL]: { label: '综合' },
   [EHistoryItemType.ARCHIVE]: { label: '视频' },
   [EHistoryItemType.LIVE]: { label: '直播' },
   [EHistoryItemType.ARTICLE]: { label: '专栏' },
