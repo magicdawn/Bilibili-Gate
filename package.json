@@ -34,7 +34,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@emotion/css": "^11.13.5",
     "@emotion/react": "^11.14.0",
-    "@magicdawn/eslint-config": "^1.6.9",
+    "@magicdawn/eslint-config": "^1.6.10",
     "@mgdn/bvid": "^0.4.0",
     "@tanstack/react-hotkeys": "^0.10.0",
     "@trim21/gm-fetch": "^0.3.0",

@@ -80,7 +80,7 @@ const MenuItemsConfig: Record<FavSelectedKeyPrefix, (FavItemsOrder | 'divider')[
 }
 
 function _getSelectedKeyPrefix(selectedKey: string) {
-  const prefix = selectedKey.split(':')[0] as FavSelectedKeyPrefix
+  const prefix = selectedKey.split(':', 1)[0] as FavSelectedKeyPrefix
   return prefix
 }
 

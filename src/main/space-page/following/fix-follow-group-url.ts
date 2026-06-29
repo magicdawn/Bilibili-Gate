@@ -24,7 +24,10 @@ async function selectGroupFromQuerystring(tagid: string) {
   debug('selectGroupFromQuerystring: %s', tagid)
 
   const el = await poll(
-    () => document.querySelector<HTMLElement>(`.follow-sidebar-item a[href*="tagid=${tagid}"] .vui_sidebar-item`),
+    () =>
+      document.querySelector<HTMLElement>(
+        `.follow-sidebar-item a[href*="tagid=${CSS.escape(tagid)}"] .vui_sidebar-item`,
+      ),
     { interval: 200, timeout: 2_000 },
   )
   if (!el) return

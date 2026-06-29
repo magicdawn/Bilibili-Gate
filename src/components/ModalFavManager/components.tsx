@@ -49,7 +49,7 @@ function ConfigPopoverContent() {
   const needFavFolderOrderSwitcher = useSnapshot(favStore).folders.length > 1
 
   const clsTitle = 'text-1.5em'
-  const clsSubTitle = 'text-1.2em'
+  const clsSubtitle = 'text-1.2em'
 
   return (
     <div className='flex flex-col gap-y-10px'>
@@ -64,7 +64,7 @@ function ConfigPopoverContent() {
       </div>
 
       <div>
-        <div className={clsSubTitle}>窗口宽度 {modalWidth}%</div>
+        <div className={clsSubtitle}>窗口宽度 {modalWidth}%</div>
         <Slider
           className='mt-0'
           value={modalWidth}
@@ -78,7 +78,7 @@ function ConfigPopoverContent() {
 
       {needFavFolderOrderSwitcher && (
         <div>
-          <div className={clsSubTitle}>收藏夹排序</div>
+          <div className={clsSubtitle}>收藏夹排序</div>
           <FavFolderOrderSwitcher value={favFolderOrder} onChange={(v) => (localStore.favFolderOrder = v)} />
         </div>
       )}
