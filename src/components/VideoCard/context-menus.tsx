@@ -58,7 +58,7 @@ import { WatchlaterItemsOrder } from '$modules/rec-services/watchlater/watchlate
 import { settings, updateSettingsInnerArray, useSettingsSnapshot } from '$modules/settings'
 import toast from '$utility/toast'
 import { copyContent } from './index.shared'
-import { getFavContextMenus, getFavTabFavRelatedMenus, type FavContext } from './use/useFavContextMenus'
+import { getFavContextMenus, getFavTabFavRelatedMenus, type FavContext } from './use/useFavRelated'
 import type { IVideoCardData } from '$modules/filter/normalize'
 import type { WatchlaterRelatedContext } from './use/useWatchlaterRelated'
 

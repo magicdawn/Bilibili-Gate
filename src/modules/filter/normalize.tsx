@@ -46,6 +46,7 @@ import type { FavItemExtend } from '$modules/rec-services/fav/types'
 
 export const DESC_SEPARATOR = '·'
 
+// #region goto
 export const KNOWN_GOTO = [
   'av',
   'bangumi',
@@ -57,6 +58,11 @@ export const KNOWN_GOTO = [
 ] as const
 
 export type Goto = (typeof KNOWN_GOTO)[number] | (string & {})
+
+export function checkIsNormalVideo(goto: Goto) {
+  return goto === 'av'
+}
+// #endregion
 
 export interface IVideoCardData {
   // video

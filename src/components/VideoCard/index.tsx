@@ -9,7 +9,6 @@ import {
   type ComponentProps,
   type ComponentRef,
   type CSSProperties,
-  type MouseEvent,
   type MouseEventHandler,
   type ReactNode,
 } from 'react'
@@ -45,10 +44,9 @@ import { ELiveStatus, ETab, type EGridDisplayMode } from '$enums'
 import { antNotification } from '$modules/antd'
 import { useInBlacklist } from '$modules/bilibili/me/relations/blacklist'
 import { useInFilterByAuthorList } from '$modules/filter/block-state'
-import { KNOWN_GOTO, normalizeCardData, type IVideoCardData } from '$modules/filter/normalize'
-import { IconForCopy, IconForDelete } from '$modules/icon'
+import { checkIsNormalVideo, KNOWN_GOTO, normalizeCardData, type IVideoCardData } from '$modules/filter/normalize'
+import { IconForCopy } from '$modules/icon'
 import { useMultiSelectState } from '$modules/multi-select/store'
-import { removeSingleHistoryItem } from '$modules/rec-services/history/helper'
 import { buildSpaceUploadVideoCardUrl, spaceUploadStore } from '$modules/rec-services/space-upload/store'
 import { useWatchlaterState } from '$modules/rec-services/watchlater'
 import { buildWatchlaterVideoCardUrl } from '$modules/rec-services/watchlater/helper'
@@ -73,7 +71,8 @@ import {
 import { fetchImagePreviewData, isImagePreviewDataValid, type ImagePreviewData } from './services'
 import { StatItemDisplay } from './stat-item'
 import { useDislikeRelated } from './use/useDislikeRelated'
-import { useInitFavContext } from './use/useFavContextMenus'
+import { useFavActionButton, useInitFavContext } from './use/useFavRelated'
+import { useRemoveHistoryRelated } from './use/useHistoryRelated'
 import { useMultiSelectRelated } from './use/useMultiSelect'
 import { getRecItemDimension, useLinkTarget, useOpenRelated } from './use/useOpenRelated'
 import { usePreviewRelated } from './use/usePreviewRelated'
@@ -234,7 +233,7 @@ const VideoCardInner = memo(function VideoCardInner({
   } = cardData
 
   const authed = !!accessKey
-  const isNormalVideo = goto === 'av'
+  const isNormalVideo = checkIsNormalVideo(goto)
   if (!KNOWN_GOTO.includes(goto)) {
     appWarn(`none (${KNOWN_GOTO.join(',')}) goto type %s`, goto, item)
   }
@@ -532,35 +531,33 @@ const VideoCardInner = memo(function VideoCardInner({
     </>
   )
 
-  const handleRemoveHistory = useLockFn(async (e: MouseEvent) => {
-    if (!checkIsHistory(item)) return
-    e.stopPropagation()
-    e.preventDefault()
-    const success = await removeSingleHistoryItem(item)
-    if (success) {
-      onRemoveCurrent?.(item, cardData)
-    }
+  const { removeHistoryActionButton } = useRemoveHistoryRelated({
+    item,
+    cardData,
+    actionButtonVisible,
+    onRemoveCurrent,
   })
-  const historyTrashBtn: ReactNode = checkIsHistory(item) && (
-    <VideoCardActionButton
-      visible={actionButtonVisible}
-      inlinePosition='right'
-      icon={<IconForDelete className='size-18px' />}
-      tooltip={'移除历史记录'}
-      onClick={handleRemoveHistory}
-    />
-  )
+
+  const { favStateActionButton } = useFavActionButton({
+    item,
+    cardData,
+    ctx: favContext,
+    actionButtonVisible,
+  })
 
   const topRightActionsEl = (
     <>
       {/* 历史: 移除历史记录 */}
-      {historyTrashBtn}
+      {removeHistoryActionButton}
 
       {/* 收藏: 取消收藏 */}
       {/* !TODO: */}
 
       {/* 稍后再看 */}
       {watchlaterButtonEl}
+
+      {/* 稍后再看: 收藏 */}
+      {favStateActionButton}
 
       {/* 复制 bvid */}
       {copyBvidInfoButtonEl}

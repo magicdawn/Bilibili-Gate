@@ -1,27 +1,36 @@
-import { useMemoizedFn } from 'ahooks'
+import { useMemoizedFn, useRequest, useUpdateEffect } from 'ahooks'
 import clsx from 'clsx'
 import { assert } from 'es-toolkit'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type MouseEvent, type ReactNode } from 'react'
 import {
   handleModifyFavItemToFolder,
   startModifyFavItemToFolder,
   startPickFavFolder,
 } from '$components/ModalFavManager'
 import { getMultiSelectedItems } from '$components/RecGrid/rec-grid-state'
-import { checkIsFav, type RecItemType } from '$define'
+import { checkIsFav, checkIsWatchlater, type RecItemType } from '$define'
 import { EApiType, ETab } from '$enums'
 import { antMessage, antModal, defineAntMenus } from '$modules/antd'
-import { IconForDelete, IconForEdit, IconForFav, IconForFaved, IconForOpenExternalLink } from '$modules/icon'
+import { checkIsNormalVideo, type IVideoCardData } from '$modules/filter/normalize'
+import {
+  IconForDelete,
+  IconForEdit,
+  IconForFav,
+  IconForFaved,
+  IconForLoading,
+  IconForOpenExternalLink,
+} from '$modules/icon'
 import { multiSelectStore } from '$modules/multi-select/store'
 import { defaultFavFolderTitle, UserFavApi } from '$modules/rec-services/fav/api'
 import { formatFavCollectionSelfSpaceUrl, formatFavFolderUrl } from '$modules/rec-services/fav/fav-url'
 import { clearFavFolderAllItemsCache } from '$modules/rec-services/fav/service/fav-folder'
 import { FavQueryKey, favStore } from '$modules/rec-services/fav/store'
+import { getHasLogined } from '$utility/cookie'
 import toast from '$utility/toast'
+import { VideoCardActionButton } from '../child-components/VideoCardActions'
 import { clsContextMenuIcon } from '../context-menus'
 import { getLinkTarget } from './useOpenRelated'
 import type { RecSharedEmitter } from '$components/Recommends/rec.shared'
-import type { IVideoCardData } from '$modules/filter/normalize'
 
 export type FavContext = ReturnType<typeof useInitFavContext>
 
@@ -31,10 +40,12 @@ export function useInitFavContext(item: RecItemType, avid: string | undefined) {
   const [folderIds, setFolderIds] = useState<number[] | undefined>(undefined)
 
   const updateFavFolderNames = useMemoizedFn(async () => {
+    if (!getHasLogined()) return
     if (!avid) return
     // 仅在 [收藏Tab | 提供 quick-fav 的地方] 更新收藏状态
     const { enable: enableQuickFav } = getQuickFavConfig(item.api)
     if (!(enableQuickFav || (checkIsFav(item) && item.from === 'fav-folder'))) return
+
     const result = await UserFavApi.getVideoFavState(avid)
     if (result) {
       setFolderNames(result.favFolderNames)
@@ -286,4 +297,73 @@ export function getFavTabFavRelatedMenus({
 
   // unexpected
   return []
+}
+
+export function useFavActionButton({
+  ctx,
+  item,
+  cardData,
+  actionButtonVisible,
+}: {
+  ctx: FavContext
+  item: RecItemType
+  cardData: IVideoCardData
+  actionButtonVisible: boolean
+}) {
+  const { avid, goto } = cardData
+  const enabled = checkIsWatchlater(item) && checkIsNormalVideo(goto) && !!avid
+  const { folderIds, folderNames, updateFavFolderNames } = ctx
+
+  const $updateFavStateReq = useRequest(() => updateFavFolderNames(), { manual: true, loadingDelay: 500 })
+
+  let favStateActionButton: ReactNode
+  {
+    const loadingFavState = $updateFavStateReq.loading
+    const faved = !!folderNames?.length
+
+    const handleClick = useMemoizedFn(async (e: MouseEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      assert(avid, 'avid should not be empty')
+      if (loadingFavState) return
+
+      if (faved) {
+        assert(folderIds?.length, 'folderIds.length should not be empty')
+        await startModifyFavItemToFolder(folderIds, (targetFolder) => {
+          return handleModifyFavItemToFolder(avid, folderIds, targetFolder)
+        })
+      } else {
+        await startPickFavFolder(async (targetFolder) => {
+          const result = await UserFavApi.addFav(avid, targetFolder.id)
+          if (result.isOk()) antMessage.success(`已加入收藏夹「${targetFolder.title}」`)
+          return result.isOk()
+        })
+      }
+    })
+    if (enabled) {
+      const icon = loadingFavState ? (
+        <IconForLoading className='size-16px' />
+      ) : faved ? (
+        <IconForFaved className='size-18px' />
+      ) : (
+        <IconForFav className='size-18px' />
+      )
+      const tooltip = faved ? `已收藏在 ${(folderNames || []).map((n) => `「${n}」`).join('')}` : '点击添加收藏'
+      favStateActionButton = (
+        <VideoCardActionButton
+          visible={actionButtonVisible}
+          inlinePosition={'right'}
+          icon={icon}
+          tooltip={tooltip}
+          onClick={handleClick}
+        />
+      )
+    }
+  }
+
+  useUpdateEffect(() => {
+    if (actionButtonVisible && enabled) $updateFavStateReq.run()
+  }, [actionButtonVisible])
+
+  return { favStateActionButton }
 }
