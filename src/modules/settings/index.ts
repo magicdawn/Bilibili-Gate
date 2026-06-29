@@ -67,6 +67,9 @@ export const initialSettings = {
 
     // 卡片最小宽度, 虽然是卡片, 但其实是网格布局
     cardMinWidth: 320,
+
+    // 整页竖直翻页: 卡片按整屏分页, 滚轮一下翻一整页, 页面之间竖直切换
+    pagedHorizontal: false,
   },
 
   /**

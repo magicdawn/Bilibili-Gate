@@ -39,6 +39,7 @@ import { getServiceFromRegistry } from '$modules/rec-services/service-map.ts'
 import { settings } from '$modules/settings'
 import { isSafari } from '$ua'
 import { ErrorDetail } from './error-detail'
+import { usePagedHorizontal } from './paged-horizontal'
 import { useSetupGridState } from './rec-grid-state'
 import { setGlobalGridItems } from './unsafe-window-export'
 import { useRefresh } from './useRefresh'
@@ -147,9 +148,8 @@ export const RecGrid = memo(function RecGrid({
   // rec-grid
   const self = useCreation(() => new RecGridSelf(), [])
   const { items, hasMore, refreshError, refreshKey, showSkeleton, loadMoreError } = self.useStore()
-  const { useCustomGrid, gridDisplayMode, enableForceColumn, forceColumnCount, cardMinWidth } = useSnapshot(
-    settings.grid,
-  )
+  const { useCustomGrid, gridDisplayMode, enableForceColumn, forceColumnCount, cardMinWidth, pagedHorizontal } =
+    useSnapshot(settings.grid)
   const { multiSelecting } = useSnapshot(multiSelectStore)
   const unmountedRef = useUnmountedRef()
   useSetupGridState()
@@ -330,6 +330,24 @@ export const RecGrid = memo(function RecGrid({
   // the grid: `.video-grid`
   const gridRef = useRef<HTMLDivElement | null>(null)
 
+  // 整页竖直翻页
+  const pagedViewportRef = useRef<HTMLDivElement | null>(null)
+  const paged = usePagedHorizontal({
+    enabled: pagedHorizontal,
+    viewportRef: pagedViewportRef,
+    fixedColumnCount:
+      gridDisplayMode === EGridDisplayMode.TwoColumnGrid
+        ? 2
+        : enableForceColumn && forceColumnCount
+          ? forceColumnCount
+          : undefined,
+    minColumnWidth: cardMinWidth,
+    itemCount: videoList.length,
+    hasMore,
+    loadMore,
+    infiniteScrollUseWindow,
+  })
+
   const getScrollerRect = useMemoizedFn(() => {
     // use window
     if (infiniteScrollUseWindow) {
@@ -505,7 +523,11 @@ export const RecGrid = memo(function RecGrid({
   )
 
   // it's a `@container` query root
-  const containerClassName = clsx('min-h-100vh @container-inline-size', propContainerClassName)
+  const containerClassName = clsx(
+    pagedHorizontal ? 'min-h-0' : 'min-h-100vh',
+    '@container-inline-size',
+    propContainerClassName,
+  )
 
   type StyleConfig = { className?: string; style?: CSSProperties }
   const gridStyleConfig: StyleConfig = useMemo(() => {
@@ -570,6 +592,53 @@ export const RecGrid = memo(function RecGrid({
 
   const cardBorderCss = useCardBorderCss()
 
+  // 整页竖直翻页渲染
+  const renderPaged = (cards: ReactNode) => {
+    const { pageIndex, rows, cols, pageCount, viewportHeight } = paged
+    const viewportStyle: CSSProperties | undefined = viewportHeight
+      ? { '--paged-viewport-height': `${viewportHeight}px` }
+      : undefined
+    const trackStyle: CSSProperties = {
+      ...gridStyleConfig.style,
+      '--paged-rows': rows,
+      '--paged-cols': cols,
+      '--paged-page-count': pageCount,
+      transform: `translateY(calc(-100% / var(--paged-page-count, 1) * ${pageIndex}))`,
+    }
+    return (
+      <div data-tab={tab} className={containerClassName}>
+        <div ref={pagedViewportRef} className={gridClassNames.pagedHorizontalViewport} style={viewportStyle}>
+          <div
+            data-tab={tab}
+            ref={gridRef}
+            {...gridStyleConfig}
+            className={clsx(gridStyleConfig.className, gridClassNames.pagedHorizontalTrack)}
+            style={trackStyle}
+          >
+            {cards}
+          </div>
+        </div>
+        <div className={gridClassNames.pagedHorizontalIndicator}>
+          <Button
+            size='small'
+            disabled={pageIndex <= 0}
+            onClick={paged.prevPage}
+            icon={<IconParkOutlineRight className='rotate-z-180deg' />}
+          />
+          <span className='mx-10px tabular-nums'>
+            {pageIndex + 1} / {pageCount}
+          </span>
+          <Button
+            size='small'
+            disabled={pageIndex >= pageCount - 1 && !hasMore}
+            onClick={paged.nextPage}
+            icon={<IconParkOutlineRight />}
+          />
+        </div>
+      </div>
+    )
+  }
+
   // 总是 render grid, getColumnCount 依赖 grid columns
   const render = ({ gridChildren, gridSiblings }: { gridChildren?: ReactNode; gridSiblings?: ReactNode } = {}) => {
     return (
@@ -623,6 +692,11 @@ export const RecGrid = memo(function RecGrid({
         />
       )
     }
+  }
+
+  // 整页竖直翻页: 只渲染视频卡片(排除 separator/footer, 它们与分页布局冲突)
+  if (pagedHorizontal) {
+    return renderPaged(videoList.map(renderItem))
   }
 
   // plain dom

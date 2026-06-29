@@ -147,6 +147,7 @@ export function TabPaneBasic() {
 
           'grid.gridDisplayMode',
           'grid.twoColumnModeAlign',
+          'grid.pagedHorizontal',
         ]}
       >
         <div className={sharedClassNames.settingsLine}>
@@ -195,6 +196,19 @@ export function TabPaneBasic() {
         <div className='flex items-center'>
           网格显示模式
           <GridDisplayModeSwitcher className='ml-xl' />
+        </div>
+
+        <div className={sharedClassNames.settingsLine}>
+          <CheckboxSettingItem
+            configPath='grid.pagedHorizontal'
+            label='整页竖直翻页'
+            tooltip={
+              <>
+                卡片按整屏分页显示, 滚动鼠标滚轮一下翻一整页, 页面之间竖直切换. <br />
+                滚轮向下 = 下一页, 滚轮向上 = 上一页.
+              </>
+            }
+          />
         </div>
       </SettingsGroup>
 
