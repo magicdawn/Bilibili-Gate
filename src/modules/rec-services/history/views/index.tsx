@@ -52,6 +52,7 @@ function HistoryItemTypeSwitch() {
 
 function HistoryDeviceTypeSwitch() {
   const { deviceType } = useSnapshot(historyStore)
+  const { tabbarViewSmallControlSize } = useSnapshot(settings.history)
   const onRefresh = useOnRefresh()
   return (
     <Radio.Group
@@ -63,11 +64,21 @@ function HistoryDeviceTypeSwitch() {
         onRefresh()
       }}
     >
-      {Object.entries(EHistoryDeviceTypeConfig).map(([itemType, { label }]) => (
-        <Radio.Button key={itemType} value={itemType}>
-          {label}
-        </Radio.Button>
-      ))}
+      {Object.entries(EHistoryDeviceTypeConfig).map(([itemType, { label, Icon }]) => {
+        const clsRadioButton = '[&_.ant-radio-button-label]:(h-full inline-flex items-center align-top)'
+        const clsIconSize = tabbarViewSmallControlSize ? 'size-16px' : 'size-21px'
+        return Icon ? (
+          <AntdTooltip key={itemType} title={label}>
+            <Radio.Button value={itemType} className={clsRadioButton}>
+              <Icon className={clsIconSize} />
+            </Radio.Button>
+          </AntdTooltip>
+        ) : (
+          <Radio.Button key={itemType} value={itemType} className={clsRadioButton}>
+            {label}
+          </Radio.Button>
+        )
+      })}
     </Radio.Group>
   )
 }

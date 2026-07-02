@@ -757,7 +757,7 @@ function apiHistoryAdapter(item: HistoryItemExtend): IVideoCardData {
         ApiDtToDeviceTypeStringMap[item.history.dt as keyof typeof ApiDtToDeviceTypeStringMap] ||
         EHistoryDeviceTypeString.UNKNOWN // UPPER_CASE_STRING
       const deviceConfig = EHistoryDeviceTypeConfig[EHistoryDeviceType[deviceType as keyof typeof EHistoryDeviceType]]
-      const DeviceIcon = deviceConfig?.icon
+      const DeviceIcon = deviceConfig?.Icon
       const deviceName = deviceConfig?.label
       return { DeviceIcon, deviceName }
     })() || {}

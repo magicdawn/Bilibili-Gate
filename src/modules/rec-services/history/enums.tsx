@@ -67,13 +67,13 @@ export enum EHistoryDeviceType {
 // label 中英混杂, 官方网页就是这样哦~
 export const EHistoryDeviceTypeConfig: Record<
   EHistoryDeviceType,
-  { label: string; icon?: ComponentType<ComponentProps<'svg'>> }
+  { label: string; Icon?: ComponentType<ComponentProps<'svg'>> }
 > = {
   [EHistoryDeviceType.ALL]: { label: '全部' },
-  [EHistoryDeviceType.PC]: { label: 'PC', icon: BiliHistoryRecordIconDeviceComputer },
-  [EHistoryDeviceType.MOBILE]: { label: '手机', icon: BiliHistoryRecordIconDevicePhone },
-  [EHistoryDeviceType.PAD]: { label: '平板', icon: BiliHistoryRecordIconDevicePad },
-  [EHistoryDeviceType.TV]: { label: 'TV', icon: BiliHistoryRecordIconDeviceTelevision },
+  [EHistoryDeviceType.PC]: { label: 'PC', Icon: BiliHistoryRecordIconDeviceComputer },
+  [EHistoryDeviceType.MOBILE]: { label: '手机', Icon: BiliHistoryRecordIconDevicePhone },
+  [EHistoryDeviceType.PAD]: { label: '平板', Icon: BiliHistoryRecordIconDevicePad },
+  [EHistoryDeviceType.TV]: { label: 'TV', Icon: BiliHistoryRecordIconDeviceTelevision },
 }
 
 // `l2`
