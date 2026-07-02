@@ -1,5 +1,5 @@
 import { Panic, UnhandledException } from 'better-result'
-import { cloneDeep } from 'es-toolkit'
+import { cloneDeep, isError } from 'es-toolkit'
 import { useMemo, type ReactNode } from 'react'
 import { AccessKeyManage } from '$components/AccessKeyManage'
 import { useLinkTarget } from '$components/VideoCard/use/useOpenRelated'
@@ -7,6 +7,7 @@ import { EHotSubTab, ETab } from '$enums'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconForOpenExternalLink } from '$modules/icon'
 import { hotStore } from '$modules/rec-services/hot'
+import { WebApiError } from '$request'
 import { NeedValidAccessKeyError } from '$utility/app-api'
 import type { AxiosError } from 'axios'
 
@@ -22,16 +23,13 @@ function wrapWithParagraph(node: ReactNode) {
 function inspectErrDetail(err: any): ReactNode {
   if (!err) return
 
-  if (!(err instanceof Error)) {
+  if (!isError(err)) {
     return wrapWithParagraph(JSON.stringify(err))
   }
 
   // unwrap better-result error when cause has a error stack
-  if (UnhandledException.is(err) || Panic.is(err)) {
-    const inner = err.cause as any
-    if (inner?.stack) {
-      return inspectErrDetail(inner)
-    }
+  if ((UnhandledException.is(err) || Panic.is(err)) && isError(err.cause)) {
+    return inspectErrDetail(err.cause)
   }
 
   // errors
@@ -73,7 +71,8 @@ function inspectErrDetail(err: any): ReactNode {
 
 function getErrLabel(err: any): ReactNode {
   if (err && err instanceof NeedValidAccessKeyError) return err.message
-  if (err && Panic.is(err)) return err.message
+  if (err && err instanceof WebApiError) return err.message
+  if (err && Panic.is(err)) return isError(err.cause) ? getErrLabel(err.cause) : err.message
   return '出错了, 请刷新重试!'
 }
 
