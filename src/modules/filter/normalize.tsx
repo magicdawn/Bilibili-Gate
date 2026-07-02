@@ -785,7 +785,7 @@ function apiHistoryAdapter(item: HistoryItemExtend): IVideoCardData {
 
     // bottom
     historyDeviceIcon: DeviceIcon && (
-      <span title={deviceName} className='size-1em'>
+      <span title={deviceName} className='size-16px'>
         <DeviceIcon className='size-full' />
       </span>
     ),
