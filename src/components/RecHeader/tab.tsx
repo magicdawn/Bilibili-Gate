@@ -95,8 +95,11 @@ export function useDeferredTab() {
 }
 
 const radioBtnCss = css`
-  height: 32px;
+  /* as child */
   vertical-align: top;
+
+  /* as container */
+  height: 32px;
   line-height: 0;
   --ant-border-radius: 16px;
 
@@ -149,7 +152,7 @@ export function VideoSourceTab({ className }: { className?: string }) {
           value={key}
           key={key}
         >
-          <span className='h-full inline-flex items-center'>
+          <span className='h-full inline-flex-center align-top'>
             <TabIcon tabKey={key} className='mr-4px' active={key === tab} />
             {label}
           </span>
