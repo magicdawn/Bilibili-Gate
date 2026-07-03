@@ -91,6 +91,13 @@ body button:where(.ant-switch) {
   }
 }
 
+// antd tooltip gap
+// https://github.com/ant-design/ant-design/issues/58585
+// https://github.com/ant-design/ant-design/issues/55038
+.ant-tooltip.ant-tooltip-placement-top .ant-tooltip-arrow {
+  bottom: 0.5px !important;
+}
+
 /**
 B站自带 css, 影响了 solid button :focus 样式
 body button:focus, body button:active {

@@ -1,7 +1,6 @@
 import { css } from '@emotion/react'
 import { useMemoizedFn, usePrevious } from 'ahooks'
 import { Radio, Segmented } from 'antd'
-import clsx from 'clsx'
 import { Fragment, useDeferredValue, useMemo, type ReactNode } from 'react'
 import { useSnapshot, type UseSnapshotOptions } from 'valtio'
 import { HelpInfo } from '$components/_base/HelpInfo'
@@ -97,7 +96,8 @@ export function useDeferredTab() {
 
 const radioBtnCss = css`
   height: 32px;
-  line-height: unset;
+  vertical-align: top;
+  line-height: 0;
   --ant-border-radius: 16px;
 
   &:has(:focus-visible) {
@@ -105,7 +105,8 @@ const radioBtnCss = css`
     outline-offset: unset;
   }
 
-  > .ant-radio-button + span {
+  .ant-radio-button-label {
+    display: inline-block;
     height: 100%;
   }
 `
@@ -129,7 +130,7 @@ export function VideoSourceTab({ className }: { className?: string }) {
       buttonStyle='solid'
       size='middle'
       value={tab}
-      className={clsx('inline-flex items-center', className)}
+      className={className}
       onFocus={(e) => {
         // 不移除 focus, refresh `r` 无法响应
         const target = e.target as HTMLElement
@@ -148,7 +149,7 @@ export function VideoSourceTab({ className }: { className?: string }) {
           value={key}
           key={key}
         >
-          <span className='h-full flex items-center line-height-unset'>
+          <span className='h-full inline-flex items-center'>
             <TabIcon tabKey={key} className='mr-4px' active={key === tab} />
             {label}
           </span>
