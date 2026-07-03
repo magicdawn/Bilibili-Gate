@@ -2,7 +2,7 @@ import GM_fetch from '@trim21/gm-fetch'
 import axios, { AxiosError, type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from 'axios'
 import { Result, UnhandledException } from 'better-result'
 import { omit } from 'es-toolkit'
-import { APP_KEY_PREFIX, appError, appWarn, HOST_API, HOST_APP, TVKeyInfo } from '$common'
+import { APP_KEY_PREFIX, appError, HOST_API, HOST_APP, TVKeyInfo } from '$common'
 import { antMessage } from '$modules/antd'
 import { encWbi } from '$modules/bilibili/risk-control/wbi'
 import { appSign } from '$utility/app-api'
@@ -161,24 +161,6 @@ gmrequest.interceptors.request.use(function (config) {
   }
 
   return config
-})
-
-gmrequest.interceptors.response.use((res) => {
-  // content-type: "application/json; charset=utf-8"
-  // responseData 是 ArrayBuffer
-  if (res.config.responseType === 'json' && res.data && res.data instanceof ArrayBuffer) {
-    appWarn('response data is ArrayBuffer')
-    const decoder = new TextDecoder()
-    const u8arr = new Uint8Array(res.data)
-    const text = decoder.decode(u8arr)
-    res.data = text
-    try {
-      res.data = JSON.parse(text)
-    } catch {
-      // noop
-    }
-  }
-  return res
 })
 
 /**

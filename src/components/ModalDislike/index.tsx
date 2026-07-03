@@ -78,8 +78,8 @@ export function ModalDislike({ show, reasons, onHide, okAction }: typeof default
     if (newIndex > len - 1) newIndex = newIndex % len
     setActiveIndex(newIndex)
   })
-  useHotkey('ArrowUp', () => increaseIndex(-1), { enabled: hotkeyEnabled })
-  useHotkey('ArrowDown', () => increaseIndex(1), { enabled: hotkeyEnabled })
+  useHotkey('ArrowUp', () => increaseIndex(-1), { enabled: hotkeyEnabled, conflictBehavior: 'allow' })
+  useHotkey('ArrowDown', () => increaseIndex(1), { enabled: hotkeyEnabled, conflictBehavior: 'allow' })
 
   const onOk = useLockFn(async (e: KeyboardEvent | MouseEvent) => {
     if (activeIndex < 0 || activeIndex > reasons.length - 1) return
