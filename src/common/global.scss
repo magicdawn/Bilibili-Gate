@@ -91,11 +91,18 @@ body button:where(.ant-switch) {
   }
 }
 
+//
 // antd tooltip gap
 // https://github.com/ant-design/ant-design/issues/58585
 // https://github.com/ant-design/ant-design/issues/55038
-.ant-tooltip.ant-tooltip-placement-top .ant-tooltip-arrow {
+//
+.ant-tooltip-placement-top .ant-tooltip-arrow,
+.ant-popover-placement-top .ant-popover-arrow {
   bottom: 0.5px !important;
+}
+.ant-tooltip-placement-bottom .ant-tooltip-arrow,
+.ant-popover-placement-bottom .ant-popover-arrow {
+  top: 1.5px !important;
 }
 
 /**

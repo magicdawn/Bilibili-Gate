@@ -126,12 +126,6 @@ export function MultiSelectButton({
   if (multiSelecting) {
     return wrapActionsPopover(btn)
   } else {
-    return iconOnly ? (
-      <AntdTooltip title='多选' arrow={false}>
-        {btn}
-      </AntdTooltip>
-    ) : (
-      btn
-    )
+    return iconOnly ? <AntdTooltip title='多选'>{btn}</AntdTooltip> : btn
   }
 }

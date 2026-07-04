@@ -162,7 +162,7 @@ export function RecHeader({ tab, leftSlot, rightSlot, shortcutEnabled, ref }: Re
           {/* 前进4 !!! */}
           {showBackForwardButtons && _isRecTab && (
             <>
-              <AntdTooltip arrow={false} title={<>前进{serviceQueueStateInfo}</>}>
+              <AntdTooltip title={<>前进{serviceQueueStateInfo}</>}>
                 <Button
                   className='icon-only-round-button'
                   disabled={refreshing || !canGoForward}
@@ -171,7 +171,7 @@ export function RecHeader({ tab, leftSlot, rightSlot, shortcutEnabled, ref }: Re
                   <IconParkOutlineArrowRight />
                 </Button>
               </AntdTooltip>
-              <AntdTooltip arrow={false} title={<>后退{serviceQueueStateInfo}</>}>
+              <AntdTooltip title={<>后退{serviceQueueStateInfo}</>}>
                 <Button
                   className='icon-only-round-button'
                   disabled={refreshing || !canGoBack}
@@ -183,7 +183,7 @@ export function RecHeader({ tab, leftSlot, rightSlot, shortcutEnabled, ref }: Re
             </>
           )}
 
-          <AntdTooltip title='设置' arrow={false}>
+          <AntdTooltip title='设置'>
             <Button onClick={showModalSettings} className='icon-only-round-button'>
               <ModalSettingsHotkey />
               <IconForConfig className='size-14px' />

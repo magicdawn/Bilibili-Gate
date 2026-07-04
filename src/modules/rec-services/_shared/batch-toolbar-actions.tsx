@@ -72,7 +72,7 @@ export function BtnAddMultiSelectedToFav() {
 
   return (
     multiSelecting && (
-      <AntdTooltip arrow={false} title='添加收藏(多选)'>
+      <AntdTooltip title='添加收藏(多选)'>
         <Button className='icon-only-round-button' onClick={handleClick}>
           <IconForFav />
         </Button>
