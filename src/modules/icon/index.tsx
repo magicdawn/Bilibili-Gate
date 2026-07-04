@@ -22,18 +22,22 @@ export const IconForTimeAsc = IconMdiSortClockDescending
 export const IconForTimeDesc = IconMdiSortClockAscending
 
 // https://github.com/tabler/tabler-icons/issues/1457
-export const IconForAsc = IconTablerSortAscending
-export const IconForDesc = IconTablerSortDescending
 // export const IconForAsc = IconOcticonSortAsc16
 // export const IconForDesc = IconOcticonSortDesc16
+// export const IconForAsc = IconTablerSortAscending2
+// export const IconForDesc = IconTablerSortDescending2
+export const IconForAsc = IconTablerSortAscending
+export const IconForDesc = IconTablerSortDescending
 
 // 同类
 // export const IconForSortAToZ = IconPrimeSortAlphaDown
 // export const IconForSortZToA = IconPrimeSortAlphaAltDown
 // export const IconForSortAToZ = IconMdiSortAlphabeticalAscending
 // export const IconForSortZToA = IconMdiSortAlphabeticalDescending
-export const IconForSortAToZ = IconFluentTextSortAscending16Filled
-export const IconForSortZToA = IconFluentTextSortDescending16Filled
+// export const IconForSortAToZ = IconMdiSortAlphabeticalAscendingVariant
+// export const IconForSortZToA = IconMdiSortAlphabeticalDescendingVariant
+export const IconForSortAToZ = IconFluentTextSortAscending20Filled
+export const IconForSortZToA = IconFluentTextSortDescending20Filled
 
 // #endregion
 
