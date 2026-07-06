@@ -1,7 +1,7 @@
 import { useMemoizedFn } from 'ahooks'
-import { Button, Space } from 'antd'
+import { Button, Space, type ButtonProps } from 'antd'
 import { fastSortWithRules, type FastSortRule } from 'fast-sort-lens'
-import { IconForAsc, IconForDesc, IconForSortAToZ, IconForSortZToA } from '$modules/icon'
+import { IconForSortSwitchAsc, IconForSortSwitchDesc, type IconComponent } from '$modules/icon'
 import { isFavFolderDefault } from '$modules/rec-services/fav/fav-util'
 import { mapNameForSort, zhLocaleComparer, zhLocaleDescComparer } from '$utility/sort'
 import { assertNever } from '$utility/type'
@@ -48,21 +48,21 @@ export function sortFavFolders(originalFolders: FavFolder[], order: FavFolderOrd
 type ActiveTab = 'default' | 'name' | 'count'
 const TabConfig: Record<
   ActiveTab,
-  { label: ReactNode; iconAsc?: ReactNode; iconDesc?: ReactNode; toggle?: FavFolderOrder[] }
+  { label: ReactNode; IconAsc?: IconComponent; IconDesc?: IconComponent; toggle?: FavFolderOrder[] }
 > = {
   default: {
     label: '默认',
   },
   name: {
     label: '名称',
-    iconAsc: <IconForSortAToZ className='1em' />,
-    iconDesc: <IconForSortZToA className='1em' />,
+    IconAsc: IconForSortSwitchAsc,
+    IconDesc: IconForSortSwitchDesc,
     toggle: ['name-asc', 'name-desc'],
   },
   count: {
     label: '数量',
-    iconAsc: <IconForAsc className='1em' />,
-    iconDesc: <IconForDesc className='1em' />,
+    IconAsc: IconForSortSwitchAsc,
+    IconDesc: IconForSortSwitchDesc,
     toggle: ['count-asc', 'count-desc'],
   },
 }
@@ -76,14 +76,19 @@ export function FavFolderOrderSwitcher({
   value,
   onChange,
   className,
+  size,
 }: {
   value: FavFolderOrder
   onChange: (value: FavFolderOrder) => void
   className?: string
+  size?: ButtonProps['size']
 }) {
   const activeTab = value.startsWith('name-') ? 'name' : value.startsWith('count-') ? 'count' : 'default'
   const isDesc = value.includes('-desc')
   const isAsc = value.includes('-asc')
+  const btnSize = size ?? 'small'
+  const clsIcon =
+    btnSize === 'small' ? 'size-1.1em' : btnSize === 'medium' || btnSize === 'middle' ? 'size-1.3em' : 'size-1.6em'
 
   const handleClick = useMemoizedFn((tab: 'default' | 'name' | 'count') => {
     // same tab: toggle asc/desc
@@ -115,18 +120,23 @@ export function FavFolderOrderSwitcher({
 
   return (
     <Space.Compact className={className}>
-      {Object.entries(TabConfig).map(([tab, { label, iconAsc, iconDesc }]) => {
+      {Object.entries(TabConfig).map(([tab, { label, IconAsc, IconDesc }]) => {
         const active = tab === activeTab
         return (
           <Button
             key={tab}
             className='gap-x-2px'
-            size='small'
+            size={btnSize}
             variant={active ? 'solid' : undefined}
             color={active ? 'primary' : undefined}
             onClick={() => handleClick(tab as ActiveTab)}
           >
-            {active && (isAsc ? iconAsc : isDesc ? iconDesc : undefined)}
+            {active &&
+              (isAsc
+                ? IconAsc && <IconAsc className={clsIcon} />
+                : isDesc
+                  ? IconDesc && <IconDesc className={clsIcon} />
+                  : undefined)}
             {label}
           </Button>
         )

@@ -45,8 +45,7 @@ if (!isValidFavFolderOrder(localStore.favFolderOrder)) {
 }
 
 function ConfigPopoverContent() {
-  const { modalWidth, favFolderOrder } = useSnapshot(localStore)
-  const needFavFolderOrderSwitcher = useSnapshot(favStore).folders.length > 1
+  const { modalWidth } = useSnapshot(localStore)
 
   const clsTitle = 'text-1.5em'
   const clsSubtitle = 'text-1.2em'
@@ -75,13 +74,6 @@ function ConfigPopoverContent() {
           }}
         />
       </div>
-
-      {needFavFolderOrderSwitcher && (
-        <div>
-          <div className={clsSubtitle}>收藏夹排序</div>
-          <FavFolderOrderSwitcher value={favFolderOrder} onChange={(v) => (localStore.favFolderOrder = v)} />
-        </div>
-      )}
     </div>
   )
 }
@@ -144,6 +136,7 @@ export function ModalFavManager({
     [foldersAfterFilter, favFolderOrder],
   )
   const foldersForRender = foldersAfterSort
+  const needFavFolderOrderSwitcher = foldersForRender.length > 1
 
   const modifyInitialSelectedIdsSet = useMemo(
     () => new Set([modifyInitialSelectedIds].flat().filter((num) => typeof num === 'number')),
@@ -241,6 +234,14 @@ export function ModalFavManager({
               </span>{' '}
               / <span>{folders.length}</span>
             </span>
+          )}
+
+          {needFavFolderOrderSwitcher && (
+            <FavFolderOrderSwitcher
+              // size='middle'
+              value={favFolderOrder}
+              onChange={(v) => (localStore.favFolderOrder = v)}
+            />
           )}
 
           <HelpInfo className='ml-5px size-1.3em'>

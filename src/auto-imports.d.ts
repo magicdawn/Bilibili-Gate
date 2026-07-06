@@ -10,6 +10,8 @@ declare global {
   const IconBiUiChecksGrid: typeof import('~icons/bi/ui-checks-grid.jsx').default
   const IconCarbonStar: typeof import('~icons/carbon/star.jsx').default
   const IconCarbonStarFilled: typeof import('~icons/carbon/star-filled.jsx').default
+  const IconCuidaSortAscendingDuotone: typeof import('~icons/cuida/sort-ascending-duotone.jsx').default
+  const IconCuidaSortDescendingDuotone: typeof import('~icons/cuida/sort-descending-duotone.jsx').default
   const IconEosIconsBackgroundTasks: typeof import('~icons/eos-icons/background-tasks.jsx').default
   const IconFluentSelectAllOn16Regular: typeof import('~icons/fluent/select-all-on16-regular.jsx').default
   const IconFluentTextSortAscending16Filled: typeof import('~icons/fluent/text-sort-ascending16-filled.jsx').default

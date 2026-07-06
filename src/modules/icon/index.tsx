@@ -8,6 +8,9 @@ import {
   BiliHistoryRecordIconTrash,
 } from './bili-history-record-icons'
 import { defineSvgFillComponent } from './util'
+import type { ComponentProps, ComponentType } from 'react'
+
+export type IconComponent = ComponentType<ComponentProps<'svg'>>
 
 export const IconForLike = IconPhThumbsUpDuotone
 export const IconForDislike = IconPhThumbsDownDuotone
@@ -28,6 +31,9 @@ export const IconForTimeDesc = IconMdiSortClockAscending
 // export const IconForDesc = IconTablerSortDescending2
 export const IconForAsc = IconTablerSortAscending
 export const IconForDesc = IconTablerSortDescending
+
+export const IconForSortSwitchAsc = IconCuidaSortAscendingDuotone
+export const IconForSortSwitchDesc = IconCuidaSortDescendingDuotone
 
 // 同类
 // export const IconForSortAToZ = IconPrimeSortAlphaDown
