@@ -250,7 +250,7 @@ export function useLargePreviewRelated({
           controls
           loop
           poster={cover}
-          className='size-full object-contain' // avoid 'cover', this video may goto fullscreen
+          className='block size-full object-contain' // avoid 'cover', this video may goto fullscreen
         >
           {videoPreviewDataBox.state?.playUrls?.map((url, i) => (
             <source key={i} src={url} />
