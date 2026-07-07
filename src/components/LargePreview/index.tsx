@@ -296,7 +296,9 @@ export const LargePreview = memo(function LargePreview({
             />
           )}
           <div
-            className='h-full overflow-hidden rounded-20px bg-white/50% backdrop-blur-10px'
+            // backdrop-blur-10px cause Chromium video hit test regression
+            // https://greasyfork.org/zh-CN/scripts/443530-bilibili-gate/discussions/333785
+            className='h-full overflow-hidden rounded-20px bg-white/50%'
             css={css`
               box-shadow: 0px 0px 1px 1px ${appPrimaryColorValue};
             `}
