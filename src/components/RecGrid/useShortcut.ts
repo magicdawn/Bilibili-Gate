@@ -8,7 +8,7 @@ import { videoGrid } from './video-grid.module.scss'
 import type { VideoCardEmitter } from '$components/VideoCard/index.shared'
 
 interface IOptions {
-  enabled: boolean
+  shortcutEnabled: boolean
   minIndex?: number
   maxIndex: number
 
@@ -29,7 +29,7 @@ interface IOptions {
 
 // 快捷键
 export function useShortcut({
-  enabled,
+  shortcutEnabled,
   minIndex = 0,
   maxIndex,
   gridRef,
@@ -102,7 +102,7 @@ export function useShortcut({
   }
 
   const addActiveIndex = (step: number | 'up' | 'down') => (e?: KeyboardEvent) => {
-    if (!enabled) return
+    if (!shortcutEnabled) return
     // 防止 scroller focus 的情况下, 因键盘产生滑动, 进而页面抖动
     e?.preventDefault()
 
@@ -130,16 +130,16 @@ export function useShortcut({
     makeVisible(newActiveIndex)
   }
   const clearActiveIndex = () => {
-    if (!enabled) return
+    if (!shortcutEnabled) return
     setActiveIndex(undefined)
   }
   const getActiveEmitter = () => {
-    if (!enabled || typeof activeIndex !== 'number') return
+    if (!shortcutEnabled || typeof activeIndex !== 'number') return
     return videoCardEmitters[activeIndex]
   }
 
   const hotkeyOptions = {
-    enabled, // set default `enabled` options
+    enabled: shortcutEnabled, // set default `enabled` options
     conflictBehavior: 'allow', // will handle in callback
   } satisfies UseHotkeyOptions
 
@@ -179,10 +179,17 @@ export function useShortcut({
             return videoCardEmitters[activeLargePreviewItemIndex]?.emit('open-with-large-preview-visible')
           }
         },
+        options: {
+          enabled:
+            shortcutEnabled && (typeof activeIndex === 'number' || typeof activeLargePreviewItemIndex === 'number'),
+        },
       },
       {
         hotkey: 'X',
         callback: () => getActiveEmitter()?.emit('open-in-popup'),
+        options: {
+          enabled: shortcutEnabled && typeof activeIndex === 'number',
+        },
       },
     ],
     {

@@ -367,7 +367,7 @@ export const RecGrid = memo(function RecGrid({
 
   // 快捷键
   const { activeIndex, clearActiveIndex } = useShortcut({
-    enabled: shortcutEnabled,
+    shortcutEnabled,
     maxIndex: videoList.length - 1,
     gridRef,
     getScrollerRect,

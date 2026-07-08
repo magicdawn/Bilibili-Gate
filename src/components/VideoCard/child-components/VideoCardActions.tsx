@@ -38,7 +38,7 @@ type InCompatibleDivProps = 'onAnimationStart' | 'onDragStart' | 'onDragEnd' | '
 interface VideoCardActionButtonProps extends Omit<ComponentProps<'div'>, InCompatibleDivProps> {
   inlinePosition: InlinePosition
   icon: ReactNode
-  tooltip: string
+  tooltip: ReactNode
   visible?: boolean
   active?: boolean
   useMotion?: boolean

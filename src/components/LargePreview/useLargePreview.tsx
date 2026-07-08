@@ -17,6 +17,7 @@ import { APP_CLS_CARD, baseVerboseDebug, BiliDomain } from '$common'
 import { useEmitterOn } from '$common/hooks/useEmitter'
 import { useRefBox, useRefStateBox } from '$common/hooks/useRefState'
 import { openNewTab } from '$modules/gm'
+import { HotkeyDisplay } from '$modules/hotkey'
 import { IconForLoading } from '$modules/icon'
 import { settings } from '$modules/settings'
 import { classListToSelector } from '$utility/dom'
@@ -150,7 +151,7 @@ export function useLargePreviewRelated({
     hide(false) // when broadcast from other-card, do not output debug message
   })
 
-  const onMouseEnter = useMemoizedFn((triggerEl: TriggerElement) => {
+  const handleMouseEnter = useMemoizedFn((triggerEl: TriggerElement) => {
     debugTrigger('%s: onMouseEnter %s', bvid, triggerEl)
     hoveringRef.set({ ...hoveringRef.val, [triggerEl]: true })
     if (triggerAction.val === 'click') return
@@ -168,7 +169,7 @@ export function useLargePreviewRelated({
       enterTimer.current = setTimeout(() => showBy('hover', triggerEl), delayMs)
     }
   })
-  const onMouseLeave = useMemoizedFn((triggerEl: TriggerElement) => {
+  const handleMouseLeave = useMemoizedFn((triggerEl: TriggerElement) => {
     debugTrigger('%s: onMouseLeave %s', bvid, triggerEl)
     hoveringRef.set({ ...hoveringRef.val, [triggerEl]: false })
     if (triggerAction.val === 'click') return
@@ -189,7 +190,7 @@ export function useLargePreviewRelated({
       checkHide()
     }
   })
-  const onClick = useMemoizedFn((el: TriggerElement) => {
+  const handleClick = useMemoizedFn((el: TriggerElement) => {
     clearTimers()
     if (triggerAction.val === 'click') {
       hide()
@@ -233,14 +234,20 @@ export function useLargePreviewRelated({
   const willRenderLargePreview = visible && !!videoPreviewDataBox.state?.playUrls?.length
   let largePreviewEl: ReactNode
   {
-    const _mouseEnter: MouseEventHandler<HTMLDivElement> = useCallback(() => onMouseEnter('popover'), [onMouseEnter])
-    const _mouseLeave: MouseEventHandler<HTMLDivElement> = useCallback(() => onMouseLeave('popover'), [onMouseLeave])
+    const onMouseEnter: MouseEventHandler<HTMLDivElement> = useCallback(
+      () => handleMouseEnter('popover'),
+      [handleMouseEnter],
+    )
+    const onMouseLeave: MouseEventHandler<HTMLDivElement> = useCallback(
+      () => handleMouseLeave('popover'),
+      [handleMouseLeave],
+    )
     largePreviewEl = willRenderLargePreview && (
       <LargePreview
         ref={largePreviewRef}
         aspectRatio={usingAspectRatio}
-        onMouseEnter={_mouseEnter}
-        onMouseLeave={_mouseLeave}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
         cardDescendantTarget={cardTarget}
       >
         <RecoverableVideo
@@ -262,7 +269,12 @@ export function useLargePreviewRelated({
             <VideoCardActionButton
               inlinePosition={'right'}
               icon={<IconRadixIconsCross2 className='size-14px' />}
-              tooltip={'关闭'}
+              tooltip={
+                <>
+                  关闭
+                  <HotkeyDisplay k='Esc' className='ml-1' />
+                </>
+              }
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
@@ -273,18 +285,28 @@ export function useLargePreviewRelated({
             <VideoCardActionButton
               inlinePosition={'right'}
               icon={<IconParkOutlinePin className='size-14px' />}
-              tooltip={'固定'}
+              tooltip={
+                <>
+                  固定
+                  <HotkeyDisplay k='P' className='ml-1' />
+                </>
+              }
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
-                onClick('popover-action-button')
+                handleClick('popover-action-button')
               }}
             />
           )}
           <VideoCardActionButton
             inlinePosition={'right'}
             icon={<IconRadixIconsOpenInNewWindow className='size-14px' />}
-            tooltip={'新窗口打开'}
+            tooltip={
+              <>
+                新窗口打开
+                <HotkeyDisplay k='Enter' className='ml-1' />
+              </>
+            }
             onClick={(e) => {
               e.preventDefault()
               e.stopPropagation()
@@ -298,15 +320,15 @@ export function useLargePreviewRelated({
 
   let largePreviewActionButtonEl: ReactNode
   {
-    const _onMouseEnter = useCallback(() => onMouseEnter('video-card-action-button'), [onMouseEnter])
-    const _onMouseLeave = useCallback(() => onMouseLeave('video-card-action-button'), [onMouseLeave])
-    const _onClick: MouseEventHandler<HTMLDivElement> = useCallback(
+    const onMouseEnter = useCallback(() => handleMouseEnter('video-card-action-button'), [handleMouseEnter])
+    const onMouseLeave = useCallback(() => handleMouseLeave('video-card-action-button'), [handleMouseLeave])
+    const onClick: MouseEventHandler<HTMLDivElement> = useCallback(
       (e) => {
         e.preventDefault()
         e.stopPropagation()
-        onClick('video-card-action-button')
+        handleClick('video-card-action-button')
       },
-      [onClick],
+      [handleClick],
     )
     largePreviewActionButtonEl = hasLargePreviewActionButton && shouldFetchPreviewData && (
       <VideoCardActionButton
@@ -319,12 +341,20 @@ export function useLargePreviewRelated({
           $req.loading ? <IconForLoading className='size-16px' /> : <IconParkOutlineVideoTwo className='size-15px' />
         }
         tooltip={triggerAction.state === 'click' ? (visible ? '关闭浮动预览' : '浮动预览') : '浮动预览'}
-        onMouseEnter={_onMouseEnter}
-        onMouseLeave={_onMouseLeave}
-        onClick={_onClick}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        onClick={onClick}
       />
     )
   }
+
+  /**
+   * Pin hotkey
+   */
+  useHotkey('P', () => handleClick('popover-action-button'), {
+    conflictBehavior: 'allow',
+    enabled: visible && !!largePreviewEl && !!largePreviewActionButtonEl && triggerAction.state === 'hover',
+  })
 
   /**
    * trigger by click, more ways to close
@@ -361,7 +391,7 @@ export function useLargePreviewRelated({
     'mouseenter',
     () => {
       if (!useVideoCardAsTrigger || !videoCardAsTriggerRef) return
-      onMouseEnter('video-card')
+      handleMouseEnter('video-card')
     },
     { target },
   )
@@ -369,7 +399,7 @@ export function useLargePreviewRelated({
     'mouseleave',
     () => {
       if (!useVideoCardAsTrigger || !videoCardAsTriggerRef) return
-      onMouseLeave('video-card')
+      handleMouseLeave('video-card')
     },
     { target },
   )
