@@ -2,11 +2,8 @@ import { av2bv } from '@mgdn/bvid'
 import { Result } from 'better-result'
 import { proxy, useSnapshot } from 'valtio'
 import { EApiType } from '$enums'
-import { antNotification } from '$modules/antd'
 import { getVideoDetail } from '$modules/bilibili/video/video-detail'
-import { settings } from '$modules/settings'
-import { isWebApiSuccess } from '$request'
-import { NeedValidAccessKeyError } from '$utility/app-api'
+import { handleRequestError } from '$request'
 import { BaseTabService } from '../_base'
 import { fetchMyLikedVideos } from './api/liked'
 import { LikedTabbarView } from './tabbar-view'
@@ -36,34 +33,22 @@ export class LikedRecService extends BaseTabService {
     return useSnapshot(this.store)
   }
 
-  showErrorNotification(payload: Partial<typeof antNotification.error>) {
-    antNotification.error({ key: 'LikedRecService:error', title: '获取喜欢列表失败', ...payload })
-  }
-
   override async fetchMore(abortSignal: AbortSignal): Promise<RecItemTypeOrSeparator[] | undefined> {
-    if (!settings.accessKey) throw new NeedValidAccessKeyError()
+    const result = await fetchMyLikedVideos(this.qs.ps, this.pn + 1)
+    result.tapError(handleRequestError)
+    let { count, item: list } = result.unwrap()
 
-    antNotification.destroy('LikedRecService:error')
-    const json = await fetchMyLikedVideos(this.qs.ps, this.pn + 1)
-    if (!isWebApiSuccess(json)) {
-      this.errorJson = json
-      this.showErrorNotification({ title: '获取喜欢列表失败', description: json.message })
-      throw new Error('Request fail with none invalid json', { cause: json })
-    }
-
-    const { count, item: list } = json.data
-
-    const detailResult = await Result.tryPromise(() =>
-      // `x.state = false`: 表示已失效, 请求详情也是报错...
-      Promise.all(list.map((x) => (x.state ? getVideoDetail(av2bv(x.param)) : undefined))),
+    // `.state = false`: 表示已失效, 请求详情也是报错...
+    list = list.filter((x) => x.state !== false)
+    const detailResults = await Promise.all(
+      list.map((x) => (x.state ? Result.tryPromise(() => getVideoDetail(av2bv(x.param))) : undefined)),
     )
-    const detailList = detailResult.unwrapOr([])
     const extendedList: LikedItemExtend[] = list.map((item, index) => {
       return {
         ...item,
         api: EApiType.Liked,
         uniqId: `${EApiType.Liked}:${item.param}`,
-        videoDetail: detailList[index],
+        videoDetail: detailResults[index]?.unwrapOr(undefined),
       }
     })
 

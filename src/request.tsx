@@ -1,6 +1,6 @@
 import GM_fetch from '@trim21/gm-fetch'
 import axios, { AxiosError, type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from 'axios'
-import { Result, UnhandledException } from 'better-result'
+import { Result, UnhandledException, type Panic } from 'better-result'
 import { omit } from 'es-toolkit'
 import { APP_KEY_PREFIX, appError, HOST_API, HOST_APP, TVKeyInfo } from '$common'
 import { antMessage } from '$modules/antd'
@@ -201,7 +201,7 @@ function extendSafeHttpMethods(_instance: AxiosInstance): ExtendedAxiosInstance 
   return instance
 }
 
-export function handleRequestError(err: AxiosError | WebApiError | UnhandledException) {
+export function handleRequestError(err: AxiosError | WebApiError | UnhandledException | Panic | Error) {
   appError(err)
   const messageContent = err instanceof WebApiError ? err.formatAsReactNode() : err.message
   antMessage.error(messageContent, 8)
