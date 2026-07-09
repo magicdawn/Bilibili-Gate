@@ -100,7 +100,7 @@
     "@vitejs/plugin-react": "^6.0.3",
     "@vitest/ui": "^4.1.10",
     "eslint": "^10.6.0",
-    "eslint-plugin-oxlint": "^1.72.0",
+    "eslint-plugin-oxlint": "^1.73.0",
     "husky": "^9.1.7",
     "knip": "^6.25.0",
     "lint-staged": "^17.0.8",
