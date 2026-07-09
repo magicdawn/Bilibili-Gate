@@ -27,7 +27,7 @@ export class LikedRecService extends BaseTabService {
   pn = 0
   errorJson: any = undefined
 
-  private store = proxy({ count: Infinity })
+  private store = proxy({ count: Infinity, invalidCount: 0 })
   useStore = () => {
     // oxlint-disable-next-line rules-of-hooks
     return useSnapshot(this.store)
@@ -38,8 +38,10 @@ export class LikedRecService extends BaseTabService {
     result.tapError(handleRequestError)
     let { count, item: list } = result.unwrap()
 
-    // `.state = false`: 表示已失效, 请求详情也是报错...
+    // `.state = false`: 表示已失效. 请求详情也是报错...
+    const invalidCountInThisRequest = list.filter((x) => x.state === false).length
     list = list.filter((x) => x.state !== false)
+
     const detailResults = await Promise.all(
       list.map((x) => (x.state ? Result.tryPromise(() => getVideoDetail(av2bv(x.param))) : undefined)),
     )
@@ -54,6 +56,7 @@ export class LikedRecService extends BaseTabService {
 
     this.pn++
     this.store.count = count
+    this.store.invalidCount += invalidCountInThisRequest
     return extendedList
   }
 }
