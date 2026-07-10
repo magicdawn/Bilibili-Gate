@@ -5,6 +5,7 @@ import { AppRoot, SetupForPage } from '$components/AppRoot'
 import { GateFloatEntry } from '$components/GateFloatEntry'
 import { registerSettingsGmCommand } from '$components/RecHeader/modals'
 import { PureRecommend } from '$components/Recommends/PureRecommend'
+import { checkLoginStatus } from '$modules/login-status'
 import { settings } from '$modules/settings'
 import { getOnlyTab, inGateEntry } from '$routes'
 import { isSafari } from '$ua'
@@ -82,6 +83,8 @@ async function initHomepagePureRecommend() {
   // biliLayout should come after header+channel
   await poll(() => document.querySelector('.bili-feed4 .bili-header'), { interval: 20, timeout: 2_000 })
   document.body.append(biliLayout)
+  // update login status
+  checkLoginStatus()
 
   const container = document.createElement('div')
   biliLayout.append(container)

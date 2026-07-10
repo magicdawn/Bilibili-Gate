@@ -11,7 +11,6 @@ import { minmax } from '$utility/num'
 import { valtioFactory } from '$utility/valtio'
 
 const defaultHeader = () => document.querySelector<HTMLElement>('.bili-header__bar')
-
 export const $usingEvolevdHeader = valtioFactory(calcUsingCustomHeader)
 function calcUsingCustomHeader() {
   const el = defaultHeader()

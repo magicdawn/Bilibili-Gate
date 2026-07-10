@@ -13,5 +13,5 @@ export function formatSpaceUrl(mid: number | string) {
 }
 
 export function formatSelfSpaceUrl() {
-  return formatSpaceUrl(getUid())
+  return formatSpaceUrl(getUid() || '')
 }

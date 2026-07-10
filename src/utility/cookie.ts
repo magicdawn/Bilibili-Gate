@@ -1,5 +1,4 @@
 import toast from './toast'
-import { valtioFactory } from './valtio'
 
 export function parseCookie(): Record<string, string> {
   const cookies: Record<string, string> = {}
@@ -27,30 +26,6 @@ export function getCsrfToken(): string {
   return csrfToken
 }
 
-export function getUid() {
-  return parseCookie().DedeUserID
-}
-
-export function getHasLogined(): boolean {
-  // logout in default header
-  // but not included in bilibili-evolved
-  // return !!document.querySelector('.logout-item')
-  const cookies = parseCookie()
-  return !!cookies.DedeUserID // SESSDATA 是 httponly
-}
-
-export const $loginState = valtioFactory(() => {
-  return {
-    cookie: document.cookie,
-    logined: getHasLogined(),
-  }
-})
-
-export function checkLoginStatus(): boolean {
-  $loginState.update()
-  return $loginState.state.value.logined
-}
-
-export function useHasLogined() {
-  return $loginState.use().logined
+export function getUid(): string {
+  return parseCookie().DedeUserID || ''
 }

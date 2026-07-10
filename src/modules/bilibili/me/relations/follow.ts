@@ -4,8 +4,8 @@
 
 import { isNotNil } from 'es-toolkit'
 import pMemoize from 'p-memoize'
+import { getLoginStatus } from '$modules/login-status'
 import { request, WebApiError } from '$request'
-import { getHasLogined } from '$utility/cookie'
 import { modifyRelations } from './common'
 import type { FollowStateJson } from './types/follow-state'
 import type { RelationAttributeEntity } from './types/shared'
@@ -36,7 +36,7 @@ export function isFollowedFromRelationAttribute(relationAttribute: RelationAttri
 }
 
 export async function queryFollowState(upMid: string | number): Promise<RelationAttributeEntity | undefined> {
-  if (!getHasLogined()) return
+  if (!getLoginStatus()) return
   const res = await request.get<FollowStateJson>('/x/relation', { params: { fid: upMid } })
   const validateResult = WebApiError.validateAxiosResponse(res, '获取关系失败')
   if (validateResult.isErr()) return

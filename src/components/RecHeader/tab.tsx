@@ -5,11 +5,11 @@ import { Fragment, useDeferredValue, useMemo, type ReactNode } from 'react'
 import { useSnapshot, type UseSnapshotOptions } from 'valtio'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { ETab } from '$enums'
+import { checkLoginStatus, toastNeedLogin, useLoginStatus } from '$modules/login-status'
 import { useSettingsSnapshot } from '$modules/settings'
 import { getOnlyTab } from '$routes'
-import { checkLoginStatus, useHasLogined } from '$utility/cookie'
 import { proxyWithGmStorage } from '$utility/valtio'
-import { TabConfig, TabIcon, toastNeedLogin, type TabConfigItem } from './tab-config'
+import { TabConfig, TabIcon, type TabConfigItem } from './tab-config'
 import { ALL_TAB_KEYS, CONFIGURABLE_TAB_KEYS } from './tab-enum'
 
 /**
@@ -41,7 +41,7 @@ export function useSortedTabKeys(options?: UseSnapshotOptions) {
 
 export function useCurrentDisplayingTabKeys() {
   const { hidingTabKeys, customTabKeysOrder } = useSettingsSnapshot()
-  const logined = useHasLogined()
+  const logined = useLoginStatus()
   const onlyTab = useMemo(getOnlyTab, [])
   const keys = useMemo(() => {
     const tabkeys = getSortedTabKeys(customTabKeysOrder)
@@ -63,7 +63,7 @@ function useCurrentDisplayingTabConfigList(): ({ key: ETab } & TabConfigItem)[] 
 export function useCurrentUsingTab(): ETab {
   const tab = useSnapshot(videoSourceTabState).value
   const displayTabKeys = useCurrentDisplayingTabKeys()
-  const logined = useHasLogined()
+  const logined = useLoginStatus()
   const fallbackTab = ETab.AppRecommend
 
   // invalid
@@ -115,13 +115,11 @@ const radioBtnCss = css`
 `
 
 export function VideoSourceTab({ className }: { className?: string }) {
-  const logined = useHasLogined()
   const tab = useCurrentUsingTab()
   const currentTabConfigList = useCurrentDisplayingTabConfigList()
   const { __internalRecTabRenderAsSegments } = useSettingsSnapshot()
-
   const onChangeTab = useMemoizedFn((newTab: ETab) => {
-    if (!logined && !TabConfig[newTab].anonymousUsage && !checkLoginStatus()) {
+    if (!TabConfig[newTab].anonymousUsage && !checkLoginStatus()) {
       return toastNeedLogin()
     }
     videoSourceTabState.value = newTab

@@ -7,8 +7,9 @@
 
 import { Result } from 'better-result'
 import { difference } from 'es-toolkit'
+import { getLoginStatus } from '$modules/login-status'
 import { request, WebApiError } from '$request'
-import { getCsrfToken, getHasLogined, getUid } from '$utility/cookie'
+import { getCsrfToken, getUid } from '$utility/cookie'
 import { formatFavFolderUrl } from '../fav-url'
 import { isFavFolderDefault, isFavFolderPrivate } from '../fav-util'
 import { favStore, updateFavFolderList } from '../store'
@@ -86,7 +87,7 @@ export async function moveFavs(resources: string | string[], src: string | numbe
  * @see https://github.com/the1812/Bilibili-Evolved/blob/master/registry/lib/components/video/quick-favorite/QuickFavorite.vue
  */
 export async function getVideoFavState(avid: number | string) {
-  if (!getHasLogined()) return
+  if (!getLoginStatus()) return
   const res = await request.get('/x/v3/fav/folder/created/list-all', {
     params: {
       up_mid: getUid(),

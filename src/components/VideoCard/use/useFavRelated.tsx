@@ -20,12 +20,12 @@ import {
   IconForLoading,
   IconForOpenExternalLink,
 } from '$modules/icon'
+import { getLoginStatus } from '$modules/login-status'
 import { multiSelectStore } from '$modules/multi-select/store'
 import { defaultFavFolderTitle, UserFavApi } from '$modules/rec-services/fav/api'
 import { formatFavCollectionSelfSpaceUrl, formatFavFolderUrl } from '$modules/rec-services/fav/fav-url'
 import { clearFavFolderAllItemsCache } from '$modules/rec-services/fav/service/fav-folder'
 import { FavQueryKey, favStore } from '$modules/rec-services/fav/store'
-import { getHasLogined } from '$utility/cookie'
 import toast from '$utility/toast'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
 import { clsContextMenuIcon } from '../context-menus'
@@ -40,7 +40,7 @@ export function useInitFavContext(item: RecItemType, avid: string | undefined) {
   const [folderIds, setFolderIds] = useState<number[] | undefined>(undefined)
 
   const updateFavFolderNames = useMemoizedFn(async () => {
-    if (!getHasLogined()) return
+    if (!getLoginStatus()) return
     if (!avid) return
     // 仅在 [收藏Tab | 提供 quick-fav 的地方] 更新收藏状态
     const { enable: enableQuickFav } = getQuickFavConfig(item.api)

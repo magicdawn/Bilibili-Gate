@@ -12,10 +12,10 @@ import { getVideoDetail } from '$modules/bilibili/video/video-detail'
 import { getFollowedStatus } from '$modules/filter'
 import { normalizeCardData, type IVideoCardData } from '$modules/filter/normalize'
 import { IconForLike } from '$modules/icon'
+import { getLoginStatus } from '$modules/login-status'
 import { getSettingsSnapshot, useSettingsSnapshot } from '$modules/settings'
 import { anonymousFlag, gmrequest } from '$request'
 import { GateQueryKey } from '$routes'
-import { getHasLogined } from '$utility/cookie'
 import { BaseTabService, type IService } from './_base'
 import { DynamicFeedRecService, getDynamicFeedServiceConfig } from './dynamic-feed'
 import { createDfStore } from './dynamic-feed/store'
@@ -107,7 +107,7 @@ export class AppRecService extends BaseTabService<RecItemType> {
   }
 
   initOtherTabServices() {
-    if (!getHasLogined()) return
+    if (!getLoginStatus()) return
     if (!this.config.addOtherTabContents) return
 
     let dynamicFeedService: IService

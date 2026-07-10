@@ -4,8 +4,9 @@ import { proxy, useSnapshot } from 'valtio'
 import { proxySet } from 'valtio/utils'
 import { appWarn, IN_BILIBILI_HOMEPAGE } from '$common'
 import { EApiType } from '$enums'
+import { getLoginStatus } from '$modules/login-status'
 import { handleRequestError } from '$request'
-import { getHasLogined, getUid } from '$utility/cookie'
+import { getUid } from '$utility/cookie'
 import { whenIdle } from '$utility/dom'
 import { BaseTabService, type IService } from '../_base'
 import { WatchlaterApiService } from './api'
@@ -35,7 +36,7 @@ function updateWatchlaterStateBvidSet(action: 'add' | 'del', bvid: string) {
 }
 
 async function initWatchlaterState() {
-  if (!getHasLogined() || !getUid()) return
+  if (!getLoginStatus() || !getUid()) return
   const fetchResult = await WatchlaterApiService.fetchItems()
   if (fetchResult.isErr() || !fetchResult.value.items.length) return
   replaceWatchlaterStateBvidSet(fetchResult.value.items.map((x) => x.bvid))

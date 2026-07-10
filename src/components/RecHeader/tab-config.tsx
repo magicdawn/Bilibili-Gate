@@ -17,7 +17,6 @@ import {
 import { favStore } from '$modules/rec-services/fav/store'
 import { isHotTabUsingShuffle } from '$modules/rec-services/hot'
 import { advancedFilterHelpInfo } from '$utility/local-filter'
-import toast from '$utility/toast'
 
 export type TabConfigItem = {
   icon: ReactElement
@@ -121,15 +120,4 @@ export function TabIcon({ tabKey, active, className }: { tabKey: ETab; active?: 
   }
   const cloned = cloneElement(icon, newProps)
   return cloned
-}
-
-export const NEED_LOGIN_MESSAGE = '你需要登录B站后使用该功能! 如已完成登录, 请刷新网页重试~'
-
-export function toastNeedLogin() {
-  return toast(NEED_LOGIN_MESSAGE)
-}
-
-export function gotoLogin() {
-  const href = 'https://passport.bilibili.com/login'
-  location.href = href
 }
