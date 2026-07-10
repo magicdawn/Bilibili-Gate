@@ -14,12 +14,15 @@ export function gotoLogin() {
 
 export const LOGIN_EL_SELECTOR = '.bili-header .header-login-entry'
 export const LOGOUT_EL_SELECTOR = '.bili-header .logout-item'
+export const AVATAR_EL_SELECTOR = '.bili-header .header-avatar-wrap--container a[href*="space.bilibili.com/"]'
 
+// use API for login status https://api.bilibili.com/x/web-interface/nav
 export const $loginStatus = valtioFactory(function calcLogined() {
   if (!getUid()) return false // SESSDATA 是 httponly
   const hasLoginEl = !!document.querySelector(LOGIN_EL_SELECTOR)
   const hasLogoutEl = !!document.querySelector(LOGOUT_EL_SELECTOR)
-  return hasLogoutEl && !hasLoginEl
+  const hasAvatarEl = !!document.querySelector(AVATAR_EL_SELECTOR)
+  return !hasLoginEl && (hasLogoutEl || hasAvatarEl) // logout 需要 hover avatar 才会出现
 })
 
 export function useLoginStatus() {
