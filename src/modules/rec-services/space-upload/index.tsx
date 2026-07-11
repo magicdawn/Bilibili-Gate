@@ -22,6 +22,10 @@ import type { ReactNode } from 'react'
 import type { WritableDeep } from 'type-fest'
 import type { SpaceUploadItem, SpaceUploadItemExtend } from '$define'
 
+const warnAnonymousUsageOnce = once(() => {
+  antMessage.warning('未登录, 查看投稿可能会受到限制!')
+})
+
 export const spaceUploadAvatarCache = new QuickLRU<number, string>({ maxSize: 100 })
 
 export const spaceUploadFollowedMidSet = proxySet<number>()
@@ -184,12 +188,8 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
     return this.singleUpService || this.mergeTimelineService
   }
 
-  warnAnonymousUsageOnce = once(() => {
-    antMessage.warning('未登录, 查看投稿可能会受到限制!')
-  })
-
   override async fetchMore(abortSignal: AbortSignal): Promise<SpaceUploadItemExtend[] | undefined> {
-    if (!checkLoginStatus()) this.warnAnonymousUsageOnce()
+    if (!checkLoginStatus()) warnAnonymousUsageOnce()
 
     this.setPageTitle()
     await this.setupServices()
