@@ -1,15 +1,15 @@
-import { Panic } from 'better-result'
 import { assert, groupBy, once, orderBy, uniq } from 'es-toolkit'
 import pmap from 'promise.map'
 import QuickLRU from 'quick-lru'
 import { snapshot } from 'valtio'
 import { proxySet } from 'valtio/utils'
 import { EApiType } from '$enums'
+import { antMessage } from '$modules/antd'
 import { getAllFollowGroups, getFollowGroupContent } from '$modules/bilibili/me/follow-group'
 import { isFollowedFromRelationAttribute, queryFollowStateMemoized } from '$modules/bilibili/me/relations/follow'
 import { getUserNickname } from '$modules/bilibili/user/nickname'
 import { getSpaceAccInfo } from '$modules/bilibili/user/space-acc-info'
-import { checkLoginStatus, NEED_LOGIN_MESSAGE, toastNeedLogin } from '$modules/login-status'
+import { checkLoginStatus } from '$modules/login-status'
 import { setPageTitle } from '$utility/dom'
 import { parseAdvancedFilter } from '$utility/local-filter'
 import { parseDuration } from '$utility/video'
@@ -184,13 +184,12 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
     return this.singleUpService || this.mergeTimelineService
   }
 
-  warnNeedLoginOnce = once(toastNeedLogin)
+  warnAnonymousUsageOnce = once(() => {
+    antMessage.warning('未登录, 查看投稿可能会受到限制!')
+  })
 
   override async fetchMore(abortSignal: AbortSignal): Promise<SpaceUploadItemExtend[] | undefined> {
-    if (!checkLoginStatus()) {
-      this.warnNeedLoginOnce()
-      throw new Panic({ message: NEED_LOGIN_MESSAGE })
-    }
+    if (!checkLoginStatus()) this.warnAnonymousUsageOnce()
 
     this.setPageTitle()
     await this.setupServices()

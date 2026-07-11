@@ -2,7 +2,9 @@ import { getUid } from '$utility/cookie'
 import toast from '$utility/toast'
 import { valtioFactory } from '$utility/valtio'
 
-export const NEED_LOGIN_MESSAGE = '你需要登录B站后使用该功能! 如已完成登录, 请刷新网页重试~'
+export const NEED_LOGIN_SHORT_MESSAGE = '需要登录B站后使用该功能!'
+export const NEED_LOGIN_MESSAGE = '需要登录B站后使用该功能! 如已完成登录, 请刷新网页重试~'
+
 export function toastNeedLogin() {
   return toast(NEED_LOGIN_MESSAGE)
 }
