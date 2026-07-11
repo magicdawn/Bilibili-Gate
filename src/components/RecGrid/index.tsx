@@ -1,6 +1,6 @@
 import { arrayMove } from '@dnd-kit/sortable'
 import { useCreation, useEventListener, useLatest, useMemoizedFn, useMount, useUnmountedRef } from 'ahooks'
-import { Button, Divider } from 'antd'
+import { Divider } from 'antd'
 import { Result } from 'better-result'
 import clsx, { type ClassValue } from 'clsx'
 import Emittery from 'emittery'
@@ -485,14 +485,7 @@ export const RecGrid = memo(function RecGrid({
         if (refreshing) return
         if (!hasMore) return '没有更多了~'
         if (loadMoreError) {
-          return (
-            <div className='flex flex-col gap-y-10px'>
-              <ErrorDetail err={loadMoreError} />
-              <div>
-                <Button onClick={loadMoreRetry}>重试</Button>
-              </div>
-            </div>
-          )
+          return <ErrorDetail err={loadMoreError} onRetry={loadMoreRetry} />
         }
         return (
           <>

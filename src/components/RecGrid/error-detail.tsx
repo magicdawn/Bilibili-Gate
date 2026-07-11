@@ -1,3 +1,4 @@
+import { Button } from 'antd'
 import { Panic, UnhandledException } from 'better-result'
 import { cloneDeep, isError } from 'es-toolkit'
 import { useMemo, type ReactNode } from 'react'
@@ -76,7 +77,7 @@ function getErrLabel(err: any): ReactNode {
   return '出错了, 请刷新重试!'
 }
 
-export function ErrorDetail({ err, tab }: { err: any; tab?: ETab }) {
+export function ErrorDetail({ err, tab, onRetry }: { err: any; tab?: ETab; onRetry?: () => void }) {
   const target = useLinkTarget()
   const errLabel = useMemo(() => getErrLabel(err), [err])
   const errDetail = useMemo(() => inspectErrDetail(err), [err])
@@ -110,6 +111,8 @@ export function ErrorDetail({ err, tab }: { err: any; tab?: ETab }) {
       )}
 
       {tab === ETab.Liked && err instanceof NeedValidAccessKeyError && <AccessKeyManage className='mt-0.5em' />}
+
+      <Button onClick={onRetry}>重试</Button>
     </div>
   )
 }
