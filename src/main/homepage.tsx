@@ -5,7 +5,7 @@ import { AppRoot, SetupForPage } from '$components/AppRoot'
 import { GateFloatEntry } from '$components/GateFloatEntry'
 import { registerSettingsGmCommand } from '$components/RecHeader/modals'
 import { PureRecommend } from '$components/Recommends/PureRecommend'
-import { checkLoginStatus } from '$modules/login-status'
+import { initLoginStorePromise } from '$modules/login-status'
 import { settings } from '$modules/settings'
 import { getOnlyTab, inGateEntry } from '$routes'
 import { isSafari } from '$ua'
@@ -43,6 +43,9 @@ export async function initHomepage() {
   if (hasBewlyBewly()) {
     return appWarn(`quit for using bewly-design`)
   }
+
+  // wait fetch login info
+  await initLoginStorePromise
 
   const shouldInit = settings.pureRecommend || inGateEntry() || getOnlyTab()
   if (shouldInit) {
@@ -83,8 +86,6 @@ async function initHomepagePureRecommend() {
   // biliLayout should come after header+channel
   await poll(() => document.querySelector('.bili-feed4 .bili-header'), { interval: 20, timeout: 2_000 })
   document.body.append(biliLayout)
-  // update login status
-  checkLoginStatus()
 
   const container = document.createElement('div')
   biliLayout.append(container)
