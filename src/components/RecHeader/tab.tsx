@@ -62,12 +62,16 @@ function useCurrentDisplayingTabConfigList(): ({ key: ETab } & TabConfigItem)[] 
 
 export function useCurrentUsingTab(): ETab {
   const tab = useSnapshot(videoSourceTabState).value
-  const displayTabKeys = useCurrentDisplayingTabKeys()
+  const displayingTabKeys = useCurrentDisplayingTabKeys()
   const logined = useLoginStatus()
   const fallbackTab = ETab.AppRecommend
 
+  // only tab
+  // login status 需要 service 自己保证
+  if (displayingTabKeys.length === 1) return displayingTabKeys[0]
+
   // invalid
-  if (!displayTabKeys.includes(tab)) return fallbackTab
+  if (!displayingTabKeys.includes(tab)) return fallbackTab
 
   // not logined
   if (
