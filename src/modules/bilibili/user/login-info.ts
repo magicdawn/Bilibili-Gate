@@ -4,11 +4,14 @@
 
 import { Result } from 'better-result'
 import { request, WebApiError } from '$request'
+import type { AnonymousLoginInfoJson } from './anonymous-info.api'
 import type { LoginInfoJson } from './login-info.api'
 
 export function fetchLoginInfo() {
   return Result.gen(async function* () {
-    const resp = yield* await request.safeGet<LoginInfoJson>('/x/web-interface/nav', { withCredentials: true })
+    const resp = yield* await request.safeGet<LoginInfoJson | AnonymousLoginInfoJson>('/x/web-interface/nav', {
+      withCredentials: true,
+    })
     const json = yield* WebApiError.validateAxiosResponse(resp)
     return Result.ok(json.data)
   })

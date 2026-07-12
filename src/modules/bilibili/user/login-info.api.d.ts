@@ -2,10 +2,10 @@ export interface LoginInfoJson {
   code: number
   message: string
   ttl: number
-  data: LoginInfoData
+  data: LoginInfo
 }
 
-export interface LoginInfoData {
+export interface LoginInfo {
   isLogin: boolean
   email_verified: number
   face: string
