@@ -1,10 +1,10 @@
-import { css as _css, css } from '@emotion/react'
+import { css } from '@emotion/react'
 import { useEventListener, useMemoizedFn, useMount } from 'ahooks'
 import { getTargetElement, type BasicTarget } from 'ahooks/lib/utils/domTarget'
 import clsx from 'clsx'
 import { orderBy, throttle } from 'es-toolkit'
 import { motion } from 'framer-motion'
-import { memo, useMemo, useState, type ComponentProps, type ReactNode } from 'react'
+import { memo, useMemo, useState, type ComponentProps, type CSSProperties, type ReactNode } from 'react'
 import { APP_CLS_CARD, APP_CLS_CARD_COVER, baseDebug } from '$common'
 import { useDelegatedRef } from '$common/hooks/mixed-ref'
 import { appPrimaryColorValue } from '$components/css-vars'
@@ -298,10 +298,8 @@ export const LargePreview = memo(function LargePreview({
           <div
             // backdrop-blur-10px cause Chromium video hit test regression
             // https://greasyfork.org/zh-CN/scripts/443530-bilibili-gate/discussions/333785
-            className='h-full overflow-hidden rounded-20px bg-white/50%'
-            css={css`
-              box-shadow: 0px 0px 1px 1px ${appPrimaryColorValue};
-            `}
+            // 一周后测试又没问题了...
+            className='relative h-full overflow-hidden rounded-20px bg-white/50% ring-1px ring-gate-primary backdrop-blur-10px'
           >
             {children}
           </div>
@@ -325,36 +323,32 @@ function PopoverArrow({
   arrowLeft: number
 }) {
   const { axis, multiplier, reverse } = DirectionConfig[direction]
-  const extra = useMemo(() => {
+  const extra: CSSProperties = useMemo(() => {
     if (axis === 'x') {
-      return _css`
-        ${direction}: 100%;
-        margin-${direction}: -1px;
-        top: ${arrowTop}px;
-        margin-top: -${size / 2}px;
-      `
+      return {
+        [direction]: '100%',
+        'top': `${arrowTop}px`,
+        [`margin-${direction}`]: `-1px`,
+        'margin-top': `-${size / 2}px`,
+      }
     } else {
-      return _css`
-        ${direction}: 100%;
-        margin-${direction}: -1px;
-        left: ${arrowLeft}px;
-        margin-left: -${size / 2}px;
-      `
+      return {
+        [direction]: `100%`,
+        'left': `${arrowLeft}px`,
+        [`margin-${direction}`]: `-1px`,
+        'margin-left': `-${size / 2}px`,
+      }
     }
   }, [size, direction, axis, arrowTop, arrowLeft])
 
   return (
     <div
       className='absolute box-content h-0 w-0'
-      css={[
-        css`
-          border: ${size}px solid transparent;
-        `,
-        extra,
-        _css`
-          border-${direction}-color: ${appPrimaryColorValue};
-        `,
-      ]}
+      style={{
+        border: `${size}px solid transparent`,
+        [`border-${direction}-color`]: appPrimaryColorValue,
+        ...extra,
+      }}
     />
   )
 }
