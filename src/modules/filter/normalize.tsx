@@ -775,7 +775,7 @@ function apiHistoryAdapter(item: HistoryItemExtend): IVideoCardData {
     durationDisplay: bottomRightInfo,
 
     // stat & tags
-    statItems: defineStatItems([]),
+    statItems: [], // no stat data available
     cardTags,
 
     // author
