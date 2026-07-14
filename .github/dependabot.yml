@@ -4,3 +4,5 @@ updates:
     package-ecosystem: github-actions
     schedule:
       interval: daily
+    cooldown:
+      default-days: 1
