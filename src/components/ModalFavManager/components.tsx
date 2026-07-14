@@ -3,7 +3,7 @@ import { useHotkey } from '@tanstack/react-hotkeys'
 import { useMemoizedFn, useRequest, useUpdateEffect } from 'ahooks'
 import { Button, Empty, Input, Popover, Slider, Spin } from 'antd'
 import clsx from 'clsx'
-import { assert, uniqBy } from 'es-toolkit'
+import { assert, isEqual, uniqBy } from 'es-toolkit'
 import PinyinMatch from 'pinyin-match'
 import { useEffect, useMemo, useState } from 'react'
 import { useSnapshot } from 'valtio'
@@ -30,10 +30,6 @@ import { proxyWithLocalStorage } from '$utility/valtio'
 import { FavFolderOrderSwitcher, isValidFavFolderOrder, sortFavFolders, type FavFolderOrder } from './fav-folder-order'
 import type { Promisable } from 'type-fest'
 import type { FavFolder } from '$modules/rec-services/fav/types/folders/list-all-folders'
-
-function isSetEqual<T>(a: Set<T>, b: Set<number>) {
-  return a.size === b.size && a.symmetricDifference(b).size === 0
-}
 
 type LocalStore = {
   modalWidth: number
@@ -173,7 +169,7 @@ export function ModalFavManager({
     if (!allowEmptyResult && !selectedFolderIdsSet.size) return true
 
     // same as input
-    if (mode === 'modify' && isSetEqual(selectedFolderIdsSet, modifyInitialSelectedIdsSet)) {
+    if (mode === 'modify' && isEqual(selectedFolderIdsSet, modifyInitialSelectedIdsSet)) {
       return true
     }
 
