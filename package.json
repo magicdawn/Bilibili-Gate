@@ -77,7 +77,7 @@
     "@commitlint/prompt-cli": "^21.2.0",
     "@commitlint/types": "^21.2.0",
     "@emotion/babel-plugin": "^11.13.5",
-    "@iconify/json": "^2.2.498",
+    "@iconify/json": "^2.2.499",
     "@rolldown/plugin-babel": "^0.2.3",
     "@rolldown/plugin-emotion": "^0.1.5",
     "@styled/typescript-styled-plugin": "^1.0.1",

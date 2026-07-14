@@ -1,6 +1,6 @@
 import { bv2av } from '@mgdn/bvid'
 import { matchesKeyboardEvent } from '@tanstack/react-hotkeys'
-import { handleModifyFavItemToFolder, startModifyFavItemToFolder } from '$components/ModalFavManager'
+import { handleModifyFavItemToFolders, startModifyFavItemToTargetFolders } from '$components/ModalFavManager'
 import { antMessage } from '$modules/antd'
 import { UserFavApi } from '$modules/rec-services/fav/api'
 import { settings } from '$modules/settings'
@@ -63,14 +63,17 @@ async function addToFav(sourceFavFolderIds?: number[] | undefined) {
     }
   }
 
-  await startModifyFavItemToFolder(sourceFavFolderIds, async (targetFolder) => {
-    const success = await handleModifyFavItemToFolder(avid, sourceFavFolderIds, targetFolder)
-    if (!success) return
+  await startModifyFavItemToTargetFolders({
+    srcFolderIds: sourceFavFolderIds,
+    modifyOkAction: async (targetFolder) => {
+      const success = await handleModifyFavItemToFolders(avid, sourceFavFolderIds, targetFolder)
+      if (!success) return
 
-    const nextState = !!targetFolder
-    const el = document.querySelector<HTMLDivElement>('.video-fav.video-toolbar-left-item')
-    el?.classList.toggle('on', nextState)
+      const nextState = !!targetFolder
+      const el = document.querySelector<HTMLDivElement>('.video-fav.video-toolbar-left-item')
+      el?.classList.toggle('on', nextState)
 
-    return true
+      return true
+    },
   })
 }

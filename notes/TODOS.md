@@ -2,7 +2,6 @@
 
 # Ideas
 
-- [ ] reconsider `fav:context-menu`, 把 fav-folder 想做 tag, 一个视频包含在多个收藏夹其实是合理的.
 - [ ] space-upload / dynamic-feed: quick search following up
 - [ ] ModalFavManager: 显示拼音首字母. 可能引入的库比较大...
 - [ ] 动态 / space-upload, 共创标记
@@ -25,3 +24,4 @@
 - [x] 稍后再看, 可以批量收藏, 方便整理之前想收藏, 但只能加入稍后再看的项.
 - [x] 专栏草稿箱报错
 - [x] 充电专属, 浮动预览无响应, 增加提示.
+- [x] 把 fav-folder 想做 tag, 一个视频包含在多个收藏夹其实是合理的.

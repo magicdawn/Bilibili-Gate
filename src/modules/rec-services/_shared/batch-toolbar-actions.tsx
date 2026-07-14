@@ -8,7 +8,8 @@ import { Result } from 'better-result'
 import { delay } from 'es-toolkit'
 import pRetry from 'p-retry'
 import { useSnapshot } from 'valtio'
-import { startPickFavFolder } from '$components/ModalFavManager'
+import { startPickFavFolders } from '$components/ModalFavManager'
+import { joinFavFolderTitles } from '$components/ModalFavManager/components'
 import {
   getMultiSelectedNormalVideoItems,
   warnNoMultiSelectedNormalVideoItems,
@@ -29,7 +30,7 @@ export function BtnAddMultiSelectedToFav() {
     const avids = selected.map((x) => x.cardData.avid).filter(Boolean)
     if (!avids.length) return warnNoMultiSelectedNormalVideoItems()
 
-    await startPickFavFolder(async (targetFolder) => {
+    await startPickFavFolders(async (targetFolders) => {
       const successAvids = []
       const failed: Record<string, boolean | any> = {}
       for (const [index, avid] of avids.entries()) {
@@ -37,7 +38,10 @@ export function BtnAddMultiSelectedToFav() {
         const result = await Result.tryPromise(() =>
           pRetry(
             async () => {
-              const result = await UserFavApi.addFav(avid, targetFolder.id)
+              const result = await UserFavApi.addFav(
+                avid,
+                targetFolders.map((x) => x.id),
+              )
               if (result.isErr()) throw result.error // 与 p-retry 配合, 需要 throw
               return true
             },
@@ -54,7 +58,7 @@ export function BtnAddMultiSelectedToFav() {
       }
 
       if (successAvids.length === avids.length) {
-        antMessage.success(`已加入收藏夹「${targetFolder.title}」`)
+        antMessage.success(`已加入收藏夹${joinFavFolderTitles(targetFolders)}`)
         return true
       }
 
