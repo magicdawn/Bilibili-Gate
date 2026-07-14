@@ -5,7 +5,7 @@
  * https://socialsisteryi.github.io/bilibili-API-collect/docs/video/action.html#%E6%94%B6%E8%97%8F%E8%A7%86%E9%A2%91-%E5%8F%8C%E7%AB%AF
  */
 
-import { Result } from 'better-result'
+import { Panic, Result } from 'better-result'
 import { difference } from 'es-toolkit'
 import { getLoginStatus } from '$modules/login-status'
 import { request, WebApiError } from '$request'
@@ -107,23 +107,23 @@ export async function getVideoFavState(avid: number | string) {
 
 export let defaultFavFolderId: number | undefined
 export let defaultFavFolderTitle: string | undefined
-export async function addFav(avid: string | number, folderIds?: number | number[]) {
-  const _folderIds = [folderIds].flat().filter((x) => x !== undefined)
-  if (!_folderIds.length && (!defaultFavFolderId || !defaultFavFolderTitle)) {
+export async function addFav(avid: string | number, inputFolderIds?: number | number[]) {
+  const folderIds = [inputFolderIds].flat().filter((x) => x !== undefined)
+  if (!folderIds.length && (!defaultFavFolderId || !defaultFavFolderTitle)) {
     await updateFavFolderList()
     const { folders } = favStore
     const defaultFolder = folders.find((f) => isFavFolderDefault(f.attr)) ?? folders[0]
-    if (!defaultFolder) return Result.err('没有找到默认收藏夹!')
+    if (!defaultFolder) return Result.err(new Panic({ message: '没有找到默认收藏夹!' }))
     defaultFavFolderId = defaultFolder.id
     defaultFavFolderTitle = defaultFolder.title
   }
-  if (!_folderIds.length && defaultFavFolderId) {
-    _folderIds.push(defaultFavFolderId)
+  if (!folderIds.length && defaultFavFolderId) {
+    folderIds.push(defaultFavFolderId)
   }
-  if (!_folderIds.length) {
-    return Result.err('没有找到默认收藏夹!')
+  if (!folderIds.length) {
+    return Result.err(new Panic({ message: '没有找到默认收藏夹!' }))
   }
-  return await favDeal({ avid, add_media_ids: _folderIds.join(',') })
+  return await favDeal({ avid, add_media_ids: folderIds.join(',') })
 }
 
 export async function fetchAllFavFolders() {
