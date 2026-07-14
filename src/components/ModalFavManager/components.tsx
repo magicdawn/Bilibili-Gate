@@ -13,11 +13,10 @@ import { antSpinIndicator } from '$components/fragments'
 import { BILI_BRAND_PINK_THEME } from '$components/ModalSettings/theme.shared'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
-import { kbdClassName } from '$modules/hotkey'
+import { HotkeyDisplay } from '$modules/hotkey'
 import {
   IconAnimatedChecked,
   IconForConfig,
-  IconForDelete,
   IconForEdit,
   IconForMove,
   IconForOpenExternalLink,
@@ -265,17 +264,18 @@ export function ModalFavManager({
           )}
 
           <AntdTooltip title='清除已选'>
-            <IconForDelete
-              className='size-1.3em cursor-pointer'
+            <IconParkOutlineClear
+              className={clsx('size-1.3em cursor-pointer', !selectedFolderIdsSet.size && 'opacity-50')}
               onClick={() => {
+                if (!selectedFolderIdsSet.size) return
                 setSelectedFolderIdsSet(new Set())
               }}
             />
           </AntdTooltip>
 
           <HelpInfo className='ml-5px size-1.3em'>
-            1. 使用 <kbd className={clsx(kbdClassName, 'mx-2px')}>r</kbd> 刷新收藏夹 <br />
-            2. 使用 <kbd className={clsx(kbdClassName, 'mx-2px')}>esc</kbd> 取消操作, 关闭窗口 <br />
+            1. 使用 <HotkeyDisplay k='R' className='mx-2px' /> 刷新收藏夹 <br />
+            2. 使用 <HotkeyDisplay k='Escape' className='mx-2px' /> 取消操作, 关闭窗口 <br />
             3. 使用 拼音 / 拼音首字母 过滤收藏夹标题 <br />
           </HelpInfo>
 

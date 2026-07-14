@@ -61,6 +61,7 @@ declare global {
   const IconParkOutlineArrowLeft: typeof import('~icons/icon-park-outline/arrow-left.jsx').default
   const IconParkOutlineArrowRight: typeof import('~icons/icon-park-outline/arrow-right.jsx').default
   const IconParkOutlineArrowUp: typeof import('~icons/icon-park-outline/arrow-up.jsx').default
+  const IconParkOutlineClear: typeof import('~icons/icon-park-outline/clear.jsx').default
   const IconParkOutlineCloseSmall: typeof import('~icons/icon-park-outline/close-small.jsx').default
   const IconParkOutlineComputer: typeof import('~icons/icon-park-outline/computer.jsx').default
   const IconParkOutlineConcern: typeof import('~icons/icon-park-outline/concern.jsx').default
