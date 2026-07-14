@@ -107,7 +107,7 @@ export function mapFavFolderIds(targetFolders: ModalFavTypes.Result) {
   return targetFolders.map((x) => x.id)
 }
 export function joinFavFolderTitles(targetFolders: ModalFavTypes.Result) {
-  return `${targetFolders.map((x) => `「${x.title}」`).join('、')}`
+  return `${targetFolders.map((x) => `「${x.title}」`).join('')}` // 「 本身提供 space
 }
 export function mapModalFavManagerResult(result: ModalFavTypes.Result) {
   return {
