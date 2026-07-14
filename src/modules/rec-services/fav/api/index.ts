@@ -107,8 +107,9 @@ export async function getVideoFavState(avid: number | string) {
 
 export let defaultFavFolderId: number | undefined
 export let defaultFavFolderTitle: string | undefined
-export async function addFav(avid: string | number, folderId?: number) {
-  if (!folderId && (!defaultFavFolderId || !defaultFavFolderTitle)) {
+export async function addFav(avid: string | number, folderIds?: number | number[]) {
+  const _folderIds = [folderIds].flat().filter((x) => x !== undefined)
+  if (!_folderIds.length && (!defaultFavFolderId || !defaultFavFolderTitle)) {
     await updateFavFolderList()
     const { folders } = favStore
     const defaultFolder = folders.find((f) => isFavFolderDefault(f.attr)) ?? folders[0]
@@ -116,11 +117,13 @@ export async function addFav(avid: string | number, folderId?: number) {
     defaultFavFolderId = defaultFolder.id
     defaultFavFolderTitle = defaultFolder.title
   }
-
-  folderId ||= defaultFavFolderId
-  if (!folderId) return Result.err('没有找到默认收藏夹!')
-
-  return await favDeal({ avid, add_media_ids: folderId.toString() })
+  if (!_folderIds.length && defaultFavFolderId) {
+    _folderIds.push(defaultFavFolderId)
+  }
+  if (!_folderIds.length) {
+    return Result.err('没有找到默认收藏夹!')
+  }
+  return await favDeal({ avid, add_media_ids: _folderIds.join(',') })
 }
 
 export async function fetchAllFavFolders() {
@@ -132,11 +135,15 @@ export async function fetchAllFavFolders() {
   return folders
 }
 
-function modifyFav(avid: string | number, sourceFolderIds: number[] | undefined, targetFolderId: number | undefined) {
+function modifyFav(
+  avid: string | number,
+  sourceFolderIds: number[] | undefined,
+  targetFolderIds: number[] | undefined,
+) {
   const source = (sourceFolderIds ?? []).filter((x) => x !== undefined)
-  const target = [targetFolderId].filter((x) => x !== undefined)
+  const target = (targetFolderIds ?? []).filter((x) => x !== undefined)
   const delArr = difference(source, target)
-  const addArr = difference(target, source)
+  const addArr = target
   return favDeal({
     avid,
     del_media_ids: delArr.length ? delArr.join(',') : undefined,

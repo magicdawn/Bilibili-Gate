@@ -3,7 +3,7 @@ import { useHotkey } from '@tanstack/react-hotkeys'
 import { useMemoizedFn, useRequest, useUpdateEffect } from 'ahooks'
 import { Button, Empty, Input, Popover, Slider, Spin } from 'antd'
 import clsx from 'clsx'
-import { assert, isEqual, uniqBy } from 'es-toolkit'
+import { assert, uniqBy } from 'es-toolkit'
 import PinyinMatch from 'pinyin-match'
 import { useEffect, useMemo, useState } from 'react'
 import { useSnapshot } from 'valtio'
@@ -17,6 +17,7 @@ import { kbdClassName } from '$modules/hotkey'
 import {
   IconAnimatedChecked,
   IconForConfig,
+  IconForDelete,
   IconForEdit,
   IconForMove,
   IconForOpenExternalLink,
@@ -29,6 +30,10 @@ import { proxyWithLocalStorage } from '$utility/valtio'
 import { FavFolderOrderSwitcher, isValidFavFolderOrder, sortFavFolders, type FavFolderOrder } from './fav-folder-order'
 import type { Promisable } from 'type-fest'
 import type { FavFolder } from '$modules/rec-services/fav/types/folders/list-all-folders'
+
+function isSetEqual<T>(a: Set<T>, b: Set<number>) {
+  return a.size === b.size && a.symmetricDifference(b).size === 0
+}
 
 type LocalStore = {
   modalWidth: number
@@ -79,9 +84,9 @@ function ConfigPopoverContent() {
 }
 
 export namespace ModalFavTypes {
-  export type Result = Pick<FavFolder, 'id' | 'title'>
+  export type Result = Pick<FavFolder, 'id' | 'title'>[] // 把 fav-folder 想做 tag, 一个视频包含在多个收藏夹其实是合理的
   export type PickOkAction = (result: Result) => Promisable<boolean | undefined | void>
-  export type ModifyOkAction = (result: Result | undefined) => Promisable<boolean | undefined | void>
+  export type ModifyOkAction = (result: Result) => Promisable<boolean | undefined | void>
   export type Props = {
     show: boolean
     onHide: () => void
@@ -93,7 +98,21 @@ export namespace ModalFavTypes {
     // modify mode
     modifyInitialSelectedIds?: number[] | number
     modifyAllowEmpty?: boolean
+    modifySingleTarget?: boolean // 批量移动时, 只能移动到一个目标
     modifyOkAction?: ModifyOkAction
+  }
+}
+
+export function mapFavFolderIds(targetFolders: ModalFavTypes.Result) {
+  return targetFolders.map((x) => x.id)
+}
+export function joinFavFolderTitles(targetFolders: ModalFavTypes.Result) {
+  return `${targetFolders.map((x) => `「${x.title}」`).join('、')}`
+}
+export function mapModalFavManagerResult(result: ModalFavTypes.Result) {
+  return {
+    targetFolderIds: mapFavFolderIds(result),
+    targetFolderTitles: joinFavFolderTitles(result),
   }
 }
 
@@ -105,17 +124,19 @@ export function ModalFavManager({
   pickOkAction,
   // modify
   modifyInitialSelectedIds,
-  modifyAllowEmpty,
+  modifyAllowEmpty = false,
+  modifySingleTarget = false,
   modifyOkAction,
 }: ModalFavTypes.Props) {
   const { modalWidth, favFolderOrder } = useSnapshot(localStore)
-  const [selectedFolderId, setSelectedFolderId] = useState<number | undefined>(undefined)
   const [filterText, setFilterText] = useState<string | undefined>(undefined)
   const $updateFoldersReq = useRequest(updateFavFolderList, { manual: true })
   const $pickOkActionReq = useRequest(async (result: ModalFavTypes.Result) => pickOkAction?.(result), { manual: true })
-  const $modifyOkActionReq = useRequest(async (result: ModalFavTypes.Result | undefined) => modifyOkAction?.(result), {
+  const $modifyOkActionReq = useRequest(async (result: ModalFavTypes.Result) => modifyOkAction?.(result), {
     manual: true,
   })
+
+  const [selectedFolderIdsSet, setSelectedFolderIdsSet] = useState(() => new Set<number>())
 
   /* #region render state */
   const { folders } = useSnapshot(favStore)
@@ -148,29 +169,35 @@ export function ModalFavManager({
   const allowEmptyResult = mode === 'modify' && modifyAllowEmpty
 
   const okButtonDisabled = useMemo(() => {
-    return (
-      (!allowEmptyResult && !selectedFolderId) || // do not allow empty, but empty
-      (mode === 'modify' && isEqual(Array.from(modifyInitialSelectedIdsSet), [selectedFolderId])) // same as input
-    )
-  }, [allowEmptyResult, selectedFolderId, mode, modifyInitialSelectedIdsSet])
+    // do not allow empty, but empty
+    if (!allowEmptyResult && !selectedFolderIdsSet.size) return true
+
+    // same as input
+    if (mode === 'modify' && isSetEqual(selectedFolderIdsSet, modifyInitialSelectedIdsSet)) {
+      return true
+    }
+
+    return false
+  }, [allowEmptyResult, selectedFolderIdsSet, mode, modifyInitialSelectedIdsSet])
   /* #endregion */
 
   /* #region callbacks & shortcuts */
   useHotkey('R', () => $updateFoldersReq.run(true), { enabled: show })
 
   const onOk = useMemoizedFn(async () => {
-    let selectedFolder: FavFolder | undefined
-    if (selectedFolderId) selectedFolder = folders.find((folder) => folder.id === selectedFolderId)
-    if (!allowEmptyResult && !selectedFolder) return antMessage.error('请选择一个收藏夹')
+    const selectedFolders: FavFolder[] = Array.from(selectedFolderIdsSet)
+      .map((id) => folders.find((f) => f.id === id))
+      .filter(Boolean)
+    if (!allowEmptyResult && !selectedFolders.length) return antMessage.error('请选择一个收藏夹')
 
     if (mode === 'pick') {
-      assert(selectedFolder, 'selectedFolder should not be empty when mode=pick')
-      const success = await $pickOkActionReq.runAsync(selectedFolder)
+      assert(selectedFolders.length, 'selectedFolder should not be empty when mode=pick')
+      const success = await $pickOkActionReq.runAsync(selectedFolders)
       if (success) onHide()
     }
 
     if (mode === 'modify') {
-      const success = await $modifyOkActionReq.runAsync(selectedFolder)
+      const success = await $modifyOkActionReq.runAsync(selectedFolders)
       if (success) onHide()
     }
   })
@@ -178,10 +205,8 @@ export function ModalFavManager({
 
   /* #region side effects */
   const sync_modifyMode_initialSelectedIdSet_to_componentState = useMemoizedFn(() => {
-    if (!show || mode !== 'modify' || !modifyInitialSelectedIdsSet.size) return
-    if (!selectedFolderId || !modifyInitialSelectedIdsSet.has(selectedFolderId)) {
-      const first = Array.from(modifyInitialSelectedIdsSet)[0]
-      setSelectedFolderId(first)
+    if (show && mode === 'modify' && modifyInitialSelectedIdsSet.size) {
+      setSelectedFolderIdsSet(new Set(modifyInitialSelectedIdsSet))
     }
   })
 
@@ -196,9 +221,8 @@ export function ModalFavManager({
   }, [show])
 
   useUpdateEffect(() => {
-    if (show && (!selectedFolderId || !modifyInitialSelectedIdsSet.has(selectedFolderId))) {
-      const first = Array.from(modifyInitialSelectedIdsSet)[0]
-      setSelectedFolderId(first)
+    if (show && !selectedFolderIdsSet.size) {
+      setSelectedFolderIdsSet(new Set(modifyInitialSelectedIdsSet))
     }
   }, [modifyInitialSelectedIdsSet])
   /* #endregion */
@@ -244,6 +268,15 @@ export function ModalFavManager({
             />
           )}
 
+          <AntdTooltip title='清除已选'>
+            <IconForDelete
+              className='size-1.3em cursor-pointer'
+              onClick={() => {
+                setSelectedFolderIdsSet(new Set())
+              }}
+            />
+          </AntdTooltip>
+
           <HelpInfo className='ml-5px size-1.3em'>
             1. 使用 <kbd className={clsx(kbdClassName, 'mx-2px')}>r</kbd> 刷新收藏夹 <br />
             2. 使用 <kbd className={clsx(kbdClassName, 'mx-2px')}>esc</kbd> 取消操作, 关闭窗口 <br />
@@ -266,7 +299,7 @@ export function ModalFavManager({
             {foldersForRender.length ? (
               foldersForRender.map((f) => {
                 const isSourceFolder = mode === 'modify' && modifyInitialSelectedIdsSet.has(f.id)
-                const active = f.id === selectedFolderId
+                const active = selectedFolderIdsSet.has(f.id)
                 return (
                   <button
                     key={f.id}
@@ -277,10 +310,15 @@ export function ModalFavManager({
                       active && 'b-gate-primary color-white bg-gate-primary! hover:bg-gate-primary-lv1!',
                     )}
                     onClick={() => {
-                      if (active && allowEmptyResult) {
-                        return setSelectedFolderId(undefined)
+                      if (mode === 'modify' && modifySingleTarget) {
+                        return setSelectedFolderIdsSet(new Set([f.id]))
+                      } else {
+                        // toggle value inside `selectedFolderIdsSet`
+                        setSelectedFolderIdsSet((set) => {
+                          set.has(f.id) ? set.delete(f.id) : set.add(f.id)
+                          return new Set(set)
+                        })
                       }
-                      setSelectedFolderId(f.id)
                     }}
                   >
                     {/* source folder marker */}

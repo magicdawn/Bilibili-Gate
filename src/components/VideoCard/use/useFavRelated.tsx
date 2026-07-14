@@ -3,10 +3,11 @@ import clsx from 'clsx'
 import { assert } from 'es-toolkit'
 import { useMemo, useState, type MouseEvent, type ReactNode } from 'react'
 import {
-  handleModifyFavItemToFolder,
-  startModifyFavItemToFolder,
-  startPickFavFolder,
+  handleModifyFavItemToFolders,
+  startModifyFavItemToTargetFolders,
+  startPickFavFolders,
 } from '$components/ModalFavManager'
+import { joinFavFolderTitles, mapFavFolderIds, mapModalFavManagerResult } from '$components/ModalFavManager/components'
 import { getMultiSelectedItems } from '$components/RecGrid/rec-grid-state'
 import { checkIsFav, checkIsWatchlater, type RecItemType } from '$define'
 import { EApiType, ETab } from '$enums'
@@ -84,8 +85,11 @@ export function getFavContextMenus(ctx: FavContext, item: RecItemType, avid: str
       label: `已收藏在 ${(folderNames || []).map((n) => `「${n}」`).join('')}`,
       async onClick() {
         assert(folderIds.length, 'folderIds.length should not be empty')
-        await startModifyFavItemToFolder(folderIds, (targetFolder) => {
-          return handleModifyFavItemToFolder(avid, folderIds, targetFolder)
+        await startModifyFavItemToTargetFolders({
+          srcFolderIds: folderIds,
+          modifyOkAction: (targetFolder) => {
+            return handleModifyFavItemToFolders(avid, folderIds, targetFolder)
+          },
         })
       },
     },
@@ -108,9 +112,10 @@ export function getFavContextMenus(ctx: FavContext, item: RecItemType, avid: str
       icon: <IconForFav className={clsContextMenuIcon} />,
       label: '收藏到',
       async onClick() {
-        await startPickFavFolder(async (targetFolder) => {
-          const result = await UserFavApi.addFav(avid, targetFolder.id)
-          if (result.isOk()) antMessage.success(`已加入收藏夹「${targetFolder.title}」`)
+        await startPickFavFolders(async (targetFolders) => {
+          const targetFolderIds = mapFavFolderIds(targetFolders)
+          const result = await UserFavApi.addFav(avid, targetFolderIds)
+          if (result.isOk()) antMessage.success(`已加入收藏夹${joinFavFolderTitles(targetFolders)}`)
           return result.isOk()
         })
       },
@@ -183,24 +188,29 @@ export function getFavTabFavRelatedMenus({
               const uniqIds = selectedFavItems.map((x) => x.uniqId)
               const titles = selectedFavItems.map((x) => x.title)
 
-              await startModifyFavItemToFolder(
-                [item.folder.id],
-                async (targetFolder) => {
-                  assert(targetFolder, 'targetFolder should not be empty')
-                  const result = await UserFavApi.moveFavs(resources, srcFavFolderId, targetFolder.id)
+              await startModifyFavItemToTargetFolders({
+                srcFolderIds: [item.folder.id],
+                modifyOkAction: async (targetFolders) => {
+                  const targetFolder = targetFolders?.[0]
+                  assert(targetFolder && targetFolder.id, 'targetFolder should not be empty')
+                  const targetFolderId = targetFolder.id
+                  const targetFolderTitle = targetFolder.title
+
+                  const result = await UserFavApi.moveFavs(resources, srcFavFolderId, targetFolderId)
                   if (result.isErr()) {
                     antMessage.error(result.error.message)
                     return false
                   }
 
                   clearFavFolderAllItemsCache(item.folder.id)
-                  clearFavFolderAllItemsCache(targetFolder.id)
+                  clearFavFolderAllItemsCache(targetFolderId)
                   recSharedEmitter.emit('remove-cards', [uniqIds, titles, { silent: true }])
-                  antMessage.success(`已移动 ${uniqIds.length} 个视频到「${targetFolder.title}」收藏夹`)
+                  antMessage.success(`已移动 ${uniqIds.length} 个视频到「${targetFolderTitle}」收藏夹`)
                   return true
                 },
-                false,
-              )
+                modifyAllowEmpty: false,
+                modifySingleTarget: true,
+              })
             },
           },
         ]
@@ -233,15 +243,18 @@ export function getFavTabFavRelatedMenus({
         icon: <IconForEdit className={clsContextMenuIcon} />,
         label: '编辑收藏',
         async onClick() {
-          await startModifyFavItemToFolder(
-            folderIds,
-            async (targetFolder) => {
-              const success = await handleModifyFavItemToFolder(avid!, folderIds, targetFolder)
-              if (success && targetFolder?.id !== item.folder.id) onRemoveCurrent?.(item, cardData, true)
+          await startModifyFavItemToTargetFolders({
+            srcFolderIds: folderIds,
+            modifyAllowEmpty: false,
+            modifyOkAction: async (targetFolders) => {
+              assert(targetFolders?.length, 'targetFolders should not be empty')
+              const success = await handleModifyFavItemToFolders(avid!, folderIds, targetFolders)
+              if (success && targetFolders.map((x) => x.id).includes(item.folder.id)) {
+                onRemoveCurrent?.(item, cardData, true)
+              }
               return success
             },
-            false,
-          )
+          })
         },
       },
       {
@@ -329,13 +342,17 @@ export function useFavActionButton({
 
       if (faved) {
         assert(folderIds?.length, 'folderIds.length should not be empty')
-        await startModifyFavItemToFolder(folderIds, (targetFolder) => {
-          return handleModifyFavItemToFolder(avid, folderIds, targetFolder)
+        await startModifyFavItemToTargetFolders({
+          srcFolderIds: folderIds,
+          modifyOkAction: (targetFolder) => {
+            return handleModifyFavItemToFolders(avid, folderIds, targetFolder)
+          },
         })
       } else {
-        await startPickFavFolder(async (targetFolder) => {
-          const result = await UserFavApi.addFav(avid, targetFolder.id)
-          if (result.isOk()) antMessage.success(`已加入收藏夹「${targetFolder.title}」`)
+        await startPickFavFolders(async (targetFolders) => {
+          const { targetFolderIds, targetFolderTitles } = mapModalFavManagerResult(targetFolders)
+          const result = await UserFavApi.addFav(avid, targetFolderIds)
+          if (result.isOk()) antMessage.success(`已加入收藏夹${targetFolderTitles}`)
           return result.isOk()
         })
       }

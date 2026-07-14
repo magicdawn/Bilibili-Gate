@@ -5,7 +5,7 @@ import { antMessage } from '$modules/antd'
 import { UserFavApi } from '$modules/rec-services/fav/api'
 import { clearFavFolderAllItemsCache } from '$modules/rec-services/fav/service/fav-folder'
 import { wrapComponent } from '$utility/global-component'
-import { ModalFavManager, type ModalFavTypes } from './components'
+import { joinFavFolderTitles, mapFavFolderIds, ModalFavManager, type ModalFavTypes } from './components'
 
 const defaultProps: ModalFavTypes.Props = {
   onHide,
@@ -37,54 +37,63 @@ export function useModalMoveFavVisible() {
  * handle 表示实际动作
  */
 
-export async function startPickFavFolder(pickOkAction: ModalFavTypes.PickOkAction) {
+export async function startPickFavFolders(pickOkAction: ModalFavTypes.PickOkAction) {
   updateProps({ show: true, mode: 'pick', pickOkAction })
   await emitter.once('modal-close')
 }
 
-export async function startModifyFavItemToFolder(
-  srcFolderIds: number[] | undefined,
-  modifyOkAction: ModalFavTypes.ModifyOkAction,
-  modifyAllowEmpty: boolean | undefined = true,
-) {
+export async function startModifyFavItemToTargetFolders({
+  srcFolderIds,
+  modifyOkAction,
+  modifyAllowEmpty = true,
+  modifySingleTarget = false,
+}: {
+  srcFolderIds: number[] | undefined
+  modifyOkAction: ModalFavTypes.ModifyOkAction
+  modifyAllowEmpty?: boolean | undefined
+  modifySingleTarget?: boolean | undefined
+}) {
   updateProps({
     show: true,
     mode: 'modify',
     modifyInitialSelectedIds: srcFolderIds,
     modifyOkAction,
     modifyAllowEmpty,
+    modifySingleTarget,
   })
   await emitter.once('modal-close')
 }
 
-export async function handleModifyFavItemToFolder(
+export async function handleModifyFavItemToFolders(
   avid: string | number,
   sourceFolderIds: number[] | undefined,
-  targetFolder: ModalFavTypes.Result | undefined,
+  targetFolders: ModalFavTypes.Result | undefined,
 ): Promise<boolean> {
+  const targetFolderIds = mapFavFolderIds(targetFolders ?? [])
+
   // unchange
-  if (isEqual(sourceFolderIds, [targetFolder?.id])) {
+  if (isEqual(sourceFolderIds, targetFolderIds)) {
     antMessage.warning('请选择不同的收藏夹!')
     return false
   }
 
   {
-    const result = await UserFavApi.modifyFav(avid, sourceFolderIds, targetFolder?.id)
+    const result = await UserFavApi.modifyFav(avid, sourceFolderIds, targetFolderIds)
     if (result.isErr()) {
       antMessage.error(result.error.message)
       return false
     }
   }
 
-  const clearQueue = [...(sourceFolderIds ?? []), targetFolder?.id].filter((x) => x !== undefined)
+  const clearQueue = [...(sourceFolderIds ?? []), ...targetFolderIds].filter((x) => x !== undefined)
   clearQueue.forEach((fid) => clearFavFolderAllItemsCache(fid))
 
   let message: string | undefined
-  if (!targetFolder) {
+  if (!targetFolders?.length) {
     message = '已取消收藏'
   } else {
     const prefix = sourceFolderIds?.length ? '已移动收藏到' : '已加入收藏'
-    message = `${prefix}「${targetFolder.title}」`
+    message = `${prefix}${joinFavFolderTitles(targetFolders)}`
   }
   antMessage.success(message)
   return true
