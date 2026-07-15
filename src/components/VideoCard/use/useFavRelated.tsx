@@ -243,13 +243,16 @@ export function getFavTabFavRelatedMenus({
         icon: <IconForEdit className={clsContextMenuIcon} />,
         label: '编辑收藏',
         async onClick() {
+          const srcFolderIds = folderIds
           await startModifyFavItemToTargetFolders({
-            srcFolderIds: folderIds,
+            srcFolderIds,
             modifyAllowEmpty: false,
             modifyOkAction: async (targetFolders) => {
-              assert(targetFolders?.length, 'targetFolders should not be empty')
-              const success = await handleModifyFavItemToFolders(avid!, folderIds, targetFolders)
-              if (success && targetFolders.map((x) => x.id).includes(item.folder.id)) {
+              const { targetFolderIds } = mapModalFavManagerResult(targetFolders)
+              assert(targetFolderIds.length, 'targetFolderIds should not be empty')
+              const success = await handleModifyFavItemToFolders(avid!, srcFolderIds, targetFolders)
+              if (success && !targetFolderIds.includes(item.folder.id)) {
+                // 我的目的地没有你~
                 onRemoveCurrent?.(item, cardData, true)
               }
               return success
