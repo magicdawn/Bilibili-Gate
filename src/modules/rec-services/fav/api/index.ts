@@ -175,7 +175,7 @@ export function renameFavFolder(folderId: number, newTitle: string) {
       csrf: getCsrfToken(),
     })
     const resp = yield* await request.safePost('/x/v3/fav/folder/edit', form)
-    const json = yield* WebApiError.validateAxiosResponse(resp, '编辑收藏夹失败')
+    const json = yield* WebApiError.validateAxiosResponse(resp, '重命名收藏夹失败')
     return Result.ok()
   })
 }

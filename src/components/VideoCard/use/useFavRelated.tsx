@@ -241,7 +241,7 @@ export function getFavTabFavRelatedMenus({
         test: !!avid,
         key: 'modify-fav',
         icon: <IconForEdit className={clsContextMenuIcon} />,
-        label: '编辑收藏',
+        label: '修改收藏',
         async onClick() {
           const srcFolderIds = folderIds
           await startModifyFavItemToTargetFolders({
