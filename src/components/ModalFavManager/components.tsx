@@ -1,7 +1,7 @@
 /* eslint-disable require-await */
 import { useHotkey } from '@tanstack/react-hotkeys'
 import { useMemoizedFn, useRequest, useUpdateEffect } from 'ahooks'
-import { Button, Empty, Input, Popover, Slider, Spin } from 'antd'
+import { Button, Checkbox, Empty, Input, Popover, Slider, Spin } from 'antd'
 import clsx from 'clsx'
 import { assert, isEqual, uniqBy } from 'es-toolkit'
 import PinyinMatch from 'pinyin-match'
@@ -10,6 +10,7 @@ import { useSnapshot } from 'valtio'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { antSpinIndicator } from '$components/fragments'
+import { explainForFlag } from '$components/ModalSettings/index.shared'
 import { BILI_BRAND_PINK_THEME } from '$components/ModalSettings/theme.shared'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
@@ -33,16 +34,17 @@ import type { FavFolder } from '$modules/rec-services/fav/types/folders/list-all
 type LocalStore = {
   modalWidth: number
   favFolderOrder: FavFolderOrder
+  singleSelect: boolean
 }
 const localStoreInitial: LocalStore = {
   modalWidth: 60, // percent
   favFolderOrder: 'default',
+  singleSelect: false,
 }
 const localStore = proxyWithLocalStorage({ ...localStoreInitial }, 'modal-fav-manager')
 // reset invalid stored data to `default`
-if (!isValidFavFolderOrder(localStore.favFolderOrder)) {
-  localStore.favFolderOrder = 'default'
-}
+if (!isValidFavFolderOrder(localStore.favFolderOrder)) localStore.favFolderOrder = localStoreInitial.favFolderOrder
+if (typeof localStore.singleSelect !== 'boolean') localStore.singleSelect = localStoreInitial.singleSelect
 
 function ConfigPopoverContent() {
   const { modalWidth } = useSnapshot(localStore)
@@ -93,8 +95,10 @@ export namespace ModalFavTypes {
     // modify mode
     modifyInitialSelectedIds?: number[] | number
     modifyAllowEmpty?: boolean
-    modifySingleTarget?: boolean // 批量移动时, 只能移动到一个目标
     modifyOkAction?: ModifyOkAction
+
+    // result control
+    singleSelect?: boolean // explicit singleSelect 例如: 批量移动时, 只能移动到一个目标
   }
 }
 
@@ -120,22 +124,37 @@ export function ModalFavManager({
   // modify
   modifyInitialSelectedIds,
   modifyAllowEmpty = false,
-  modifySingleTarget = false,
   modifyOkAction,
+  // result control
+  singleSelect,
 }: ModalFavTypes.Props) {
-  const { modalWidth, favFolderOrder } = useSnapshot(localStore)
-  const [filterText, setFilterText] = useState<string | undefined>(undefined)
+  const { modalWidth, favFolderOrder, singleSelect: singleSelectFromStore } = useSnapshot(localStore)
+  const { folders } = useSnapshot(favStore)
   const $updateFoldersReq = useRequest(updateFavFolderList, { manual: true })
   const $pickOkActionReq = useRequest(async (result: ModalFavTypes.Result) => pickOkAction?.(result), { manual: true })
   const $modifyOkActionReq = useRequest(async (result: ModalFavTypes.Result) => modifyOkAction?.(result), {
     manual: true,
   })
 
+  /* #region select state */
   const [selectedFolderIdsSet, setSelectedFolderIdsSet] = useState(() => new Set<number>())
+  const usingSingleSelect = singleSelect ?? singleSelectFromStore
+  const handleSingleSelectChange = useMemoizedFn((val: boolean) => {
+    localStore.singleSelect = val
+    if (val && selectedFolderIdsSet.size > 1) {
+      setSelectedFolderIdsSet(new Set([Array.from(selectedFolderIdsSet)[0]]))
+    }
+  })
+  const modifyInitialSelectedIdsSet = useMemo(
+    () => new Set([modifyInitialSelectedIds].flat().filter((num) => typeof num === 'number')),
+    [modifyInitialSelectedIds],
+  )
+  const allowEmptyResult = mode === 'modify' && modifyAllowEmpty
+  /* #endregion */
 
-  /* #region render state */
-  const { folders } = useSnapshot(favStore)
+  /* #region render folders */
   // filter
+  const [filterText, setFilterText] = useState<string | undefined>(undefined)
   const foldersAfterFilter = useMemo(() => {
     const mapped = folders.map((folder, index) => ({ ...folder, vol: index + 1 }))
     if (!filterText) return mapped
@@ -153,27 +172,6 @@ export function ModalFavManager({
   )
   const foldersForRender = foldersAfterSort
   const needFavFolderOrderSwitcher = foldersForRender.length > 1
-
-  const modifyInitialSelectedIdsSet = useMemo(
-    () => new Set([modifyInitialSelectedIds].flat().filter((num) => typeof num === 'number')),
-    [modifyInitialSelectedIds],
-  )
-
-  const srcFavFolderBgClassName = useSrcFavFolderBgClassName()
-
-  const allowEmptyResult = mode === 'modify' && modifyAllowEmpty
-
-  const okButtonDisabled = useMemo(() => {
-    // do not allow empty, but empty
-    if (!allowEmptyResult && !selectedFolderIdsSet.size) return true
-
-    // same as input
-    if (mode === 'modify' && isEqual(selectedFolderIdsSet, modifyInitialSelectedIdsSet)) {
-      return true
-    }
-
-    return false
-  }, [allowEmptyResult, selectedFolderIdsSet, mode, modifyInitialSelectedIdsSet])
   /* #endregion */
 
   /* #region callbacks & shortcuts */
@@ -222,6 +220,16 @@ export function ModalFavManager({
   }, [modifyInitialSelectedIdsSet])
   /* #endregion */
 
+  const srcFavFolderBgClassName = useSrcFavFolderBgClassName()
+
+  const okButtonDisabled = useMemo(() => {
+    // do not allow empty, but empty
+    if (!allowEmptyResult && !selectedFolderIdsSet.size) return true
+    // same as input
+    if (mode === 'modify' && isEqual(selectedFolderIdsSet, modifyInitialSelectedIdsSet)) return true
+    return false
+  }, [allowEmptyResult, selectedFolderIdsSet, mode, modifyInitialSelectedIdsSet])
+
   return (
     <BaseModal
       show={show}
@@ -238,8 +246,18 @@ export function ModalFavManager({
             <span className='ml-5px'>{mode === 'pick' ? '选择目标收藏夹' : '修改收藏'}</span>
           </div>
 
+          <HelpInfo className='mx-0 size-1.3em'>
+            1. 使用 <HotkeyDisplay k='R' className='mx-2px' /> 刷新收藏夹 <br />
+            2. 使用 <HotkeyDisplay k='Escape' className='mx-2px' /> 取消操作, 关闭窗口 <br />
+            3. 使用 拼音 / 拼音首字母 过滤收藏夹标题 <br />
+          </HelpInfo>
+
+          <Popover trigger={'click'} title={<ConfigPopoverContent />}>
+            <IconForConfig className='size-1.3em cursor-pointer' />
+          </Popover>
+
           <Input
-            className='w-215px'
+            className='ml-2 w-215px'
             allowClear
             placeholder='过滤: 支持拼音 / 拼音首字母'
             value={filterText}
@@ -263,25 +281,29 @@ export function ModalFavManager({
             />
           )}
 
-          <AntdTooltip title='清除已选'>
-            <IconParkOutlineClear
-              className={clsx('size-1.3em cursor-pointer', !selectedFolderIdsSet.size && 'opacity-50')}
-              onClick={() => {
-                if (!selectedFolderIdsSet.size) return
-                setSelectedFolderIdsSet(new Set())
-              }}
-            />
-          </AntdTooltip>
+          <Checkbox
+            checked={usingSingleSelect}
+            onChange={(e) => handleSingleSelectChange(e.target.checked)}
+            disabled={singleSelect !== undefined} // disabled when explicit specified
+            styles={{ label: { paddingInline: '6px 0' } }}
+          >
+            <AntdTooltip title={explainForFlag('单选: 只允许选择一个目标收藏夹', '多选: 可多选目标收藏夹')}>
+              单选
+            </AntdTooltip>
+          </Checkbox>
 
-          <HelpInfo className='ml-5px size-1.3em'>
-            1. 使用 <HotkeyDisplay k='R' className='mx-2px' /> 刷新收藏夹 <br />
-            2. 使用 <HotkeyDisplay k='Escape' className='mx-2px' /> 取消操作, 关闭窗口 <br />
-            3. 使用 拼音 / 拼音首字母 过滤收藏夹标题 <br />
-          </HelpInfo>
-
-          <Popover trigger={'click'} title={<ConfigPopoverContent />}>
-            <IconForConfig className='size-1.3em cursor-pointer' />
-          </Popover>
+          {/* 多选时: 提供清除按钮 */}
+          {!usingSingleSelect && (
+            <AntdTooltip title='清除已选'>
+              <IconParkOutlineClear
+                className={clsx('size-1.3em cursor-pointer', !selectedFolderIdsSet.size && 'opacity-50')}
+                onClick={() => {
+                  if (!selectedFolderIdsSet.size) return
+                  setSelectedFolderIdsSet(new Set())
+                }}
+              />
+            </AntdTooltip>
+          )}
         </div>
         <ModalClose onClick={onHide} />
       </div>
@@ -306,7 +328,7 @@ export function ModalFavManager({
                       active && 'b-gate-primary color-white bg-gate-primary! hover:bg-gate-primary-lv1!',
                     )}
                     onClick={() => {
-                      if (mode === 'modify' && modifySingleTarget) {
+                      if (usingSingleSelect) {
                         return setSelectedFolderIdsSet(new Set([f.id]))
                       } else {
                         // toggle value inside `selectedFolderIdsSet`

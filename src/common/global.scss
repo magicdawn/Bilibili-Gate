@@ -98,11 +98,11 @@ body button:where(.ant-switch) {
 //
 .ant-tooltip-placement-top .ant-tooltip-arrow,
 .ant-popover-placement-top .ant-popover-arrow {
-  bottom: 1.5px !important;
+  bottom: 1px !important;
 }
 .ant-tooltip-placement-bottom .ant-tooltip-arrow,
 .ant-popover-placement-bottom .ant-popover-arrow {
-  top: 1.5px !important;
+  top: 1.5px !important; // 不知为何 1px 不够
 }
 
 /**

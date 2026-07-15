@@ -209,7 +209,7 @@ export function getFavTabFavRelatedMenus({
                   return true
                 },
                 modifyAllowEmpty: false,
-                modifySingleTarget: true,
+                singleSelect: true,
               })
             },
           },

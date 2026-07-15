@@ -46,12 +46,12 @@ export async function startModifyFavItemToTargetFolders({
   srcFolderIds,
   modifyOkAction,
   modifyAllowEmpty = true,
-  modifySingleTarget = false,
+  singleSelect,
 }: {
   srcFolderIds: number[] | undefined
   modifyOkAction: ModalFavTypes.ModifyOkAction
   modifyAllowEmpty?: boolean | undefined
-  modifySingleTarget?: boolean | undefined
+  singleSelect?: boolean | undefined
 }) {
   updateProps({
     show: true,
@@ -59,7 +59,7 @@ export async function startModifyFavItemToTargetFolders({
     modifyInitialSelectedIds: srcFolderIds,
     modifyOkAction,
     modifyAllowEmpty,
-    modifySingleTarget,
+    singleSelect,
   })
   await emitter.once('modal-close')
 }
@@ -67,7 +67,7 @@ export async function startModifyFavItemToTargetFolders({
 export async function handleModifyFavItemToFolders(
   avid: string | number,
   sourceFolderIds: number[] | undefined,
-  targetFolders: ModalFavTypes.Result | undefined,
+  targetFolders: ModalFavTypes.Result,
 ): Promise<boolean> {
   const targetFolderIds = mapFavFolderIds(targetFolders ?? [])
 
