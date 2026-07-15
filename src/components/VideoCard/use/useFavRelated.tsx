@@ -15,10 +15,10 @@ import { antMessage, antModal, defineAntMenus } from '$modules/antd'
 import { checkIsNormalVideo, type IVideoCardData } from '$modules/filter/normalize'
 import {
   IconForDelete,
-  IconForEdit,
   IconForFav,
   IconForFaved,
   IconForLoading,
+  IconForMove,
   IconForOpenExternalLink,
 } from '$modules/icon'
 import { getLoginStatus } from '$modules/login-status'
@@ -240,8 +240,8 @@ export function getFavTabFavRelatedMenus({
       {
         test: !!avid,
         key: 'modify-fav',
-        icon: <IconForEdit className={clsContextMenuIcon} />,
-        label: '修改收藏',
+        icon: <IconForMove className={clsContextMenuIcon} />,
+        label: '移动到其他收藏夹',
         async onClick() {
           const srcFolderIds = folderIds
           await startModifyFavItemToTargetFolders({
