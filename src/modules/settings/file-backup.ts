@@ -18,7 +18,7 @@ import {
 import { set_HAS_RESTORED_SETTINGS } from './restore-flag'
 import type { PartialDeep } from 'type-fest'
 
-export class ObjectUrl {
+export class ObjectUrlWrapper {
   public url: string | undefined
   public revokeTimer: number | undefined
   constructor(obj: Blob, delay: number = ms('10min')) {
@@ -33,14 +33,14 @@ export class ObjectUrl {
   }
 }
 
-let lastObjectUrl: ObjectUrl | undefined
+let lastObjectUrl: ObjectUrlWrapper | undefined
 async function genUrl(paths: LeafSettingsPath[] | undefined) {
   const fullSettings = await loadSettingsFromGmStorage()
   const val = paths?.length ? pickSettings(fullSettings, paths).pickedSettings : fullSettings
   const json = JSON.stringify(val, null, 2)
   const blob = new Blob([json], { type: 'application/json' })
   lastObjectUrl?.revoke()
-  lastObjectUrl = new ObjectUrl(blob)
+  lastObjectUrl = new ObjectUrlWrapper(blob)
   return lastObjectUrl.url!
 }
 
@@ -48,14 +48,23 @@ export async function exportSettings(paths?: LeafSettingsPath[], moduleLabel?: s
   const url = await genUrl(paths)
   const prefix = [APP_NAME, trim(moduleLabel || '', ['-', ' ']), 'settings'].filter(Boolean).join('-')
   const filename = `${prefix} ${dayjs().format('YYYY-MM-DD HH:mm:ss')}.json`
-  if (typeof GM_download !== 'undefined') {
-    GM_download?.({ url, name: filename })
-  } else {
+
+  const useGmDownload = () => {
+    if (typeof GM_download !== 'undefined') {
+      GM_download?.({ url, name: filename })
+    }
+  }
+  const usePlainLink = () => {
     const link = document.createElement('a')
     link.href = url
     link.download = filename
     link.click()
   }
+
+  // ViolentMonkey mv3 中各种 bug,
+  // GM_download 调用无响应...
+  // oxlint-disable-next-line react-hooks/rules-of-hooks
+  usePlainLink()
 }
 
 export async function chooseFileForImportSettings() {
