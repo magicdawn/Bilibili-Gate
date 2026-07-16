@@ -1,4 +1,5 @@
-import { proxy, useSnapshot } from 'valtio'
+import { proxy } from 'valtio'
+import { useTrackedSnapshot } from 'valtio-select'
 import { fetchLoginInfo } from '$modules/bilibili/user/login-info'
 import toast from '$utility/toast'
 import type { AnonymousLoginInfo } from '$modules/bilibili/user/anonymous-info.api'
@@ -29,12 +30,16 @@ export async function initLoginStore() {
 
 export const initLoginStorePromise = initLoginStore()
 
-export function useLoginStatus() {
-  return useSnapshot(loginStore).loginInfo?.isLogin ?? false
+function calcLoginStatus(s: typeof loginStore) {
+  return s.loginInfo?.isLogin ?? false
 }
 
 export function getLoginStatus() {
-  return loginStore.loginInfo?.isLogin ?? false
+  return calcLoginStatus(loginStore)
+}
+
+export function useLoginStatus() {
+  return useTrackedSnapshot(loginStore, calcLoginStatus)
 }
 
 export function checkLoginStatus(): boolean {

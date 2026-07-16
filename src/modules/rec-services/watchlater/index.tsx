@@ -1,6 +1,7 @@
 import { assert, orderBy, shuffle } from 'es-toolkit'
 import pRetry from 'p-retry'
-import { proxy, useSnapshot } from 'valtio'
+import { proxy } from 'valtio'
+import { useTrackedSnapshot } from 'valtio-select'
 import { proxySet } from 'valtio/utils'
 import { appWarn, IN_BILIBILI_HOMEPAGE } from '$common'
 import { EApiType } from '$enums'
@@ -22,8 +23,9 @@ export const watchlaterState = proxy({
 })
 
 export function useWatchlaterState(bvid?: string) {
-  const set = useSnapshot(watchlaterState).bvidSet
-  return !!bvid && set.has(bvid)
+  return useTrackedSnapshot(watchlaterState, ({ bvidSet }) => {
+    return !!bvid && bvidSet.has(bvid)
+  })
 }
 
 function replaceWatchlaterStateBvidSet(newSet: string[]) {
