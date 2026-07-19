@@ -69,9 +69,9 @@ async function addToFav(sourceFavFolderIds?: number[] | undefined) {
       const success = await handleModifyFavItemToFolders(avid, sourceFavFolderIds, targetFolder)
       if (!success) return
 
-      const nextState = !!targetFolder
+      const nextFavedState = !!targetFolder.length
       const el = document.querySelector<HTMLDivElement>('.video-fav.video-toolbar-left-item')
-      el?.classList.toggle('on', nextState)
+      el?.classList.toggle('on', nextFavedState)
 
       return true
     },
