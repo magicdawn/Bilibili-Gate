@@ -329,7 +329,12 @@ export function ModalFavManager({
                     )}
                     onClick={() => {
                       if (usingSingleSelect) {
-                        return setSelectedFolderIdsSet(new Set([f.id]))
+                        if (allowEmptyResult && active) {
+                          // toggle
+                          setSelectedFolderIdsSet(new Set())
+                        } else {
+                          setSelectedFolderIdsSet(new Set([f.id]))
+                        }
                       } else {
                         // toggle value inside `selectedFolderIdsSet`
                         setSelectedFolderIdsSet((set) => {
