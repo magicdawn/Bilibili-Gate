@@ -6,6 +6,7 @@ import clsx from 'clsx'
 import { assert, isEqual, uniqBy } from 'es-toolkit'
 import PinyinMatch from 'pinyin-match'
 import { useEffect, useMemo, useState } from 'react'
+import { match } from 'ts-pattern'
 import { useSnapshot } from 'valtio'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { HelpInfo } from '$components/_base/HelpInfo'
@@ -18,8 +19,8 @@ import { HotkeyDisplay } from '$modules/hotkey'
 import {
   IconAnimatedChecked,
   IconForConfig,
-  IconForEdit,
-  IconForMove,
+  IconForFav,
+  IconForFaved,
   IconForOpenExternalLink,
   IconForReset,
 } from '$modules/icon'
@@ -146,7 +147,7 @@ export function ModalFavManager({
     }
   })
   const modifyInitialSelectedIdsSet = useMemo(
-    () => new Set([modifyInitialSelectedIds].flat().filter((num) => typeof num === 'number')),
+    () => new Set([modifyInitialSelectedIds].flat().filter((num) => num !== undefined)),
     [modifyInitialSelectedIds],
   )
   const allowEmptyResult = mode === 'modify' && modifyAllowEmpty
@@ -230,6 +231,22 @@ export function ModalFavManager({
     return false
   }, [allowEmptyResult, selectedFolderIdsSet, mode, modifyInitialSelectedIdsSet])
 
+  const modalTitle = useMemo(() => {
+    return match(mode)
+      .returnType<string>()
+      .with('pick', () => '选择目标收藏夹')
+      .with('modify', () => (allowEmptyResult ? '移动或取消收藏' : '移动到其他收藏夹'))
+      .exhaustive()
+  }, [mode, allowEmptyResult])
+
+  const faved = useMemo(() => {
+    return match(mode)
+      .returnType<boolean>()
+      .with('pick', () => false)
+      .with('modify', () => !!modifyInitialSelectedIdsSet.size)
+      .exhaustive()
+  }, [mode, modifyInitialSelectedIdsSet])
+
   return (
     <BaseModal
       show={show}
@@ -242,8 +259,8 @@ export function ModalFavManager({
       <div className={BaseModalClassNames.modalHeader}>
         <div className='flex flex-wrap items-center gap-x-10px gap-y-1'>
           <div className={BaseModalClassNames.modalTitle}>
-            {mode === 'pick' ? <IconForMove className='size-25px' /> : <IconForEdit className='size-25px' />}
-            <span className='ml-5px'>{mode === 'pick' ? '选择目标收藏夹' : '修改收藏'}</span>
+            {faved ? <IconForFaved className='size-25px' /> : <IconForFav className='size-25px' />}
+            <span className='ml-5px'>{modalTitle}</span>
           </div>
 
           <HelpInfo className='mx-0 size-1.3em'>

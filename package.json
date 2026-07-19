@@ -64,6 +64,7 @@
     "ring-buffer-ts": "^1.2.0",
     "sass-embedded": "^1.100.0",
     "spark-md5": "^3.0.2",
+    "ts-pattern": "^5.9.0",
     "ua-parser-js": "^1.0.41",
     "unocss-merge": "^0.10.0",
     "valtio": "^2.3.2",

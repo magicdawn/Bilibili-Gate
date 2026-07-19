@@ -13,14 +13,7 @@ import { checkIsFav, checkIsWatchlater, type RecItemType } from '$define'
 import { EApiType, ETab } from '$enums'
 import { antMessage, antModal, defineAntMenus } from '$modules/antd'
 import { checkIsNormalVideo, type IVideoCardData } from '$modules/filter/normalize'
-import {
-  IconForDelete,
-  IconForFav,
-  IconForFaved,
-  IconForLoading,
-  IconForMove,
-  IconForOpenExternalLink,
-} from '$modules/icon'
+import { IconForDelete, IconForFav, IconForFaved, IconForLoading, IconForOpenExternalLink } from '$modules/icon'
 import { getLoginStatus } from '$modules/login-status'
 import { multiSelectStore } from '$modules/multi-select/store'
 import { defaultFavFolderTitle, UserFavApi } from '$modules/rec-services/fav/api'
@@ -172,7 +165,7 @@ export function getFavTabFavRelatedMenus({
           {
             key: 'fav:batch-move-fav',
             label: `移动到其他收藏夹${multiSelectingAppendix}`,
-            icon: <IconParkOutlineTransferData className={clsContextMenuIcon} />,
+            icon: <IconForFaved className={clsContextMenuIcon} />,
             async onClick() {
               if (!multiSelectStore.multiSelecting) return
 
@@ -240,7 +233,7 @@ export function getFavTabFavRelatedMenus({
       {
         test: !!avid,
         key: 'modify-fav',
-        icon: <IconForMove className={clsContextMenuIcon} />,
+        icon: <IconForFaved className={clsContextMenuIcon} />,
         label: '移动到其他收藏夹',
         async onClick() {
           const srcFolderIds = folderIds
