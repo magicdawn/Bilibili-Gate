@@ -5,7 +5,7 @@ import { Fragment, useDeferredValue, useMemo, type ReactNode } from 'react'
 import { useSnapshot, type UseSnapshotOptions } from 'valtio'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { ETab } from '$enums'
-import { checkLoginStatus, toastNeedLogin, useLoginStatus } from '$modules/login-status'
+import { getLoginStatus, toastNeedLogin, useLoginStatus } from '$modules/login-status'
 import { useSettingsSnapshot } from '$modules/settings'
 import { getOnlyTab } from '$routes'
 import { proxyWithGmStorage } from '$utility/valtio'
@@ -123,7 +123,7 @@ export function VideoSourceTab({ className }: { className?: string }) {
   const currentTabConfigList = useCurrentDisplayingTabConfigList()
   const { __internalRecTabRenderAsSegments } = useSettingsSnapshot()
   const onChangeTab = useMemoizedFn((newTab: ETab) => {
-    if (!TabConfig[newTab].anonymousUsage && !checkLoginStatus()) {
+    if (!TabConfig[newTab].anonymousUsage && !getLoginStatus()) {
       return toastNeedLogin()
     }
     videoSourceTabState.value = newTab

@@ -41,7 +41,3 @@ export function getLoginStatus() {
 export function useLoginStatus() {
   return useTrackedSnapshot(loginStore, calcLoginStatus)
 }
-
-export function checkLoginStatus(): boolean {
-  return getLoginStatus()
-}

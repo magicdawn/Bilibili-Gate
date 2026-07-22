@@ -3,9 +3,8 @@
  */
 
 import { useSnapshot } from 'valtio'
-import { baseDebug, IN_BILIBILI_HOMEPAGE } from '$common'
+import { baseDebug } from '$common'
 import { isWebApiSuccess, request } from '$request'
-import { whenIdle } from '$utility/dom'
 import { proxySetWithGmStorage } from '$utility/valtio'
 import { modifyRelations } from './common'
 import type { UpMidType } from '$modules/rec-services/dynamic-feed/store'
@@ -53,11 +52,7 @@ export async function getUserBlacklist() {
 
   const getPage = async (pn: number) => {
     const res = await request.get('/x/relation/blacks', {
-      params: {
-        re_version: 0,
-        ps,
-        pn,
-      },
+      params: { re_version: 0, ps, pn },
     })
 
     const json = res.data as ListBlackJson
@@ -83,14 +78,3 @@ export async function getUserBlacklist() {
 
   return blackMids
 }
-
-;(async () => {
-  // 仅首页需要
-  if (!IN_BILIBILI_HOMEPAGE) return
-  await whenIdle()
-  const ids = await getUserBlacklist()
-  debug('user blocklist fetched: %o', ids)
-  if (ids) {
-    blacklistMidsReplaceAllWith(ids.map((x) => x.toString()))
-  }
-})()

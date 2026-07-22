@@ -5,7 +5,8 @@ import { useTrackedSnapshot } from 'valtio-select'
 import { useEmitterOn } from '$common/hooks/useEmitter'
 import { checkIsAppRecommend, checkIsLive, checkIsPcRecommend, type RecItemType } from '$define'
 import { ETab } from '$enums'
-import { followedMidSet, queryFollowedStatus } from '$modules/bilibili/me/relations/follow'
+import { queryFollowedStatus } from '$modules/bilibili/me/relations/follow'
+import { followedMidSet } from '$modules/bilibili/me/relations/following-state'
 import { getFollowedStatus } from '$modules/filter'
 import { getLoginStatus } from '$modules/login-status'
 import type { IVideoCardData } from '$modules/filter/normalize'
@@ -31,16 +32,17 @@ export function useInitFollowedStatusContext(
   const followedFromApi = useTrackedSnapshot(followedMidSet, (set) => !!authorMid && set.has(authorMid.toString()))
 
   const updateFollowedStatus = useLockFn(async () => {
+    if (!authorMid) return // must has valid mid
     if (!getLoginStatus()) return // not logined
     if (followedFromCardData !== undefined) return // already followed from card data
-    if (!authorMid) return // must has valid mid
+    await queryFollowedStatus(authorMid)
+  })
+  useEmitterOn(emitter, 'context-menu-open', () => {
     // must from these tabs
     const allowedTabs = [ETab.Watchlater, ETab.Fav, ETab.History, ETab.Liked, ETab.SpaceUpload]
     if (!allowedTabs.includes(tab)) return
-    // fetch
-    await queryFollowedStatus(authorMid)
+    updateFollowedStatus()
   })
-  useEmitterOn(emitter, 'context-menu-open', updateFollowedStatus)
 
   const followed = followedFromCardData ?? followedFromApi ?? false
 

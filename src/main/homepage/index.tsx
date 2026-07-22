@@ -10,7 +10,8 @@ import { settings } from '$modules/settings'
 import { getOnlyTab, inGateEntry } from '$routes'
 import { isSafari } from '$ua'
 import { poll, tryAction, tryToRemove } from '$utility/dom'
-import { initDefaultHomepageLargePreview } from './default-homepage'
+import { initDefaultHomepageLargePreview } from '../default-homepage'
+import { initMyRelations } from './init-relations'
 import type { Root } from 'react-dom/client'
 
 const bewlyEnabledSelector = 'html.bewly-design:not(:has(#i_cecream,#app))'
@@ -46,6 +47,9 @@ export async function initHomepage() {
 
   // wait fetch login info
   await initLoginStorePromise
+
+  // fetch relations
+  initMyRelations()
 
   const shouldInit = settings.pureRecommend || inGateEntry() || getOnlyTab()
   if (shouldInit) {

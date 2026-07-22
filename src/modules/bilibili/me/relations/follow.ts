@@ -4,10 +4,10 @@
 
 import { isNotNil } from 'es-toolkit'
 import pMemoize from 'p-memoize'
-import { proxySet } from 'valtio/utils'
 import { getLoginStatus } from '$modules/login-status'
 import { request, WebApiError } from '$request'
 import { modifyRelations } from './common'
+import { followedMidSet } from './following-state'
 import type { FollowStateJson } from './types/follow-state'
 import type { RelationAttributeEntity } from './types/shared'
 
@@ -19,6 +19,10 @@ function followActionFactory(action: 'follow' | 'unfollow') {
 
   return async function followAction(upMid: string) {
     const success = await modifyRelations(upMid, act)
+    if (success) {
+      if (action === 'follow') followedMidSet.add(upMid)
+      else if (action === 'unfollow') followedMidSet.delete(upMid)
+    }
     return success
   }
 }
@@ -60,5 +64,3 @@ export async function queryFollowedStatus(upMid: string | number) {
   val ? followedMidSet.add(upMid.toString()) : followedMidSet.delete(upMid.toString())
   return val
 }
-
-export const followedMidSet = proxySet<string>()

@@ -8,7 +8,7 @@ import { defineStatItems, type StatItemField, type StatItemType } from '$compone
 import { PcRecGoto } from '$define/pc-recommend'
 import { EApiType, ELiveStatus } from '$enums'
 import { AntdTooltip } from '$modules/antd/custom'
-import { followedMidSet } from '$modules/bilibili/me/relations/follow'
+import { followedMidSet } from '$modules/bilibili/me/relations/following-state'
 import { BiliFreshSpaceIconUploadChargeOnly } from '$modules/icon/bili-fresh-space-icons'
 import { normalizeDynamicFeedItem } from '$modules/rec-services/dynamic-feed/api/df-normalize'
 import { isFavFolderPrivate } from '$modules/rec-services/fav/fav-util'

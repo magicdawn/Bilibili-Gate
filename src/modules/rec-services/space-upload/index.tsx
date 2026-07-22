@@ -5,10 +5,11 @@ import { snapshot } from 'valtio'
 import { EApiType } from '$enums'
 import { antMessage } from '$modules/antd'
 import { getAllFollowGroups, getFollowGroupContent } from '$modules/bilibili/me/follow-group'
-import { followedMidSet, queryFollowedStatus } from '$modules/bilibili/me/relations/follow'
+import { queryFollowedStatus } from '$modules/bilibili/me/relations/follow'
+import { followedMidSet } from '$modules/bilibili/me/relations/following-state'
 import { getUserNickname } from '$modules/bilibili/user/nickname'
 import { getSpaceAccInfo } from '$modules/bilibili/user/space-acc-info'
-import { checkLoginStatus } from '$modules/login-status'
+import { getLoginStatus } from '$modules/login-status'
 import { setPageTitle } from '$utility/dom'
 import { parseAdvancedFilter } from '$utility/local-filter'
 import { parseDuration } from '$utility/video'
@@ -183,7 +184,7 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
   }
 
   override async fetchMore(abortSignal: AbortSignal): Promise<SpaceUploadItemExtend[] | undefined> {
-    if (!checkLoginStatus()) warnAnonymousUsageOnce()
+    if (!getLoginStatus()) warnAnonymousUsageOnce()
 
     this.setPageTitle()
     await this.setupServices()
