@@ -8,6 +8,7 @@ import { defineStatItems, type StatItemField, type StatItemType } from '$compone
 import { PcRecGoto } from '$define/pc-recommend'
 import { EApiType, ELiveStatus } from '$enums'
 import { AntdTooltip } from '$modules/antd/custom'
+import { followedMidSet } from '$modules/bilibili/me/relations/follow'
 import { BiliFreshSpaceIconUploadChargeOnly } from '$modules/icon/bili-fresh-space-icons'
 import { normalizeDynamicFeedItem } from '$modules/rec-services/dynamic-feed/api/df-normalize'
 import { isFavFolderPrivate } from '$modules/rec-services/fav/fav-util'
@@ -21,7 +22,7 @@ import {
   EHistoryDeviceTypeString,
 } from '$modules/rec-services/history/enums'
 import { isPgcSeasonRankItem, isPgcWebRankItem } from '$modules/rec-services/hot/rank/rank-tab'
-import { spaceUploadAvatarCache, spaceUploadFollowedMidSet } from '$modules/rec-services/space-upload'
+import { spaceUploadAvatarCache } from '$modules/rec-services/space-upload'
 import { buildSpaceUploadVideoCardUrl } from '$modules/rec-services/space-upload/store'
 import { isSpaceUploadItemChargeOnly } from '$modules/rec-services/space-upload/util'
 import { buildWatchlaterVideoCardUrl } from '$modules/rec-services/watchlater/helper'
@@ -661,7 +662,7 @@ function apiSpaceUploadAdapter(item: SpaceUploadItemExtend): IVideoCardData {
     authorName: item.author,
     authorFace: spaceUploadAvatarCache.get(item.mid),
     authorMid,
-    followed: spaceUploadFollowedMidSet.has(item.mid),
+    followed: followedMidSet.has(item.mid.toString()),
     cardTags: defineCardTags([
       isSpaceUploadItemChargeOnly(item) && {
         key: `${item.api}:charge-only`,

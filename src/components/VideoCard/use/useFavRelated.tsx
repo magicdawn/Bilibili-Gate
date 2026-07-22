@@ -2,6 +2,7 @@ import { useMemoizedFn, useRequest, useUpdateEffect } from 'ahooks'
 import clsx from 'clsx'
 import { assert } from 'es-toolkit'
 import { useMemo, useState, type MouseEvent, type ReactNode } from 'react'
+import { useEmitterOn } from '$common/hooks/useEmitter'
 import {
   handleModifyFavItemToFolders,
   startModifyFavItemToTargetFolders,
@@ -25,10 +26,11 @@ import { VideoCardActionButton } from '../child-components/VideoCardActions'
 import { clsContextMenuIcon } from '../context-menus'
 import { getLinkTarget } from './useOpenRelated'
 import type { RecSharedEmitter } from '$components/Recommends/rec.shared'
+import type { VideoCardEmitter } from '../index.shared'
 
 export type FavContext = ReturnType<typeof useInitFavContext>
 
-export function useInitFavContext(item: RecItemType, avid: string | undefined) {
+export function useInitFavContext(item: RecItemType, avid: string | undefined, emitter: VideoCardEmitter) {
   const [folderNames, setFolderNames] = useState<string[] | undefined>(undefined)
   const [folderUrls, setFolderUrls] = useState<string[] | undefined>(undefined)
   const [folderIds, setFolderIds] = useState<number[] | undefined>(undefined)
@@ -47,6 +49,7 @@ export function useInitFavContext(item: RecItemType, avid: string | undefined) {
       setFolderIds(result.favFolderIds)
     }
   })
+  useEmitterOn(emitter, 'context-menu-open', updateFavFolderNames)
 
   return useMemo(
     () => ({ folderNames, folderUrls, folderIds, updateFavFolderNames }),

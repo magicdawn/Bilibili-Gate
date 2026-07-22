@@ -2,11 +2,10 @@ import { assert, groupBy, once, orderBy, uniq } from 'es-toolkit'
 import pmap from 'promise.map'
 import QuickLRU from 'quick-lru'
 import { snapshot } from 'valtio'
-import { proxySet } from 'valtio/utils'
 import { EApiType } from '$enums'
 import { antMessage } from '$modules/antd'
 import { getAllFollowGroups, getFollowGroupContent } from '$modules/bilibili/me/follow-group'
-import { isFollowedFromRelationAttribute, queryFollowStateMemoized } from '$modules/bilibili/me/relations/follow'
+import { followedMidSet, queryFollowedStatus } from '$modules/bilibili/me/relations/follow'
 import { getUserNickname } from '$modules/bilibili/user/nickname'
 import { getSpaceAccInfo } from '$modules/bilibili/user/space-acc-info'
 import { checkLoginStatus } from '$modules/login-status'
@@ -28,14 +27,9 @@ const warnAnonymousUsageOnce = once(() => {
 
 export const spaceUploadAvatarCache = new QuickLRU<number, string>({ maxSize: 100 })
 
-export const spaceUploadFollowedMidSet = proxySet<number>()
-
 async function trySetFollowedMidSet(upMid: number) {
-  if (spaceUploadFollowedMidSet.has(upMid)) return
-  const state = await queryFollowStateMemoized(upMid)
-  if (state && isFollowedFromRelationAttribute(state)) {
-    spaceUploadFollowedMidSet.add(upMid)
-  }
+  if (!upMid || followedMidSet.has(upMid.toString())) return
+  await queryFollowedStatus(upMid)
 }
 
 type SpaceUploadServiceConfig = {
@@ -173,7 +167,7 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
 
     if (this.groupId !== undefined) {
       const mids = await getFollowGroupContent(this.groupId!)
-      mids.forEach((x) => spaceUploadFollowedMidSet.add(x)) // mark followed
+      mids.forEach((x) => followedMidSet.add(x.toString())) // mark followed
       if (!mids.length) throw new Error('Group is Empty!')
       this.mergeTimelineService = new MergeTimelineService(
         mids.map((x) => x.toString()),

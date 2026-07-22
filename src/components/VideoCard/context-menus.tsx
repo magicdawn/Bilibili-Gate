@@ -3,7 +3,6 @@
  */
 
 import { useMemoizedFn } from 'ahooks'
-import { isNil } from 'es-toolkit'
 import { useMemo, type MouseEvent } from 'react'
 import { useSnapshot } from 'valtio'
 import {
@@ -15,11 +14,8 @@ import {
 } from '$components/RecGrid/rec-grid-state'
 import { useRecSelfContext } from '$components/Recommends/rec.shared'
 import {
-  checkIsAppRecommend,
   checkIsDynamicFeed,
   checkIsHistory,
-  checkIsLive,
-  checkIsPcRecommend,
   checkIsSpaceUpload,
   type DynamicFeedItemExtend,
   type RecItemType,
@@ -29,7 +25,7 @@ import { antMessage, antModal, defineAntMenus, type AntMenuItem } from '$modules
 import { UserBlacklistService } from '$modules/bilibili/me/relations/blacklist'
 import { UserfollowService } from '$modules/bilibili/me/relations/follow'
 import { setNicknameCache } from '$modules/bilibili/user/nickname'
-import { getFollowedStatus, isApiRecLike } from '$modules/filter'
+import { isApiRecLike } from '$modules/filter'
 import { openNewTab } from '$modules/gm'
 import {
   IconForAsc,
@@ -73,6 +69,7 @@ type UseContextMenuOptions = {
 
   watchlaterContext: WatchlaterRelatedContext
   favContext: FavContext
+  followed: boolean
   hasDislikeEntry: boolean
   onTriggerDislike: () => unknown
   onRemoveCurrent: ((item: RecItemType, data: IVideoCardData, silent?: boolean) => void | Promise<void>) | undefined
@@ -88,8 +85,11 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
     tab,
     isNormalVideo,
 
+    // contexts
     favContext,
     watchlaterContext,
+    followed,
+
     hasDislikeEntry,
     onTriggerDislike,
     onRemoveCurrent,
@@ -166,13 +166,6 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
   /**
    * unfollow
    */
-  const followed = (() => {
-    if (!isNil(cardData.followed)) return cardData.followed
-    if (tab === ETab.DynamicFeed && checkIsLive(item)) return true // 关注的人的直播; ETab.DynamicFeed 其他 item 使用 cardData.followed
-    if (tab === ETab.Live && checkIsLive(item)) return true // 关注的人的直播
-    if (checkIsAppRecommend(item) || checkIsPcRecommend(item)) return getFollowedStatus(recommendReason)
-    return false
-  })()
   const hasUnfollowEntry = followed
   const onUnfollowUp = useMemoizedFn(async () => {
     if (!authorMid) return

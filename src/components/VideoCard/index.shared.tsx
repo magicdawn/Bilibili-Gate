@@ -117,6 +117,7 @@ export type VideoCardEvents = {
   'trigger-dislike': undefined
   'start-preview-animation': undefined
   'hotkey-preview-animation': undefined
+  'context-menu-open': undefined
 }
 export type VideoCardEmitter = Emittery<VideoCardEvents>
 export function createVideoCardEmitter() {

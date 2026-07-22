@@ -95,7 +95,7 @@ function __BottomRevertAction({
   return (
     <div className={blockedCardClassNames.action}>
       {/* 需要它撑起高度 */}
-      <VideoCardBottom item={item} cardData={cardData} className='invisible' />
+      <VideoCardBottom item={item} cardData={cardData} className='invisible' followed={false} />
       <div className={blockedCardClassNames.actionInner}>
         <button className={blockedCardClassNames.actionButton} onClick={onClick}>
           <IconForReset className='mr-4px mt--2px' />

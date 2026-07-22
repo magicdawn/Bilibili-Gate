@@ -19,7 +19,7 @@ import { checkIsHistory, checkIsLive, checkIsPcRecommend, checkIsRank, type RecI
 import { PcRecGoto } from '$define/pc-recommend'
 import { ELiveStatus, type EGridDisplayMode } from '$enums'
 import { DESC_SEPARATOR, type IVideoCardData } from '$modules/filter/normalize'
-import { IconForLive } from '$modules/icon'
+import { IconAnimatedChecked, IconForLive } from '$modules/icon'
 import { fetchAppRecommendFollowedPubDate } from '$modules/rec-services/app'
 import { formatSpaceUrl } from '$modules/rec-services/dynamic-feed/shared'
 import { settings } from '$modules/settings'
@@ -87,15 +87,17 @@ const descOwnerCss = css`
 export const VideoCardBottom = memo(function ({
   item,
   cardData,
-  handleVideoLinkClick,
   className,
   gridDisplayMode,
+  followed,
+  handleVideoLinkClick,
 }: {
   item: RecItemType
   cardData: IVideoCardData
-  handleVideoLinkClick?: MouseEventHandler
   className?: string
   gridDisplayMode?: EGridDisplayMode
+  followed: boolean
+  handleVideoLinkClick?: MouseEventHandler
 }) {
   const { useBorder } = useSnapshot(settings.style.videoCard)
   const target = useLinkTarget()
@@ -286,6 +288,16 @@ export const VideoCardBottom = memo(function ({
    *                   - when normal video => `author-name + date`
    *          line3: recommend-reason
    */
+
+  let avatarAddon: ReactNode
+  if (streaming) {
+    avatarAddon = <IconForLive active className='absolute bottom-0 right-0 size-12px rounded-full bg-gate-primary' />
+  } else if (followed) {
+    avatarAddon = (
+      <IconAnimatedChecked className='absolute bottom-0 right-0 size-12px rounded-full bg-gate-primary color-white' />
+    )
+  }
+
   return (
     <div
       className={clsx(
@@ -310,9 +322,7 @@ export const VideoCardBottom = memo(function ({
           ) : (
             <Avatar>{authorName?.[0] || appBadgeDesc?.[0] || ''}</Avatar>
           )}
-          {streaming && (
-            <IconForLive active className='absolute bottom-0 right-0 size-12px rounded-full bg-gate-primary' />
-          )}
+          {avatarAddon}
         </a>
       )}
 

@@ -72,6 +72,7 @@ import { fetchImagePreviewData, isImagePreviewDataValid, type ImagePreviewData }
 import { StatItemDisplay } from './stat-item'
 import { useDislikeRelated } from './use/useDislikeRelated'
 import { useFavActionButton, useInitFavContext } from './use/useFavRelated'
+import { useInitFollowedStatusContext } from './use/useFollowRelated'
 import { useRemoveHistoryRelated } from './use/useHistoryRelated'
 import { useMultiSelectRelated } from './use/useMultiSelect'
 import { getRecItemDimension, useLinkTarget, useOpenRelated } from './use/useOpenRelated'
@@ -399,7 +400,7 @@ const VideoCardInner = memo(function VideoCardInner({
   /**
    * 收藏状态
    */
-  const favContext = useInitFavContext(item, avid)
+  const favContext = useInitFavContext(item, avid, emitter)
 
   // 打开视频卡片
   const {
@@ -455,6 +456,9 @@ const VideoCardInner = memo(function VideoCardInner({
   useEmitterOn(emitter, 'start-preview-animation', onStartPreviewAnimation)
   useEmitterOn(emitter, 'hotkey-preview-animation', onHotkeyPreviewAnimation)
 
+  const followedStatusContext = useInitFollowedStatusContext(tab, item, cardData, emitter)
+  const { followed } = followedStatusContext
+
   /**
    * context menu
    */
@@ -465,6 +469,7 @@ const VideoCardInner = memo(function VideoCardInner({
     isNormalVideo,
     watchlaterContext,
     favContext,
+    followed,
     hasDislikeEntry,
     onTriggerDislike,
     onRemoveCurrent,
@@ -474,7 +479,7 @@ const VideoCardInner = memo(function VideoCardInner({
   })
   const onContextMenuOpenChange = useMemoizedFn((open: boolean) => {
     if (!open) return
-    favContext.updateFavFolderNames()
+    emitter.emit('context-menu-open')
   })
 
   /**
@@ -709,6 +714,7 @@ const VideoCardInner = memo(function VideoCardInner({
       item={item}
       cardData={cardData}
       gridDisplayMode={gridDisplayMode}
+      followed={followed}
       handleVideoLinkClick={multiSelecting ? toggleMultiSelect : handleVideoLinkClick}
     />
   )

@@ -4,6 +4,7 @@
 
 import { isNotNil } from 'es-toolkit'
 import pMemoize from 'p-memoize'
+import { proxySet } from 'valtio/utils'
 import { getLoginStatus } from '$modules/login-status'
 import { request, WebApiError } from '$request'
 import { modifyRelations } from './common'
@@ -35,7 +36,7 @@ export function isFollowedFromRelationAttribute(relationAttribute: RelationAttri
   return !!relationAttribute.attribute && [1, 2, 6].includes(relationAttribute.attribute)
 }
 
-export async function queryFollowState(upMid: string | number): Promise<RelationAttributeEntity | undefined> {
+async function fetchRelationEntity(upMid: string | number): Promise<RelationAttributeEntity | undefined> {
   if (!getLoginStatus()) return
   const res = await request.get<FollowStateJson>('/x/relation', { params: { fid: upMid } })
   const validateResult = WebApiError.validateAxiosResponse(res, '获取关系失败')
@@ -44,8 +45,20 @@ export async function queryFollowState(upMid: string | number): Promise<Relation
   return json.data
 }
 
-// with memory cache
-export const queryFollowStateMemoized = pMemoize(queryFollowState, {
+export const queryRelationEntity = pMemoize(fetchRelationEntity, {
   cacheKey: ([upMid]) => upMid.toString(),
-  shouldCache: isNotNil,
+  shouldCache: (val) => isNotNil(val),
 })
+
+/**
+ * 返回 boolean | undefined, undefined 表示未知
+ */
+export async function queryFollowedStatus(upMid: string | number) {
+  const entity = await queryRelationEntity(upMid)
+  if (!entity) return
+  const val = isFollowedFromRelationAttribute(entity)
+  val ? followedMidSet.add(upMid.toString()) : followedMidSet.delete(upMid.toString())
+  return val
+}
+
+export const followedMidSet = proxySet<string>()
