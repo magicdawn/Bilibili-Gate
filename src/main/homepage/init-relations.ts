@@ -2,11 +2,13 @@ import { Result } from 'better-result'
 import ms from 'ms'
 import { computed } from 'valtio-reactive'
 import { appError, baseDebug, IN_BILIBILI_HOMEPAGE } from '$common'
+import { antMessage } from '$modules/antd'
 import {
   fetchFullFollowings,
   followedMidSet,
   followedMidSetReplaceAllWith,
 } from '$modules/bilibili/me/relations/following-state'
+import { WebApiError } from '$request'
 import { whenIdle } from '$utility/dom'
 import { proxyWithGmStorage } from '$utility/valtio'
 import {
@@ -47,8 +49,33 @@ export async function initMyRelations() {
   await initMyFollowings()
 }
 
-async function initMyBlacklist() {
-  if (cacheStore.blacklistCacheValid) return Result.ok({ skip: true })
+export async function handleManualRefreshRelationsCache() {
+  {
+    const result = await initMyBlacklist(false)
+    if (result.isErr()) {
+      const err = result.error
+      const messageContent = err instanceof WebApiError ? err.formatAsReactNode() : err.message
+      antMessage.error(messageContent, 8)
+      return
+    } else {
+      antMessage.success(`已更新黑名单: ${blacklistMidSet.size}条数据`)
+    }
+  }
+  {
+    const result = await initMyFollowings(false)
+    if (result.isErr()) {
+      const err = result.error
+      const messageContent = err instanceof WebApiError ? err.formatAsReactNode() : err.message
+      antMessage.error(messageContent, 8)
+      return
+    } else {
+      antMessage.success(`已更新关注列表: ${followedMidSet.size}条数据`)
+    }
+  }
+}
+
+async function initMyBlacklist(useCache = true) {
+  if (useCache && cacheStore.blacklistCacheValid) return Result.ok({ skip: true })
   const result = await fetchFullBlacklist()
   return result
     .tapError((err) => appError('initMyBlacklist error:', err))
@@ -62,8 +89,8 @@ async function initMyBlacklist() {
     })
 }
 
-async function initMyFollowings() {
-  if (cacheStore.followingsCacheValid) return
+async function initMyFollowings(useCache = true) {
+  if (useCache && cacheStore.followingsCacheValid) return Result.ok({ skip: true })
   const result = await fetchFullFollowings()
   return result
     .tapError((err) => appError('initMyFollowings error:', err))

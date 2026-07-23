@@ -17,6 +17,7 @@ export const IconForDislike = IconPhThumbsDownDuotone
 export const IconForConfig = IconParkOutlineConfig
 export const IconForPlayer = IconParkOutlinePlayTwo
 export const IconForOpenExternalLink = IconMaterialSymbolsLightOpenInNew
+export const IconForCloudStorage = IconIcOutlineCloud
 
 // general
 

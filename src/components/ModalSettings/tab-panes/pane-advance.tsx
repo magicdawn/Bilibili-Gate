@@ -1,3 +1,4 @@
+import { useRequest } from 'ahooks'
 import { Button, Popconfirm } from 'antd'
 import clsx from 'clsx'
 import { difference, startCase } from 'es-toolkit'
@@ -7,9 +8,11 @@ import { buttonOpenCss } from '$common/emotion-css'
 import { CollapsePanel } from '$components/_base/CollapsePanel'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
+import { handleManualRefreshRelationsCache } from '$main/homepage/init-relations'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
-import { IconForConfig, IconForOpenExternalLink } from '$modules/icon'
+import { IconForCloudStorage, IconForConfig, IconForOpenExternalLink } from '$modules/icon'
+import { IconForRoll } from '$modules/icon/stat-icons'
 import {
   allowedLeafSettingsPaths,
   internalBooleanPaths,
@@ -48,6 +51,7 @@ async function onRestoreSettings() {
 
 export function TabPaneAdvance() {
   const [internalKeysExpanded, setInternalKeysExpanded] = useState<boolean>(false)
+  const manualRefreshRelationsCacheReq = useRequest(handleManualRefreshRelationsCache, { manual: true })
 
   return (
     <div className={sharedClassNames.tabPane}>
@@ -84,7 +88,7 @@ export function TabPaneAdvance() {
       <SettingsGroup
         title={
           <>
-            <IconIcOutlineCloud className='mr-4px size-28px' />
+            <IconForCloudStorage className='mr-4px size-28px' />
             设置备份
             <HelpInfo>
               使用专栏草稿箱作为云存储 <br />
@@ -113,6 +117,27 @@ export function TabPaneAdvance() {
               从专栏草稿箱中恢复
             </Button>
           </Popconfirm>
+        </div>
+      </SettingsGroup>
+
+      <SettingsGroup
+        title={
+          <>
+            <IconForRoll className='mr-4px size-28px' />
+            缓存
+            <HelpInfo>手动刷新缓存数据</HelpInfo>
+          </>
+        }
+      >
+        <div className='flex items-center gap-x-20px'>
+          <Button
+            onClick={() => manualRefreshRelationsCacheReq.run()}
+            loading={manualRefreshRelationsCacheReq.loading}
+            className='gap-x-1'
+          >
+            {!manualRefreshRelationsCacheReq.loading && <IconForRoll className='size-1em' />}
+            刷新黑名单/关注列表缓存
+          </Button>
         </div>
       </SettingsGroup>
 
