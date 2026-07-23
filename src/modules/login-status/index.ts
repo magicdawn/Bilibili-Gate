@@ -1,12 +1,25 @@
+import { Panic, Result } from 'better-result'
 import { proxy } from 'valtio'
 import { useTrackedSnapshot } from 'valtio-select'
 import { fetchLoginInfo } from '$modules/bilibili/user/login-info'
+import { getUid } from '$utility/cookie'
 import toast from '$utility/toast'
 import type { AnonymousLoginInfo } from '$modules/bilibili/user/anonymous-info.api'
 import type { LoginInfo } from '$modules/bilibili/user/login-info.api'
 
 export const NEED_LOGIN_SHORT_MESSAGE = '需要登录B站后使用该功能!'
 export const NEED_LOGIN_MESSAGE = '需要登录B站后使用该功能! 如已完成登录, 请刷新网页重试~'
+export const NOT_LOGINED_ERROR_MESSAGE = '未登录'
+
+/**
+ * returns a Result resolves to `mid`
+ */
+export function validateLoginedMid() {
+  if (!getLoginStatus()) return Result.err(new Panic({ message: NOT_LOGINED_ERROR_MESSAGE }))
+  const mid = getUid()
+  if (!mid) return Result.err(new Panic({ message: NOT_LOGINED_ERROR_MESSAGE }))
+  return Result.ok(mid)
+}
 
 export function toastNeedLogin() {
   return toast(NEED_LOGIN_MESSAGE)

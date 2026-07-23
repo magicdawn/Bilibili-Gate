@@ -2,7 +2,7 @@ import { uniq } from 'es-toolkit'
 import { baseDebug } from '$common'
 import { checkIsDynamicFeed, type RecItemTypeOrSeparator } from '$define'
 import { EApiType, type ETab } from '$enums'
-import { blacklistMids } from '$modules/bilibili/me/relations/blacklist'
+import { blacklistMidSet } from '$modules/bilibili/me/relations/blacklist'
 import { DynamicFeedEnums } from '$modules/rec-services/dynamic-feed/api/enums'
 import { isNormalRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { getSettingsSnapshot, settings } from '$modules/settings'
@@ -29,7 +29,7 @@ export function isApiRecLike(api: EApiType) {
 
 export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
   // quick skip when (filter not enabled && blacklistMids empty)
-  if (!settings.filter.enabled && !blacklistMids.size) {
+  if (!settings.filter.enabled && !blacklistMidSet.size) {
     return items
   }
 
@@ -57,7 +57,7 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
 
     function check_blacklist_filterByUp_filterByTitle() {
       // blacklist
-      if (authorMid && blacklistMids.size && blacklistMids.has(authorMid)) {
+      if (authorMid && blacklistMidSet.size && blacklistMidSet.has(authorMid)) {
         debug('filter out by blacklist-rule: %s %o', authorMid, { bvid, title })
         return false
       }

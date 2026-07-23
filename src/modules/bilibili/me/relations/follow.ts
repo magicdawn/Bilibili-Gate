@@ -8,7 +8,7 @@ import { getLoginStatus } from '$modules/login-status'
 import { request, WebApiError } from '$request'
 import { modifyRelations } from './common'
 import { followedMidSet } from './following-state'
-import type { FollowStateJson } from './types/follow-state'
+import type { FollowStateJson } from './types/follow-state.api'
 import type { RelationAttributeEntity } from './types/shared'
 
 function followActionFactory(action: 'follow' | 'unfollow') {
@@ -29,12 +29,11 @@ function followActionFactory(action: 'follow' | 'unfollow') {
 
 export const follow = followActionFactory('follow')
 export const unfollow = followActionFactory('unfollow')
-export const UserfollowService = { follow, unfollow }
+export const UserFollowService = { follow, unfollow }
 
 /**
  * https://socialsisteryi.github.io/bilibili-API-collect/docs/user/relation.html#查询用户与自己关系-仅关注
  */
-
 export function isFollowedFromRelationAttribute(relationAttribute: RelationAttributeEntity) {
   /** 关系属性	0：未关注; 1：悄悄关注（已弃用）; 2：已关注; 6：已互粉; 128：已拉黑 */
   return !!relationAttribute.attribute && [1, 2, 6].includes(relationAttribute.attribute)

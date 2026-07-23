@@ -397,10 +397,12 @@ const VideoCardInner = memo(function VideoCardInner({
     videoTitle: title,
   })
 
-  /**
-   * 收藏状态
-   */
+  // fav
   const favContext = useInitFavContext(item, avid, emitter)
+
+  // followed
+  const followedStatusContext = useInitFollowedStatusContext(item, cardData, emitter)
+  const { followed } = followedStatusContext
 
   // 打开视频卡片
   const {
@@ -455,9 +457,6 @@ const VideoCardInner = memo(function VideoCardInner({
   useEmitterOn(emitter, 'trigger-dislike', () => void onTriggerDislike())
   useEmitterOn(emitter, 'start-preview-animation', onStartPreviewAnimation)
   useEmitterOn(emitter, 'hotkey-preview-animation', onHotkeyPreviewAnimation)
-
-  const followedStatusContext = useInitFollowedStatusContext(tab, item, cardData, emitter)
-  const { followed } = followedStatusContext
 
   /**
    * context menu

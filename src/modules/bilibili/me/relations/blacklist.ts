@@ -2,15 +2,14 @@
  * user blacklist services
  */
 
+import { Result } from 'better-result'
 import { useSnapshot } from 'valtio'
-import { baseDebug } from '$common'
-import { isWebApiSuccess, request } from '$request'
+import { validateLoginedMid } from '$modules/login-status'
+import { request, WebApiError } from '$request'
 import { proxySetWithGmStorage } from '$utility/valtio'
 import { modifyRelations } from './common'
 import type { UpMidType } from '$modules/rec-services/dynamic-feed/store'
-import type { ListBlackJson } from './types/list-black'
-
-const debug = baseDebug.extend('service:user:relations:blacklist')
+import type { ListBlackJson } from './types/list-black.api'
 
 export const blacklistAdd = blacklistActionFactory('follow')
 export const blacklistRemove = blacklistActionFactory('remove')
@@ -20,11 +19,11 @@ export const UserBlacklistService = {
   remove: blacklistRemove,
 }
 
-export const { set: blacklistMids, replaceAllWith: blacklistMidsReplaceAllWith } =
+export const { set: blacklistMidSet, replaceAllWith: blacklistMidSetReplaceAllWith } =
   await proxySetWithGmStorage<UpMidType>('blacklist-mids')
 
 export function useInBlacklist(upMid?: string) {
-  const set = useSnapshot(blacklistMids)
+  const set = useSnapshot(blacklistMidSet)
   return !!upMid && set.has(upMid)
 }
 
@@ -35,7 +34,7 @@ function blacklistActionFactory(action: 'follow' | 'remove') {
     const success = await modifyRelations(upMid, act)
 
     if (success) {
-      const set = blacklistMids
+      const set = blacklistMidSet
       if (action === 'follow') {
         set.add(upMid)
       } else if (action === 'remove') {
@@ -47,34 +46,27 @@ function blacklistActionFactory(action: 'follow' | 'remove') {
   }
 }
 
-export async function getUserBlacklist() {
+export function fetchFullBlacklist() {
   const ps = 20
-
-  const getPage = async (pn: number) => {
-    const res = await request.get('/x/relation/blacks', {
-      params: { re_version: 0, ps, pn },
+  const singlePage = (pn: number) => {
+    return Result.gen(async function* () {
+      yield* validateLoginedMid()
+      const resp = yield* await request.safeGet<ListBlackJson>('/x/relation/blacks', { params: { ps, pn } })
+      const json = yield* WebApiError.validateAxiosResponse(resp, '获取关注列表失败')
+      const total = json?.data?.total || 0
+      const mids = (json?.data?.list || []).map((x) => x.mid)
+      return Result.ok({ total, mids })
     })
-
-    const json = res.data as ListBlackJson
-    if (!isWebApiSuccess(json)) return
-
-    const total = json.data.total
-    const mids = json.data.list.map((x) => x.mid)
-    return { total, mids }
   }
-
-  const ret = await getPage(1)
-  if (!ret) return
-  const { total, mids = [] } = ret
-  let blackMids: number[] = mids
-
-  if (total) {
-    const maxPn = Math.ceil(total / ps)
-    for (let pn = 2; pn <= maxPn; pn++) {
-      const { mids = [] } = (await getPage(pn)) || {}
-      blackMids = blackMids.concat(mids)
+  return Result.gen(async function* () {
+    let { total, mids: allMids } = yield* await singlePage(1)
+    if (total) {
+      const maxPn = Math.ceil(total / ps)
+      for (let pn = 2; pn <= maxPn; pn++) {
+        const { mids } = yield* await singlePage(pn)
+        allMids = allMids.concat(mids)
+      }
     }
-  }
-
-  return blackMids
+    return Result.ok(allMids)
+  })
 }

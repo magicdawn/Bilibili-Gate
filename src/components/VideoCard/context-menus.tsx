@@ -23,7 +23,7 @@ import {
 import { EApiType, ETab } from '$enums'
 import { antMessage, antModal, defineAntMenus, type AntMenuItem } from '$modules/antd'
 import { UserBlacklistService } from '$modules/bilibili/me/relations/blacklist'
-import { UserfollowService } from '$modules/bilibili/me/relations/follow'
+import { UserFollowService } from '$modules/bilibili/me/relations/follow'
 import { setNicknameCache } from '$modules/bilibili/user/nickname'
 import { isApiRecLike } from '$modules/filter'
 import { openNewTab } from '$modules/gm'
@@ -177,7 +177,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
     })
     if (!confirm) return
 
-    const success = await UserfollowService.unfollow(authorMid)
+    const success = await UserFollowService.unfollow(authorMid)
     if (success) {
       antMessage.success('已取消关注')
     }
