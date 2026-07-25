@@ -48,17 +48,14 @@ export const StatFieldIconConfig: Record<StatItemField, ReactNode> = {
 }
 
 /**
- * app 接口返回的 icon 是数字 (id), 映射成 field(play / like ...), field 映射成 svg-icon
+ * app 接口返回的 icon 是数字 (id), 映射成 field(play / like ...)
  */
-export const AppRecStatItemFieldMap: Record<number, StatItemField> = {
-  1: 'play',
-  2: 'like', // 没出现过, 猜的
-  3: 'danmaku',
-  4: 'bangumi:follow', // 追番
-  20: 'like', // 动态点赞
-}
-export function getField(id: number) {
-  return AppRecStatItemFieldMap[id] || AppRecStatItemFieldMap[1] // 不认识的图标id, 使用 play
+export enum AppRecommendApiIconType {
+  Play = 1,
+  Like = 2, // 没出现过, 猜的
+  Danmaku = 3,
+  BangumiFollow = 4, // 追番
+  DynamicFeedLike = 20, // 动态点赞
 }
 
 export const StatItemDisplay = memo(function ({ field, value }: StatItemType) {

@@ -11,11 +11,22 @@ export function appSign(params: Record<string, any>, appkey: string, appsec: str
   return hash(searchParams.toString() + appsec)
 }
 
+// 哔哩哔哩-HD on ipad
 export const appApiCommonParams = {
   platform: 'ios',
   mobi_app: 'ipad',
   device: 'pad',
   build: '37300100',
+  c_locale: 'zh-Hans_CN',
+  s_locale: 'zh-Hans_CN',
+} as const
+
+// 哔哩哔哩 on ipad
+export const BilibiliAppForIpadParams = {
+  platform: 'ios',
+  mobi_app: 'iphone',
+  device: 'pad',
+  build: '90300100',
   c_locale: 'zh-Hans_CN',
   s_locale: 'zh-Hans_CN',
 } as const

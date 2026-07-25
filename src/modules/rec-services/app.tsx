@@ -1,5 +1,5 @@
 import { av2bv } from '@mgdn/bvid'
-import { randomInt, range, shuffle, uniqBy } from 'es-toolkit'
+import { range, shuffle, uniqBy } from 'es-toolkit'
 import { times } from 'es-toolkit/compat'
 import pmap from 'promise.map'
 import { explainForFlag } from '$components/ModalSettings/index.shared'
@@ -227,23 +227,30 @@ export class AppRecService extends BaseTabService<RecItemType> {
   }
 }
 
+let idxOffset = 1
+
 class AppRecInnerService implements IService {
   constructor(public anonymousFetch = false) {}
 
   hasMore = true
 
   private async getRecommend(abortSignal: AbortSignal) {
+    // NOTE: 这个 API 受参数控制, 大变形哦~
     const res = await gmrequest.get('/x/v2/feed/index', {
       signal: abortSignal,
       timeout: 20_000,
       responseType: 'json',
       [anonymousFlag]: this.anonymousFetch,
       params: {
-        build: '1',
+        actionKey: 'appkey',
+        platform: 'ios',
         mobi_app: 'iphone',
         device: 'pad',
+        build: '90300100',
+        c_locale: 'zh-Hans_CN',
+        s_locale: 'zh-Hans_CN',
         // idx: 返回的 items.idx 为传入 idx+1, idx+2, ...
-        idx: Math.floor(Date.now() / 1000) + randomInt(1000),
+        idx: Math.floor(Date.now() / 1000) + 100 * idxOffset++,
       },
     })
     const json = res.data as ipad.AppRecommendJson
@@ -272,10 +279,12 @@ class AppRecInnerService implements IService {
       // ad
       if (item.card_goto?.includes('ad')) return false
       if (item.goto?.includes('ad')) return false
-      if ((item as any).ad_info) return false
+      if (item.ad_info) return false
 
       // unsupported: bannner
-      if ((item.card_goto as string | undefined) === 'banner') return false
+      // unsupported: live
+      if (item.card_goto === 'banner') return false
+      if (item.goto === 'live' || item.card_goto === 'live') return false
 
       // 充电专属
       // 特征: 没有 player_args

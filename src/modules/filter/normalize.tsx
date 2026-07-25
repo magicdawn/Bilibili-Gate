@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 import { assert, memoize, noop, type MemoizeCache } from 'es-toolkit'
 import { appWarn } from '$common'
 import { defineCardTags, type CardTag } from '$components/VideoCard/card-tags'
-import { defineStatItems, type StatItemField, type StatItemType } from '$components/VideoCard/stat-item'
+import { AppRecommendApiIconType, defineStatItems, type StatItemType } from '$components/VideoCard/stat-item'
 import { PcRecGoto } from '$define/pc-recommend'
 import { EApiType, ELiveStatus } from '$enums'
 import { AntdTooltip } from '$modules/antd/custom'
@@ -178,29 +178,14 @@ function apiAppAdapter(item: AppRecItemExtend): IVideoCardData {
 }
 
 function apiIpadAppAdapter(item: AppRecItemExtend): IVideoCardData {
-  const extractCountFor = (target: StatItemField) => {
-    const { cover_left_text_1, cover_left_text_2, cover_left_text_3 } = item
-    const arr = [cover_left_text_1, cover_left_text_2, cover_left_text_3].filter(Boolean)
-    if (target === 'play') {
-      const text = arr.find((text) => /观看|播放$/.test(text))
-      if (!text) return
-      const rest = text.replace(/观看|播放$/, '')
-      return parseCount(rest)
-    }
-
-    if (target === 'danmaku') {
-      const text = arr.find((text) => text.endsWith('弹幕'))
-      if (!text) return
-      const rest = text.replace(/弹幕$/, '')
-      return parseCount(rest)
-    }
-
-    if (target === 'bangumi:follow') {
-      const text = arr.find((text) => /追[剧番]$/.test(text))
-      if (!text) return
-      const rest = text.replace(/追[剧番]$/, '')
-      return parseCount(rest)
-    }
+  const parseCountByIcon = (icon: AppRecommendApiIconType) => {
+    const leftGroups = [
+      { icon: item.cover_left_icon_1, text: item.cover_left_text_1 },
+      { icon: item.cover_left_icon_2, text: item.cover_left_text_2 },
+      { icon: item.cover_left_icon_3, text: item.cover_left_text_3 },
+    ].filter((x) => x.icon && x.text)
+    const text = leftGroups.find((x) => x.icon === icon)?.text
+    if (text) return parseCount(text)
   }
 
   const avid = item.param
@@ -237,12 +222,12 @@ function apiIpadAppAdapter(item: AppRecItemExtend): IVideoCardData {
   })()
 
   // stat
-  const play = extractCountFor('play')
+  const play = parseCountByIcon(AppRecommendApiIconType.Play)
   const like = undefined
   const coin = undefined
-  const danmaku = extractCountFor('danmaku')
+  const danmaku = parseCountByIcon(AppRecommendApiIconType.Danmaku)
   const favorite = undefined
-  const bangumiFollow = extractCountFor('bangumi:follow')
+  const bangumiFollow = parseCountByIcon(AppRecommendApiIconType.BangumiFollow)
   const statItems: StatItemType[] = [
     { field: 'play', value: play },
     typeof danmaku === 'number'
@@ -279,7 +264,7 @@ function apiIpadAppAdapter(item: AppRecItemExtend): IVideoCardData {
 
     // author
     authorName: item.args.up_name || descAuthorName,
-    authorFace: item.avatar.cover,
+    authorFace: item.avatar?.cover,
     authorMid: String(item.args.up_id || ''),
 
     appBadge: item.cover_badge,
