@@ -14,12 +14,12 @@ import { analyzer } from 'vite-bundle-analyzer'
 import Inspect from 'vite-plugin-inspect'
 import monkey, { cdn } from 'vite-plugin-monkey'
 import z from 'zod'
-import { name as packageName, version as packageVersion } from './package.json'
+import { name as packageName, version as packageVersion } from './package.json' with { type: 'json' }
 
 const isDev = process.env.NODE_ENV === 'development'
 if (isDev) {
   // only needed in dev mode
-  typedScssModules(`${__dirname}/src/**/{*.module.scss,_*.scss}`, {
+  typedScssModules(`${import.meta.dirname}/src/**/{*.module.scss,_*.scss}`, {
     watch: true,
   })
 }
