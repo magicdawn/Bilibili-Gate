@@ -179,9 +179,9 @@ export function ModalFavManager({
   useHotkey('R', () => $updateFoldersReq.run(true), { enabled: show })
 
   const onOk = useMemoizedFn(async () => {
-    const selectedFolders: FavFolder[] = Array.from(selectedFolderIdsSet)
-      .map((id) => folders.find((f) => f.id === id))
-      .filter(Boolean)
+    const selectedFolders: FavFolder[] = Array.from(selectedFolderIdsSet, (id) =>
+      folders.find((f) => f.id === id),
+    ).filter(Boolean)
     if (!allowEmptyResult && !selectedFolders.length) return antMessage.error('请选择一个收藏夹')
 
     if (mode === 'pick') {

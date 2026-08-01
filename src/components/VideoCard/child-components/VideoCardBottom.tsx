@@ -141,15 +141,17 @@ export const VideoCardBottom = memo(function ({
   })
 
   const descTitleAttribute: string | undefined = useMemo(() => {
-    if (isNormalVideo && (authorName || pubts || pubtsFromApi || pubdateDisplay || pubdateDisplayForTitleAttr)) {
-      let datePartForTitleAttribute: string | undefined
-      if (pubts || pubtsFromApi) {
-        datePartForTitleAttribute = dayjs.unix((pubts || pubtsFromApi)!).format('YYYY年M月D日 HH:mm')
-      } else {
-        datePartForTitleAttribute = pubdateDisplay
-      }
-      return [authorName, pubdateDisplayForTitleAttr || datePartForTitleAttribute].filter(Boolean).join(' · ')
+    if (!(isNormalVideo && (authorName || pubts || pubtsFromApi || pubdateDisplay || pubdateDisplayForTitleAttr))) {
+      return
     }
+
+    let datePartForTitleAttribute: string | undefined
+    if (pubts || pubtsFromApi) {
+      datePartForTitleAttribute = dayjs.unix((pubts || pubtsFromApi)!).format('YYYY年M月D日 HH:mm')
+    } else {
+      datePartForTitleAttribute = pubdateDisplay
+    }
+    return [authorName, pubdateDisplayForTitleAttr || datePartForTitleAttribute].filter(Boolean).join(' · ')
   }, [isNormalVideo, authorName, pubts, pubtsFromApi, pubdateDisplay, pubdateDisplayForTitleAttr])
 
   const _recommendReasonClassName = useUnoMerge(clsRecommendReason, displayingAsList && clsRecommendReasonInList)

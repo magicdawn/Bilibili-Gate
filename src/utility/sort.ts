@@ -14,7 +14,7 @@ export function zhLocaleComparer(a: string, b: string) {
   return a.localeCompare(b, 'zh-CN')
 }
 export function zhLocaleDescComparer(a: string, b: string) {
-  return zhLocaleComparer(a, b) * -1
+  return -zhLocaleComparer(a, b)
 }
 
 export function sortListByName<T extends object>(

@@ -153,12 +153,14 @@ export function HomePageGlobalStyle() {
               display: none !important;
             }
 
-            ${!usingEvolevdHeader &&
-            css`
-              .bili-feed4 .bili-header {
-                min-height: 64px !important;
-              }
-            `}
+            ${
+              !usingEvolevdHeader &&
+              css`
+                .bili-feed4 .bili-header {
+                  min-height: 64px !important;
+                }
+              `
+            }
 
             .bili-feed4 .bili-header .bili-header__bar {
               &.slide-down,

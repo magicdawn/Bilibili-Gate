@@ -298,12 +298,14 @@ function apiPcAdapter(item: PcRecItemExtend): IVideoCardData {
     coin: undefined,
     danmaku: item.stat?.danmaku,
     favorite: undefined,
-    statItems: _isLive
-      ? defineStatItems([{ field: 'live:viewed-by', value: item.room_info?.watched_show.num }])
-      : defineStatItems([
-          { field: 'play', value: item.stat?.view },
-          { field: 'danmaku', value: item.stat?.danmaku },
-        ]),
+    statItems: defineStatItems(
+      _isLive
+        ? [{ field: 'live:viewed-by', value: item.room_info?.watched_show.num }]
+        : [
+            { field: 'play', value: item.stat?.view },
+            { field: 'danmaku', value: item.stat?.danmaku },
+          ],
+    ),
 
     // author
     authorName: item.owner?.name,

@@ -32,6 +32,7 @@ export const BilibiliAppForIpadParams = {
 } as const
 
 export class NeedValidAccessKeyError extends Error {
+  // eslint-disable-next-line unicorn/custom-error-definition
   constructor(msg?: string, cause?: unknown) {
     msg ||= '需要有效的 access_key'
     super(msg, { cause })
