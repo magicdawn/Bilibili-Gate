@@ -15,9 +15,9 @@ export const NOT_LOGINED_ERROR_MESSAGE = '未登录'
  * returns a Result resolves to `mid`
  */
 export function validateLoginedMid() {
-  if (!getLoginStatus()) return Result.err(new Panic({ message: NOT_LOGINED_ERROR_MESSAGE }))
   const mid = getUid()
   if (!mid) return Result.err(new Panic({ message: NOT_LOGINED_ERROR_MESSAGE }))
+  if (!getLoginStatus()) return Result.err(new Panic({ message: NOT_LOGINED_ERROR_MESSAGE }))
   return Result.ok(mid)
 }
 

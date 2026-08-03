@@ -14,7 +14,7 @@ import {
   useMemo,
   useRef,
   useState,
-  type CSSProperties,
+  type ComponentProps,
   type Key,
   type ReactNode,
   type Ref,
@@ -69,7 +69,6 @@ const clsGridColSpanFull = 'grid-col-span-full'
 // like `this` in Class Component, but it's for Function Component
 export class RecGridSelf {
   // render state
-  // should be private, but I'm too lazy to add getters and refactor
   private store = proxy({
     refreshKey: -1,
     showSkeleton: false,
@@ -500,8 +499,8 @@ export const RecGrid = memo(function RecGrid({
   // it's a `@container` query root
   const containerClassName = clsx('min-h-100vh @container-inline-size', propContainerClassName)
 
-  type StyleConfig = { className?: string; style?: CSSProperties }
-  const gridStyleConfig: StyleConfig = useMemo(() => {
+  type StyleProps = Pick<ComponentProps<'div'>, 'className' | 'style'>
+  const gridStyleProps: StyleProps = useMemo(() => {
     const {
       videoGrid,
       videoGridBiliFeed4,
@@ -567,7 +566,7 @@ export const RecGrid = memo(function RecGrid({
   const render = ({ gridChildren, gridSiblings }: { gridChildren?: ReactNode; gridSiblings?: ReactNode } = {}) => {
     return (
       <div data-tab={tab} className={containerClassName}>
-        <div data-tab={tab} ref={gridRef} {...gridStyleConfig}>
+        <div data-tab={tab} ref={gridRef} {...gridStyleProps}>
           {gridChildren}
         </div>
         {gridSiblings}

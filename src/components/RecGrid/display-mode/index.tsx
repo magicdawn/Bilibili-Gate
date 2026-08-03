@@ -115,8 +115,8 @@ export function GridTemplateColumnsConfig({ className }: { className?: string })
               title={
                 <>
                   自适应: 指按照「卡片最小宽度」自适应 <br />
-                  如果期望显示更多的列, 可以调小「卡片最小宽度」; <br />
-                  如果期望显示更少的列, 可以调大「卡片最小宽度」; <br />
+                  如果期望显示更多的列, 可以调小「卡片最小宽度」 <br />
+                  如果期望显示更少的列, 可以调大「卡片最小宽度」 <br />
                   Tip: 先点击输入框, 再移动鼠标到透视按钮, 然后使用键盘
                   <HotkeyDisplay k='Alt+ArrowUp' className='mx-1' />
                   <HotkeyDisplay k='Alt+ArrowDown' className='mx-1' /> 调整

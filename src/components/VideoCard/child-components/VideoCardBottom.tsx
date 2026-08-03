@@ -303,9 +303,8 @@ export const VideoCardBottom = memo(function ({
   return (
     <div
       className={clsx(
-        !displayingAsList ? 'pt-15px' : 'pt-5px',
-        'flex gap-x-5px overflow-hidden px-5px',
-        useBorder ? 'mb-10px' : 'mb-5px',
+        !displayingAsList ? 'pt-10px' : 'pt-5px',
+        'mb-5px flex gap-x-5px overflow-hidden px-5px',
         className,
       )}
     >
