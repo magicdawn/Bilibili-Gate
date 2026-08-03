@@ -52,6 +52,7 @@ import { useWatchlaterState } from '$modules/rec-services/watchlater'
 import { buildWatchlaterVideoCardUrl } from '$modules/rec-services/watchlater/helper'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { isWebApiSuccess } from '$request'
+import { isFirefoxLike } from '$ua'
 import { videoCardBorderRadiusValue } from '../css-vars'
 import { useLargePreviewRelated } from '../LargePreview/useLargePreview'
 import { multiSelectedCss, useBlockedCardCss } from './card-border-css'
@@ -659,7 +660,7 @@ const VideoCardInner = memo(function VideoCardInner({
         <Picture
           src={`${cover}@672w_378h_1c_!web-home-common-cover`}
           className='bili-video-card__cover size-full'
-          imgProps={{ alt: title }}
+          imgProps={{ alt: isFirefoxLike ? undefined : title }} // firefox shows alt during imgload
           style={{ borderRadius: 0 }}
         />
       ) : (

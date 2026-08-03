@@ -77,7 +77,8 @@ bilibili-app-recommend 用户可以通过文件导出全部设置迁移到 Bilib
 
 ## 介绍
 
-_\* 截图均为不带 access_key 匿名获取, 不代表作者喜好_
+- _**截图均为不带 access_key 匿名获取, 不代表作者喜好**_
+- 截图可能已经过时, 以实际安装为准
 
 ### 一站式体验
 
@@ -286,14 +287,15 @@ pnpm build # build 完会自动使用 Chrome 打开安装地址
 
 ## 支持
 
-- 如果对你有用, 请在 GitHub 点个 Star :)
-- 如果你喜欢这个项目, 可以 「[爱发电](https://afdian.com/a/magicdawn)」 支持一下
+- 请在 [GitHub](https://github.com/magicdawn/Bilibili-Gate) 点个 Star :)
+- [爱发电](https://afdian.com/a/magicdawn) 为我发电 😘
+- [B站](https://space.bilibili.com/38112129) 为我充电, 大会员B币券也能用 😘
 
 ![afdian-magicdawn_w375](https://raw.githubusercontent.com/magicdawn/magicdawn/master/images/afdian-magicdawn_w375_v2.jpg)
 
 ### 赞助者
 
-感谢这些来自爱发电的赞助者：
+感谢发电: 数据来自爱发电
 
 <!-- AFDIAN-ACTION:START -->
 
