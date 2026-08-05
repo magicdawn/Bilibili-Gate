@@ -61,8 +61,8 @@
 
 .video-grid-custom {
   // gap
-  $col-gap: clamp(10px, 1.1cqw, 20px); // prevVersion: $col-gap: 20px;
-  $row-gap: clamp(15px, 0.88vw, 30px);
+  $col-gap: clamp(10px, 1.1cqw, 20px);
+  $row-gap: clamp(15px, 1.1vw, 30px);
   --row-gap: #{$row-gap};
   column-gap: $col-gap;
   row-gap: 0;
