@@ -5,7 +5,7 @@ import { useTrackedSnapshot } from 'valtio-select'
 import { proxySet } from 'valtio/utils'
 import { appWarn, IN_BILIBILI_HOMEPAGE } from '$common'
 import { EApiType } from '$enums'
-import { getLoginStatus } from '$modules/login-status'
+import { getLoginStatus, initLoginStorePromise } from '$modules/login-status'
 import { handleRequestError } from '$request'
 import { getUid } from '$utility/cookie'
 import { whenIdle } from '$utility/dom'
@@ -45,6 +45,7 @@ async function initWatchlaterState() {
 }
 if (IN_BILIBILI_HOMEPAGE) {
   void (async () => {
+    await initLoginStorePromise
     await whenIdle()
     await pRetry(initWatchlaterState, {
       retries: 3,
