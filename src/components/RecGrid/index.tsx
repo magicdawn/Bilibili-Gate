@@ -15,6 +15,7 @@ import {
   useRef,
   useState,
   type ComponentProps,
+  type CSSProperties,
   type Key,
   type ReactNode,
   type Ref,
@@ -146,9 +147,15 @@ export const RecGrid = memo(function RecGrid({
   // rec-grid
   const self = useCreation(() => new RecGridSelf(), [])
   const { items, hasMore, refreshError, refreshKey, showSkeleton, loadMoreError } = self.useStore()
-  const { useCustomGrid, gridDisplayMode, enableForceColumn, forceColumnCount, cardMinWidth } = useSnapshot(
-    settings.grid,
-  )
+  const {
+    useCustomGrid,
+    gridDisplayMode,
+    enableForceColumn,
+    forceColumnCount,
+    cardMinWidth,
+    enableForceRowGap,
+    forceRowGap,
+  } = useSnapshot(settings.grid)
   const { multiSelecting } = useSnapshot(multiSelectStore)
   const unmountedRef = useUnmountedRef()
   useSetupGridState()
@@ -535,11 +542,17 @@ export const RecGrid = memo(function RecGrid({
       useCustomGrid ? videoGridCustom : videoGridBiliFeed4,
     ]
 
+    let baseStyle: CSSProperties | undefined
+    if (enableForceRowGap && forceRowGap && useCustomGrid) {
+      baseStyle ||= {}
+      baseStyle['--row-gap'] = `${forceRowGap}px`
+    }
+
     const renderClassName = (...more: ClassValue[]) => clsx(baseClass, ...more, propClassName)
 
     // 双列
     if (gridDisplayMode === EGridDisplayMode.TwoColumnGrid) {
-      return { className: renderClassName(narrowMode) }
+      return { className: renderClassName(narrowMode), style: baseStyle }
     }
 
     // 中空
@@ -549,16 +562,26 @@ export const RecGrid = memo(function RecGrid({
 
     // bili-feed4
     if (!useCustomGrid) {
-      return { className: renderClassName() }
+      return { className: renderClassName(), style: baseStyle }
     }
 
     // Bilibili-Gate custom
     if (enableForceColumn && forceColumnCount) {
-      return { className: renderClassName(), style: { '--col': forceColumnCount.toString() } }
+      return { className: renderClassName(), style: { ...baseStyle, '--col': forceColumnCount.toString() } }
     } else {
-      return { className: renderClassName(), style: { '--card-min-width': `${cardMinWidth}px` } }
+      return { className: renderClassName(), style: { ...baseStyle, '--card-min-width': `${cardMinWidth}px` } }
     }
-  }, [gridClassNames, useCustomGrid, gridDisplayMode, enableForceColumn, forceColumnCount, cardMinWidth, propClassName])
+  }, [
+    gridClassNames,
+    useCustomGrid,
+    gridDisplayMode,
+    enableForceColumn,
+    forceColumnCount,
+    cardMinWidth,
+    enableForceRowGap,
+    forceRowGap,
+    propClassName,
+  ])
 
   const cardBorderCss = useCardBorderCss()
 

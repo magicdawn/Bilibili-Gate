@@ -3,6 +3,7 @@ import { InputNumber, Radio, Space, type CheckboxOptionType, type RadioChangeEve
 import { useMemo } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
 import { useSnapshot } from 'valtio'
+import { APP_NAME } from '$common'
 import { EGridDisplayMode } from '$enums'
 import { AntdTooltip } from '$modules/antd/custom'
 import { HotkeyDisplay } from '$modules/hotkey'
@@ -172,5 +173,88 @@ export function GridTemplateColumnsConfig({ className }: { className?: string })
 
   return (
     <Radio.Group className={_className} disabled={!useCustomGrid} options={options} value={value} onChange={onChange} />
+  )
+}
+
+export function UseCustomGridSwitcher({ className }: { className?: string }) {
+  const { useCustomGrid } = useSnapshot(settings.grid)
+  const _className = useUnoMerge('flex items-center gap-x-15px', clsRadioWrapper, clsRadioLabel, className)
+  return (
+    <Radio.Group
+      size='large'
+      className={_className}
+      value={useCustomGrid}
+      onChange={(e) => {
+        settings.grid.useCustomGrid = e.target.value
+      }}
+      options={[
+        {
+          value: true,
+          label: (
+            <AntdTooltip title={<>使用 {APP_NAME} 自定义网格配置: 页宽90%, 可跟随 Bilibili-Evolved 自定义顶栏配置</>}>
+              <span className='inline-flex-center'>{APP_NAME} 自定义</span>
+            </AntdTooltip>
+          ),
+        },
+        {
+          value: false,
+          label: (
+            <AntdTooltip title={<>使用 bili-feed4 版本B站首页默认的网格配置</>}>
+              <span className='inline-flex-center'>B站默认</span>
+            </AntdTooltip>
+          ),
+        },
+      ]}
+    />
+  )
+}
+
+export function GridRowGapSwitcher({ className }: { className?: string }) {
+  const { enableForceRowGap, forceRowGap, useCustomGrid } = useSnapshot(settings.grid)
+  const _className = useUnoMerge('flex items-center gap-x-15px', clsRadioWrapper, clsRadioLabel, className)
+  return (
+    <Radio.Group
+      disabled={!useCustomGrid}
+      size='large'
+      className={_className}
+      value={enableForceRowGap}
+      onChange={(e) => {
+        settings.grid.enableForceRowGap = e.target.value
+      }}
+      options={[
+        {
+          value: false,
+          label: (
+            // clamp(15px, 1.1vw, 30px)
+            <AntdTooltip title={<>1.1vw, 15px ~ 30px</>}>
+              <span className='inline-flex-center'>自适应</span>
+            </AntdTooltip>
+          ),
+        },
+        {
+          value: true,
+          label: (
+            <span className='inline-flex-center gap-x-1'>
+              指定间距
+              <Space.Compact>
+                <InputNumber
+                  disabled={!enableForceRowGap}
+                  size='small'
+                  min={5}
+                  max={50}
+                  step={1}
+                  value={forceRowGap}
+                  onChange={(value) => {
+                    if (!value) return
+                    settings.grid.forceRowGap = value
+                  }}
+                />
+                <Space.Addon>px</Space.Addon>
+              </Space.Compact>
+            </span>
+          ),
+        },
+      ]}
+    />
   )
 }

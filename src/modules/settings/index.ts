@@ -67,6 +67,10 @@ export const initialSettings = {
 
     // 卡片最小宽度, 虽然是卡片, 但其实是网格布局
     cardMinWidth: 320,
+
+    // row gap
+    enableForceRowGap: false,
+    forceRowGap: 25,
   },
 
   /**

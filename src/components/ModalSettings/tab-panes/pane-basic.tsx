@@ -1,5 +1,5 @@
 import { useHover, useMemoizedFn, useMount } from 'ahooks'
-import { Button, Radio, Tag } from 'antd'
+import { Button, Tag } from 'antd'
 import clsx from 'clsx'
 import { delay } from 'es-toolkit'
 import { useRef } from 'react'
@@ -8,11 +8,17 @@ import { APP_NAME } from '$common'
 import { TooltipContentDivider } from '$components/_base'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { AccessKeyManage } from '$components/AccessKeyManage'
-import { CheckboxSettingItem, SwitchSettingItem } from '$components/ModalSettings/setting-item'
-import { GridDisplayModeSwitcher, GridTemplateColumnsConfig } from '$components/RecGrid/display-mode'
+import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
+import {
+  GridDisplayModeSwitcher,
+  GridRowGapSwitcher,
+  GridTemplateColumnsConfig,
+  UseCustomGridSwitcher,
+} from '$components/RecGrid/display-mode'
 import { MAX_REC_SERVICE_HISTORY_COUNT } from '$components/RecGrid/useRefresh'
 import { TabIcon } from '$components/RecHeader/tab-config'
-import { ESidebarAlign, ETab } from '$enums'
+import { SidebarSwitcher } from '$components/RecSidebar/sidebar-settings'
+import { ETab } from '$enums'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
 import { IconForCopy } from '$modules/icon'
@@ -22,7 +28,7 @@ import { SettingsGroup, sharedClassNames } from './shared'
 
 export function TabPaneBasic() {
   const {
-    grid: { useCustomGrid, enableForceColumn, forceColumnCount, cardMinWidth },
+    grid: { enableForceRowGap, forceRowGap },
     style,
     enableSidebar,
     sidebarAlign,
@@ -142,6 +148,9 @@ export function TabPaneBasic() {
           'grid.cardMinWidth',
           'grid.forceColumnCount',
 
+          'grid.enableForceRowGap',
+          'grid.forceRowGap',
+
           'enableSidebar',
           'sidebarAlign',
 
@@ -150,47 +159,21 @@ export function TabPaneBasic() {
         ]}
       >
         <div className='grid grid-cols-[max-content_1fr] items-center gap-x-1 gap-y-1'>
-          <div className='text-end'>网格配置：</div>
-          <SwitchSettingItem
-            configPath='grid.useCustomGrid'
-            size={'small'}
-            className='w-max'
-            tooltip={
-              <>
-                网格配置指: 网格宽度, 间距, 列数等. <br />
-                {explainForFlag(
-                  <>使用 {APP_NAME} 自定义网格配置: 宽度为90%; 可跟随 Bilibili-Evolved 自定义顶栏配置</>,
-                  <>使用 bili-feed4 版本B站首页默认的网格配置</>,
-                )}
-              </>
-            }
-          />
+          <AntdTooltip title='网格配置指: 网格宽度, 间距, 列数等'>
+            <span className='cursor-pointer text-end'>网格配置：</span>
+          </AntdTooltip>
+          <UseCustomGridSwitcher />
 
-          <div className='text-end'>网格列数：</div>
+          <span className='text-end'>网格列数：</span>
           <GridTemplateColumnsConfig />
 
+          <AntdTooltip title='卡片之间上下间距'>
+            <span className='cursor-pointer text-end'>行间距：</span>
+          </AntdTooltip>
+          <GridRowGapSwitcher />
+
           <span className='text-end'>侧边栏：</span>
-          <div className={sharedClassNames.settingsLine}>
-            <SwitchSettingItem
-              configPath='enableSidebar'
-              size='small'
-              tooltip={explainForFlag('使用侧边栏(如动态 分组/UP 选择)', '使用下拉面板')}
-            />
-            <Radio.Group
-              disabled={!enableSidebar}
-              buttonStyle='solid'
-              size='small'
-              value={sidebarAlign}
-              onChange={(e) => void (settings.sidebarAlign = e.target.value)}
-            >
-              <Radio.Button value={ESidebarAlign.Left} className='inline-flex-center'>
-                <IconMaterialSymbolsAlignHorizontalLeft className='size-16px' />
-              </Radio.Button>
-              <Radio.Button value={ESidebarAlign.Right} className='inline-flex-center'>
-                <IconMaterialSymbolsAlignHorizontalRight className='size-16px' />
-              </Radio.Button>
-            </Radio.Group>
-          </div>
+          <SidebarSwitcher />
 
           <span className='text-end'>显示模式：</span>
           <GridDisplayModeSwitcher />
