@@ -37,18 +37,18 @@ export const TabConfig: Record<ETab, TabConfigItem> = {
   [ETab.PcRecommend]: {
     icon: <IconForPc className='size-18px' />,
     label: '推荐',
-    desc: '使用新版首页顶部推荐 API',
+    desc: '使用 PC 端首页推荐 API',
     anonymousUsage: true,
   },
   [ETab.KeepFollowOnly]: {
     icon: <IconForFollowedOnly className='size-18px' />,
     label: '已关注',
-    desc: '从PC端推荐中筛选出「已关注」,可能比较慢; 关注的UP更新在动态~',
+    desc: '从 PC 端推荐中筛选出「已关注」，可能比较慢；关注的UP更新在动态',
   },
   [ETab.DynamicFeed]: {
     icon: <IconForDynamicFeed className='size-18px' />,
     label: '动态',
-    desc: '视频投稿动态',
+    desc: '关注的 UP 动态更新',
     swr: true,
   },
   [ETab.Watchlater]: {
@@ -57,13 +57,13 @@ export const TabConfig: Record<ETab, TabConfigItem> = {
       <IconForWatchlater className='size-17px [&_.circle]:stroke-current' />
     ),
     label: '稍后再看',
-    desc: '「我」的稍后再看',
+    desc: '我的稍后再看',
     swr: true,
   },
   [ETab.Fav]: {
     icon: <IconForFav className='mt--1px size-16px' />,
     label: '收藏',
-    desc: '「我」的收藏',
+    desc: '我的收藏',
     get swr() {
       return !favStore.usingShuffle
     },
@@ -80,7 +80,7 @@ export const TabConfig: Record<ETab, TabConfigItem> = {
   [ETab.Live]: {
     icon: <IconForLive className='size-16px' />,
     label: '直播',
-    desc: '直播~',
+    desc: '关注的直播',
     swr: true,
   },
   [ETab.SpaceUpload]: {
@@ -90,8 +90,8 @@ export const TabConfig: Record<ETab, TabConfigItem> = {
     anonymousUsage: true, // 防止未登录 fallback 到 app-recommend
     extraHelpInfo: (
       <div className='ml-20px'>
-        搜索词: 搜索相关作品 <br />
-        本地过滤词: 本地过滤搜索结果; 本地过滤词支持高级规则:
+        搜索词：搜索相关作品 <br />
+        本地过滤词：本地过滤搜索结果；本地过滤词支持高级规则：
         <div className='ml-20px'>{advancedFilterHelpInfo}</div>
       </div>
     ),
@@ -99,13 +99,13 @@ export const TabConfig: Record<ETab, TabConfigItem> = {
   [ETab.Liked]: {
     icon: <IconForLike className='size-16px' />,
     label: '赞',
-    desc: '「我」的点赞. 使用 App 端个人空间 API, 需要 access_key',
+    desc: '我的点赞：使用 App 端个人空间 API，需要 access_key',
     swr: true,
   },
   [ETab.History]: {
     icon: <IconForHistory className='size-16px' />,
     label: '历史',
-    desc: '「我」看过的内容',
+    desc: '我看过的内容',
     swr: true,
   },
 }
