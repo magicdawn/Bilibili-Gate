@@ -8,7 +8,7 @@ import { APP_NAME } from '$common'
 import { TooltipContentDivider } from '$components/_base'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { AccessKeyManage } from '$components/AccessKeyManage'
-import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
+import { CheckboxSettingItem, SwitchSettingItem } from '$components/ModalSettings/setting-item'
 import { GridDisplayModeSwitcher, GridTemplateColumnsConfig } from '$components/RecGrid/display-mode'
 import { MAX_REC_SERVICE_HISTORY_COUNT } from '$components/RecGrid/useRefresh'
 import { TabIcon } from '$components/RecHeader/tab-config'
@@ -149,10 +149,12 @@ export function TabPaneBasic() {
           'grid.twoColumnModeAlign',
         ]}
       >
-        <div className={sharedClassNames.settingsLine}>
-          <CheckboxSettingItem
+        <div className='grid grid-cols-[max-content_1fr] items-center gap-x-1 gap-y-1'>
+          <div className='text-end'>网格配置：</div>
+          <SwitchSettingItem
             configPath='grid.useCustomGrid'
-            label='使用自定义网格配置'
+            size={'small'}
+            className='w-max'
             tooltip={
               <>
                 网格配置指: 网格宽度, 间距, 列数等. <br />
@@ -163,38 +165,35 @@ export function TabPaneBasic() {
               </>
             }
           />
-        </div>
 
-        <div className={sharedClassNames.settingsLine}>
-          网格列数:
+          <div className='text-end'>网格列数：</div>
           <GridTemplateColumnsConfig />
-        </div>
 
-        <div className='flex items-center gap-x-4px'>
-          <CheckboxSettingItem
-            configPath='enableSidebar'
-            label='使用侧边栏'
-            tooltip={explainForFlag('使用侧边栏(如动态 分组/UP 选择)', '使用下拉面板')}
-          />
-          <Radio.Group
-            disabled={!enableSidebar}
-            buttonStyle='solid'
-            size='small'
-            value={sidebarAlign}
-            onChange={(e) => void (settings.sidebarAlign = e.target.value)}
-          >
-            <Radio.Button value={ESidebarAlign.Left} className='inline-flex-center'>
-              <IconMaterialSymbolsAlignHorizontalLeft className='size-16px' />
-            </Radio.Button>
-            <Radio.Button value={ESidebarAlign.Right} className='inline-flex-center'>
-              <IconMaterialSymbolsAlignHorizontalRight className='size-16px' />
-            </Radio.Button>
-          </Radio.Group>
-        </div>
+          <span className='text-end'>侧边栏：</span>
+          <div className={sharedClassNames.settingsLine}>
+            <SwitchSettingItem
+              configPath='enableSidebar'
+              size='small'
+              tooltip={explainForFlag('使用侧边栏(如动态 分组/UP 选择)', '使用下拉面板')}
+            />
+            <Radio.Group
+              disabled={!enableSidebar}
+              buttonStyle='solid'
+              size='small'
+              value={sidebarAlign}
+              onChange={(e) => void (settings.sidebarAlign = e.target.value)}
+            >
+              <Radio.Button value={ESidebarAlign.Left} className='inline-flex-center'>
+                <IconMaterialSymbolsAlignHorizontalLeft className='size-16px' />
+              </Radio.Button>
+              <Radio.Button value={ESidebarAlign.Right} className='inline-flex-center'>
+                <IconMaterialSymbolsAlignHorizontalRight className='size-16px' />
+              </Radio.Button>
+            </Radio.Group>
+          </div>
 
-        <div className='flex items-center'>
-          网格显示模式
-          <GridDisplayModeSwitcher className='ml-xl' />
+          <span className='text-end'>显示模式：</span>
+          <GridDisplayModeSwitcher />
         </div>
       </SettingsGroup>
 
