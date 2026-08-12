@@ -223,14 +223,12 @@ const VideoCardInner = memo(function VideoCardInner({
     cover,
     duration,
     durationDisplay,
-    recommendReason,
     watchedProgress,
 
     // stat
     statItems,
 
     // author
-    authorName,
     authorMid,
   } = cardData
 

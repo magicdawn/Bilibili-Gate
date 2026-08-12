@@ -122,8 +122,7 @@ export const VideoCardBottom = memo(function ({
     authorMid,
 
     // adpater specific
-    appBadge,
-    appBadgeDesc,
+    appRecommendDesc,
     rankingDesc,
     liveExtraDesc,
     historyDeviceIcon,
@@ -231,18 +230,20 @@ export const VideoCardBottom = memo(function ({
     }
 
     // app-recommend: bangumi
-    if (appBadge || appBadgeDesc) {
+    if (appRecommendDesc) {
       return (
-        <a
-          className='bili-video-card__info--owner'
-          css={descOwnerCss}
-          href={href}
-          target={target}
-          onContextMenu={showNativeContextMenuWhenAltKeyPressed}
-        >
-          {!!appBadge && <span css={appBadgeCss}>{appBadge}</span>}
-          {!!appBadgeDesc && <span>{appBadgeDesc}</span>}
-        </a>
+        <>
+          <a
+            className='bili-video-card__info--owner'
+            css={descOwnerCss}
+            href={href}
+            target={target}
+            onContextMenu={showNativeContextMenuWhenAltKeyPressed}
+          >
+            {!!appRecommendDesc && <span>{appRecommendDesc}</span>}
+          </a>
+          {recommendReasonEl}
+        </>
       )
     }
 
@@ -321,7 +322,7 @@ export const VideoCardBottom = memo(function ({
           {authorFace ? (
             <Avatar src={getAvatarSrc(authorFace)} />
           ) : (
-            <Avatar>{authorName?.[0] || appBadgeDesc?.[0] || ''}</Avatar>
+            <Avatar>{authorName?.[0] || appRecommendDesc?.[0] || ''}</Avatar>
           )}
           {avatarAddon}
         </a>

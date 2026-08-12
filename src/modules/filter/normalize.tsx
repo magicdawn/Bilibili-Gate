@@ -109,8 +109,7 @@ export interface IVideoCardData {
   /**
    * adpater specific
    */
-  appBadge?: string
-  appBadgeDesc?: string
+  appRecommendDesc?: string
   rankingDesc?: string
   liveExtraDesc?: string
   liveAreaName?: string
@@ -238,6 +237,8 @@ function apiIpadAppAdapter(item: AppRecItemExtend): IVideoCardData {
   const desc = item.desc || ''
   const [descAuthorName = undefined, descDate = undefined] = desc.split(DESC_SEPARATOR)
 
+  const badge = item.cover_badge || (item.goto !== 'av' ? item.cover_right_text : undefined)
+
   return {
     // video
     avid,
@@ -247,6 +248,7 @@ function apiIpadAppAdapter(item: AppRecItemExtend): IVideoCardData {
     href,
     title: item.title,
     cover: item.cover,
+    cardTags: badge ? defineCardTags([{ key: 'app-recommend:badge', text: badge }]) : undefined,
     pubts: item.videoDetail?.pubdate || undefined,
     pubdateDisplay: descDate,
     duration: item.videoDetail?.duration || item.player_args?.duration || undefined,
@@ -265,10 +267,10 @@ function apiIpadAppAdapter(item: AppRecItemExtend): IVideoCardData {
     // author
     authorName: item.args.up_name || descAuthorName,
     authorFace: item.avatar?.cover,
-    authorMid: String(item.args.up_id || ''),
+    authorMid: item.args.up_id?.toString(),
 
-    appBadge: item.cover_badge,
-    appBadgeDesc: item.desc,
+    // desc
+    appRecommendDesc: item.desc,
   }
 }
 
