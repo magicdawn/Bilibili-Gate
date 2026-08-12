@@ -225,8 +225,8 @@ export function GridRowGapSwitcher({ className }: { className?: string }) {
         {
           value: false,
           label: (
-            // clamp(15px, 1.15vw, 40px)
-            <AntdTooltip title={<>1.15vw, 15px ~ 40px</>}>
+            // clamp(15px, 1.2vw, 40px)
+            <AntdTooltip title={<>1.2vw, 15px ~ 40px</>}>
               <span className='inline-flex-center'>自适应</span>
             </AntdTooltip>
           ),
