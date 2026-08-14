@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import dayjs from 'dayjs'
 import { assert, memoize, noop, type MemoizeCache } from 'es-toolkit'
 import { appWarn } from '$common'
-import { defineCardTags, type CardTag } from '$components/VideoCard/card-tags'
+import { defineCardBadges, type CardBadge } from '$components/VideoCard/card-badges'
 import { AppRecommendApiIconType, defineStatItems, type StatItemType } from '$components/VideoCard/stat-item'
 import { PcRecGoto } from '$define/pc-recommend'
 import { EApiType, ELiveStatus } from '$enums'
@@ -104,7 +104,7 @@ export interface IVideoCardData {
   followed?: boolean // 是否「已关注」
 
   // general top-mark
-  cardTags?: CardTag[]
+  cardBadges?: CardBadge[]
 
   /**
    * adpater specific
@@ -248,7 +248,7 @@ function apiIpadAppAdapter(item: AppRecItemExtend): IVideoCardData {
     href,
     title: item.title,
     cover: item.cover,
-    cardTags: badge ? defineCardTags([{ key: 'app-recommend:badge', text: badge }]) : undefined,
+    cardBadges: badge ? defineCardBadges([{ key: 'app-recommend:badge', text: badge }]) : undefined,
     pubts: item.videoDetail?.pubdate || undefined,
     pubdateDisplay: descDate,
     duration: item.videoDetail?.duration || item.player_args?.duration || undefined,
@@ -652,13 +652,13 @@ function apiSpaceUploadAdapter(item: SpaceUploadItemExtend): IVideoCardData {
     authorFace: spaceUploadAvatarCache.get(item.mid),
     authorMid,
     followed: followedMidSet.has(item.mid.toString()),
-    cardTags: defineCardTags([
-      isSpaceUploadItemChargeOnly(item) && {
-        key: `${item.api}:charge-only`,
-        icon: <BiliFreshSpaceIconUploadChargeOnly className='size-14px' />,
-        text: item.elec_arc_badge,
-      },
-    ]),
+    cardBadges: isSpaceUploadItemChargeOnly(item)
+      ? defineCardBadges({
+          key: `${item.api}:charge-only`,
+          icon: <BiliFreshSpaceIconUploadChargeOnly className='size-14px' />,
+          text: item.elec_arc_badge,
+        })
+      : undefined,
   }
 }
 
@@ -728,7 +728,7 @@ function apiHistoryAdapter(item: HistoryItemExtend): IVideoCardData {
     //
   }
 
-  const cardTags = (() => {
+  const cardBadges = (() => {
     if (!item.badge) return
     if (isVideo) return
     if (isLive && item.live_status === ELiveStatus.Streaming) return // "直播中" 会单独处理
@@ -738,7 +738,7 @@ function apiHistoryAdapter(item: HistoryItemExtend): IVideoCardData {
       className = 'bg-black/50' // 未开播, 灰色 tag
     }
 
-    return defineCardTags([{ key: 'history:badge', text: item.badge, className }])
+    return defineCardBadges([{ key: 'history:badge', text: item.badge, className }])
   })()
 
   const { DeviceIcon, deviceName } =
@@ -766,7 +766,7 @@ function apiHistoryAdapter(item: HistoryItemExtend): IVideoCardData {
 
     // stat & tags
     statItems: [], // no stat data available
-    cardTags,
+    cardBadges,
 
     // author
     authorFace: item.author_face || undefined,

@@ -1,5 +1,5 @@
 /**
- * 我比较了 Tag / Mark / Badge 的语义, 发现其实都可以, 这里统一为 Tag
+ * 统一为 Badge
  */
 
 import { Dropdown } from 'antd'
@@ -15,34 +15,34 @@ import { useTooltip } from './child-components/VideoCardActions'
 import { useLinkNewTab } from './use/useOpenRelated'
 import type { NormalRankItem } from '$modules/rec-services/hot/rank/types'
 
-export type CardTag = {
+export type CardBadge = {
   key: Key
   icon?: ReactNode
   text?: ReactNode
   className?: string
 }
 
-export function isCardTagValid(x: CardTag) {
+export function checkIsCardBadgeValid(x: CardBadge) {
   return !!(x.icon || x.text)
 }
 
-export function defineCardTags(items: (CardTag | false | undefined)[]): CardTag[] {
-  return items.filter(Boolean).filter(isCardTagValid)
+export function defineCardBadges(...items: Array<CardBadge | CardBadge[] | false | undefined>): CardBadge[] {
+  return items.flat().filter(Boolean).filter(checkIsCardBadgeValid)
 }
 
-export const clsCardTagContainer =
+export const clsCardBadgeContainer =
   'pointer-events-none h-19px flex-center whitespace-nowrap rounded-2px bg-gate-primary px-4px text-center text-13px color-white'
 
-export function BaseTag({ children, className }: { children?: ReactNode; className?: string }) {
-  return <span className={useUnoMerge(clsCardTagContainer, className)}>{children}</span>
+export function BaseBadge({ children, className }: { children?: ReactNode; className?: string }) {
+  return <span className={useUnoMerge(clsCardBadgeContainer, className)}>{children}</span>
 }
 
-export function GeneralCardTag({ tag }: { tag: CardTag }) {
-  if (!isCardTagValid(tag)) return
+export function GeneralCardBadge({ tag }: { tag: CardBadge }) {
+  if (!checkIsCardBadgeValid(tag)) return
   const { icon, text, className } = tag
   const hasIcon = !!icon
   return (
-    <BaseTag
+    <BaseBadge
       className={clsx(
         'min-w-32px',
         hasIcon ? 'pl-4px pr-6px' : 'px-4px', // 有图标左边更显空旷
@@ -51,7 +51,7 @@ export function GeneralCardTag({ tag }: { tag: CardTag }) {
     >
       {hasIcon && icon}
       {text}
-    </BaseTag>
+    </BaseBadge>
   )
 }
 
@@ -60,7 +60,7 @@ function getColor(no: number) {
   const medalColors = ['#FFD700', '#C0C0C0', '#B36700']
   return medalColors[no - 1] ?? appPrimaryColorValue
 }
-export function RankNumTag({ item }: { item: RankItemExtend }) {
+export function RankNumBadge({ item }: { item: RankItemExtend }) {
   const hasMedal = item.rankingNo <= 3
   const medalIcon = <IconPhCrownFill />
 
@@ -127,16 +127,16 @@ export function RankNumTag({ item }: { item: RankItemExtend }) {
   )
 }
 
-export function LiveTag() {
+export function LiveBadge() {
   return (
-    <BaseTag>
+    <BaseBadge>
       <IconForLive active className='size-14px' />
       直播中
-    </BaseTag>
+    </BaseBadge>
   )
 }
 
-export function ApiTypeTag({ item }: { item: RecItemType }) {
+export function ApiTypeBadge({ item }: { item: RecItemType }) {
   const text = useMemo(() => {
     if (checkIsDynamicFeed(item)) return '动态'
     if (checkIsWatchlater(item)) return '稍后再看'
@@ -154,14 +154,14 @@ export function ApiTypeTag({ item }: { item: RecItemType }) {
   })
 
   return (
-    <span ref={triggerRef} className={useUnoMerge(clsCardTagContainer, 'pointer-events-auto')}>
+    <span ref={triggerRef} className={useUnoMerge(clsCardBadgeContainer, 'pointer-events-auto')}>
       {text}
       {tooltipEl}
     </span>
   )
 }
 
-export function VolTag({ vol, volTooltip }: { vol: number; volTooltip?: ReactNode }) {
+export function VolBadge({ vol, volTooltip }: { vol: number; volTooltip?: ReactNode }) {
   const { triggerRef, tooltipEl } = useTooltip({
     inlinePosition: 'left',
     tooltip: volTooltip,

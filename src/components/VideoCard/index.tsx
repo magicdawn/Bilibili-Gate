@@ -55,8 +55,8 @@ import { isWebApiSuccess } from '$request'
 import { isFirefoxLike } from '$ua'
 import { videoCardBorderRadiusValue } from '../css-vars'
 import { useLargePreviewRelated } from '../LargePreview/useLargePreview'
+import { ApiTypeBadge, checkIsCardBadgeValid, GeneralCardBadge, LiveBadge, RankNumBadge, VolBadge } from './card-badges'
 import { multiSelectedCss, useBlockedCardCss } from './card-border-css'
-import { ApiTypeTag, GeneralCardTag, isCardTagValid, LiveTag, RankNumTag, VolTag } from './card-tags'
 import { BlockedCard, DislikedCard, SkeletonCard } from './child-components/other-type-cards'
 import { SimpleProgressBar } from './child-components/PreviewImage'
 import { VideoCardActionButton, VideoCardActionsClassNames } from './child-components/VideoCardActions'
@@ -483,14 +483,14 @@ const VideoCardInner = memo(function VideoCardInner({
   /**
    * top marks
    */
-  const _hasGeneralCardTags = !!cardData.cardTags?.some(isCardTagValid)
-  const _isRank = checkIsRank(item)
-  const _isStreaming = // 直播中
+  const hasGeneralCardBadges = !!cardData.cardBadges?.some(checkIsCardBadgeValid)
+  const isRank = checkIsRank(item)
+  const isStreaming = // 直播中
     ((checkIsLive(item) || checkIsHistory(item)) && item.live_status === ELiveStatus.Streaming) ||
     (checkIsPcRecommend(item) && item.goto === PcRecGoto.Live)
-  const hasApiTypeTag = tab === ETab.AppRecommend && !checkIsAppRecommend(item) && !checkIsLive(item)
+  const hasApiTypeBadge = tab === ETab.AppRecommend && !checkIsAppRecommend(item) && !checkIsLive(item)
   const hasVolMark =
-    (checkIsSpaceUpload(item) && spaceUploadSettings.showVol) || (checkIsFav(item) && !!item.vol && !hasApiTypeTag)
+    (checkIsSpaceUpload(item) && spaceUploadSettings.showVol) || (checkIsFav(item) && !!item.vol && !hasApiTypeBadge)
 
   const copyBvidInfoButtonEl = __internalEnableCopyBvidInfo && bvid && (
     <VideoCardActionButton
@@ -511,26 +511,26 @@ const VideoCardInner = memo(function VideoCardInner({
       {/* 多选 */}
       {multiSelecting && multiSelectEl}
 
-      {/* 我不想看 */}
-      {dislikeButtonEl}
-
       {/* 热门: 排行榜 */}
-      {_isRank && <RankNumTag item={item} />}
+      {isRank && <RankNumBadge item={item} />}
 
       {/* 直播: 直播中 */}
-      {_isStreaming && <LiveTag />}
+      {isStreaming && <LiveBadge />}
 
       {/* App推荐: 来自其他 Tab 的内容 */}
-      {hasApiTypeTag && <ApiTypeTag item={item} />}
+      {hasApiTypeBadge && <ApiTypeBadge item={item} />}
 
       {/* 显示序号, Tab: 投稿 | 收藏 */}
       {hasVolMark && !!item.vol && (
-        <VolTag vol={item.vol} volTooltip={checkIsFav(item) ? item.volTooltip : undefined} />
+        <VolBadge vol={item.vol} volTooltip={checkIsFav(item) ? item.volTooltip : undefined} />
       )}
 
-      {/* General card-tag */}
+      {/* general badges */}
       {/* 动态: 充电专属; 投稿: 充电专属;  */}
-      {_hasGeneralCardTags && cardData.cardTags?.map((tag) => <GeneralCardTag key={tag.key} tag={tag} />)}
+      {hasGeneralCardBadges && cardData.cardBadges?.map((tag) => <GeneralCardBadge key={tag.key} tag={tag} />)}
+
+      {/* 我不想看 */}
+      {dislikeButtonEl}
     </>
   )
 

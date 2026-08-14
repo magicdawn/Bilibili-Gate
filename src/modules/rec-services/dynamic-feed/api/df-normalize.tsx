@@ -1,5 +1,5 @@
 import { Picture } from '$components/_base/Picture'
-import { defineCardTags } from '$components/VideoCard/card-tags'
+import { defineCardBadges } from '$components/VideoCard/card-badges'
 import { defineStatItems } from '$components/VideoCard/stat-item'
 import { EApiType } from '$enums'
 import { parseCount, parseDuration } from '$utility/video'
@@ -56,7 +56,7 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
   } as const satisfies Partial<IVideoCardData>
 
   const defineSingleCardTag = (text: ReactNode) => {
-    return defineCardTags([{ key: `${EApiType.DynamicFeed}:tag`, text }])
+    return defineCardBadges([{ key: `${EApiType.DynamicFeed}:tag`, text }])
   }
 
   if (majorType === DynamicFeedEnums.MajorType.Archive && major.archive) {
@@ -77,17 +77,16 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
 
       // 「投稿视频」显示 recommendReason, 其他显示 tag
       recommendReason: v.badge.text === DynamicFeedBadgeText.Upload ? v.badge.text : undefined,
-      cardTags: defineCardTags([
+      cardBadges:
         v.badge.text === DynamicFeedBadgeText.Upload
           ? undefined
-          : {
+          : defineCardBadges({
               key: `${EApiType.DynamicFeed}:tag`,
               icon: v.badge.icon_url ? (
                 <Picture src={`${v.badge.icon_url}@!web-dynamic`} className='size-14px' />
               ) : undefined,
               text: v.badge.text,
-            },
-      ]),
+            }),
 
       // stat
       statItems: defineStatItems([
@@ -119,7 +118,7 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
       href: opus.jump_url,
       cover: opus.pics?.[0]?.url,
       title: opus.title || opus.summary?.text || '',
-      cardTags: defineSingleCardTag(cardTagText),
+      cardBadges: defineSingleCardTag(cardTagText),
     }
   }
 
@@ -135,7 +134,7 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
         { field: 'play', value: pgc.stat.play },
         { field: 'danmaku', value: pgc.stat.danmaku },
       ]),
-      cardTags: defineSingleCardTag(author.label), // 纪录片)
+      cardBadges: defineSingleCardTag(author.label), // 纪录片)
       pubts: author.pub_ts, // 0
       pubdateDisplay: author.pub_time, // pub_ts 为 0, 不可用
     }
@@ -162,7 +161,7 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
       danmaku: parseCount(ugc_season.stat.danmaku),
 
       recommendReason: author.pub_action,
-      cardTags: defineSingleCardTag('合集'),
+      cardBadges: defineSingleCardTag('合集'),
 
       // AuthorTypeUgcSeason 里 mid 其实是 avid .... 不知道咋整
       authorMid: undefined,
