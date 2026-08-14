@@ -31,7 +31,7 @@ export function defineCardBadges(...items: Array<CardBadge | CardBadge[] | false
 }
 
 export const clsCardBadgeContainer =
-  'pointer-events-none h-19px flex-center whitespace-nowrap rounded-2px bg-gate-primary px-4px text-center text-13px color-white'
+  'pointer-events-none h-19px flex items-center justify-center whitespace-nowrap rounded-2px bg-gate-primary px-4px text-center text-13px color-white leading-19px'
 
 export function BaseBadge({ children, className }: { children?: ReactNode; className?: string }) {
   return <span className={useUnoMerge(clsCardBadgeContainer, className)}>{children}</span>
