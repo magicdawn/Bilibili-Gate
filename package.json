@@ -43,7 +43,7 @@
     "axios": "^1.19.0",
     "better-result": "^3.0.1",
     "clsx": "^2.1.1",
-    "dayjs": "^1.11.21",
+    "dayjs": "^1.11.22",
     "emittery": "^2.0.0",
     "es-toolkit": "^1.50.0",
     "fast-sort-lens": "^1.0.2",

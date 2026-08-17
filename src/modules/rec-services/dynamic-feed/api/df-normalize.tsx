@@ -2,6 +2,7 @@ import { Picture } from '$components/_base/Picture'
 import { defineCardBadges } from '$components/VideoCard/card-badges'
 import { defineStatItems } from '$components/VideoCard/stat-item'
 import { EApiType } from '$enums'
+import { AntdTooltip } from '$modules/antd/custom'
 import { IconForForward } from '$modules/icon'
 import { parseCount, parseDuration } from '$utility/video'
 import { DynamicFeedBadgeText } from '../store'
@@ -26,6 +27,11 @@ export function dynamicFeedDetectAd(item: DynamicFeedItem): boolean {
   }
 
   return false
+}
+
+function checkDynamicFeedItemIsVideo(item: DynamicFeedItem) {
+  const major = item.modules.module_dynamic.major
+  return major?.type === DynamicFeedEnums.MajorType.Archive
 }
 
 export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData | undefined {
@@ -59,6 +65,19 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
 
   if (major?.type === DynamicFeedEnums.MajorType.Archive && major.archive) {
     const v = major.archive
+    const videoTitle = v.title || v.desc
+    const itemTitle = item.modules.module_dynamic.desc?.text
+    const titleRender = itemTitle ? (
+      <AntdTooltip title={<>动态: {itemTitle}</>}>
+        <span>{videoTitle}</span>
+      </AntdTooltip>
+    ) : (
+      videoTitle
+    )
+    const title = [!!itemTitle && `动态: ${itemTitle}`, !!videoTitle && `视频标题: ${videoTitle}`]
+      .filter(Boolean)
+      .join('\n\n')
+
     return {
       ...sharedCardData,
 
@@ -68,7 +87,8 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
       // cid: v.
       goto: 'av',
       href: `/video/${v.bvid}/`,
-      title: v.title,
+      title,
+      titleRender,
       cover: v.cover,
       duration: parseDuration(v.duration_text) || 0,
       durationDisplay: v.duration_text,
@@ -164,10 +184,23 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
   }
 
   if (item.type === DynamicFeedEnums.ItemType.Forward && item.orig) {
-    const originalNormalized = normalizeDynamicFeedItem(item.orig)
-    if (!originalNormalized) return
+    const originalItem = item.orig
+    const originalItemNormalized = normalizeDynamicFeedItem(originalItem)
+    if (!originalItemNormalized) return
 
+    // Q: 这是在干什么
+    // A: 对于转发视频
+    //    标题: (转发内容 + 原视频视频标题)
+    //    hover title: (尽量详细, 转发内容 + 原动态投稿文字 + 原动态视频标题)
+    const { major } = originalItem.modules.module_dynamic
+    const originalVideoTitle = major?.type === DynamicFeedEnums.MajorType.Archive ? major?.archive?.title : undefined
     const forwardText = item.modules.module_dynamic.desc?.text
+    const title = [
+      !!forwardText && `转发: ${forwardText}`,
+      !!originalItemNormalized.title && `原动态: ${originalItemNormalized.title.replace(/^动态: /, '')}`,
+    ]
+      .filter(Boolean)
+      .join('\n\n')
     const titleRender = (
       <>
         {forwardText && (
@@ -177,16 +210,16 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
             <br />
           </>
         )}
-        {originalNormalized.title}
+        {originalVideoTitle || originalItemNormalized.title}
       </>
     )
 
     return {
-      ...originalNormalized,
+      ...originalItemNormalized,
       ...sharedCardData,
       cardBadges: defineSingleDfCardBadge('转发', <IconForForward className='relative top--1px size-14px' />),
-      title: '',
       titleRender,
+      title, // for title attribute
       href: `https://t.bilibili.com/${item.id_str}`,
     }
   }
