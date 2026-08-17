@@ -2,6 +2,7 @@ import { Picture } from '$components/_base/Picture'
 import { defineCardBadges } from '$components/VideoCard/card-badges'
 import { defineStatItems } from '$components/VideoCard/stat-item'
 import { EApiType } from '$enums'
+import { IconForForward } from '$modules/icon'
 import { parseCount, parseDuration } from '$utility/video'
 import { DynamicFeedBadgeText } from '../store'
 import { DynamicFeedEnums } from './enums'
@@ -30,13 +31,10 @@ export function dynamicFeedDetectAd(item: DynamicFeedItem): boolean {
 export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData | undefined {
   // ad
   if (dynamicFeedDetectAd(item)) return
-  // no major
-  const major = item.modules.module_dynamic.major
-  if (!major) return
 
+  const major = item.modules.module_dynamic.major
   const author = item.modules.module_author
   const additional = item.modules.module_dynamic.additional
-  const majorType = major.type
 
   const sharedCardData = {
     authorName: author.name,
@@ -47,19 +45,19 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
 
     // 动态自身的 stat
     statItems: defineStatItems([
-      { field: 'like', value: item.modules.module_stat.like.count },
-      { field: 'dynamic-feed:comment', value: item.modules.module_stat.comment.count },
-      { field: 'dynamic-feed:forward', value: item.modules.module_stat.forward.count },
+      { field: 'like', value: item.modules.module_stat?.like.count },
+      { field: 'dynamic-feed:comment', value: item.modules.module_stat?.comment.count },
+      { field: 'dynamic-feed:forward', value: item.modules.module_stat?.forward.count },
     ]),
 
     recommendReason: author.pub_action,
   } as const satisfies Partial<IVideoCardData>
 
-  const defineSingleCardTag = (text: ReactNode) => {
-    return defineCardBadges([{ key: `${EApiType.DynamicFeed}:tag`, text }])
+  const defineSingleDfCardBadge = (text: ReactNode, icon?: ReactNode) => {
+    return defineCardBadges([{ key: `${EApiType.DynamicFeed}:tag`, text, icon }])
   }
 
-  if (majorType === DynamicFeedEnums.MajorType.Archive && major.archive) {
+  if (major?.type === DynamicFeedEnums.MajorType.Archive && major.archive) {
     const v = major.archive
     return {
       ...sharedCardData,
@@ -80,13 +78,10 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
       cardBadges:
         v.badge.text === DynamicFeedBadgeText.Upload
           ? undefined
-          : defineCardBadges({
-              key: `${EApiType.DynamicFeed}:tag`,
-              icon: v.badge.icon_url ? (
-                <Picture src={`${v.badge.icon_url}@!web-dynamic`} className='size-14px' />
-              ) : undefined,
-              text: v.badge.text,
-            }),
+          : defineSingleDfCardBadge(
+              v.badge.text,
+              v.badge.icon_url ? <Picture src={`${v.badge.icon_url}@!web-dynamic`} className='size-14px' /> : undefined,
+            ),
 
       // stat
       statItems: defineStatItems([
@@ -98,7 +93,7 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
     }
   }
 
-  if (majorType === DynamicFeedEnums.MajorType.Opus && major.opus) {
+  if (major?.type === DynamicFeedEnums.MajorType.Opus && major.opus) {
     const { opus } = major
     const isReserve = additional?.type === DynamicFeedEnums.AdditionalType.Reserve
     const isLiveReserve = isReserve && /直播预告/.test(additional.reserve.title)
@@ -118,11 +113,11 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
       href: opus.jump_url,
       cover: opus.pics?.[0]?.url,
       title: opus.title || opus.summary?.text || '',
-      cardBadges: defineSingleCardTag(cardTagText),
+      cardBadges: defineSingleDfCardBadge(cardTagText),
     }
   }
 
-  if (majorType === DynamicFeedEnums.MajorType.Pgc && major.pgc) {
+  if (major?.type === DynamicFeedEnums.MajorType.Pgc && major.pgc) {
     const { pgc } = major
     return {
       ...sharedCardData,
@@ -134,13 +129,13 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
         { field: 'play', value: pgc.stat.play },
         { field: 'danmaku', value: pgc.stat.danmaku },
       ]),
-      cardBadges: defineSingleCardTag(author.label), // 纪录片)
+      cardBadges: defineSingleDfCardBadge(author.label), // e.g `纪录片`
       pubts: author.pub_ts, // 0
       pubdateDisplay: author.pub_time, // pub_ts 为 0, 不可用
     }
   }
 
-  if (majorType === DynamicFeedEnums.MajorType.UgcSeason && major.ugc_season) {
+  if (major?.type === DynamicFeedEnums.MajorType.UgcSeason && major.ugc_season) {
     const { ugc_season } = major
     return {
       ...sharedCardData,
@@ -161,13 +156,40 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
       danmaku: parseCount(ugc_season.stat.danmaku),
 
       recommendReason: author.pub_action,
-      cardBadges: defineSingleCardTag('合集'),
+      cardBadges: defineSingleDfCardBadge('合集'),
 
       // AuthorTypeUgcSeason 里 mid 其实是 avid .... 不知道咋整
       authorMid: undefined,
     }
   }
 
-  // DYNAMIC_TYPE_FORWARD: 这个咋处理?
+  if (item.type === DynamicFeedEnums.ItemType.Forward && item.orig) {
+    const originalNormalized = normalizeDynamicFeedItem(item.orig)
+    if (!originalNormalized) return
+
+    const forwardText = item.modules.module_dynamic.desc?.text
+    const titleRender = (
+      <>
+        {forwardText && (
+          <>
+            <IconForForward className='relative top--1px mr-1 size-1em rounded-full bg-gate-primary vertical-middle color-white' />
+            {forwardText}
+            <br />
+          </>
+        )}
+        {originalNormalized.title}
+      </>
+    )
+
+    return {
+      ...originalNormalized,
+      ...sharedCardData,
+      cardBadges: defineSingleDfCardBadge('转发', <IconForForward className='relative top--1px size-14px' />),
+      title: '',
+      titleRender,
+      href: `https://t.bilibili.com/${item.id_str}`,
+    }
+  }
+
   // DYNAMIC_TYPE_LIVE_RCMD: 动态支持了直播中, 这个没必要了
 }

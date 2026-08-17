@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { memo, useMemo, type ReactNode } from 'react'
-import { IconForFav } from '$modules/icon'
+import { IconForComment, IconForFav, IconForForward } from '$modules/icon'
 import { IconForStatDanmaku, IconForStatPlay } from '$modules/icon/stat-icons'
 import { formatCount } from '$utility/video'
 import { STAT_NUMBER_FALLBACK } from './index.shared'
@@ -43,8 +43,8 @@ export const StatFieldIconConfig: Record<StatItemField, ReactNode> = {
   'favorite': <IconForFav className={clsForThirdPartyIcon} />,
   'coin': <IconTablerCoinYen className={clsForThirdPartyIcon} />,
   'live:viewed-by': <IconParkOutlinePreviewOpen className={clsForThirdPartyIcon} />,
-  'dynamic-feed:comment': <IconTablerMessageCircle className={clsForThirdPartyIcon} />,
-  'dynamic-feed:forward': <IconTablerArrowForwardUp className={clsForThirdPartyIcon} />,
+  'dynamic-feed:comment': <IconForComment className={clsForThirdPartyIcon} />,
+  'dynamic-feed:forward': <IconForForward className={clsForThirdPartyIcon} />,
 }
 
 /**

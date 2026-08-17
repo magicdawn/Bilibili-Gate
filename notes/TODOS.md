@@ -11,6 +11,7 @@
 - [ ] multi-select: disable refresh btn click / r refresh when multi-selecting has many selected. possible prevent Browser reload.
 - [ ] multi-select: parse selected state from clipboard
 - [ ] multi-select: float toolbar 现在往 tabbar 上堆, 空间不够, 更好的方式是 float toolbar.
+- [ ] 直播预览
 
 # Completed
 
@@ -25,3 +26,4 @@
 - [x] 专栏草稿箱报错
 - [x] 充电专属, 浮动预览无响应, 增加提示.
 - [x] 把 fav-folder 想做 tag, 一个视频包含在多个收藏夹其实是合理的.
+- [x] 动态: 支持显示转发动态

@@ -50,8 +50,8 @@ export interface LikeIcon {
 export interface DynamicFeedItemModules {
   module_author: ModuleAuthor
   module_dynamic: PurpleModuleDynamic
-  module_more: ModuleMore
-  module_stat: ModuleStat
+  module_more?: ModuleMore
+  module_stat?: ModuleStat // e.g forward `item.orig` has no `module_stat`
 }
 
 export interface ContainerSize {

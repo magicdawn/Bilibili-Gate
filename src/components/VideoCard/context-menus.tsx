@@ -276,6 +276,18 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
       },
     [hasEntry_dynamicFeed_offsetAndMinId, item, authorMid],
   )
+  const dynamicFeedOpenDetailPage: AntMenuItem | false = useMemo(() => {
+    return (
+      checkIsDynamicFeed(item) && {
+        key: '动态: 查看动态详情',
+        label: '动态: 查看动态详情',
+        icon: <IconForOpenExternalLink className={clsContextMenuIcon} />,
+        onClick() {
+          openNewTab(`https://t.bilibili.com/${item.id_str}`)
+        },
+      }
+    )
+  }, [item])
 
   /**
    * space-upload offset
@@ -391,6 +403,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
         icon: <IconForDynamicFeed className={clsContextMenuIcon} />,
         onClick: onViewUpDyn,
       },
+      dynamicFeedOpenDetailPage,
       dynamicViewUpdateSinceThis,
       dynamicViewStartFromHere,
 
