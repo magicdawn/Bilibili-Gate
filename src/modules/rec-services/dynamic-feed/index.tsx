@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import { filter, map, pipe } from 'es-toolkit/fp'
 import pmap from 'promise.map'
 import { snapshot } from 'valtio'
 import { baseDebug } from '$common'
@@ -14,7 +15,6 @@ import { getArchive } from './api/enums'
 import { hasLocalDynamicFeedCache, localDynamicFeedCache, performIncrementalUpdateIfNeed } from './cache'
 import { FollowGroupMergeTimelineService } from './group/merge-timeline-service'
 import {
-  DF_SELECTED_KEY_ALL,
   DF_SELECTED_KEY_PREFIX_GROUP,
   DF_SELECTED_KEY_PREFIX_UP,
   dfStore,
@@ -355,22 +355,22 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
       }
     }
 
-    const items: DynamicFeedItemExtend[] = rawItems
+    const items: DynamicFeedItemExtend[] = pipe(
+      rawItems,
 
-      // by 关注分组
-      .filter((x) => {
-        if (!this.viewingSomeGroup) return true
-        if (this.groupMergeTimelineService) return true // skip group-filter when loaded via groupMergeTimelineService
-        if (!this.groupMids.size) return true
+      // filter by 关注分组
+      filter((x) => {
         const mid = x.modules.module_author.mid
-        return this.groupMids.has(mid)
-      })
+        return this.viewingSomeGroup && this.groupMergeTimelineService && this.groupMids.size && mid
+          ? this.groupMids.has(mid)
+          : true
+      }),
 
-      // by 动态视频|投稿视频
-      .filter((x) => {
+      // filter by 动态视频|投稿视频
+      filter((x) => {
         // all
         if (this.dynamicFeedVideoType === DynamicFeedVideoType.All) return true
-        // type only
+        // require video
         const v = getArchive(x)
         if (!v) return false
         const currentLabel = v.badge.text
@@ -381,28 +381,28 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
           return currentLabel === DynamicFeedBadgeText.Upload || currentLabel === DynamicFeedBadgeText.ChargeOnly
         }
         return false
-      })
+      }),
 
       // by 充电专属
-      .filter((x) => {
+      filter((x) => {
         if (!this.hideChargeOnlyVideos) return true
         const v = getArchive(x)
         if (!v) return true // NOTE: none video should pass
         const chargeOnly = v.badge.text === DynamicFeedBadgeText.ChargeOnly
         return !chargeOnly
-      })
+      }),
 
       // by 最短时长
-      .filter((x) => {
+      filter((x) => {
         if (this.filterMinDuration === DynamicFeedVideoMinDuration.All) return true
         const v = getArchive(x)
         if (!v) return false
         const duration = parseDuration(v.duration_text)
         return duration >= this.filterMinDurationValue
-      })
+      }),
 
       // by 关键字过滤
-      .filter((x) => {
+      filter((x) => {
         if (!this.filterText) return true
         const v = getArchive(x)
         if (!v) return false
@@ -413,25 +413,25 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
           useAdvancedFilter,
           useAdvancedFilterParsed,
         })
-      })
+      }),
 
       // 在「全部」动态中隐藏 UP 的动态
-      .filter((x) => {
-        if (this.config.selectedKey !== DF_SELECTED_KEY_ALL) return true
-        const set = this.viewingAllHideMids
-        if (!set.size) return true
+      filter((x) => {
         const mid = x.modules.module_author.mid
-        return !set.has(mid.toString())
-      })
+        return this.viewingAll && this.viewingAllHideMids.size && mid
+          ? !this.viewingAllHideMids.has(mid.toString())
+          : true
+      }),
 
-      .map((item) => {
+      map((item) => {
         return {
           ...item,
           api: EApiType.DynamicFeed,
           uniqId: `${EApiType.DynamicFeed}:${item.id_str || crypto.randomUUID()}`,
           groupId: this.viewingSomeGroup ? this.groupId : undefined,
         }
-      })
+      }),
+    )
 
     /**
      * filter functions

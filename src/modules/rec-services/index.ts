@@ -15,9 +15,7 @@ const debug = baseDebug.extend('service')
 
 export const recItemUniqer = (item: RecItemTypeOrSeparator): string => {
   if (item.api === EApiType.Separator) return item.uniqId
-  const { bvid } = normalizeCardData(item)
-  if (bvid) return bvid // maybe empty string: rank-pgc-season
-  return item.uniqId
+  return normalizeCardData(item).bvid || item.uniqId
 }
 
 export function concatRecItems(existing: RecItemTypeOrSeparator[], newItems: RecItemTypeOrSeparator[]) {
@@ -32,6 +30,10 @@ async function fetchMinCount(count: number, fetcherOptions: FetcherOptions, filt
 
   let items: RecItemTypeOrSeparator[] = []
   let hasMore = true
+  const concatMore = (more: RecItemTypeOrSeparator[]) => {
+    const moreFiltered = filterRecItems(more, tab) // filter
+    items = concatRecItems(items, moreFiltered) // concat
+  }
 
   const addMore = async (restCount: number) => {
     // dynamic-feed     动态
@@ -40,9 +42,8 @@ async function fetchMinCount(count: number, fetcherOptions: FetcherOptions, filt
     // hot              热门 (popular-general  综合热门, popular-weekly  每周必看, ranking  排行榜)
     // live             直播
     if (!isRecTab(tab)) {
-      let cur = (await service.loadMore(abortSignal)) ?? []
-      cur = filterRecItems(cur, tab) // filter
-      items = concatRecItems(items, cur) // concat
+      const more = (await service.loadMore(abortSignal)) ?? []
+      concatMore(more)
       hasMore = service.hasMore
       return
     }
@@ -94,9 +95,8 @@ async function fetchMinCount(count: number, fetcherOptions: FetcherOptions, filt
       }
     }
 
-    let cur = (await service.loadMore(abortSignal)) || []
-    cur = filterRecItems(cur, tab) // filter
-    items = concatRecItems(items, cur) // concat
+    const more = (await service.loadMore(abortSignal)) || []
+    concatMore(more)
     hasMore = service.hasMore
   }
 
