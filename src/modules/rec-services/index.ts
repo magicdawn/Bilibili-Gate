@@ -101,26 +101,13 @@ async function fetchMinCount(count: number, fetcherOptions: FetcherOptions, filt
   }
 
   await addMore(count)
-  while (true) {
-    // aborted
-    if (abortSignal?.aborted) {
-      debug('getMinCount: break for abortSignal')
-      break
-    }
-    // no more
-    if (!hasMore) {
-      debug('getMinCount: break for tab=%s hasMore=false', tab)
-      break
-    }
-    // enough
+  const shouldContinue = () => {
     const len = items.filter((x) => x.api !== EApiType.Separator).length
-    if (len >= count) {
-      break
-    }
-
+    return len < count && hasMore && !abortSignal?.aborted
+  }
+  while (shouldContinue()) {
     await addMore(count - items.length)
   }
-
   return items
 }
 
