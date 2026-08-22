@@ -1,6 +1,8 @@
+import { Result } from 'better-result'
 import { uniqBy } from 'es-toolkit'
-import { request } from '$request'
-import { getUid } from '$utility/cookie'
+import { validateLoginedMid } from '$modules/login-status'
+import { request, WebApiError } from '$request'
+import { getCsrfToken, getUid } from '$utility/cookie'
 import type { FavCollectionDetailJson } from '../types/collections/collection-detail'
 import type { FavCollection, ListAllCollectionJson } from '../types/collections/list-all-collections'
 
@@ -46,4 +48,19 @@ export async function fetchCollectionDetail(collectionId: string | number, page:
   })
   const json = res.data as FavCollectionDetailJson
   return json.data
+}
+
+export function unsubscribeFavCollection(season_id: string | number) {
+  return Result.gen(async function* () {
+    yield* validateLoginedMid()
+    const resp = yield* await request.safePost('/x/v3/fav/season/unfav', undefined, {
+      params: {
+        season_id,
+        platform: 'web',
+        csrf: getCsrfToken(),
+      },
+    })
+    const json = yield* WebApiError.validateAxiosResponse(resp, '取消订阅失败')
+    return Result.ok(json)
+  })
 }

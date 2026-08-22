@@ -1,5 +1,12 @@
 # Todos
 
+- [ ] 收藏的合集, 取消订阅
+
+```txt
+POST https://api.bilibili.com/x/v3/fav/season/unfav?season_id=1240875&platform=web&csrf=f86ad96e79571df24251a3c07c22a3d7
+no post body
+```
+
 # Ideas
 
 - [ ] space-upload / dynamic-feed: quick search following up

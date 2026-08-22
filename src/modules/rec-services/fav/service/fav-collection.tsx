@@ -1,12 +1,15 @@
-import { Button } from 'antd'
+import { useMemoizedFn } from 'ahooks'
+import { Button, Popconfirm } from 'antd'
 import { Result } from 'better-result'
-import { cloneDeep, countBy, orderBy, shuffle } from 'es-toolkit'
+import { assert, cloneDeep, countBy, orderBy, shuffle } from 'es-toolkit'
 import { proxy, useSnapshot } from 'valtio'
 import { useLinkTarget } from '$components/VideoCard/use/useOpenRelated'
 import { EApiType } from '$enums'
+import { antMessage } from '$modules/antd'
 import { getSpaceAccInfo } from '$modules/bilibili/user/space-acc-info'
-import { IconForOpenExternalLink, IconForPlayer } from '$modules/icon'
-import { fetchCollectionDetail } from '../collection/api'
+import { IconForDelete, IconForOpenExternalLink, IconForPlayer } from '$modules/icon'
+import { handleRequestError } from '$request'
+import { fetchCollectionDetail, unsubscribeFavCollection } from '../collection/api'
 import { FavItemsOrder, handleItemsOrder } from '../fav-enum'
 import { formatBvidUrl, formatFavCollectionSelfSpaceUrl, formatFavCollectionUpSpaceUrl } from '../fav-url'
 import { favStore } from '../store'
@@ -147,7 +150,15 @@ export class FavCollectionService implements IFavInnerService {
 
 export function FavCollectionSeparator({ service }: { service: FavCollectionService }) {
   const { firstBvid, info } = useSnapshot(service.state)
+  const upMid = info?.upper.mid
   const target = useLinkTarget()
+  const handleUnsubscribeFavCollection = useMemoizedFn(async () => {
+    assert(service.collectionId, 'seasonId should not be nil')
+    const result = await unsubscribeFavCollection(service.collectionId)
+    if (result.isErr()) return handleRequestError(result.error)
+    antMessage.success(`已取消订阅合集: ${info?.title}`)
+    // !TODO: clean up
+  })
   return (
     <div className='col-span-full mb-15px mt-5px flex flex-col gap-y-10px'>
       <div className='flex-v-center gap-x-1 text-1.6em'>
@@ -167,11 +178,19 @@ export function FavCollectionSeparator({ service }: { service: FavCollectionServ
           <IconForOpenExternalLink className='size-16px' />
           去「我的空间」查看
         </Button>
-        {info?.upper.mid && (
-          <Button href={formatFavCollectionUpSpaceUrl(info.upper.mid, service.collectionId)} target={target}>
+        {upMid && (
+          <Button href={formatFavCollectionUpSpaceUrl(upMid, service.collectionId)} target={target}>
             <IconForOpenExternalLink className='size-16px' />
             去合集发布页
           </Button>
+        )}
+        {service.collectionId && (
+          <Popconfirm title='确定取消订阅?' onConfirm={handleUnsubscribeFavCollection}>
+            <Button>
+              <IconForDelete className='size-16px' />
+              取消订阅
+            </Button>
+          </Popconfirm>
         )}
       </div>
     </div>
