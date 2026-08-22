@@ -5,9 +5,9 @@ import { delay } from 'es-toolkit'
 import { useRef } from 'react'
 import { subscribeKey } from 'valtio/utils'
 import { APP_NAME } from '$common'
-import { TooltipContentDivider } from '$components/_base'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { AccessKeyManage } from '$components/AccessKeyManage'
+import { PrimaryBgContentDivider } from '$components/fragments'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import {
   GridDisplayModeSwitcher,
@@ -21,18 +21,13 @@ import { SidebarSwitcher } from '$components/RecSidebar/sidebar-settings'
 import { ETab } from '$enums'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
-import { IconForCopy } from '$modules/icon'
+import { IconForCopy, IconForHelp } from '$modules/icon'
 import { settings, useSettingsSnapshot } from '$modules/settings'
 import { explainForFlag, toastAndReload } from '../index.shared'
 import { SettingsGroup, sharedClassNames } from './shared'
 
 export function TabPaneBasic() {
-  const {
-    grid: { enableForceRowGap, forceRowGap },
-    style,
-    enableSidebar,
-    sidebarAlign,
-  } = useSettingsSnapshot()
+  const { style } = useSettingsSnapshot()
 
   useMount(() => {
     return subscribeKey(settings, 'pureRecommend', async (v) => {
@@ -59,11 +54,11 @@ export function TabPaneBasic() {
             access_key
             <HelpInfo
               className='ml-5px mt-6px size-18px'
-              IconComponent={IconParkOutlineHelp}
+              IconComponent={IconForHelp}
               tooltipProps={{ classNames: { root: 'text-14px' } }}
             >
               App 端登录凭证, 使用情况: <br />
-              <TooltipContentDivider />
+              <PrimaryBgContentDivider />
               <div className='group flex items-start'>
                 <div className='w-55px flex flex-none items-center'>
                   <TabIcon tabKey={ETab.AppRecommend} className='mr-1' /> 推荐
@@ -73,7 +68,7 @@ export function TabPaneBasic() {
                   <li className='w-max'>提交不喜欢</li>
                 </ul>
               </div>
-              <TooltipContentDivider />
+              <PrimaryBgContentDivider />
               <div className='group flex items-start'>
                 <div className='w-55px flex flex-none items-center'>
                   <TabIcon tabKey={ETab.Liked} className='mr-1' />赞

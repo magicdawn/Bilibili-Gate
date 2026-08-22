@@ -11,17 +11,43 @@ import { defineSvgFillComponent } from './util'
 import type { ComponentProps, ComponentType } from 'react'
 
 export type IconComponent = ComponentType<ComponentProps<'svg'>>
+export { IconAnimatedChecked } from './animated-checked'
 
+// Tabs
+export const IconForPhone = BiliHistoryRecordIconDevicePhone // IconParkOutlineIphone
+export const IconForPc = BiliHistoryRecordIconDeviceComputer // IconParkOutlineComputer
+export const IconForFollowedOnly = IconParkOutlineConcern
+export const IconForDynamicFeed = BiliFreshSpaceIconDynamicFeed // IconParkOutlineTumblr
+export const IconForFav = IconCarbonStar
+export const IconForFaved = IconCarbonStarFilled // faved variant
+export const IconForHot = IconParkOutlineFire
+export const IconForSpaceUpload = IconLineMdUploadingLoop
+export const IconForHistory = BiliHistoryRecordIconLogo // IconLucideClock
+
+// nouns
+export const IconForPlayer = IconParkOutlinePlayTwo
+export const IconForCloudStorage = IconIcOutlineCloud
+export const IconForAccessKey = IconMingcuteKey1Line
+export const IconForInfo = IconParkOutlineInfo
+export const IconForHelp = IconParkOutlineHelp
+export const IconForBlacklist = IconParkOutlinePeopleDelete
+
+// verbs
 export const IconForLike = IconPhThumbsUpDuotone
 export const IconForDislike = IconPhThumbsDownDuotone
 export const IconForConfig = IconParkOutlineConfig
-export const IconForPlayer = IconParkOutlinePlayTwo
 export const IconForOpenExternalLink = IconMaterialSymbolsLightOpenInNew
-export const IconForCloudStorage = IconIcOutlineCloud
+export const IconForReset = IconParkOutlineReturn
+export const IconForCopy = IconParkOutlineCopy
+export const IconForLoading = IconSvgSpinnersBarsRotateFade
+export const IconForDelete = BiliHistoryRecordIconTrash // IconMaterialSymbolsDeleteOutlineRounded
+export const IconForMove = IconParkOutlineTransferData
+export const IconForEdit = IconParkOutlineWrite
+export const IconForComment = IconTablerMessageCircle // dynamic-feed 评论
+export const IconForForward = IconTablerArrowForwardUp // dynamic-feed 转发
+export const IconForReload = IconTablerReload
 
-// general
-
-// #region ↑↓
+// #region orders ↑↓
 export const IconForTimeAsc = IconMdiSortClockDescending
 export const IconForTimeDesc = IconMdiSortClockAscending
 
@@ -46,43 +72,10 @@ export const IconForSortSwitchDesc = IconCuidaSortDescendingDuotone
 export const IconForSortAToZ = IconFluentTextSortAscending20Filled
 export const IconForSortZToA = IconFluentTextSortDescending20Filled
 
-// #endregion
-
-export const IconForInfo = IconParkOutlineInfo
-export { IconAnimatedChecked } from './animated-checked'
-
-// orders
 export const IconForDefaultOrder = IconMdiShuffleDisabled
 export const IconForShuffle = IconCuidaShuffleOutline
 export const IconForTimestamp = IconParkOutlineTime
-
-// Tabs
-// export const IconForPhone = IconParkOutlineIphone
-// export const IconForPc = IconParkOutlineComputer
-export const IconForPhone = BiliHistoryRecordIconDevicePhone
-export const IconForPc = BiliHistoryRecordIconDeviceComputer
-export const IconForFollowedOnly = IconParkOutlineConcern
-// export const IconForDynamicFeed = IconParkOutlineTumblr
-export const IconForDynamicFeed = BiliFreshSpaceIconDynamicFeed
-export const IconForFav = IconCarbonStar
-export const IconForFaved = IconCarbonStarFilled // faved variant
-export const IconForHot = IconParkOutlineFire
-export const IconForSpaceUpload = IconLineMdUploadingLoop
-// export const IconForHistory = IconLucideClock
-export const IconForHistory = BiliHistoryRecordIconLogo
-
-// actions
-export const IconForBlacklist = IconParkOutlinePeopleDelete
-export const IconForReset = IconParkOutlineReturn
-export const IconForCopy = IconParkOutlineCopy
-export const IconForLoading = IconSvgSpinnersBarsRotateFade
-// export const IconForDelete = IconMaterialSymbolsDeleteOutlineRounded
-export const IconForDelete = BiliHistoryRecordIconTrash
-export const IconForMove = IconParkOutlineTransferData
-export const IconForEdit = IconParkOutlineWrite
-// dynamic feed 评论/转发
-export const IconForComment = IconTablerMessageCircle
-export const IconForForward = IconTablerArrowForwardUp
+// #endregion
 
 const LIVE_GIF = `data:image/gif;base64,R0lGODlhGAAYAJECAP7+/v///wAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh/wtYTVAgRGF0YVhNUDw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTQ4IDc5LjE2NDAzNiwgMjAxOS8wOC8xMy0wMTowNjo1NyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIDIxLjAgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QTI2NTYzMDc2RTNDMTFFREJENEJEMzUxOTQzQjMxMkQiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QTI2NTYzMDg2RTNDMTFFREJENEJEMzUxOTQzQjMxMkQiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpBMjY1NjMwNTZFM0MxMUVEQkQ0QkQzNTE5NDNCMzEyRCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpBMjY1NjMwNjZFM0MxMUVEQkQ0QkQzNTE5NDNCMzEyRCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PgH//v38+/r5+Pf29fTz8vHw7+7t7Ovq6ejn5uXk4+Lh4N/e3dzb2tnY19bV1NPS0dDPzs3My8rJyMfGxcTDwsHAv769vLu6ubi3trW0s7KxsK+urayrqqmop6alpKOioaCfnp2cm5qZmJeWlZSTkpGQj46NjIuKiYiHhoWEg4KBgH9+fXx7enl4d3Z1dHNycXBvbm1sa2ppaGdmZWRjYmFgX15dXFtaWVhXVlVUU1JRUE9OTUxLSklIR0ZFRENCQUA/Pj08Ozo5ODc2NTQzMjEwLy4tLCsqKSgnJiUkIyIhIB8eHRwbGhkYFxYVFBMSERAPDg0MCwoJCAcGBQQDAgEAACH5BAkEAAIALAAAAAAYABgAAAI5lI+py+0Po2QhTFXrRdlu031gJgqhpI0pdJ4sacJv6j6trABeTOMcfFslgp7ar4fcDVcyX+kJjToKACH5BAkEAAIALAAAAAAYABgAAAI2lI+py+0Po5xUhFDRvdls3H0T522SaJkRikKs6qptAr+kYoOzJvc37dPBgKQco3YbdpbM5qQAACH5BAkEAAIALAAAAAAYABgAAAI3lI+py+0Po5y02hhykHqLzmkGiImfCZHkkh0qmrztOSuyt8bmzfC0Z9sJa7qZLwhEwS7MpnNSAAAh+QQJBAACACwAAAAAGAAYAAACPJSPqcvtD6OctJoQ7MFYC55dYQSKHcmZo3J+qdsmJRzO7DvbMs7HSN5b/YIqBvCkGyKJixds4/NIp1RHAQAh+QQJBAACACwAAAAAGAAYAAACOpSPqcvtD6OcLwSarMVHXy54YKhJIrmhn3K25eKmJ/vGa1bnKS3rN2IzzHC94q/jE754yNVyBI1KIQUAIfkECQQAAgAsAAAAABgAGAAAAjmUj6nL7Q+jnLSaEOzBePbLSVwmjGJYopCZfmnDxmoif6xSkzeN5ozfIuF6RBfPVhQeN66Z5gmNTgoAIfkECQQAAgAsAAAAABgAGAAAAjmUj6nL7Q+jnLRaETLSMnMfdJ4Bit8YlRgKqerauOibyCen2OGK1/Pf2wB3NOGNyPLteIfk5QmNTgoAIfkECQQAAgAsAAAAABgAGAAAAjeUj6nL7Q+jnCkEWu3FRm/uHdYUCiVUnk+qSewYvd/amrWKyF2t6DbcuwmBGZgv+OHxOMyms1kAACH5BAkEAAIALAAAAAAYABgAAAI5lI+py+0PowtBLkptwlUf7n1YaIBlF5kmpI6puz5t9tLxBLsCgCpzdxPZcjQfEajbFHVJkvMJtRQAACH5BAkEAAIALAAAAAAYABgAAAI1lI+py+0Po5wpBFrtxUZv7nGdJgqheJ5QSkasJb2bmsFmSyPyaCv73avNcC1fr1gsKZdMSAEAIfkECQQAAgAsAAAAABgAGAAAAjWUj6nL7Q+jnLRaEfI1Wd8ebKDYkR4WHqcyol7Llm4KJ+0tx69cI/i+8vGGQdUpl9sol0xIAQAh+QQJBAACACwAAAAAGAAYAAACNJSPqcvtD6OctNq7QsBCa+xtV9h8DJl5p5qaCtqJsZugNvuyN43sIlzTCXkHnJHISSqXiQIAIfkECQQAAgAsAAAAABgAGAAAAjKUj6nL7Q+jnLTai3MMPLDuLeDXkZwZKqNYsqebJqva0u86yy1e6/feQ9SGL43xiEwUAAAh+QQJBAACACwAAAAAGAAYAAACM5SPqcvtD6OctNp7Q8BCa+xtzDd6JamEp5iai2qgcEvCc2K7N5LXLi3qsXCy4pCDTCoXBQAh+QQJBAACACwAAAAAGAAYAAACNJSPqcvtD6OctNoYcrhC7+txIag1mVkuY/exp5qOayLHqVK/M5J/+9Ez/IQvF7DISSqXkAIAIfkEBQQAAgAsAAAAABgAGAAAAjKUj6nL7Q+jnFSEUNG92WzcfZ21jWJYRucJranyutwig2xSey+e5nQPnMGEMeHoiExCCgA7`
 export function IconForLive({

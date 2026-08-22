@@ -35,6 +35,7 @@ declare global {
   const IconLineMdUploadingLoop: typeof import('~icons/line-md/uploading-loop.jsx').default
   const IconLucideCircle: typeof import('~icons/lucide/circle.jsx').default
   const IconLucideCircleCheck: typeof import('~icons/lucide/circle-check.jsx').default
+  const IconLucideClock: typeof import('~icons/lucide/clock.jsx').default
   const IconLucideFolder: typeof import('~icons/lucide/folder.jsx').default
   const IconLucideFolderLock: typeof import('~icons/lucide/folder-lock.jsx').default
   const IconLucideList: typeof import('~icons/lucide/list.jsx').default
@@ -53,6 +54,7 @@ declare global {
   const IconMdiSortAlphabeticalDescendingVariant: typeof import('~icons/mdi/sort-alphabetical-descending-variant.jsx').default
   const IconMdiSortClockAscending: typeof import('~icons/mdi/sort-clock-ascending.jsx').default
   const IconMdiSortClockDescending: typeof import('~icons/mdi/sort-clock-descending.jsx').default
+  const IconMingcuteKey1Line: typeof import('~icons/mingcute/key1-line.jsx').default
   const IconMingcuteZaSortAscendingLettersLine: typeof import('~icons/mingcute/za-sort-ascending-letters-line.jsx').default
   const IconMingcuteZaSortDescendingLettersLine: typeof import('~icons/mingcute/za-sort-descending-letters-line.jsx').default
   const IconMynauiUsersGroup: typeof import('~icons/mynaui/users-group.jsx').default
@@ -114,6 +116,7 @@ declare global {
   const IconTablerListDetails: typeof import('~icons/tabler/list-details.jsx').default
   const IconTablerMessageCircle: typeof import('~icons/tabler/message-circle.jsx').default
   const IconTablerPlus: typeof import('~icons/tabler/plus.jsx').default
+  const IconTablerReload: typeof import('~icons/tabler/reload.jsx').default
   const IconTablerRestore: typeof import('~icons/tabler/restore.jsx').default
   const IconTablerSortAscending: typeof import('~icons/tabler/sort-ascending.jsx').default
   const IconTablerSortAscending2: typeof import('~icons/tabler/sort-ascending2.jsx').default

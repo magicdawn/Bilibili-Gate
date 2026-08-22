@@ -3,9 +3,8 @@ import { Button, Dropdown, type DropdownProps } from 'antd'
 import clsx from 'clsx'
 import { useMemo, useState, type ComponentRef, type MouseEvent, type ReactNode, type RefObject } from 'react'
 import { buttonOpenCss, usePopoverBorderStyle } from '$common/emotion-css'
-import { TooltipContentDivider } from '$components/_base'
 import { HelpInfo } from '$components/_base/HelpInfo'
-import { clsAntdButton } from '$components/fragments'
+import { clsAntdButton, PrimaryBgContentDivider } from '$components/fragments'
 import { defineAntMenus } from '$modules/antd'
 import { soloShiftKey } from '$modules/hotkey'
 
@@ -89,7 +88,7 @@ export const GenericOrderSwitcher = function <T extends string | number>({
       </Dropdown>
       <HelpInfo>
         {extraHelpInfo}
-        {extraHelpInfo && <TooltipContentDivider />}
+        {extraHelpInfo && <PrimaryBgContentDivider />}
         操作说明: <br />
         1. 点击/下拉切换 <br />
         2. 按住 {soloShiftKey} 键点击逆序切换 <br />

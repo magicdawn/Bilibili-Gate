@@ -1,8 +1,4 @@
-export const antSpinIndicator = (
-  <IconSvgSpinnersBarsRotateFade className='text-gate-primary [.ant-spin_.ant-spin-dot&]:size-25px' />
-)
-
-export const clsAntdButton = 'flex items-center gap-x-1 [&.ant-btn:not(:disabled):focus-visible]:outline-0'
+import { useUnoMerge } from 'unocss-merge/react'
 
 // z-index
 export function parseZ(className: `z-${string}`) {
@@ -17,3 +13,13 @@ export const clsZAntdPopupBase = 'z-11000'
 export const clsZVideoCardLargePreview = 'z-11200'
 export const clsZVideoCardContextMenu = 'z-11300'
 export const clsZToast = 'z-90000'
+
+export const antSpinIndicator = (
+  <IconSvgSpinnersBarsRotateFade className='text-gate-primary [.ant-spin_.ant-spin-dot&]:size-25px' />
+)
+
+export const clsAntdButton = 'flex items-center gap-x-1 [&.ant-btn:not(:disabled):focus-visible]:outline-0'
+
+export function PrimaryBgContentDivider({ className }: { className?: string }) {
+  return <hr className={useUnoMerge('my-1 box-border h-1px b-none bg-gate-primary-lv-1', className)} />
+}

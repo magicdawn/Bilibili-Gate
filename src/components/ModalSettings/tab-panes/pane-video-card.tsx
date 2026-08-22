@@ -3,6 +3,7 @@ import { Divider, Select, Slider, Tag } from 'antd'
 import { isEqual, pick } from 'es-toolkit'
 import { useMemo } from 'react'
 import { HelpInfo } from '$components/_base/HelpInfo'
+import { PrimaryBgContentDivider } from '$components/fragments'
 import { EVideoLinkOpenMode, VideoLinkOpenModeConfig } from '$components/VideoCard/index.shared'
 import { antMessage } from '$modules/antd'
 import { HotkeyDisplay } from '$modules/hotkey'
@@ -99,7 +100,31 @@ export function TabPaneVideoCard() {
 
       {/* 边框样式 */}
       <SettingsGroup
-        title='边框样式'
+        title={
+          <>
+            卡片边框
+            <SwitchSettingItem
+              configPath='style.videoCard.useBorder'
+              tooltip={
+                <>
+                  {explainForFlag('使用卡片边框', '禁用')}
+                  <PrimaryBgContentDivider />
+                  开启时, 视频卡片会有边框包裹, 更像是一个卡片! <br />
+                  整个卡片区域可点击 / 可触发预览 / 可使用右键菜单 <br />
+                  否则只是封面区域可以
+                  <PrimaryBgContentDivider />
+                  使用快捷键 <HotkeyDisplay k='Shift+B' /> 切换状态 <br />
+                  {borderCycleListLabels.map((label) => (
+                    <Tag color='success' key={label} className='mx-1'>
+                      {label}
+                    </Tag>
+                  ))}
+                </>
+              }
+              className='ml-3'
+            />
+          </>
+        }
         resetSettingPaths={[
           'style.videoCard.useBorder',
           'style.videoCard.useBorderOnlyOnHover',
@@ -107,24 +132,6 @@ export function TabPaneVideoCard() {
         ]}
       >
         <div className={sharedClassNames.settingsLine}>
-          <CheckboxSettingItem
-            configPath='style.videoCard.useBorder'
-            label='使用卡片边框'
-            tooltip={
-              <>
-                勾选后, 视频卡片会有边框包裹, 更像是一个卡片~ <br />
-                整个卡片区域可点击 / 可触发预览 / 可使用右键菜单 <br />
-                否则只是封面区域可以 <br />
-                使用快捷键 <HotkeyDisplay k='Shift+B' /> 切换状态 <br />
-                {borderCycleListLabels.map((label) => (
-                  <Tag color='success' key={label} className='mx-1'>
-                    {label}
-                  </Tag>
-                ))}
-              </>
-            }
-          />
-
           <CheckboxSettingItem
             configPath='style.videoCard.useBorderOnlyOnHover'
             label='仅在悬浮时显示'

@@ -11,8 +11,7 @@ import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { handleManualRefreshRelationsCache } from '$main/homepage/init-relations'
 import { antMessage } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
-import { IconForCloudStorage, IconForConfig, IconForOpenExternalLink } from '$modules/icon'
-import { IconForRoll } from '$modules/icon/stat-icons'
+import { IconForCloudStorage, IconForConfig, IconForOpenExternalLink, IconForReload } from '$modules/icon'
 import {
   allowedLeafSettingsPaths,
   internalBooleanPaths,
@@ -123,7 +122,7 @@ export function TabPaneAdvance() {
       <SettingsGroup
         title={
           <>
-            <IconForRoll className='mr-4px size-28px' />
+            <IconForReload className='mr-4px size-28px' />
             缓存
             <HelpInfo>手动刷新缓存数据</HelpInfo>
           </>
@@ -135,7 +134,7 @@ export function TabPaneAdvance() {
             loading={manualRefreshRelationsCacheReq.loading}
             className='gap-x-1'
           >
-            {!manualRefreshRelationsCacheReq.loading && <IconForRoll className='size-1em' />}
+            {!manualRefreshRelationsCacheReq.loading && <IconForReload className='size-1em' />}
             刷新黑名单/关注列表缓存
           </Button>
         </div>
