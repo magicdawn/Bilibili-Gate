@@ -1,7 +1,7 @@
 import { useMemoizedFn } from 'ahooks'
 import { Button, Popconfirm } from 'antd'
 import { Result } from 'better-result'
-import { assert, cloneDeep, countBy, orderBy, shuffle } from 'es-toolkit'
+import { assert, cloneDeep, countBy, delay, orderBy, shuffle } from 'es-toolkit'
 import { proxy, useSnapshot } from 'valtio'
 import { useLinkTarget } from '$components/VideoCard/use/useOpenRelated'
 import { EApiType } from '$enums'
@@ -12,7 +12,7 @@ import { handleRequestError } from '$request'
 import { fetchCollectionDetail, unsubscribeFavCollection } from '../collection/api'
 import { FavItemsOrder, handleItemsOrder } from '../fav-enum'
 import { formatBvidUrl, formatFavCollectionSelfSpaceUrl, formatFavCollectionUpSpaceUrl } from '../fav-url'
-import { favStore } from '../store'
+import { favStore, updateFavCollectionList } from '../store'
 import { IconForCollection } from '../views'
 import { FavItemsOrderSwitcher } from '../views/fav-items-order'
 import { FAV_PAGE_SIZE } from './_base'
@@ -152,12 +152,13 @@ export function FavCollectionSeparator({ service }: { service: FavCollectionServ
   const { firstBvid, info } = useSnapshot(service.state)
   const upMid = info?.upper.mid
   const target = useLinkTarget()
-  const handleUnsubscribeFavCollection = useMemoizedFn(async () => {
+  const handleUnsubscribe = useMemoizedFn(async () => {
     assert(service.collectionId, 'seasonId should not be nil')
     const result = await unsubscribeFavCollection(service.collectionId)
     if (result.isErr()) return handleRequestError(result.error)
     antMessage.success(`已取消订阅合集: ${info?.title}`)
-    // !TODO: clean up
+    await delay(0)
+    updateFavCollectionList(true)
   })
   return (
     <div className='col-span-full mb-15px mt-5px flex flex-col gap-y-10px'>
@@ -185,7 +186,7 @@ export function FavCollectionSeparator({ service }: { service: FavCollectionServ
           </Button>
         )}
         {service.collectionId && (
-          <Popconfirm title='确定取消订阅?' onConfirm={handleUnsubscribeFavCollection}>
+          <Popconfirm title='确定取消订阅?' onConfirm={handleUnsubscribe}>
             <Button>
               <IconForDelete className='size-16px' />
               取消订阅

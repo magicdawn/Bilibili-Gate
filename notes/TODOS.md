@@ -1,12 +1,5 @@
 # Todos
 
-- [ ] 收藏的合集, 取消订阅
-
-```txt
-POST https://api.bilibili.com/x/v3/fav/season/unfav?season_id=1240875&platform=web&csrf=f86ad96e79571df24251a3c07c22a3d7
-no post body
-```
-
 # Ideas
 
 - [ ] space-upload / dynamic-feed: quick search following up
@@ -34,3 +27,4 @@ no post body
 - [x] 充电专属, 浮动预览无响应, 增加提示.
 - [x] 把 fav-folder 想做 tag, 一个视频包含在多个收藏夹其实是合理的.
 - [x] 动态: 支持显示转发动态
+- [x] 收藏的合集, 取消订阅
