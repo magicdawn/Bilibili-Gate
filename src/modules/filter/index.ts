@@ -3,7 +3,7 @@ import { baseDebug } from '$common'
 import { checkIsDynamicFeed, type RecItemTypeOrSeparator } from '$define'
 import { EApiType, type ETab } from '$enums'
 import { blacklistMidSet } from '$modules/bilibili/me/relations/blacklist'
-import { DynamicFeedEnums } from '$modules/rec-services/dynamic-feed/api/enums'
+import { DynamicFeedEnums, DynamicFeedItemHelper } from '$modules/rec-services/dynamic-feed/api/enums'
 import { isNormalRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { getSettingsSnapshot, settings } from '$modules/settings'
 import { normalizeCardData } from './normalize'
@@ -211,19 +211,15 @@ export function filterRecItems(items: RecItemTypeOrSeparator[], tab: ETab) {
       }
 
       // dfHideOpusMids
+      // notice: 转发也算做广义上的图文
       if (
-        isMajorOpus &&
+        DynamicFeedItemHelper.isTextOrImage(item) &&
         dfHideOpusMids.enabled &&
         dfHideOpusMids.keywords.length &&
         authorMid &&
         dfBlockOpusMids.has(authorMid)
       ) {
-        debug('filter out by df-hide-opus-mids-rule: %o', {
-          dfHideOpusMids,
-          authorMid,
-          title,
-          uniqId: item.uniqId,
-        })
+        debug('filter out by df-hide-opus-mids-rule: %o', { dfHideOpusMids, authorMid, title, uniqId: item.uniqId })
         return false
       }
     }

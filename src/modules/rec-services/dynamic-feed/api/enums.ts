@@ -37,8 +37,20 @@ export namespace DynamicFeedEnums {
   }
 }
 
-export function getArchive(item: DynamicFeedItem): MajorTypeArchive['archive'] | undefined {
-  const major = item.modules.module_dynamic.major
-  if (major?.type !== DynamicFeedEnums.MajorType.Archive) return
-  return major.archive
+export const DynamicFeedItemHelper = {
+  isVideo(item: DynamicFeedItem) {
+    const major = item.modules.module_dynamic.major
+    return major?.type === DynamicFeedEnums.MajorType.Archive
+  },
+  isTextOrImage(item: DynamicFeedItem) {
+    return (
+      item.modules.module_dynamic.major?.type === DynamicFeedEnums.MajorType.Opus ||
+      item.type === DynamicFeedEnums.ItemType.Forward // 转发也算图文
+    )
+  },
+  getVideo(item: DynamicFeedItem): MajorTypeArchive['archive'] | undefined {
+    const major = item.modules.module_dynamic.major
+    if (major?.type !== DynamicFeedEnums.MajorType.Archive) return
+    return major.archive
+  },
 }

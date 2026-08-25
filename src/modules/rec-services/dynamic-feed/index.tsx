@@ -11,7 +11,7 @@ import { parseDuration } from '$utility/video'
 import { BaseTabService, QueueStrategy } from '../_base'
 import { LiveRecService } from '../live'
 import { fetchDynamicFeeds } from './api'
-import { getArchive } from './api/enums'
+import { DynamicFeedItemHelper } from './api/enums'
 import { hasLocalDynamicFeedCache, localDynamicFeedCache, performIncrementalUpdateIfNeed } from './cache'
 import { FollowGroupMergeTimelineService } from './group/merge-timeline-service'
 import {
@@ -296,7 +296,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
         await performIncrementalUpdateIfNeed(this.upMid)
         this._queueForFilterCache = new QueueStrategy<DynamicFeedItem>(20)
         this._queueForFilterCache.bufferQueue = ((await localDynamicFeedCache.get(this.upMid)) || []).filter((x) => {
-          const v = getArchive(x)
+          const v = DynamicFeedItemHelper.getVideo(x)
           if (!v) return false
           const title = v.title
           return filterByFilterText({
@@ -371,7 +371,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
         // all
         if (this.dynamicFeedVideoType === DynamicFeedVideoType.All) return true
         // require video
-        const v = getArchive(x)
+        const v = DynamicFeedItemHelper.getVideo(x)
         if (!v) return false
         const currentLabel = v.badge.text
         if (this.dynamicFeedVideoType === DynamicFeedVideoType.DynamicOnly) {
@@ -386,7 +386,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
       // by 充电专属
       filter((x) => {
         if (!this.hideChargeOnlyVideos) return true
-        const v = getArchive(x)
+        const v = DynamicFeedItemHelper.getVideo(x)
         if (!v) return true // NOTE: none video should pass
         const chargeOnly = v.badge.text === DynamicFeedBadgeText.ChargeOnly
         return !chargeOnly
@@ -395,7 +395,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
       // by 最短时长
       filter((x) => {
         if (this.filterMinDuration === DynamicFeedVideoMinDuration.All) return true
-        const v = getArchive(x)
+        const v = DynamicFeedItemHelper.getVideo(x)
         if (!v) return false
         const duration = parseDuration(v.duration_text)
         return duration >= this.filterMinDurationValue
@@ -404,7 +404,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
       // by 关键字过滤
       filter((x) => {
         if (!this.filterText) return true
-        const v = getArchive(x)
+        const v = DynamicFeedItemHelper.getVideo(x)
         if (!v) return false
         const title = v.title || ''
         return filterByFilterText({

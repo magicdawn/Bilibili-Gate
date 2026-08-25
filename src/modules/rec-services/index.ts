@@ -1,21 +1,33 @@
 import { uniqBy } from 'es-toolkit'
 import { baseDebug } from '$common'
 import { getColumnCount } from '$components/RecGrid/useShortcut'
+import { checkIsDynamicFeed, type RecItemTypeOrSeparator } from '$define'
 import { EApiType, ETab } from '$enums'
 import { filterRecItems } from '$modules/filter'
 import { normalizeCardData } from '$modules/filter/normalize'
 import { settings } from '$modules/settings'
 import { AppRecService } from './app'
+import { DynamicFeedItemHelper } from './dynamic-feed/api/enums'
 import { PcRecService } from './pc'
 import { isRecTab, type FetcherOptions } from './service-map'
-import type { RecItemTypeOrSeparator } from '$define'
 import type { DynamicFeedRecService } from './dynamic-feed'
 
 const debug = baseDebug.extend('service')
 
 export const recItemUniqer = (item: RecItemTypeOrSeparator): string => {
   if (item.api === EApiType.Separator) return item.uniqId
-  return normalizeCardData(item).bvid || item.uniqId
+  const { bvid } = normalizeCardData(item)
+  {
+    // DynamicFeed uniq 逻辑特殊
+    // see https://github.com/magicdawn/Bilibili-Gate/issues/259
+    // 具体:
+    // 1. 保留原视频, 保留转发原视频的所有转发动态
+    // 2. 对于联合投稿: 作者1动态 + 作者2动态 + ..., 仅保留一个
+    if (checkIsDynamicFeed(item)) {
+      return !!bvid && DynamicFeedItemHelper.isVideo(item) ? `${EApiType.DynamicFeed}:video:${bvid}` : item.uniqId
+    }
+  }
+  return bvid || item.uniqId
 }
 
 export function concatRecItems(existing: RecItemTypeOrSeparator[], newItems: RecItemTypeOrSeparator[]) {

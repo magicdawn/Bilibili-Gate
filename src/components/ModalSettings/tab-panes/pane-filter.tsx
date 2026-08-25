@@ -314,7 +314,7 @@ function SubTabFilterForDynamicFeed() {
               /abc|\d+/
             </Tag>
             <br />
-            作用范围: 支持的动态类型: 视频 / 图文
+            作用范围：所有支持的动态类型：视频、图文、转发等
           </HelpInfo>
           <SwitchSettingItem configPath='filter.dfByTitle.enabled' disabled={!enabled} className='ml-10px' />
         </div>
@@ -330,7 +330,8 @@ function SubTabFilterForDynamicFeed() {
           <span>屏蔽 UP 的图文动态</span>
           <HelpInfo>
             支持 mid 或 mid(备注) <br />
-            右键图文动态可快速添加
+            右键图文动态可快速添加 <br />
+            转发也算做图文动态
           </HelpInfo>
           <SwitchSettingItem configPath='filter.dfHideOpusMids.enabled' disabled={!enabled} className='ml-10px' />
         </div>

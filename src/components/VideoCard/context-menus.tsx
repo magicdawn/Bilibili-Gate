@@ -40,7 +40,7 @@ import {
   IconForWatchlater,
 } from '$modules/icon'
 import { multiSelectStore } from '$modules/multi-select/store'
-import { DynamicFeedEnums } from '$modules/rec-services/dynamic-feed/api/enums'
+import { DynamicFeedItemHelper } from '$modules/rec-services/dynamic-feed/api/enums'
 import {
   DF_SELECTED_KEY_ALL,
   DF_SELECTED_KEY_PREFIX_UP,
@@ -217,10 +217,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
    * 图文动态: 屏蔽此 UP
    */
   const hasEntry_hideUpOpusDynamic =
-    dfHideOpusMidsEnabled &&
-    checkIsDynamicFeed(item) &&
-    item.modules.module_dynamic.major?.type === DynamicFeedEnums.MajorType.Opus &&
-    !!authorMid
+    dfHideOpusMidsEnabled && checkIsDynamicFeed(item) && DynamicFeedItemHelper.isTextOrImage(item) && !!authorMid
   const onAddMidTo_dfHideOpusMids = useMemoizedFn(async () => {
     if (!authorMid) return antMessage.error('UP mid 为空!')
     const content = `${authorMid}`

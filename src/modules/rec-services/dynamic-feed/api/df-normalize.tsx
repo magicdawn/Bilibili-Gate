@@ -29,11 +29,6 @@ export function dynamicFeedDetectAd(item: DynamicFeedItem): boolean {
   return false
 }
 
-function checkDynamicFeedItemIsVideo(item: DynamicFeedItem) {
-  const major = item.modules.module_dynamic.major
-  return major?.type === DynamicFeedEnums.MajorType.Archive
-}
-
 export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData | undefined {
   // ad
   if (dynamicFeedDetectAd(item)) return
