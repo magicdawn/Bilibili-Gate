@@ -8,8 +8,12 @@
     "react/jsx-no-undef": "off",
     "react/jsx-no-target-blank": "off",
     "react/exhaustive-deps": "off",
+    "react/immutability": "off", // silly useOpenRelated.tsx(64, 5): `onOpenWithMode` is read during its own initialization
+    "react/use-memo": "off",
+    "react/preserve-manual-memoization": "off",
+    "react/set-state-in-effect": "off",
+    "react/refs": "off",
     "react/rules-of-hooks": "error",
-    // let eslint handle
-    "no-debugger": "off"
+    "no-debugger": "off" // let eslint handle
   }
 }

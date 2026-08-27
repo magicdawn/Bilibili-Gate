@@ -4,6 +4,7 @@
 
 import { App, message, Modal, notification, type MenuProps } from 'antd'
 import { omit } from 'es-toolkit'
+import { useLayoutEffect } from 'react'
 import { $headerHeight } from '$header'
 import type { ConfigOptions as MessageConfigOptions, MessageInstance } from 'antd/es/message/interface'
 import type { HookAPI as ModalHookAPI } from 'antd/es/modal/useModal'
@@ -31,10 +32,13 @@ export let antMessage: MessageInstance = message
 export let antNotification: NotificationInstance = notification
 export let antModal: ModalHookAPI = Modal as any
 function SetupInner() {
-  antStatic = App.useApp()
-  antMessage = antStatic.message
-  antNotification = antStatic.notification
-  antModal = antStatic.modal
+  const val = App.useApp()
+  useLayoutEffect(() => {
+    antStatic = val
+    antMessage = val.message
+    antNotification = val.notification
+    antModal = val.modal
+  }, [val])
   return null
 }
 
