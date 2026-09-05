@@ -3,6 +3,7 @@ import { useMemoizedFn, useMount } from 'ahooks'
 import { Input, Space } from 'antd'
 import { useRef, type ComponentRef } from 'react'
 import { useSnapshot } from 'valtio'
+import { explainForFlag } from '$components/ModalSettings/index.shared'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
 import { usePlainShortcutEnabled } from '$components/RecHeader/index.shared'
 import { useOnRefresh } from '$components/Recommends/rec.shared'
@@ -123,6 +124,18 @@ export function SpaceUploadTabbarView() {
       </Space.Compact>
 
       <CheckboxSettingItem configPath='spaceUpload.showVol' label={'显示序号'} className='flex-none' />
+
+      <CheckboxSettingItem
+        configPath='spaceUpload.useCollectionUrl'
+        label={'使用合集链接'}
+        className='flex-none'
+        tooltip={
+          <>
+            个人空间投稿 API 会对合集进行折叠, 对于代表合集的视频
+            {explainForFlag('查看合集而不是单个视频', '查看单个视频')}
+          </>
+        }
+      />
 
       {isDisplayingSingleUpAllItems && (
         <GeneralContinuePlaySwitch

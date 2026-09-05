@@ -57,18 +57,49 @@ export interface SpaceUploadItem {
   is_lesson_finished: number
   lesson_update_info: string
   jump_url: string
-  meta: null
+  meta: Meta | null
   is_avoided: number
   season_id: number
   attribute: number
   is_charging_arc: boolean
   elec_arc_type: number
-  elec_arc_badge?: string
+  elec_arc_badge: string
   vt: number
   enable_vt: number
   vt_display: string
-  playback_position: number
+  playback_position?: number
   is_self_view: boolean
+  view_self_type: number
+}
+
+export interface Meta {
+  id: number
+  title: string
+  cover: string
+  mid: number
+  intro: string
+  sign_state: number
+  attribute: number
+  stat: Stat
+  ep_count: number
+  first_aid: number
+  ptime: number
+  ep_num: number
+  show: number
+}
+
+export interface Stat {
+  season_id: number
+  view: number
+  danmaku: number
+  reply: number
+  favorite: number
+  coin: number
+  share: number
+  like: number
+  mtime: number
+  vt: number
+  vv: number
 }
 
 export interface Page {

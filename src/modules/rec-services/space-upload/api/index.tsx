@@ -8,6 +8,7 @@ import { appError } from '$common'
 import { IconForFav, IconForPlayer, IconForTimestamp } from '$modules/icon'
 import { isWebApiSuccess, request, WebApiError } from '$request'
 import type { ReactNode } from 'react'
+import type { SpaceUploadJson } from './space-upload.api'
 
 export enum SpaceUploadOrder {
   Latest = 'pubdate',
@@ -76,27 +77,19 @@ export async function getSpaceUpload({
   keyword?: string
   pagenum?: number
 }) {
-  const res = await request.get('/x/space/wbi/arc/search', {
-    params: {
-      mid,
-      order,
-      keyword,
-      ps: SPACE_UPLOAD_API_PAGE_SIZE,
-      pn: pagenum,
-    },
+  const resp = await request.get<SpaceUploadJson>('/x/space/wbi/arc/search', {
+    params: { mid, order, keyword, ps: SPACE_UPLOAD_API_PAGE_SIZE, pn: pagenum },
   })
 
-  {
-    const result = WebApiError.validateAxiosResponse(res, '获取用户投稿失败')
-    if (result.isErr()) throw result.error
-  }
+  const result = WebApiError.validateAxiosResponse(resp, '获取用户投稿失败')
+  if (result.isErr()) throw result.error
 
   // NOTE: 我触发不了了...不知道为什么
   // if (SpaceUploadEmptySuccessResponseError.isEmptySuccessJson(json)) {
   //   throw new SpaceUploadEmptySuccessResponseError(json)
   // }
 
-  const json = res.data
+  const json = resp.data
   const items = json.data.list.vlist || []
   const count = json.data.page.count
   let hasMore: boolean

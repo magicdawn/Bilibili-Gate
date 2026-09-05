@@ -6,7 +6,7 @@ import type { ERankApiType, IRankTab } from '$modules/rec-services/hot/rank/rank
 import type { RankItem } from '$modules/rec-services/hot/rank/types'
 import type { LikedItem } from '$modules/rec-services/liked/api/liked.api'
 import type { LiveItem } from '$modules/rec-services/live/types/list-live'
-import type { SpaceUploadItem } from '$modules/rec-services/space-upload/types/space-upload'
+import type { SpaceUploadItem } from '$modules/rec-services/space-upload/api/space-upload.api'
 import type { DynamicFeedItem } from '../modules/rec-services/dynamic-feed/api/types'
 import type { FavItemExtend } from '../modules/rec-services/fav/types'
 import type { WatchlaterItem } from '../modules/rec-services/watchlater/types'
@@ -18,7 +18,7 @@ import type { PopularWeeklyItem } from './popular-weekly'
 import type { PvideoJson } from './pvideo'
 
 export type { FavItem, FavItemExtend } from '$modules/rec-services/fav/types'
-export type { SpaceUploadItem, SpaceUploadJson } from '$modules/rec-services/space-upload/types/space-upload'
+export type { SpaceUploadItem, SpaceUploadJson } from '$modules/rec-services/space-upload/api/space-upload.api'
 export type { DynamicFeedItem, DynamicFeedJson } from '../modules/rec-services/dynamic-feed/api/types'
 export type { WatchlaterItem, WatchlaterJson } from '../modules/rec-services/watchlater/types'
 export type { DmJson, PvideoJson }

@@ -25,7 +25,7 @@ import type { ItemsSeparator } from '$define'
 import type { IFavInnerService } from '../index'
 import type { FavItemExtend } from '../types'
 import type { FavFolder } from '../types/folders/list-all-folders'
-import type { FavFolderDetailInfo, ResourceListJSON } from '../types/folders/list-folder-items'
+import type { FavFolderDetailInfo, ResourceListJson } from '../types/folders/list-folder-items'
 
 export function FavFolderRenamePopover({
   folderId,
@@ -320,7 +320,7 @@ export class FavFolderBasicService {
       },
     })
 
-    const json = res.data as ResourceListJSON
+    const json = res.data as ResourceListJson
     if (!isWebApiSuccess(json)) {
       toast(json.message || REQUEST_FAIL_MSG)
       return

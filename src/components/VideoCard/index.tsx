@@ -47,6 +47,7 @@ import { useInFilterByAuthorList } from '$modules/filter/block-state'
 import { checkIsNormalVideo, KNOWN_GOTO, normalizeCardData, type IVideoCardData } from '$modules/filter/normalize'
 import { IconForCopy } from '$modules/icon'
 import { useMultiSelectState } from '$modules/multi-select/store'
+import { SpaceUploadItemHelper } from '$modules/rec-services/space-upload/api/helper'
 import { buildSpaceUploadVideoCardUrl, spaceUploadStore } from '$modules/rec-services/space-upload/store'
 import { useWatchlaterState } from '$modules/rec-services/watchlater'
 import { buildWatchlaterVideoCardUrl } from '$modules/rec-services/watchlater/helper'
@@ -249,6 +250,8 @@ const VideoCardInner = memo(function VideoCardInner({
       return buildSpaceUploadVideoCardUrl(authorMid, item.bvid, item.aid, {
         continuePlay: spaceUploadSettings.continuePlay,
         continuePlayDirection: spaceUploadSettings.continuePlayDirection,
+        useCollectionUrl: spaceUploadSettings.useCollectionUrl,
+        collectionId: SpaceUploadItemHelper.checkIsCollection(item) ? item.season_id.toString() : undefined,
         itemsOrder: spaceUploadItemsOrder,
         isDisplayingSingleUpAllItems: spaceUploadIsDisplayingSingleUpAllItems,
       })

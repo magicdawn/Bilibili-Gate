@@ -1,5 +1,4 @@
 import { av2bv } from '@mgdn/bvid'
-import clsx from 'clsx'
 import dayjs from 'dayjs'
 import { assert, memoize, noop, type MemoizeCache } from 'es-toolkit'
 import { appWarn } from '$common'
@@ -8,7 +7,6 @@ import { AppRecommendApiIconType, defineStatItems, type StatItemType } from '$co
 import { PcRecGoto } from '$define/pc-recommend'
 import { EApiType, ELiveStatus } from '$enums'
 import { AntdTooltip } from '$modules/antd/custom'
-import { followedMidSet } from '$modules/bilibili/me/relations/following-state'
 import { BiliFreshSpaceIconUploadChargeOnly } from '$modules/icon/bili-fresh-space-icons'
 import { normalizeDynamicFeedItem } from '$modules/rec-services/dynamic-feed/api/df-normalize'
 import { isFavFolderPrivate } from '$modules/rec-services/fav/fav-util'
@@ -23,11 +21,12 @@ import {
 } from '$modules/rec-services/history/enums'
 import { isPgcSeasonRankItem, isPgcWebRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { spaceUploadAvatarCache } from '$modules/rec-services/space-upload'
+import { SpaceUploadItemHelper } from '$modules/rec-services/space-upload/api/helper'
 import { buildSpaceUploadVideoCardUrl } from '$modules/rec-services/space-upload/store'
-import { isSpaceUploadItemChargeOnly } from '$modules/rec-services/space-upload/util'
 import { buildWatchlaterVideoCardUrl } from '$modules/rec-services/watchlater/helper'
 import { toHttps } from '$utility/url'
 import { formatDuration, formatTimestamp, getVideoInvalidReason, parseCount, parseDuration } from '$utility/video'
+import { NestedTitleHelper } from './normalize-helper'
 import type { ReactNode } from 'react'
 import type {
   AppRecItemExtend,
@@ -377,26 +376,14 @@ function apiWatchlaterAdapter(item: WatchlaterItemExtend): IVideoCardData {
 
 function apiFavAdapter(item: FavItemExtend): IVideoCardData {
   const belongsToTitle = item.from === 'fav-folder' ? item.folder.title : item.collection.title
-
-  const iconInTitleStyle = {
-    display: 'inline-block',
-    verticalAlign: 'middle',
-    marginRight: 4,
-    marginTop: -2,
-  }
-
-  const fillWithColorPrimary = '[&_path]:fill-gate-primary'
-
-  const iconInTitle =
-    item.from === 'fav-folder' ? (
-      isFavFolderPrivate(item.folder.attr) ? (
-        <IconForPrivateFolder className={clsx('size-15px', fillWithColorPrimary)} style={iconInTitleStyle} />
-      ) : (
-        <IconForPublicFolder className={clsx('size-15px', fillWithColorPrimary)} style={iconInTitleStyle} />
-      )
-    ) : (
-      <IconForCollection className={clsx('size-15px', fillWithColorPrimary)} style={iconInTitleStyle} />
-    )
+  const Icon =
+    item.from === 'fav-folder'
+      ? isFavFolderPrivate(item.folder.attr)
+        ? IconForPrivateFolder
+        : IconForPublicFolder
+      : IconForCollection
+  const title = NestedTitleHelper.buildTitle(belongsToTitle, item.title)
+  const titleRender = NestedTitleHelper.buildTitleReactNode(Icon, belongsToTitle, item.title)
 
   return {
     // video
@@ -405,13 +392,8 @@ function apiFavAdapter(item: FavItemExtend): IVideoCardData {
     // cid: item.
     goto: 'av',
     href: `/video/${item.bvid}/`,
-    title: `【${belongsToTitle}】· ${item.title}`,
-    titleRender: (
-      <>
-        【{iconInTitle}
-        {belongsToTitle}】· {item.title}
-      </>
-    ),
+    title,
+    titleRender,
     cover: item.cover,
     pubts: item.pubtime,
     duration: item.duration,
@@ -621,6 +603,16 @@ function apiSpaceUploadAdapter(item: SpaceUploadItemExtend): IVideoCardData {
   const avid = item.aid.toString()
   const bvid = item.bvid
   const href = buildSpaceUploadVideoCardUrl(authorMid, bvid, avid)
+  const usingMeta = SpaceUploadItemHelper.getMeta(item)
+  const isCollection = SpaceUploadItemHelper.checkIsCollection(item)
+
+  const belongsToTitle = usingMeta?.title
+  const title = usingMeta ? NestedTitleHelper.buildTitle(belongsToTitle || '', item.title) : item.title
+  const titleRender = usingMeta
+    ? NestedTitleHelper.buildTitleReactNode(IconForCollection, belongsToTitle || '', item.title)
+    : undefined
+
+  const watchedProgress = duration && item.playback_position ? item.playback_position / duration : undefined
 
   return {
     // video
@@ -629,11 +621,20 @@ function apiSpaceUploadAdapter(item: SpaceUploadItemExtend): IVideoCardData {
     cid: undefined,
     goto: 'av',
     href,
-    title: item.title,
-    cover: item.pic,
-    pubts: item.created,
+    title,
+    titleRender,
+    cover: usingMeta ? usingMeta.cover : item.pic,
+    pubts: usingMeta ? usingMeta.ptime : item.created,
     duration,
-    durationDisplay: durationStr,
+    // 不管 lesson
+    durationDisplay: usingMeta ? (
+      <span className='inline-flex-center gap-x-2px'>
+        {isCollection && <IconForCollection className='size-14px' />}
+        {usingMeta.ep_count}
+      </span>
+    ) : (
+      durationStr
+    ),
     recommendReason,
 
     // stat
@@ -642,23 +643,39 @@ function apiSpaceUploadAdapter(item: SpaceUploadItemExtend): IVideoCardData {
     coin: undefined,
     danmaku: item.video_review,
     favorite: undefined,
-    statItems: defineStatItems([
-      { field: 'play', value: item.play },
-      { field: 'danmaku', value: item.video_review },
-    ]),
+    statItems: defineStatItems(
+      usingMeta
+        ? [
+            { field: 'play', value: usingMeta.stat.view },
+            { field: 'danmaku', value: usingMeta.stat.danmaku },
+          ]
+        : [
+            { field: 'play', value: item.play },
+            { field: 'danmaku', value: item.video_review },
+          ],
+    ),
+    watchedProgress,
 
     // author
     authorName: item.author,
     authorFace: spaceUploadAvatarCache.get(item.mid),
     authorMid,
-    followed: followedMidSet.has(item.mid.toString()),
-    cardBadges: isSpaceUploadItemChargeOnly(item)
-      ? defineCardBadges({
-          key: `${item.api}:charge-only`,
-          icon: <BiliFreshSpaceIconUploadChargeOnly className='size-14px' />,
-          text: item.elec_arc_badge,
-        })
-      : undefined,
+    cardBadges: defineCardBadges(
+      isCollection && {
+        key: `${item.api}:collection`,
+        icon: <IconForCollection className='size-14px' />,
+        text: '合集',
+      },
+      SpaceUploadItemHelper.checkIsChargeOnly(item) && {
+        key: `${item.api}:charge-only`,
+        icon: <BiliFreshSpaceIconUploadChargeOnly className='size-14px' />,
+        text: item.elec_arc_badge,
+      },
+      SpaceUploadItemHelper.checkIsUnionVideo(item) && {
+        key: `${item.api}:union-video`,
+        text: '合作',
+      },
+    ),
   }
 }
 

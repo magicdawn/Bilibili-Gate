@@ -15,8 +15,8 @@ import { parseAdvancedFilter } from '$utility/local-filter'
 import { parseDuration } from '$utility/video'
 import { BaseTabService, type IService } from '../_base'
 import { DefaultSpaceUploadOrder, SpaceUploadOrder, SpaceUploadOrderConfig, tryGetSpaceUpload } from './api'
+import { SpaceUploadItemHelper } from './api/helper'
 import { QUERY_SPACE_UPLOAD_INITIAL_PAGE, spaceUploadStore } from './store'
-import { isSpaceUploadItemChargeOnly } from './util'
 import { SpaceUploadTabbarView } from './views'
 import type { ReactNode } from 'react'
 import type { WritableDeep } from 'type-fest'
@@ -208,12 +208,13 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
     // filter 时保留它们的序号
     // "充电专属"
     if (this.hideChargeOnlyVideos) {
-      list = list.filter((item) => !isSpaceUploadItemChargeOnly(item))
+      list = list.filter((item) => !SpaceUploadItemHelper.checkIsChargeOnly(item))
     }
     // 最短时长
     if (this.filterMinDurationValue !== undefined) {
       const minDuration = this.filterMinDurationValue
       list = list.filter((item) => {
+        if (SpaceUploadItemHelper.checkIsCollection(item)) return true // 不过滤合集项
         const duration = parseDuration(item.length)
         return duration >= minDuration
       })
@@ -222,6 +223,7 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
     if (this.filterMaxDurationValue !== undefined) {
       const maxDuration = this.filterMaxDurationValue
       list = list.filter((item) => {
+        if (SpaceUploadItemHelper.checkIsCollection(item)) return true // 不过滤合集项
         const duration = parseDuration(item.length)
         return duration <= maxDuration
       })

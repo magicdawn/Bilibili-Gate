@@ -2,18 +2,19 @@
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["typescript", "unicorn", "oxc", "react"],
   "rules": {
-    "no-unused-vars": "off",
+    "no-debugger": "off", // let eslint handle
     "no-unused-expressions": "off",
+    "no-unused-vars": "off",
     "no-warning-comments": "error",
-    "react/jsx-no-undef": "off",
-    "react/jsx-no-target-blank": "off",
+    "react-hooks/rules-of-hooks": "off", // 霸占 useXXX 命名
     "react/exhaustive-deps": "off",
     "react/immutability": "off", // silly useOpenRelated.tsx(64, 5): `onOpenWithMode` is read during its own initialization
-    "react/use-memo": "off",
+    "react/jsx-no-target-blank": "off",
+    "react/jsx-no-undef": "off",
     "react/preserve-manual-memoization": "off",
-    "react/set-state-in-effect": "off",
     "react/refs": "off",
     "react/rules-of-hooks": "error",
-    "no-debugger": "off" // let eslint handle
+    "react/set-state-in-effect": "off",
+    "react/use-memo": "off"
   }
 }

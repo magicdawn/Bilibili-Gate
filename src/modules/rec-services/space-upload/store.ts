@@ -3,6 +3,7 @@ import { proxy, snapshot } from 'valtio'
 import { EContinuePlayDirection } from '$enums'
 import { getSettingsSnapshot, type Settings } from '$modules/settings'
 import { proxyMapWithGmStorage } from '$utility/valtio'
+import { formatFavCollectionGateUrl } from '../fav/fav-url'
 import { SpaceUploadOrder } from './api'
 
 export enum SpaceUploadQueryKey {
@@ -154,12 +155,20 @@ export function buildSpaceUploadVideoCardUrl(
   mid: string | number | undefined,
   bvid: string,
   aid?: string | number,
-  config?: Pick<Settings['spaceUpload'], 'continuePlay' | 'continuePlayDirection'> & {
+  config?: Pick<Settings['spaceUpload'], 'continuePlay' | 'continuePlayDirection' | 'useCollectionUrl'> & {
     itemsOrder: SpaceUploadOrder
     isDisplayingSingleUpAllItems: boolean
+    collectionId?: string
   },
 ) {
-  const { itemsOrder, continuePlay, continuePlayDirection, isDisplayingSingleUpAllItems } =
+  const {
+    itemsOrder,
+    continuePlay,
+    continuePlayDirection,
+    isDisplayingSingleUpAllItems,
+    useCollectionUrl,
+    collectionId,
+  } =
     config ??
     (() => {
       const { usingOrder: itemsOrder, isDisplayingSingleUpAllItems } = snapshot(store)
@@ -167,9 +176,14 @@ export function buildSpaceUploadVideoCardUrl(
         ...getSettingsSnapshot().spaceUpload,
         itemsOrder,
         isDisplayingSingleUpAllItems,
+        collectionId: undefined,
       }
     })()
 
+  // 合集
+  if (useCollectionUrl && collectionId) return formatFavCollectionGateUrl(collectionId)
+
+  // 普通视频
   if (!continuePlay || !isDisplayingSingleUpAllItems) return `https://www.bilibili.com/video/${bvid}/`
 
   // https://www.bilibili.com/list/:mid/?sort_field=pubtime&tid=0&oid=:avid&bvid=:bvid

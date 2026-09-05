@@ -1,5 +1,7 @@
 # Todos
 
+- [ ] space-upload 最新 tag 显示
+
 # Ideas
 
 - [ ] space-upload / dynamic-feed: quick search following up
@@ -28,3 +30,6 @@
 - [x] 把 fav-folder 想做 tag, 一个视频包含在多个收藏夹其实是合理的.
 - [x] 动态: 支持显示转发动态
 - [x] 收藏的合集, 取消订阅
+- [x] space-upload 支持显示合集
+- [x] space-upload 合作 tag 显示
+- [x] space-upload 已观看的进度

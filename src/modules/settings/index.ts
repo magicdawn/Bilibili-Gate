@@ -194,6 +194,8 @@ export const initialSettings = {
     // 连续播放 https://www.bilibili.com/list/:mid/?sort_field=pubtime&tid=0&oid=:avid&bvid=:bvid
     continuePlay: false,
     continuePlayDirection: EContinuePlayDirection.Normal,
+    // 直接查看合集
+    useCollectionUrl: false,
   },
 
   /**

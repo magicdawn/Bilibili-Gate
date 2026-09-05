@@ -3,7 +3,7 @@
  */
 
 import { request } from '$request'
-import type { DynamicPortalJSON, DynamicPortalUp } from './portal-types'
+import type { DynamicPortalJson, DynamicPortalUp } from './portal-types'
 
 /**
  * 最近有更新的 UP
@@ -14,7 +14,7 @@ export async function getRecentUpdateUpList() {
   const res = await request.get('/x/polymer/web-dynamic/v1/portal', {
     params: { up_list_more: 0 },
   })
-  const json = res.data as DynamicPortalJSON
+  const json = res.data as DynamicPortalJson
   const rawUpList = (json?.data?.up_list || []) as
     | DynamicPortalUp[]
     | { has_more: boolean; items: DynamicPortalUp[]; offset: string }
