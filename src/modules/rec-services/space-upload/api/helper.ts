@@ -2,7 +2,7 @@ import type { SpaceUploadItem } from './space-upload.api'
 
 /**
  * 保留原始 ALLCAPS 命名
- * 保留原始 tags 命令
+ * 保留原始 tags 命名
  */
 export enum ESpaceUploadTagPreset {
   CHARGE = 'CHARGE',

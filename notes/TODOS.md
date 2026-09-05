@@ -1,7 +1,5 @@
 # Todos
 
-- [ ] space-upload 最新 tag 显示
-
 # Ideas
 
 - [ ] space-upload / dynamic-feed: quick search following up

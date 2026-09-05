@@ -134,3 +134,73 @@ us = (e, t) => {
 order_avoided: "true",
 platform: "web"
 ```
+
+## tags
+
+```js
+// 最新
+Date.now() - e < 24 * 3600 * 1e3
+```
+
+```js
+u_ = {
+  NEW: {
+    priority: 0,
+    tag: {
+      text: '最新',
+      class: 'new-tag',
+      style: '',
+    },
+  },
+  [mt.SNEAK]: {
+    priority: 1,
+    tag: {
+      text: '抢先看',
+      class: 'sneak-tag',
+      icon: 'BDC/battery_charge_simple_fill/3',
+      style: '',
+    },
+  },
+  [mt.CHARGE]: {
+    priority: 2,
+    tag: {
+      text: '充电专属',
+      class: 'charge-tag',
+      icon: 'BDC/battery_charge_simple_fill/3',
+      style: '',
+    },
+  },
+  [mt.PUGV]: {
+    priority: 3,
+    tag: {
+      text: '课堂',
+      class: 'pugv-tag',
+      style: '',
+    },
+  },
+  [mt.INTERACTIVE]: {
+    priority: 4,
+    tag: {
+      text: '互动',
+      class: 'interactive-tag',
+      style: '',
+    },
+  },
+  [mt.UNION]: {
+    priority: 5,
+    tag: {
+      text: '合作',
+      class: 'union-tag',
+      style: '',
+    },
+  },
+  [mt.LIVE_PLAYBACK]: {
+    priority: 6,
+    tag: {
+      text: '直播回放',
+      class: 'live-tag',
+      style: '',
+    },
+  },
+}
+```
