@@ -623,7 +623,7 @@ function apiSpaceUploadAdapter(item: SpaceUploadItemExtend): IVideoCardData {
     href,
     title,
     titleRender,
-    cover: usingMeta ? usingMeta.cover : item.pic,
+    cover: item.pic, // use item cover even for collection, collection cover `usingMeta.cover`
     pubts: usingMeta ? usingMeta.ptime : item.created,
     duration,
     // 不管 lesson
