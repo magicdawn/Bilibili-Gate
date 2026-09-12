@@ -5,7 +5,6 @@ import { AppRoot, SetupForPage } from '$components/AppRoot'
 import { GateFloatEntry } from '$components/GateFloatEntry'
 import { registerSettingsGmCommand } from '$components/RecHeader/modals'
 import { PureRecommend } from '$components/Recommends/PureRecommend'
-import { initLoginStorePromise } from '$modules/login-status'
 import { settings } from '$modules/settings'
 import { getOnlyTab, inGateEntry } from '$routes'
 import { isSafari } from '$ua'
@@ -46,7 +45,7 @@ export async function initHomepage() {
   }
 
   // wait fetch login info
-  await initLoginStorePromise
+  // await initLoginStorePromise
 
   // fetch relations
   initMyRelations()

@@ -8,6 +8,7 @@ import {
   followedMidSet,
   followedMidSetReplaceAllWith,
 } from '$modules/bilibili/me/relations/following-state'
+import { initLoginStorePromise } from '$modules/login-status'
 import { WebApiError } from '$request'
 import { whenIdle } from '$utility/dom'
 import { proxyWithGmStorage } from '$utility/valtio'
@@ -43,6 +44,7 @@ export const cacheStore = computed({
 
 export async function initMyRelations() {
   if (!IN_BILIBILI_HOMEPAGE) return // 仅首页需要
+  await initLoginStorePromise
   await whenIdle()
   // 串行: 避免 request limit => {code: -412,message: "request was banned",ttl: 1}
   await initMyBlacklist()

@@ -14,8 +14,9 @@ import { analyzer } from 'vite-bundle-analyzer'
 import Inspect from 'vite-plugin-inspect'
 import monkey, { cdn } from 'vite-plugin-monkey'
 import z from 'zod'
-import { name as packageName, version as packageVersion } from './package.json' with { type: 'json' }
+import packageJson from './package.json' with { type: 'json' }
 
+const { name: packageName, version: packageVersion } = packageJson
 const isDev = process.env.NODE_ENV === 'development'
 if (isDev) {
   // only needed in dev mode

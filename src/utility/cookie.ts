@@ -1,8 +1,9 @@
+import { memoize } from 'es-toolkit'
 import toast from './toast'
 
-export function parseCookie(): Record<string, string> {
+export const parseCookieStr = memoize((documentCookieStr: string): Record<string, string> => {
   const cookies: Record<string, string> = {}
-  document.cookie
+  documentCookieStr
     .split(';')
     .map((pair) => pair.trim())
     .filter(Boolean)
@@ -15,10 +16,20 @@ export function parseCookie(): Record<string, string> {
       cookies[key] = val
     })
   return cookies
+})
+
+export function parseCookie() {
+  return parseCookieStr(document.cookie)
+}
+
+export enum EBiliCookieKey {
+  CsrfToken = 'bili_jct',
+  Uid = 'DedeUserID',
+  UidMd5 = 'DedeUserID__ckMd5',
 }
 
 export function getCsrfToken(): string {
-  const csrfToken = parseCookie().bili_jct
+  const csrfToken = parseCookie()[EBiliCookieKey.CsrfToken]
   if (!csrfToken) {
     toast('找不到 csrf token, 请检查是否登录')
     throw new Error('找不到 csrf token, 请检查是否登录')
@@ -27,5 +38,5 @@ export function getCsrfToken(): string {
 }
 
 export function getUid(): string {
-  return parseCookie().DedeUserID || ''
+  return parseCookie()[EBiliCookieKey.Uid] || ''
 }
