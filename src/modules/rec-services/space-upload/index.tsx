@@ -4,7 +4,7 @@ import QuickLRU from 'quick-lru'
 import { snapshot } from 'valtio'
 import { EApiType } from '$enums'
 import { antMessage } from '$modules/antd'
-import { getAllFollowGroups, getFollowGroupContent } from '$modules/bilibili/me/follow-group'
+import { getAllFollowGroups, getFollowGroupMids } from '$modules/bilibili/me/follow-group'
 import { queryFollowedStatus } from '$modules/bilibili/me/relations/follow'
 import { followedMidSet } from '$modules/bilibili/me/relations/following-state'
 import { getUserNickname } from '$modules/bilibili/user/nickname'
@@ -167,7 +167,7 @@ export class SpaceUploadService extends BaseTabService<SpaceUploadItemExtend> {
     }
 
     if (this.groupId !== undefined) {
-      const mids = await getFollowGroupContent(this.groupId!)
+      const mids = await getFollowGroupMids(this.groupId!)
       mids.forEach((x) => followedMidSet.add(x.toString())) // mark followed
       if (!mids.length) throw new Error('Group is Empty!')
       this.mergeTimelineService = new MergeTimelineService(

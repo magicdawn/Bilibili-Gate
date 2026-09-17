@@ -12,6 +12,8 @@
 - [ ] multi-select: parse selected state from clipboard
 - [ ] multi-select: float toolbar 现在往 tabbar 上堆, 空间不够, 更好的方式是 float toolbar.
 - [ ] 直播预览
+- [ ] dynamic-feed: 单独查看时, 添加 video only mode, 跟屏蔽还是不一样
+- [ ] dynamic-feed: 时长限制, use DurationInput
 
 # Completed
 

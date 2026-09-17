@@ -4,7 +4,7 @@ import pmap from 'promise.map'
 import { snapshot } from 'valtio'
 import { baseDebug } from '$common'
 import { EApiType, ELiveStatus } from '$enums'
-import { getFollowGroupContent } from '$modules/bilibili/me/follow-group'
+import { getFollowGroupMids, getFollowGroupMidsWithCache } from '$modules/bilibili/me/follow-group'
 import { settings } from '$modules/settings'
 import { parseAdvancedFilter } from '$utility/local-filter'
 import { parseDuration } from '$utility/video'
@@ -42,6 +42,7 @@ export function getDynamicFeedServiceConfig(usingDfStore: DynamicFeedStore = dfS
     // UP | 分组
     upMid: snap.upMid,
     groupId: snap.selectedGroupId,
+    groupExpectedCount: snap.selectedGroup?.count,
 
     // 过滤
     filterText: snap.filterText,
@@ -164,7 +165,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
   get upMid() {
     return this.config.upMid
   }
-  // NOTE: number | undefined 默认分组是 0
+  // NOTE: `type: number | undefined` 默认分组是 0
   get groupId() {
     return this.config.groupId
   }
@@ -204,18 +205,16 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
   private async loadGroupMids() {
     if (this.groupId === undefined) return // no need
     if (this.groupMidsLoaded) return // loaded
-    try {
-      const mids = await getFollowGroupContent(this.groupId)
-      this.groupMids = new Set(mids)
-      if (this.shouldEnableMergeTimeline(mids.length)) {
-        this.groupMergeTimelineService = new FollowGroupMergeTimelineService(
-          mids.map((x) => x.toString()),
-          this.config.videoOnly,
-        )
-      }
-    } finally {
-      this.groupMidsLoaded = true
+
+    const mids = await getFollowGroupMidsWithCache(this.groupId, this.config.groupExpectedCount)
+    this.groupMids = new Set(mids)
+    if (this.shouldEnableMergeTimeline(mids.length)) {
+      this.groupMergeTimelineService = new FollowGroupMergeTimelineService(
+        mids.map((x) => x.toString()),
+        this.config.videoOnly,
+      )
     }
+    this.groupMidsLoaded = true
   }
   /* #endregion */
 
@@ -243,7 +242,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
     const set = this.viewingAllHideMids
     mids.forEach((x) => set.add(x))
 
-    const midsInGroup = (await pmap(groupIds, (id) => getFollowGroupContent(id), 3)).flat()
+    const midsInGroup = (await pmap(groupIds, (id) => getFollowGroupMids(id), 3)).flat()
     midsInGroup.forEach((x) => set.add(x.toString()))
     this.viewingAllHideMidsLoaded = true
   }
@@ -360,10 +359,11 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
 
       // filter by 关注分组
       filter((x) => {
+        if (!this.viewingSomeGroup) return true
+        if (this.groupMergeTimelineService) return true // skip group-filter when loaded via groupMergeTimelineService
+        if (!this.groupMids.size) return true
         const mid = x.modules.module_author.mid
-        return this.viewingSomeGroup && this.groupMergeTimelineService && this.groupMids.size && mid
-          ? this.groupMids.has(mid)
-          : true
+        return this.groupMids.has(mid)
       }),
 
       // filter by 动态视频|投稿视频

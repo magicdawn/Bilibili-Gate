@@ -1,8 +1,11 @@
 import { uniq } from 'es-toolkit'
+import ms from 'ms'
 import { get_w_webId } from '$modules/bilibili/risk-control/w_webid'
 import { encWbi } from '$modules/bilibili/risk-control/wbi'
 import { request } from '$request'
+import { reusePendingPromise } from '$utility/async'
 import { getUid } from '$utility/cookie'
+import { getIdbCache } from '$utility/idb'
 import type { FollowGroupContent, FollowGroupContentJson } from './types/group-content'
 import type { FollowGroupsJson } from './types/groups'
 
@@ -23,7 +26,7 @@ export async function getAllFollowGroups({ removeEmpty = true }: { removeEmpty?:
   return groups
 }
 
-export async function getFollowGroupContent(tagid: number | string) {
+export async function getFollowGroupMids(tagid: number | string) {
   const ps = 20
 
   const singleRequest = async (page: number) => {
@@ -48,3 +51,21 @@ export async function getFollowGroupContent(tagid: number | string) {
   const mids = uniq(items.map((x) => x.mid))
   return mids
 }
+
+const followGroupCache = getIdbCache<{ ts: number; val: number[] }>('follow-groups')
+const MIN_GROUP_COUNT = 40 // 多于 40 才缓存
+const CACHE_DURATION = ms('5min') // 缓存 5 分钟
+export const getFollowGroupMidsWithCache = reusePendingPromise(async function (
+  tagid: number | string,
+  expectedCount: number | undefined,
+) {
+  const cacheKey =
+    tagid !== undefined && expectedCount !== undefined && expectedCount > MIN_GROUP_COUNT
+      ? `${tagid}-${expectedCount}`
+      : undefined
+  const cached = cacheKey ? await followGroupCache.get(cacheKey) : undefined
+  if (cached && cached.val && cached.ts && Date.now() - cached.ts <= CACHE_DURATION) return cached.val
+  const val = await getFollowGroupMids(tagid)
+  if (cacheKey) await followGroupCache.set(cacheKey, { ts: Date.now(), val })
+  return val
+})
