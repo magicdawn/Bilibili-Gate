@@ -1,9 +1,10 @@
+import { TEXT_CHARGE_ONLY } from '$common'
 import { Picture } from '$components/_base/Picture'
-import { defineCardBadges } from '$components/VideoCard/card-badges'
+import { defineCardBadge, defineCardBadges } from '$components/VideoCard/card-badges'
 import { defineStatItems } from '$components/VideoCard/stat-item'
 import { EApiType } from '$enums'
 import { AntdTooltip } from '$modules/antd/custom'
-import { IconForForward } from '$modules/icon'
+import { IconForChargeOnly, IconForForward } from '$modules/icon'
 import { parseCount, parseDuration } from '$utility/video'
 import { DynamicFeedBadgeText } from '../store'
 import { DynamicFeedEnums } from './enums'
@@ -11,15 +12,17 @@ import type { ReactNode } from 'react'
 import type { IVideoCardData } from '$modules/filter/normalize'
 import type { DynamicFeedItem } from './types'
 
+const { MajorType, AdditionalType, ItemType, AuthorType } = DynamicFeedEnums
+
 export function dynamicFeedDetectAd(item: DynamicFeedItem): boolean {
   const { major, additional } = item.modules.module_dynamic
 
   // "UP主的推荐" 带货
-  if (additional?.type === DynamicFeedEnums.AdditionalType.Goods) return true
+  if (additional?.type === AdditionalType.Goods) return true
 
   // 外卖红包: https://www.bilibili.com/opus/1160909044283605014
   // 可以使用 `setttings.filter.dfByTitle.keywords` 过滤, 但这里还是内置这个
-  if (major?.type === DynamicFeedEnums.MajorType.Opus) {
+  if (major?.type === MajorType.Opus) {
     const title = major.opus.title || ''
     if (['B站密令', '大红包'].some((keyword) => title.includes(keyword))) {
       return true
@@ -36,6 +39,26 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
   const major = item.modules.module_dynamic.major
   const author = item.modules.module_author
   const additional = item.modules.module_dynamic.additional
+
+  // what's this see https://github.com/magicdawn/Bilibili-Gate/issues/264
+  const badgeFromAuthorIconLabel = (() => {
+    if (author.type !== AuthorType.Normal) return
+    if (!author.icon_badge?.text) return
+
+    const { text, icon } = author.icon_badge
+    const iconNode = icon ? (
+      text === TEXT_CHARGE_ONLY ? (
+        <IconForChargeOnly className='size-1em' />
+      ) : (
+        <img src={icon} className='size-1em' />
+      )
+    ) : undefined
+    return defineCardBadge({
+      key: `${EApiType.DynamicFeed}:author:icon-label`,
+      text,
+      icon: iconNode,
+    })
+  })()
 
   const sharedCardData = {
     authorName: author.name,
@@ -58,7 +81,7 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
     return defineCardBadges([{ key: `${EApiType.DynamicFeed}:tag`, text, icon }])
   }
 
-  if (major?.type === DynamicFeedEnums.MajorType.Archive && major.archive) {
+  if (major?.type === MajorType.Archive && major.archive) {
     const v = major.archive
     const videoTitle = v.title || v.desc
     const itemTitle = item.modules.module_dynamic.desc?.text
@@ -108,18 +131,18 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
     }
   }
 
-  if (major?.type === DynamicFeedEnums.MajorType.Opus && major.opus) {
+  if (major?.type === MajorType.Opus && major.opus) {
     const { opus } = major
-    const isReserve = additional?.type === DynamicFeedEnums.AdditionalType.Reserve
+    const isReserve = additional?.type === AdditionalType.Reserve
     const isLiveReserve = isReserve && /直播预告/.test(additional.reserve.title)
     const hasPic = !!opus.pics?.length
     const cardTagText: string | undefined = (() => {
       if (isLiveReserve) return '直播预告'
       if (isReserve) return additional.reserve.title?.split('：', 1)[0] || '预约'
-      // DynamicFeedEnums.ItemType.Draw | Article | Word 不知道有啥区别?
-      if (item.type === DynamicFeedEnums.ItemType.Word) return '文字动态'
-      if (item.type === DynamicFeedEnums.ItemType.Draw) return hasPic ? '图片' : '文字动态'
-      if (item.type === DynamicFeedEnums.ItemType.Article) return '专栏'
+      // ItemType.Draw | Article | Word 不知道有啥区别?
+      if (item.type === ItemType.Word) return '文字动态'
+      if (item.type === ItemType.Draw) return hasPic ? '图片' : '文字动态'
+      if (item.type === ItemType.Article) return '专栏'
     })()
 
     return {
@@ -128,11 +151,14 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
       href: opus.jump_url,
       cover: opus.pics?.[0]?.url,
       title: opus.title || opus.summary?.text || '',
-      cardBadges: defineSingleDfCardBadge(cardTagText),
+      cardBadges: defineCardBadges(
+        { key: `${EApiType.DynamicFeed}:tag`, text: cardTagText },
+        badgeFromAuthorIconLabel, // 比如：充电专属动态
+      ),
     }
   }
 
-  if (major?.type === DynamicFeedEnums.MajorType.Pgc && major.pgc) {
+  if (major?.type === MajorType.Pgc && major.pgc) {
     const { pgc } = major
     return {
       ...sharedCardData,
@@ -150,7 +176,7 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
     }
   }
 
-  if (major?.type === DynamicFeedEnums.MajorType.UgcSeason && major.ugc_season) {
+  if (major?.type === MajorType.UgcSeason && major.ugc_season) {
     const { ugc_season } = major
     return {
       ...sharedCardData,
@@ -178,7 +204,7 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
     }
   }
 
-  if (item.type === DynamicFeedEnums.ItemType.Forward && item.orig) {
+  if (item.type === ItemType.Forward && item.orig) {
     const originalItem = item.orig
     const originalItemNormalized = normalizeDynamicFeedItem(originalItem)
     if (!originalItemNormalized) return
@@ -188,7 +214,7 @@ export function normalizeDynamicFeedItem(item: DynamicFeedItem): IVideoCardData 
     //    标题: (转发内容 + 原视频视频标题)
     //    hover title: (尽量详细, 转发内容 + 原动态投稿文字 + 原动态视频标题)
     const { major } = originalItem.modules.module_dynamic
-    const originalVideoTitle = major?.type === DynamicFeedEnums.MajorType.Archive ? major?.archive?.title : undefined
+    const originalVideoTitle = major?.type === MajorType.Archive ? major?.archive?.title : undefined
     const forwardText = item.modules.module_dynamic.desc?.text
     const title = [
       !!forwardText && `转发: ${forwardText}`,

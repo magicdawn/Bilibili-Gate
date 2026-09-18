@@ -26,7 +26,12 @@ export function checkIsCardBadgeValid(x: CardBadge) {
   return !!(x.icon || x.text)
 }
 
-export function defineCardBadges(...items: Array<CardBadge | CardBadge[] | false | undefined>): CardBadge[] {
+export function defineCardBadge(item: CardBadge | false | undefined): CardBadge | undefined {
+  return item && checkIsCardBadgeValid(item) ? item : undefined
+}
+
+type SingleOrMutliple<T> = T | T[]
+export function defineCardBadges(...items: Array<SingleOrMutliple<CardBadge | false | undefined>>): CardBadge[] {
   return items.flat().filter(Boolean).filter(checkIsCardBadgeValid)
 }
 

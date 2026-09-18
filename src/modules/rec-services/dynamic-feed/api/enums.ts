@@ -28,6 +28,7 @@ export namespace DynamicFeedEnums {
     Pgc = 'MAJOR_TYPE_PGC',
     UgcSeason = 'MAJOR_TYPE_UGC_SEASON',
     LiveRcmd = 'MAJOR_TYPE_LIVE_RCMD',
+    Blocked = 'MAJOR_TYPE_BLOCKED',
   }
 
   // for `.modules.module_dynamic.additional.type`

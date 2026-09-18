@@ -35,6 +35,7 @@ export const APP_CLS_CARD_RECOMMEND_REASON = `${APP_NAMESPACE}-video-card__recom
 
 export const REQUEST_FAIL_MSG = '请求失败, 请重试 !!!'
 export const OPERATION_FAIL_MSG = '操作失败!'
+export const TEXT_CHARGE_ONLY = '充电专属'
 
 export const __DEV__ = import.meta.env.DEV
 export const __PROD__ = import.meta.env.PROD

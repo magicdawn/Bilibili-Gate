@@ -68,12 +68,12 @@ export enum DynamicFeedVideoType {
   DynamicOnly = 'dynamic-only',
 }
 
-export enum DynamicFeedBadgeText {
-  Upload = '投稿视频',
-  Dynamic = '动态视频',
-  ChargeOnly = '充电专属',
+export const DynamicFeedBadgeText = {
+  Upload: '投稿视频',
+  Dynamic: '动态视频',
+  // ChargeOnly: TEXT_CHARGE_ONLY,
   // 其他: 抢先看
-}
+} as const
 
 export const DynamicFeedVideoTypeLabel: Record<DynamicFeedVideoType, string> = {
   [DynamicFeedVideoType.All]: '全部',

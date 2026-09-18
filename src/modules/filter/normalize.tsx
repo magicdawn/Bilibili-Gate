@@ -7,7 +7,7 @@ import { AppRecommendApiIconType, defineStatItems, type StatItemType } from '$co
 import { PcRecGoto } from '$define/pc-recommend'
 import { EApiType, ELiveStatus } from '$enums'
 import { AntdTooltip } from '$modules/antd/custom'
-import { BiliFreshSpaceIconUploadChargeOnly } from '$modules/icon/bili-fresh-space-icons'
+import { IconForChargeOnly } from '$modules/icon'
 import { normalizeDynamicFeedItem } from '$modules/rec-services/dynamic-feed/api/df-normalize'
 import { isFavFolderPrivate } from '$modules/rec-services/fav/fav-util'
 import { IconForCollection, IconForPrivateFolder, IconForPublicFolder } from '$modules/rec-services/fav/views'
@@ -668,7 +668,7 @@ function apiSpaceUploadAdapter(item: SpaceUploadItemExtend): IVideoCardData {
       },
       SpaceUploadItemHelper.checkIsChargeOnly(item) && {
         key: `${item.api}:charge-only`,
-        icon: <BiliFreshSpaceIconUploadChargeOnly className='size-14px' />,
+        icon: <IconForChargeOnly className='size-14px' />,
         text: item.elec_arc_badge,
       },
       SpaceUploadItemHelper.checkIsUnionVideo(item) && {

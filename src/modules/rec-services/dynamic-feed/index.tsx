@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import { filter, map, pipe } from 'es-toolkit/fp'
 import pmap from 'promise.map'
 import { snapshot } from 'valtio'
-import { baseDebug } from '$common'
+import { baseDebug, TEXT_CHARGE_ONLY } from '$common'
 import { EApiType, ELiveStatus } from '$enums'
 import { getFollowGroupMids, getFollowGroupMidsWithCache } from '$modules/bilibili/me/follow-group'
 import { settings } from '$modules/settings'
@@ -11,7 +11,7 @@ import { parseDuration } from '$utility/video'
 import { BaseTabService, QueueStrategy } from '../_base'
 import { LiveRecService } from '../live'
 import { fetchDynamicFeeds } from './api'
-import { DynamicFeedItemHelper } from './api/enums'
+import { DynamicFeedEnums, DynamicFeedItemHelper } from './api/enums'
 import { hasLocalDynamicFeedCache, localDynamicFeedCache, performIncrementalUpdateIfNeed } from './cache'
 import { FollowGroupMergeTimelineService } from './group/merge-timeline-service'
 import {
@@ -199,8 +199,8 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
       (midCount > 0 && midCount <= FollowGroupMergeTimelineService.ENABLE_MERGE_TIMELINE_UPMID_COUNT_THRESHOLD) // <- 太多了则从全部过滤
     )
   }
-  private groupMergeTimelineService: FollowGroupMergeTimelineService | undefined
-  private groupMids = new Set<number>()
+  groupMergeTimelineService: FollowGroupMergeTimelineService | undefined
+  groupMids = new Set<number>()
   private groupMidsLoaded = false
   private async loadGroupMids() {
     if (this.groupId === undefined) return // no need
@@ -359,11 +359,12 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
 
       // filter by 关注分组
       filter((x) => {
-        if (!this.viewingSomeGroup) return true
-        if (this.groupMergeTimelineService) return true // skip group-filter when loaded via groupMergeTimelineService
-        if (!this.groupMids.size) return true
+        const { viewingSomeGroup, groupMergeTimelineService, groupMids } = this
+        if (!viewingSomeGroup) return true
+        if (groupMergeTimelineService) return true // skip group-filter when loaded via groupMergeTimelineService
+        if (!groupMids.size) return true
         const mid = x.modules.module_author.mid
-        return this.groupMids.has(mid)
+        return groupMids.has(mid)
       }),
 
       // filter by 动态视频|投稿视频
@@ -378,7 +379,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
           return currentLabel === DynamicFeedBadgeText.Dynamic
         }
         if (this.dynamicFeedVideoType === DynamicFeedVideoType.UploadOnly) {
-          return currentLabel === DynamicFeedBadgeText.Upload || currentLabel === DynamicFeedBadgeText.ChargeOnly
+          return currentLabel === DynamicFeedBadgeText.Upload || currentLabel === TEXT_CHARGE_ONLY
         }
         return false
       }),
@@ -386,10 +387,21 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
       // by 充电专属
       filter((x) => {
         if (!this.hideChargeOnlyVideos) return true
+
+        // 充电专属视频
         const v = DynamicFeedItemHelper.getVideo(x)
-        if (!v) return true // NOTE: none video should pass
-        const chargeOnly = v.badge.text === DynamicFeedBadgeText.ChargeOnly
-        return !chargeOnly
+        if (v) {
+          const isChargeOnly = v.badge.text === TEXT_CHARGE_ONLY
+          return !isChargeOnly
+        }
+
+        // 充电专属专栏、...
+        const author = x.modules.module_author
+        const isChargeOnly =
+          author.type === DynamicFeedEnums.AuthorType.Normal && author.icon_badge?.text === TEXT_CHARGE_ONLY
+        if (isChargeOnly) return false
+
+        return true // default: keep all
       }),
 
       // by 最短时长

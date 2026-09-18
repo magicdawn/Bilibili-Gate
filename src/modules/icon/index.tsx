@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import IconCuidaShuffleOutline from '~icons/cuida/shuffle-outline' // 这个不能自动 import 不知为何
-import { BiliFreshSpaceIconDynamicFeed } from './bili-fresh-space-icons'
+import { BiliFreshSpaceIconDynamicFeed, BiliFreshSpaceIconUploadChargeOnly } from './bili-fresh-space-icons'
 import {
   BiliHistoryRecordIconDeviceComputer,
   BiliHistoryRecordIconDevicePhone,
@@ -31,6 +31,7 @@ export const IconForAccessKey = IconMingcuteKey1Line
 export const IconForInfo = IconParkOutlineInfo
 export const IconForHelp = IconParkOutlineHelp
 export const IconForBlacklist = IconParkOutlinePeopleDelete
+export const IconForChargeOnly = BiliFreshSpaceIconUploadChargeOnly
 
 // verbs
 export const IconForLike = IconPhThumbsUpDuotone

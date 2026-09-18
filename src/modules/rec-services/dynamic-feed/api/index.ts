@@ -38,6 +38,8 @@ export async function fetchDynamicFeeds({
     'timezone_offset': '-480',
     'type': videoOnly ? 'video' : 'all',
     'platform': 'web',
+    // itemOpusStyle,listOnlyfans,opusBigCover,onlyfansVote,decorationCard,onlyfansAssetsV2,forwardListHidden,ugcDelete,onlyfansQaCard,commentsNewVersion,avatarAutoTheme,sunflowerStyle,cardsEnhance,eva3CardOpus,eva3CardVideo,eva3CardComment,eva3CardVote,eva3CardUser
+    // features 太多了, 可以控制 API response
     'features': 'itemOpusStyle',
     'web_location': '0.0',
     'x-bili-device-req-json': JSON.stringify({ platform: 'web', device: 'pc' }),

@@ -9,7 +9,7 @@ import { Badge, Button, Checkbox, Input, Popover, Radio } from 'antd'
 import { delay, throttle } from 'es-toolkit'
 import { useCallback, useMemo, useState, type ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
-import { __PROD__ } from '$common'
+import { __PROD__, TEXT_CHARGE_ONLY } from '$common'
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { appPrimaryColorValue } from '$components/css-vars'
@@ -190,9 +190,8 @@ function PopoverContent({
         <div className={classes.sectionTilte}>
           视频类型
           <HelpInfo>
-            「{DynamicFeedBadgeText.ChargeOnly}」在此程序中归类为「投稿视频」
-            <br />
-            「动态视频」时长通常较短
+            「{TEXT_CHARGE_ONLY}」在此程序中归类为「投稿视频」
+            <br />「{DynamicFeedBadgeText.Dynamic}」时长通常较短
           </HelpInfo>
         </div>
         <div>
@@ -238,12 +237,12 @@ function PopoverContent({
               <AntdTooltip
                 title={
                   <>
-                    隐藏「{DynamicFeedBadgeText.ChargeOnly}」视频 <br />
+                    隐藏「{TEXT_CHARGE_ONLY}」视频、专栏等 <br />
                     仅对当前 UP 或 分组生效
                   </>
                 }
               >
-                <span style={{ userSelect: 'none' }}>隐藏「{DynamicFeedBadgeText.ChargeOnly}」</span>
+                <span style={{ userSelect: 'none' }}>隐藏「{TEXT_CHARGE_ONLY}」</span>
               </AntdTooltip>
             </Checkbox>
           </div>

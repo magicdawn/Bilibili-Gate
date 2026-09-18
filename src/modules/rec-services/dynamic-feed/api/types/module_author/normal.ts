@@ -6,6 +6,7 @@ export interface AuthorTypeNormal {
   decorate: Decorate
   face: string
   face_nft: boolean
+  icon_badge?: IconBadge
   following: boolean | number
   jump_url: string
   label: string
@@ -173,4 +174,10 @@ export interface Label {
   text: string
   text_color: string
   use_img_label: boolean
+}
+
+export interface IconBadge {
+  text: string
+  icon: string
+  render_img: string
 }
