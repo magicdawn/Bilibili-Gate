@@ -20,8 +20,6 @@ import { IconForGroup, IconForUp } from '../shared'
 import {
   DF_SELECTED_KEY_ALL,
   dfStore,
-  DynamicFeedVideoMinDuration,
-  DynamicFeedVideoType,
   updateFilterData,
   type DynamicFeedStore,
   type DynamicFeedStoreSelectedKey,
@@ -45,8 +43,6 @@ const clearPayload: Partial<DynamicFeedStore> = {
   upFace: undefined,
   filterText: undefined,
   selectedGroupId: undefined,
-  dynamicFeedVideoType: DynamicFeedVideoType.All,
-  filterMinDuration: DynamicFeedVideoMinDuration.All,
 }
 
 // who's dynamic-feed

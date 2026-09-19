@@ -12,8 +12,6 @@
 - [ ] multi-select: parse selected state from clipboard
 - [ ] multi-select: float toolbar 现在往 tabbar 上堆, 空间不够, 更好的方式是 float toolbar.
 - [ ] 直播预览
-- [ ] dynamic-feed: 单独查看时, 添加 video only mode, 跟屏蔽还是不一样
-- [ ] dynamic-feed: 时长限制, use DurationInput
 
 # Completed
 
@@ -33,3 +31,5 @@
 - [x] space-upload 支持显示合集
 - [x] space-upload 合作 tag 显示
 - [x] space-upload 已观看的进度
+- [x] dynamic-feed: 单独查看时, 添加 video only mode, 跟屏蔽还是不一样, 实现为 `contentFilter`
+- [x] dynamic-feed: 时长限制, use DurationInput

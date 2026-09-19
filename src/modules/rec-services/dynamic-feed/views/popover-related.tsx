@@ -6,11 +6,13 @@
 
 import { useMemoizedFn, useRequest } from 'ahooks'
 import { Badge, Button, Checkbox, Input, Popover, Radio } from 'antd'
+import clsx from 'clsx'
 import { delay, throttle } from 'es-toolkit'
 import { useCallback, useMemo, useState, type ReactNode } from 'react'
 import { useSnapshot } from 'valtio'
 import { __PROD__, TEXT_CHARGE_ONLY } from '$common'
 import { buttonOpenCss, usePopoverBorderColor } from '$common/emotion-css'
+import { PopoverDurationInput } from '$components/_base/DurationInput'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { appPrimaryColorValue } from '$components/css-vars'
 import { CheckboxSettingItem } from '$components/ModalSettings/setting-item'
@@ -39,11 +41,9 @@ import {
   DF_SELECTED_KEY_PREFIX_UP,
   dfStore,
   DynamicFeedBadgeText,
+  DynamicFeedContentFilter,
+  DynamicFeedContentFilterLabel,
   DynamicFeedQueryKey,
-  DynamicFeedVideoMinDuration,
-  DynamicFeedVideoMinDurationConfig,
-  DynamicFeedVideoType,
-  DynamicFeedVideoTypeLabel,
   QUERY_DYNAMIC_FILTER_TEXT,
   SHOW_DYNAMIC_FEED_ONLY,
   type UpMidType,
@@ -53,6 +53,9 @@ import type { CheckboxChangeEvent } from 'antd/es/checkbox'
 import type { Get } from 'type-fest'
 import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 
+const minDurationPresets = [10, 30, 1 * 60, 2 * 60, 5 * 60, 10 * 60, 15 * 60, 20 * 60] // in seconds
+const maxDurationPresets = [1, 2, 5, 10, 15, 20, 30, 45, 60].map((m) => m * 60) // in seconds
+
 export function usePopoverRelated({
   externalFilterInput,
   getPopupContainer,
@@ -60,7 +63,11 @@ export function usePopoverRelated({
   externalFilterInput: boolean
   getPopupContainer: (() => HTMLElement) | undefined
 }) {
-  const { upMid, dynamicFeedVideoType, filterMinDuration, filterText, hideChargeOnlyVideos } = useSnapshot(dfStore)
+  const {
+    upMid,
+    filterText,
+    currentFilterState: { contentFilter, hideChargeOnlyItems, filterMinDuration, filterMaxDuration, addSeparator },
+  } = useSnapshot(dfStore)
   const onRefresh = useOnRefresh()
 
   const filterInput = (
@@ -89,10 +96,6 @@ export function usePopoverRelated({
     />
   )
 
-  const popoverContent = (
-    <PopoverContent externalFilterInput={externalFilterInput} filterInput={filterInput} refresh={onRefresh} />
-  )
-
   const [popoverOpen, setPopoverOpen] = useState(
     __PROD__
       ? false //
@@ -102,14 +105,24 @@ export function usePopoverRelated({
     ? setPopoverOpen //
     : setPopoverOpen // dev: free to change
 
+  const popoverContent = (
+    <PopoverContent
+      externalFilterInput={externalFilterInput}
+      filterInput={filterInput}
+      refresh={onRefresh}
+      open={popoverOpen}
+    />
+  )
+
   const showPopoverBadge = useMemo(() => {
     return !!(
-      dynamicFeedVideoType !== DynamicFeedVideoType.All ||
-      hideChargeOnlyVideos ||
+      contentFilter !== DynamicFeedContentFilter.All ||
+      hideChargeOnlyItems ||
       filterText ||
-      filterMinDuration !== DynamicFeedVideoMinDuration.All
+      filterMinDuration ||
+      filterMaxDuration
     )
-  }, [dynamicFeedVideoType, hideChargeOnlyVideos, filterText, filterMinDuration])
+  }, [contentFilter, hideChargeOnlyItems, filterText, filterMinDuration, filterMaxDuration])
 
   const popoverTrigger = (
     <Popover
@@ -143,21 +156,20 @@ function PopoverContent({
   externalFilterInput,
   filterInput,
   refresh,
+  open,
 }: {
   externalFilterInput: boolean
   filterInput: ReactNode
   refresh: RefreshFn | undefined
+  open: boolean
 }) {
   const {
     viewingSomeUp,
     selectedGroup,
     viewingSomeGroup,
     selectedKey,
-    dynamicFeedVideoType,
-    filterMinDuration,
-    hideChargeOnlyVideos,
-    addSeparators,
     filterText,
+    currentFilterState: { contentFilter, hideChargeOnlyItems, filterMinDuration, filterMaxDuration, addSeparator },
   } = useSnapshot(dfStore)
 
   let linkToReflectFilterTextEl: ReactNode
@@ -188,48 +200,44 @@ function PopoverContent({
     <div className={classes.wrapper}>
       <div className={classes.section}>
         <div className={classes.sectionTilte}>
-          视频类型
+          动态类型
           <HelpInfo>
-            「{TEXT_CHARGE_ONLY}」在此程序中归类为「投稿视频」
-            <br />「{DynamicFeedBadgeText.Dynamic}」时长通常较短
+            「{DynamicFeedBadgeText.Upload}」UP个人空间投稿Tab可见
+            <br />「{DynamicFeedBadgeText.Dynamic}」时长通常较短，UP个人空间投稿Tab不可见
+            <br />「{TEXT_CHARGE_ONLY}」在此脚本中算作「投稿视频」的子类
           </HelpInfo>
         </div>
         <div>
           <Radio.Group
             buttonStyle='solid'
-            value={dynamicFeedVideoType}
+            value={contentFilter}
+            size='small'
             onChange={async (v) => {
-              dfStore.dynamicFeedVideoType = v.target.value
+              dfStore.updateCurrentFilterState({ contentFilter: v.target.value })
               await delay(100)
               refresh?.()
             }}
           >
-            {Object.values(DynamicFeedVideoType).map((v) => {
+            {Object.values(DynamicFeedContentFilter).map((v) => {
               return (
                 <Radio.Button key={v} value={v}>
-                  {DynamicFeedVideoTypeLabel[v]}
+                  {DynamicFeedContentFilterLabel[v]}
                 </Radio.Button>
               )
             })}
           </Radio.Group>
         </div>
       </div>
-      {dynamicFeedVideoType !== DynamicFeedVideoType.DynamicOnly && (
+      {contentFilter !== DynamicFeedContentFilter.DynamicVideoOnly && (
         <div className={classes.section}>
           <div className={classes.sectionTilte}>充电专属</div>
           <div className={classes.sectionContent}>
             <Checkbox
               className='ml-5px'
-              checked={hideChargeOnlyVideos}
+              checked={hideChargeOnlyItems}
               onChange={async (e) => {
                 const val = e.target.checked
-                const set = dfStore.hideChargeOnlyVideosForKeysSet
-                if (val) {
-                  set.add(selectedKey)
-                } else {
-                  set.delete(selectedKey)
-                }
-
+                dfStore.updateCurrentFilterState({ hideChargeOnlyItems: val })
                 await delay(100)
                 refresh?.()
               }}
@@ -248,28 +256,38 @@ function PopoverContent({
           </div>
         </div>
       )}
+
       <div className={classes.section}>
-        <div className={classes.sectionTilte}>最短时长</div>
-        <div>
-          <Radio.Group
-            className='overflow-hidden [&_.ant-radio-button-wrapper]:px-10px' // 原始 15px
-            buttonStyle='solid'
-            value={filterMinDuration}
-            onChange={async (v) => {
-              dfStore.filterMinDuration = v.target.value
-              await delay(100)
-              refresh?.()
-            }}
-          >
-            {Object.values(DynamicFeedVideoMinDuration).map((k) => {
-              const { label } = DynamicFeedVideoMinDurationConfig[k]
-              return (
-                <Radio.Button key={k} value={k}>
-                  {label}
-                </Radio.Button>
-              )
-            })}
-          </Radio.Group>
+        <div className={classes.sectionTilte}>时长</div>
+        <div className={classes.sectionContent}>
+          <div className='flex items-center gap-x-8px'>
+            <span className={clsx(filterMinDuration && 'color-gate-primary')}>最短时长</span>
+            <PopoverDurationInput
+              parentOpen={open}
+              title='编辑「最短时长」'
+              value={filterMinDuration}
+              presets={minDurationPresets}
+              classNames={{ popoverRoot: 'w-210px', numberInput: 'w-80px' }}
+              onChange={(v) => {
+                dfStore.setFilterMinDuration(v)
+                refresh?.()
+              }}
+            />
+          </div>
+          <div className='flex items-center gap-x-8px'>
+            <span className={clsx(filterMaxDuration && 'color-gate-primary')}>最长时长</span>
+            <PopoverDurationInput
+              parentOpen={open}
+              title='编辑「最长时长」'
+              value={filterMaxDuration}
+              presets={maxDurationPresets}
+              classNames={{ popoverRoot: 'w-210px', numberInput: 'w-80px' }}
+              onChange={(v) => {
+                dfStore.setFilterMaxDuration(v)
+                refresh?.()
+              }}
+            />
+          </div>
         </div>
       </div>
 
@@ -295,23 +313,14 @@ function PopoverContent({
         </div>
         <div className={classes.sectionContent}>
           <Checkbox
-            checked={addSeparators}
+            checked={addSeparator}
             onChange={async (v) => {
-              dfStore.addSeparatorsMap.set('global', v.target.checked)
+              dfStore.updateCurrentFilterState({ addSeparator: v.target.checked })
               await delay(100)
               refresh?.()
             }}
           >
-            <AntdTooltip
-              title={
-                <>
-                  添加今日/更早分割线 <br />
-                  当前实现为全局共享此设置
-                </>
-              }
-            >
-              添加分割线
-            </AntdTooltip>
+            <AntdTooltip title={<>添加今日/更早分割线</>}>添加分割线</AntdTooltip>
           </Checkbox>
 
           {/* actions for up|group */}

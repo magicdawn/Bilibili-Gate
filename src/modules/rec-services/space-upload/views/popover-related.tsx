@@ -87,7 +87,7 @@ function PopoverContent({ refresh, open }: { refresh: RefreshFn | undefined; ope
       </div>
 
       <div className={classes.section}>
-        <div className={classes.sectionTilte}>按时长过滤</div>
+        <div className={classes.sectionTilte}>时长</div>
         <div className={classes.sectionContent}>
           <div className='flex items-center gap-x-8px'>
             <span className={clsx(filterMinDuration && 'color-gate-primary')}>最短时长</span>
@@ -96,7 +96,7 @@ function PopoverContent({ refresh, open }: { refresh: RefreshFn | undefined; ope
               title='编辑「最短时长」'
               value={filterMinDuration}
               presets={minDurationPresets}
-              classNames={{ popoverRoot: 'w-204px', numberInput: 'w-80px' }}
+              classNames={{ popoverRoot: 'w-210px', numberInput: 'w-80px' }}
               onChange={(v) => {
                 spaceUploadStore.setFilterMinDuration(v)
                 refresh?.()
@@ -110,7 +110,7 @@ function PopoverContent({ refresh, open }: { refresh: RefreshFn | undefined; ope
               title='编辑「最长时长」'
               value={filterMaxDuration}
               presets={maxDurationPresets}
-              classNames={{ popoverRoot: 'w-204px', numberInput: 'w-80px' }}
+              classNames={{ popoverRoot: 'w-210px', numberInput: 'w-80px' }}
               onChange={(v) => {
                 spaceUploadStore.setFilterMaxDuration(v)
                 refresh?.()

@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
 import { filter, map, pipe } from 'es-toolkit/fp'
 import pmap from 'promise.map'
+import { match } from 'ts-pattern'
 import { snapshot } from 'valtio'
 import { baseDebug, TEXT_CHARGE_ONLY } from '$common'
 import { EApiType, ELiveStatus } from '$enums'
@@ -19,8 +20,7 @@ import {
   DF_SELECTED_KEY_PREFIX_UP,
   dfStore,
   DynamicFeedBadgeText,
-  DynamicFeedVideoMinDuration,
-  DynamicFeedVideoType,
+  DynamicFeedContentFilter,
   QUERY_DYNAMIC_MIN_ID,
   QUERY_DYNAMIC_MIN_TS,
   QUERY_DYNAMIC_OFFSET,
@@ -43,24 +43,20 @@ export function getDynamicFeedServiceConfig(usingDfStore: DynamicFeedStore = dfS
     upMid: snap.upMid,
     groupId: snap.selectedGroupId,
     groupExpectedCount: snap.selectedGroup?.count,
-
-    // 过滤
-    filterText: snap.filterText,
-
-    // 类型
-    dynamicFeedVideoType: snap.dynamicFeedVideoType,
-    hideChargeOnlyVideos: snap.hideChargeOnlyVideos,
-
-    // 时长
-    filterMinDuration: snap.filterMinDuration,
-    filterMinDurationValue: snap.filterMinDurationValue,
-
-    // flags
     selectedKey: snap.selectedKey,
     viewingAll: snap.viewingAll,
     viewingSomeUp: snap.viewingSomeUp,
     viewingSomeGroup: snap.viewingSomeGroup,
-    addSeparators: snap.addSeparators,
+
+    // 过滤
+    filterText: snap.filterText,
+
+    // filter state
+    contentFilter: snap.currentFilterState.contentFilter,
+    hideChargeOnlyItems: snap.currentFilterState.hideChargeOnlyItems,
+    filterMinDuration: snap.currentFilterState.filterMinDuration,
+    filterMaxDuration: snap.currentFilterState.filterMaxDuration,
+    addSeparator: snap.currentFilterState.addSeparator,
 
     /**
      * from settings
@@ -131,8 +127,13 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
     // 过滤结果可能较少
     if (
       this.filterText ||
-      this.dynamicFeedVideoType === DynamicFeedVideoType.DynamicOnly ||
-      this.filterMinDuration !== DynamicFeedVideoMinDuration.All
+      !(
+        // only these 2 has many contents
+        this.contentFilter === DynamicFeedContentFilter.All ||
+        this.contentFilter === DynamicFeedContentFilter.UploadVideoOnly
+      ) ||
+      this.filterMinDuration ||
+      this.filterMaxDuration
     ) {
       return true
     }
@@ -148,8 +149,9 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
         !this.upMid &&
         this.groupId === undefined &&
         !this.filterText &&
-        this.dynamicFeedVideoType === DynamicFeedVideoType.All &&
-        this.filterMinDuration === DynamicFeedVideoMinDuration.All
+        this.contentFilter === DynamicFeedContentFilter.All &&
+        !this.filterMinDuration &&
+        !this.filterMaxDuration
       if (filterEmpty) {
         this.liveRecService = new LiveRecService(true)
       }
@@ -172,17 +174,20 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
   get filterText() {
     return this.config.filterText
   }
-  get dynamicFeedVideoType() {
-    return this.config.dynamicFeedVideoType
+  get contentFilter() {
+    return this.config.contentFilter
   }
-  get hideChargeOnlyVideos() {
-    return this.config.hideChargeOnlyVideos
+  get hideChargeOnlyItems() {
+    return this.config.hideChargeOnlyItems
   }
   get filterMinDuration() {
     return this.config.filterMinDuration
   }
-  get filterMinDurationValue() {
-    return this.config.filterMinDurationValue
+  get filterMaxDuration() {
+    return this.config.filterMaxDuration
+  }
+  get addSeparator() {
+    return this.config.addSeparator
   }
   get viewingSomeUp() {
     return this.config.viewingSomeUp
@@ -367,26 +372,28 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
         return groupMids.has(mid)
       }),
 
-      // filter by 动态视频|投稿视频
+      // filter by DynamicFeedContentFilter 动态视频|投稿视频
       filter((x) => {
-        // all
-        if (this.dynamicFeedVideoType === DynamicFeedVideoType.All) return true
-        // require video
         const v = DynamicFeedItemHelper.getVideo(x)
-        if (!v) return false
-        const currentLabel = v.badge.text
-        if (this.dynamicFeedVideoType === DynamicFeedVideoType.DynamicOnly) {
-          return currentLabel === DynamicFeedBadgeText.Dynamic
-        }
-        if (this.dynamicFeedVideoType === DynamicFeedVideoType.UploadOnly) {
-          return currentLabel === DynamicFeedBadgeText.Upload || currentLabel === TEXT_CHARGE_ONLY
-        }
-        return false
+        const isVideo = !!v
+        const currentLabel = v?.badge.text
+        const isUploadVideo =
+          isVideo && (currentLabel === DynamicFeedBadgeText.Upload || currentLabel === TEXT_CHARGE_ONLY)
+        const isDynamicVideo = isVideo && currentLabel === DynamicFeedBadgeText.Dynamic
+
+        return match(this.contentFilter)
+          .returnType<boolean>()
+          .with(DynamicFeedContentFilter.All, () => true)
+          .with(DynamicFeedContentFilter.VideoOnly, () => isVideo)
+          .with(DynamicFeedContentFilter.UploadVideoOnly, () => isUploadVideo)
+          .with(DynamicFeedContentFilter.DynamicVideoOnly, () => isDynamicVideo)
+          .with(DynamicFeedContentFilter.NoneVideo, () => !isVideo)
+          .exhaustive()
       }),
 
       // by 充电专属
       filter((x) => {
-        if (!this.hideChargeOnlyVideos) return true
+        if (!this.hideChargeOnlyItems) return true
 
         // 充电专属视频
         const v = DynamicFeedItemHelper.getVideo(x)
@@ -404,13 +411,19 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
         return true // default: keep all
       }),
 
-      // by 最短时长
+      // by 视频时长
       filter((x) => {
-        if (this.filterMinDuration === DynamicFeedVideoMinDuration.All) return true
+        const { filterMinDuration, filterMaxDuration } = this
+        if (!filterMinDuration && !filterMaxDuration) return true
+
         const v = DynamicFeedItemHelper.getVideo(x)
         if (!v) return false
         const duration = parseDuration(v.duration_text)
-        return duration >= this.filterMinDurationValue
+
+        let valid = true
+        if (filterMinDuration) valid = valid && duration >= filterMinDuration
+        if (filterMaxDuration) valid = valid && duration <= filterMaxDuration
+        return valid
       }),
 
       // by 关键字过滤
@@ -520,7 +533,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
     }
   })()
   handleAddSeparators(items: AllowedItemType[]) {
-    if (!this.config.addSeparators) return items
+    if (!this.config.addSeparator) return items
     const ret = items
 
     // today

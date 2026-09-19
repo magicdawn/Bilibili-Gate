@@ -1,4 +1,4 @@
-import { delay } from 'es-toolkit'
+import { delay, isEqual, pick } from 'es-toolkit'
 import ms from 'ms'
 import { proxy } from 'valtio'
 import { IN_BILIBILI_HOMEPAGE } from '$common'
@@ -6,7 +6,7 @@ import { getAllFollowGroups } from '$modules/bilibili/me/follow-group'
 import { settings } from '$modules/settings'
 import { getUid } from '$utility/cookie'
 import { setPageTitle, whenIdle } from '$utility/dom'
-import { proxyMapWithGmStorage, proxySetWithGmStorage, subscribeOnKeys } from '$utility/valtio'
+import { proxyMapWithGmStorage, subscribeOnKeys } from '$utility/valtio'
 import { getRecentUpdateUpList } from './up'
 import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 import type { DynamicPortalUp } from './up/portal-types'
@@ -62,10 +62,12 @@ if (SHOW_DYNAMIC_FEED_ONLY) {
 
 export type UpMidType = string
 
-export enum DynamicFeedVideoType {
+export enum DynamicFeedContentFilter {
   All = 'all',
-  UploadOnly = 'upload-only',
-  DynamicOnly = 'dynamic-only',
+  VideoOnly = 'video-only',
+  UploadVideoOnly = 'upload-only',
+  DynamicVideoOnly = 'dynamic-only',
+  NoneVideo = 'none-video',
 }
 
 export const DynamicFeedBadgeText = {
@@ -75,10 +77,12 @@ export const DynamicFeedBadgeText = {
   // 其他: 抢先看
 } as const
 
-export const DynamicFeedVideoTypeLabel: Record<DynamicFeedVideoType, string> = {
-  [DynamicFeedVideoType.All]: '全部',
-  [DynamicFeedVideoType.UploadOnly]: '仅投稿视频',
-  [DynamicFeedVideoType.DynamicOnly]: '仅动态视频',
+export const DynamicFeedContentFilterLabel: Record<DynamicFeedContentFilter, string> = {
+  [DynamicFeedContentFilter.All]: '全部',
+  [DynamicFeedContentFilter.VideoOnly]: '仅视频',
+  [DynamicFeedContentFilter.UploadVideoOnly]: '仅投稿视频',
+  [DynamicFeedContentFilter.DynamicVideoOnly]: '仅动态视频',
+  [DynamicFeedContentFilter.NoneVideo]: '非视频',
 }
 
 export enum DynamicFeedVideoMinDuration {
@@ -112,11 +116,31 @@ export type DynamicFeedStoreSelectedKey =
   | `${typeof DF_SELECTED_KEY_PREFIX_UP}${UpMidType}`
   | `${typeof DF_SELECTED_KEY_PREFIX_GROUP}${number}`
 
-const hideChargeOnlyVideosForKeysSet = (
-  await proxySetWithGmStorage<string>('dynamic-feed:hide-charge-only-videos-for-keys')
-).set
+export type DynamicFeedFilterState = {
+  contentFilter: DynamicFeedContentFilter
+  hideChargeOnlyItems: boolean
+  filterMinDuration: number | undefined
+  filterMaxDuration: number | undefined
+  addSeparator: boolean
+}
 
-const addSeparatorsMap = (await proxyMapWithGmStorage<string, boolean>('dynamic-feed:add-separators')).map
+export { defaultFilterState as defaultDynamicFeedFilterState }
+const defaultFilterState = {
+  contentFilter: DynamicFeedContentFilter.All,
+  hideChargeOnlyItems: false,
+  filterMinDuration: undefined,
+  filterMaxDuration: undefined,
+  addSeparator: false,
+} as const satisfies DynamicFeedFilterState
+
+const dynamicFeedFilterStateMap = (
+  await proxyMapWithGmStorage<DynamicFeedStoreSelectedKey, DynamicFeedFilterState>('dynamic-feed:filters', {
+    beforeSave(vals) {
+      // 不存储 `默认值`
+      return vals.filter(([, state]) => !isEqual(state, defaultFilterState))
+    },
+  })
+).map
 
 /**
  * df expand to `dynamic-feed`
@@ -139,7 +163,6 @@ export function createDfStore() {
       return this.groups.find((x) => x.tagid === this.selectedGroupId)
     },
 
-    dynamicFeedVideoType: DynamicFeedVideoType.All,
     filterText: (QUERY_DYNAMIC_FILTER_TEXT ?? undefined) as string | undefined,
 
     // 选择状态
@@ -160,21 +183,55 @@ export function createDfStore() {
       return DF_SELECTED_KEY_ALL
     },
 
-    hideChargeOnlyVideosForKeysSet,
-    get hideChargeOnlyVideos() {
-      return this.hideChargeOnlyVideosForKeysSet.has(this.selectedKey)
+    filterStateMap: dynamicFeedFilterStateMap,
+    get currentFilterState(): DynamicFeedFilterState {
+      const state = (this.filterStateMap.get(this.selectedKey) ?? {}) as Partial<DynamicFeedFilterState>
+      return { ...defaultFilterState, ...state }
+    },
+    resetCurrentFilterState() {
+      this.filterStateMap.set(this.selectedKey, { ...defaultFilterState })
+    },
+    updateCurrentFilterState(payload: Partial<DynamicFeedFilterState>) {
+      this.filterStateMap.set(this.selectedKey, { ...this.currentFilterState, ...payload })
     },
 
-    addSeparatorsMap,
-    get addSeparators() {
-      // 按 selectedKey 区分是否有必要?
-      return this.addSeparatorsMap.get('global') ?? false
+    /* #region set current filterState duration */
+    _setDurationValue(target: 'min' | 'max', value: number | undefined) {
+      const payload: Pick<DynamicFeedFilterState, 'filterMinDuration' | 'filterMaxDuration'> = {
+        ...pick(this.currentFilterState, ['filterMinDuration', 'filterMaxDuration']),
+        ...(target === 'min' && { filterMinDuration: value }),
+        ...(target === 'max' && { filterMaxDuration: value }),
+      }
+      // zero to undefined
+      payload.filterMinDuration ||= undefined
+      payload.filterMaxDuration ||= undefined
+      // boundary check
+      if (
+        payload.filterMaxDuration &&
+        payload.filterMinDuration &&
+        payload.filterMinDuration >= payload.filterMaxDuration // invalid case
+      ) {
+        if (target === 'min') payload.filterMaxDuration = undefined
+        if (target === 'max') payload.filterMinDuration = undefined
+      }
+      this.updateCurrentFilterState(payload)
     },
+    setFilterMinDuration(val: number | undefined) {
+      return this._setDurationValue('min', val)
+    },
+    setFilterMaxDuration(val: number | undefined) {
+      return this._setDurationValue('max', val)
+    },
+    /* #endregion */
 
-    filterMinDuration: DynamicFeedVideoMinDuration.All,
-    get filterMinDurationValue() {
-      return DynamicFeedVideoMinDurationConfig[this.filterMinDuration].duration
+    /* #region current filterState shortcuts */
+    get current_hideChargeOnlyItems() {
+      return this.currentFilterState.hideChargeOnlyItems
     },
+    get current_addSeparator() {
+      return this.currentFilterState.addSeparator
+    },
+    /* #endregion */
 
     /**
      * methods
