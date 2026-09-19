@@ -143,16 +143,10 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
 
   constructor(public config: DynamicFeedServiceConfig) {
     super(DynamicFeedRecService.PAGE_SIZE)
-    // config live
+    // live
     if (this.config.showLiveInDynamicFeed) {
-      const filterEmpty =
-        !this.upMid &&
-        this.groupId === undefined &&
-        !this.filterText &&
-        this.contentFilter === DynamicFeedContentFilter.All &&
-        !this.filterMinDuration &&
-        !this.filterMaxDuration
-      if (filterEmpty) {
+      const shouldShowLive = this.config.viewingAll && !this.filterText
+      if (shouldShowLive) {
         this.liveRecService = new LiveRecService(true)
       }
     }

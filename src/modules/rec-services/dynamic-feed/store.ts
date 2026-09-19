@@ -173,7 +173,7 @@ export function createDfStore() {
       return !!this.upMid
     },
     get viewingSomeGroup(): boolean {
-      return typeof this.selectedGroupId === 'number'
+      return this.selectedGroupId !== undefined
     },
 
     // 筛选 UP & 分组 select 控件的 key
