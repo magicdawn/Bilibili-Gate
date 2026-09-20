@@ -1,4 +1,4 @@
-import { delay, isEqual, pick } from 'es-toolkit'
+import { delay, isEqual } from 'es-toolkit'
 import ms from 'ms'
 import { proxy } from 'valtio'
 import { IN_BILIBILI_HOMEPAGE } from '$common'
@@ -7,6 +7,7 @@ import { settings } from '$modules/settings'
 import { getUid } from '$utility/cookie'
 import { setPageTitle, whenIdle } from '$utility/dom'
 import { proxyMapWithGmStorage, subscribeOnKeys } from '$utility/valtio'
+import { DurationInputHelper } from '../_shared/duration-input-helper'
 import { getRecentUpdateUpList } from './up'
 import type { FollowGroup } from '$modules/bilibili/me/follow-group/types/groups'
 import type { DynamicPortalUp } from './up/portal-types'
@@ -185,11 +186,10 @@ export function createDfStore() {
 
     filterStateMap: dynamicFeedFilterStateMap,
     get currentFilterState(): DynamicFeedFilterState {
-      const state = (this.filterStateMap.get(this.selectedKey) ?? {}) as Partial<DynamicFeedFilterState>
-      return { ...defaultFilterState, ...state }
+      return { ...defaultFilterState, ...this.filterStateMap.get(this.selectedKey) }
     },
     resetCurrentFilterState() {
-      this.filterStateMap.set(this.selectedKey, { ...defaultFilterState })
+      this.filterStateMap.delete(this.selectedKey)
     },
     updateCurrentFilterState(payload: Partial<DynamicFeedFilterState>) {
       this.filterStateMap.set(this.selectedKey, { ...this.currentFilterState, ...payload })
@@ -197,23 +197,7 @@ export function createDfStore() {
 
     /* #region set current filterState duration */
     _setDurationValue(target: 'min' | 'max', value: number | undefined) {
-      const payload: Pick<DynamicFeedFilterState, 'filterMinDuration' | 'filterMaxDuration'> = {
-        ...pick(this.currentFilterState, ['filterMinDuration', 'filterMaxDuration']),
-        ...(target === 'min' && { filterMinDuration: value }),
-        ...(target === 'max' && { filterMaxDuration: value }),
-      }
-      // zero to undefined
-      payload.filterMinDuration ||= undefined
-      payload.filterMaxDuration ||= undefined
-      // boundary check
-      if (
-        payload.filterMaxDuration &&
-        payload.filterMinDuration &&
-        payload.filterMinDuration >= payload.filterMaxDuration // invalid case
-      ) {
-        if (target === 'min') payload.filterMaxDuration = undefined
-        if (target === 'max') payload.filterMinDuration = undefined
-      }
+      const payload = DurationInputHelper.normalizeDurationLimit(this.currentFilterState, target, value)
       this.updateCurrentFilterState(payload)
     },
     setFilterMinDuration(val: number | undefined) {

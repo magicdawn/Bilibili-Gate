@@ -1,8 +1,9 @@
-import { isEqual, pick } from 'es-toolkit'
+import { isEqual } from 'es-toolkit'
 import { proxy, snapshot } from 'valtio'
 import { EContinuePlayDirection } from '$enums'
 import { getSettingsSnapshot, type Settings } from '$modules/settings'
 import { proxyMapWithGmStorage } from '$utility/valtio'
+import { DurationInputHelper } from '../_shared/duration-input-helper'
 import { formatFavCollectionGateUrl } from '../fav/fav-url'
 import { SpaceUploadOrder } from './api'
 
@@ -105,36 +106,17 @@ const store = proxy({
     return `${SpaceUploadFilterKeyPrefixUp}unknown`
   },
   get currentFilterState(): SpaceUploadFilterState {
-    const state = (this.filterStateMap.get(this.currentFilterKey) ?? {}) as Partial<SpaceUploadFilterState>
-    return { ...defaultFilterState, ...state }
+    return { ...defaultFilterState, ...this.filterStateMap.get(this.currentFilterKey) }
   },
 
   resetCurrentFilterState() {
-    this.filterStateMap.set(this.currentFilterKey, { ...defaultFilterState })
+    this.filterStateMap.delete(this.currentFilterKey)
   },
-
   updateCurrentFilterState(payload: Partial<SpaceUploadFilterState>) {
     this.filterStateMap.set(this.currentFilterKey, { ...this.currentFilterState, ...payload })
   },
-
   _setDurationValue(target: 'min' | 'max', value: number | undefined) {
-    const payload: Pick<SpaceUploadFilterState, 'filterMinDuration' | 'filterMaxDuration'> = {
-      ...pick(this.currentFilterState, ['filterMinDuration', 'filterMaxDuration']),
-      ...(target === 'min' && { filterMinDuration: value }),
-      ...(target === 'max' && { filterMaxDuration: value }),
-    }
-    // zero to undefined
-    payload.filterMinDuration ||= undefined
-    payload.filterMaxDuration ||= undefined
-    // boundary check
-    if (
-      payload.filterMaxDuration &&
-      payload.filterMinDuration &&
-      payload.filterMinDuration >= payload.filterMaxDuration // invalid case
-    ) {
-      if (target === 'min') payload.filterMaxDuration = undefined
-      if (target === 'max') payload.filterMinDuration = undefined
-    }
+    const payload = DurationInputHelper.normalizeDurationLimit(this.currentFilterState, target, value)
     this.updateCurrentFilterState(payload)
   },
   setFilterMinDuration(val: number | undefined) {
