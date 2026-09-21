@@ -39,13 +39,7 @@ export async function fetchAllFavCollections() {
 }
 
 export async function fetchCollectionDetail(collectionId: string | number, page: number) {
-  const res = await request.get('/x/space/fav/season/list', {
-    params: {
-      season_id: collectionId,
-      ps: 20,
-      pn: page,
-    },
-  })
+  const res = await request.get('/x/space/fav/season/list', { params: { season_id: collectionId, ps: 20, pn: page } })
   const json = res.data as FavCollectionDetailJson
   return json.data
 }
@@ -54,11 +48,7 @@ export function unsubscribeFavCollection(season_id: string | number) {
   return Result.gen(async function* () {
     yield* validateLoginedMid()
     const resp = yield* await request.safePost('/x/v3/fav/season/unfav', undefined, {
-      params: {
-        season_id,
-        platform: 'web',
-        csrf: getCsrfToken(),
-      },
+      params: { season_id, platform: 'web', csrf: getCsrfToken() },
     })
     const json = yield* WebApiError.validateAxiosResponse(resp, '取消订阅失败')
     return Result.ok(json)

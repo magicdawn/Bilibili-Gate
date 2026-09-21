@@ -3,6 +3,7 @@ import { Button, Popconfirm } from 'antd'
 import { Result } from 'better-result'
 import { assert, cloneDeep, countBy, delay, orderBy, shuffle } from 'es-toolkit'
 import { proxy, useSnapshot } from 'valtio'
+import { APP_NAME } from '$common'
 import { useLinkTarget } from '$components/VideoCard/use/useOpenRelated'
 import { EApiType } from '$enums'
 import { antMessage } from '$modules/antd'
@@ -11,7 +12,12 @@ import { IconForDelete, IconForOpenExternalLink, IconForPlayer } from '$modules/
 import { handleRequestError } from '$request'
 import { fetchCollectionDetail, unsubscribeFavCollection } from '../collection/api'
 import { FavItemsOrder, handleItemsOrder } from '../fav-enum'
-import { formatBvidUrl, formatFavCollectionSelfSpaceUrl, formatFavCollectionUpSpaceUrl } from '../fav-url'
+import {
+  formatBvidUrl,
+  formatFavCollectionGateUrl,
+  formatFavCollectionSelfSpaceUrl,
+  formatFavCollectionUpSpaceUrl,
+} from '../fav-url'
 import { favStore, updateFavCollectionList } from '../store'
 import { IconForCollection } from '../views'
 import { FavItemsOrderSwitcher } from '../views/fav-items-order'
@@ -175,6 +181,9 @@ export function FavCollectionSeparator({ service }: { service: FavCollectionServ
             播放
           </Button>
         )}
+        <Button href={formatFavCollectionGateUrl(service.collectionId)} target={target}>
+          <IconForOpenExternalLink className='size-16px' />在 {APP_NAME} 中查看
+        </Button>
         <Button href={formatFavCollectionSelfSpaceUrl(service.collectionId)} target={target}>
           <IconForOpenExternalLink className='size-16px' />
           去「我的空间」查看
