@@ -1,6 +1,6 @@
 import { css as _css, css, Global } from '@emotion/react'
 import { useMemo } from 'react'
-import { APP_CLS_ROOT, IN_BILIBILI_HOMEPAGE } from '$common'
+import { APP_CLS_ROOT, APP_CLS_TAB_BAR, IN_BILIBILI_HOMEPAGE } from '$common'
 import { appBgId, appPrimaryColorId, appTextColorId } from '$common/css-vars-export.module.scss'
 import { useAntLinkColorGlobalStyle } from '$common/emotion-css'
 import { $headerWidth, $usingEvolevdHeader, useBackToTopRight } from '$header'
@@ -165,7 +165,7 @@ export function HomePageGlobalStyle() {
             .bili-feed4 .bili-header .bili-header__bar {
               &.slide-down,
               &:not(.slide-down) {
-                animation: headerSlideDown 0.3s linear forwards !important;
+                animation: biliHeaderSlideDown 0.3s linear forwards !important;
                 box-shadow: 0 2px 4px ${dark ? 'rgb(255 255 255 / 5%)' : 'rgb(0 0 0 / 8%)'} !important;
               }
             }
@@ -174,27 +174,20 @@ export function HomePageGlobalStyle() {
               background-color: var(--bg1);
               color: var(--text1);
               transition: background-color 0.2s linear;
-              animation-name: headerSlideDown;
+              animation-name: biliHeaderSlideDown;
 
-              .left-entry {
-                .mini-header__title,
-                .entry-title,
-                .default-entry,
-                .loc-mc-box__text,
-                .download-entry,
-                .loc-entry {
-                  color: var(--text1);
-                }
+              /* text color on white-bg */
+              .left-entry,
+              .right-entry {
+                color: var(--text1) !important;
               }
-              .right-entry .right-entry__outside {
-                .right-entry-text,
-                .right-entry-icon {
-                  color: var(--text2);
-                }
+              /* svg icon: 正常应该是 --text1, 最右侧投稿 button 有 bg 例外 */
+              svg.trigger-icon {
+                color: currentColor !important;
               }
             }
 
-            .area-header-wrapper {
+            div:has(> .${APP_CLS_TAB_BAR}) {
               margin-top: 10px;
             }
           `,
