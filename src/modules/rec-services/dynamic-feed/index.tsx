@@ -363,6 +363,7 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
         if (groupMergeTimelineService) return true // skip group-filter when loaded via groupMergeTimelineService
         if (!groupMids.size) return true
         const mid = x.modules.module_author.mid
+        if (!mid) return true
         return groupMids.has(mid)
       }),
 
@@ -370,11 +371,9 @@ export class DynamicFeedRecService extends BaseTabService<AllowedItemType> {
       filter((x) => {
         const v = DynamicFeedItemHelper.getVideo(x)
         const isVideo = !!v
-        const currentLabel = v?.badge.text
-        const isUploadVideo =
-          isVideo && (currentLabel === DynamicFeedBadgeText.Upload || currentLabel === TEXT_CHARGE_ONLY)
-        const isDynamicVideo = isVideo && currentLabel === DynamicFeedBadgeText.Dynamic
-
+        const badgeText = v?.badge.text
+        const isUploadVideo = isVideo && (badgeText === DynamicFeedBadgeText.Upload || badgeText === TEXT_CHARGE_ONLY)
+        const isDynamicVideo = isVideo && badgeText === DynamicFeedBadgeText.Dynamic
         return match(this.contentFilter)
           .returnType<boolean>()
           .with(DynamicFeedContentFilter.All, () => true)
