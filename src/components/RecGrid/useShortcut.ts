@@ -203,10 +203,10 @@ export function useShortcut({
     [
       { hotkey: 'Backspace', callback: () => getActiveCardHandle()?.triggerDislike() },
       // 稍候再看, s 与 BILIBILI-Envoled 快捷键冲突
-      { hotkey: 'S', callback: () => getActiveCardHandle()?.toggleWatchLater },
-      { hotkey: 'W', callback: () => getActiveCardHandle()?.toggleWatchLater },
-      { hotkey: '.', callback: () => getActiveCardHandle()?.hotkeyPreviewAnimation },
-      { hotkey: 'P', callback: () => getActiveCardHandle()?.hotkeyPreviewAnimation },
+      { hotkey: 'S', callback: () => getActiveCardHandle()?.toggleWatchLater() },
+      { hotkey: 'W', callback: () => getActiveCardHandle()?.toggleWatchLater() },
+      { hotkey: '.', callback: () => getActiveCardHandle()?.hotkeyPreviewAnimation() },
+      { hotkey: 'P', callback: () => getActiveCardHandle()?.hotkeyPreviewAnimation() },
     ],
     {
       ...hotkeyOptions,
