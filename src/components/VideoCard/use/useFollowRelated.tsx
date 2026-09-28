@@ -2,19 +2,22 @@ import { useLockFn } from 'ahooks'
 import { isNotNil } from 'es-toolkit'
 import { useMemo } from 'react'
 import { useTrackedSnapshot } from 'valtio-select'
-import { useEmitterOn } from '$common/hooks/useEmitter'
 import { checkIsAppRecommend, checkIsLive, checkIsPcRecommend, type RecItemType } from '$define'
 import { EApiType } from '$enums'
 import { queryFollowedStatus } from '$modules/bilibili/me/relations/follow'
 import { followedMidSet } from '$modules/bilibili/me/relations/following-state'
 import { getFollowedStatus } from '$modules/filter'
 import { getLoginStatus } from '$modules/login-status'
+import type { EventEmitter } from 'ahooks/lib/useEventEmitter'
 import type { IVideoCardData } from '$modules/filter/normalize'
-import type { VideoCardEmitter } from '../index.shared'
 
 export type FollowedStatusContext = ReturnType<typeof useInitFollowedStatusContext>
 
-export function useInitFollowedStatusContext(item: RecItemType, cardData: IVideoCardData, emitter: VideoCardEmitter) {
+export function useInitFollowedStatusContext(
+  item: RecItemType,
+  cardData: IVideoCardData,
+  contextMenuOpenEvent: EventEmitter<void>,
+) {
   const { authorMid } = cardData
 
   const followedFromCardData = useMemo(() => {
@@ -31,7 +34,7 @@ export function useInitFollowedStatusContext(item: RecItemType, cardData: IVideo
     if (followedFromCardData !== undefined) return // already followed from card data
     await queryFollowedStatus(authorMid)
   })
-  useEmitterOn(emitter, 'context-menu-open', () => {
+  contextMenuOpenEvent.useSubscription(() => {
     // allowed apiTypes
     const allowedApiTypes = [EApiType.Watchlater, EApiType.Fav, EApiType.History, EApiType.Liked, EApiType.SpaceUpload]
     if (!allowedApiTypes.includes(item.api)) return

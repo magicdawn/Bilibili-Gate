@@ -3,10 +3,10 @@ import { useCreation, useEventListener, useLatest, useMemoizedFn, useMount, useU
 import { Divider } from 'antd'
 import { Result } from 'better-result'
 import clsx, { type ClassValue } from 'clsx'
-import Emittery from 'emittery'
 import { delay } from 'es-toolkit'
 import ms from 'ms'
 import {
+  createRef,
   Fragment,
   memo,
   useEffect,
@@ -27,7 +27,7 @@ import { APP_CLS_GRID, appError, baseDebug } from '$common'
 import { useEmitterOn } from '$common/hooks/useEmitter'
 import { useRecSelfContext, type RefreshFn } from '$components/Recommends/rec.shared'
 import { clsGateVideoGridDivider } from '$components/shared.module.scss'
-import { VideoCard } from '$components/VideoCard'
+import { VideoCard, type VideoCardHandle } from '$components/VideoCard'
 import { getActiveCardBorderCss, useCardBorderCss } from '$components/VideoCard/card-border-css'
 import { EApiType, EGridDisplayMode, ETab } from '$enums'
 import { $headerHeight } from '$header'
@@ -46,7 +46,6 @@ import { useRefresh } from './useRefresh'
 import { useShortcut } from './useShortcut'
 import * as gridClassNames from './video-grid.module.scss'
 import type { ArgsProps } from 'antd/es/notification'
-import type { VideoCardEmitter, VideoCardEvents } from '$components/VideoCard/index.shared'
 import type { RecItemTypeOrSeparator } from '$define'
 
 const debug = baseDebug.extend('components:RecGrid')
@@ -348,22 +347,8 @@ export const RecGrid = memo(function RecGrid({
     }
   })
 
-  // emitters
-  const videoCardEmitterCache = useMemo(() => new Map<string, VideoCardEmitter>(), [refreshKey])
-  const videoCardEmitters = useMemo(() => {
-    return videoList.map(({ uniqId }) => {
-      const cacheKey = uniqId
-      return (
-        videoCardEmitterCache.get(cacheKey) ||
-        (() => {
-          const instance = new Emittery<VideoCardEvents>()
-          videoCardEmitterCache.set(cacheKey, instance)
-          return instance
-        })()
-      )
-    })
-  }, [videoList])
-
+  // refs
+  const videoCardRefs = useMemo(() => videoList.map(() => createRef<VideoCardHandle>()), [videoList])
   const [activeLargePreviewUniqId, setActiveLargePreviewUniqId] = useState<string | undefined>(undefined)
   useEmitterOn(recSharedEmitter, 'show-large-preview', ({ data: uniqId }) => setActiveLargePreviewUniqId(uniqId))
   const activeLargePreviewItemIndex = useMemo(() => {
@@ -377,7 +362,7 @@ export const RecGrid = memo(function RecGrid({
     maxIndex: videoList.length - 1,
     gridRef,
     getScrollerRect,
-    videoCardEmitters,
+    videoCardRefs,
     activeLargePreviewItemIndex,
     changeScrollY: infiniteScrollUseWindow
       ? function ({ offset, absolute }) {
@@ -631,7 +616,7 @@ export const RecGrid = memo(function RecGrid({
           item={item}
           active={active}
           onRemoveCurrent={(item, data, silent) => handleRemoveCards([item.uniqId], [data.title], { silent })}
-          emitter={videoCardEmitters[index]}
+          ref={videoCardRefs[index]}
           recSharedEmitter={recSharedEmitter}
           gridDisplayMode={gridDisplayMode}
           multiSelecting={multiSelecting}

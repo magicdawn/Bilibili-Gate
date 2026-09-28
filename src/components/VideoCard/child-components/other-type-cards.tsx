@@ -1,7 +1,6 @@
 import { useMemoizedFn } from 'ahooks'
 import clsx from 'clsx'
 import { memo, useMemo } from 'react'
-import { useEmitterOn } from '$common/hooks/useEmitter'
 import { handleCancelDislike } from '$components/ModalDislike/api'
 import { normalizeDislikeReason, type DislikeReason } from '$components/ModalDislike/types'
 import { antMessage } from '$modules/antd'
@@ -10,7 +9,6 @@ import { parseUpRepresent } from '$modules/filter/parse'
 import { IconForBlacklist, IconForReset } from '$modules/icon'
 import { settings, updateSettingsInnerArray } from '$modules/settings'
 import { videoCardBorderRadiusValue } from '../../css-vars'
-import { defaultVideoCardEmitter, type VideoCardEmitter } from '../index.shared'
 import { skeletonActive as clsSkeletonActive } from './skeleton.module.scss'
 import { VideoCardBottom } from './VideoCardBottom'
 import type { RecItemType } from '$define'
@@ -55,17 +53,14 @@ export const DislikedCard = memo(function DislikedCard({
   item,
   cardData,
   dislikedReason,
-  emitter = defaultVideoCardEmitter,
 }: {
   item: RecItemType
   cardData: IVideoCardData
   dislikedReason: DislikeReason
-  emitter?: VideoCardEmitter
 }) {
   const onCancelDislike = useMemoizedFn(async () => {
     await handleCancelDislike(item, dislikedReason)
   })
-  useEmitterOn(emitter, 'cancel-dislike', onCancelDislike)
 
   const { text, helpText } = useMemo(() => normalizeDislikeReason(dislikedReason), [dislikedReason])
 

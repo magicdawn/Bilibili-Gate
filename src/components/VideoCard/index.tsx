@@ -1,21 +1,22 @@
 import { css } from '@emotion/react'
-import { useLockFn, useMemoizedFn, useUpdateEffect } from 'ahooks'
+import { useEventEmitter, useLockFn, useMemoizedFn, useUpdateEffect } from 'ahooks'
 import { Dropdown } from 'antd'
 import clsx from 'clsx'
 import {
   memo,
+  useImperativeHandle,
   useMemo,
   useRef,
-  type ComponentProps,
+  type ComponentPropsWithoutRef,
   type ComponentRef,
   type CSSProperties,
   type MouseEventHandler,
   type ReactNode,
+  type Ref,
 } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
 import { useSnapshot } from 'valtio'
 import { APP_CLS_CARD, APP_CLS_CARD_ACTIVE, APP_CLS_CARD_COVER, APP_CLS_ROOT, APP_KEY_PREFIX, appWarn } from '$common'
-import { useEmitterOn } from '$common/hooks/useEmitter'
 import { isEmptyFragment } from '$common/hooks/useIsEmptyFragment'
 import { useLessFrequentFn } from '$common/hooks/useLessFrequentFn'
 import { useRefStateBox } from '$common/hooks/useRefState'
@@ -63,13 +64,7 @@ import { SimpleProgressBar } from './child-components/PreviewImage'
 import { VideoCardActionButton, VideoCardActionsClassNames } from './child-components/VideoCardActions'
 import { VideoCardBottom } from './child-components/VideoCardBottom'
 import { showNativeContextMenuWhenAltKeyPressed, useContextMenus } from './context-menus'
-import {
-  clsZWatchedProgressBar,
-  copyContent,
-  defaultVideoCardEmitter,
-  displayAsListCss,
-  type VideoCardEmitter,
-} from './index.shared'
+import { clsZWatchedProgressBar, copyContent, displayAsListCss } from './index.shared'
 import { fetchImagePreviewData, isImagePreviewDataValid, type ImagePreviewData } from './services'
 import { StatItemDisplay } from './stat-item'
 import { useDislikeRelated } from './use/useDislikeRelated'
@@ -82,29 +77,39 @@ import { usePreviewRelated } from './use/usePreviewRelated'
 import { useWatchlaterRelated } from './use/useWatchlaterRelated'
 import type { CssProp } from '$utility/type'
 
-export type VideoCardProps = {
+export type VideoCardHandle = {
+  open: () => void
+  openInPopup: () => void
+  openWithLargePreviewVisible: () => void
+  toggleWatchLater: () => void
+  triggerDislike: () => void
+  startPreviewAnimation: () => void
+  hotkeyPreviewAnimation: () => void
+}
+
+export type VideoCardProps = ComponentPropsWithoutRef<'div'> & {
+  ref?: Ref<VideoCardHandle>
   style?: CSSProperties
   className?: string
   loading?: boolean
   active?: boolean // 键盘 active
   item?: RecItemType
   onRemoveCurrent?: (item: RecItemType, data: IVideoCardData, silent?: boolean) => void | Promise<void>
-  emitter?: VideoCardEmitter
   recSharedEmitter?: RecSharedEmitter
   tab: ETab
   baseCss?: CssProp
   gridDisplayMode?: EGridDisplayMode
   multiSelecting?: boolean
-} & ComponentProps<'div'>
+}
 
 export const VideoCard = memo(function VideoCard({
+  ref,
   style,
   className,
   item,
   loading,
   active,
   onRemoveCurrent,
-  emitter,
   recSharedEmitter,
   tab,
   baseCss,
@@ -148,17 +153,17 @@ export const VideoCard = memo(function VideoCard({
         item &&
         cardData &&
         (showingDislikeCard ? (
-          <DislikedCard item={item} cardData={cardData} emitter={emitter} dislikedReason={dislikedReason!} />
+          <DislikedCard item={item} cardData={cardData} dislikedReason={dislikedReason!} />
         ) : showingBlacklistCard ? (
           <BlockedCard item={item} cardData={cardData} blockType='blacklist' />
         ) : showingBlockedCard ? (
           <BlockedCard item={item} cardData={cardData} blockType='filter' />
         ) : (
           <VideoCardInner
+            ref={ref}
             item={item}
             cardData={cardData}
             active={active}
-            emitter={emitter}
             recSharedEmitter={recSharedEmitter}
             tab={tab}
             onRemoveCurrent={onRemoveCurrent}
@@ -174,11 +179,11 @@ export const VideoCard = memo(function VideoCard({
 })
 
 export type VideoCardInnerProps = {
+  ref?: Ref<VideoCardHandle>
   item: RecItemType
   cardData: IVideoCardData
   active?: boolean
   onRemoveCurrent?: (item: RecItemType, data: IVideoCardData, silent?: boolean) => void | Promise<void>
-  emitter?: VideoCardEmitter
   recSharedEmitter?: RecSharedEmitter
   watchlaterAdded: boolean
   tab: ETab
@@ -187,12 +192,12 @@ export type VideoCardInnerProps = {
   multiSelected: boolean
 }
 const VideoCardInner = memo(function VideoCardInner({
+  ref,
   item,
   cardData,
   tab,
   active = false,
   onRemoveCurrent,
-  emitter = defaultVideoCardEmitter,
   recSharedEmitter = defaultRecSharedEmitter,
   watchlaterAdded,
   gridDisplayMode,
@@ -366,6 +371,7 @@ const VideoCardInner = memo(function VideoCardInner({
     actionButtonVisible,
     watchlaterAdded,
   })
+  const { handleToggleWatchlater } = watchlaterContext
 
   // 不喜欢
   const { dislikeButtonEl, hasDislikeEntry, onTriggerDislike } = useDislikeRelated({
@@ -399,11 +405,13 @@ const VideoCardInner = memo(function VideoCardInner({
     videoTitle: title,
   })
 
+  const contextMenuOpenEvent = useEventEmitter()
+
   // fav
-  const favContext = useInitFavContext(item, avid, emitter)
+  const favContext = useInitFavContext(item, avid, contextMenuOpenEvent)
 
   // followed
-  const followedStatusContext = useInitFollowedStatusContext(item, cardData, emitter)
+  const followedStatusContext = useInitFollowedStatusContext(item, cardData, contextMenuOpenEvent)
   const { followed } = followedStatusContext
 
   // 打开视频卡片
@@ -447,18 +455,30 @@ const VideoCardInner = memo(function VideoCardInner({
   /**
    * expose actions
    */
-
-  useEmitterOn(emitter, 'open', () => onOpenWithMode())
-  useEmitterOn(emitter, 'open-in-popup', onOpenInPopup)
-  useEmitterOn(emitter, 'open-with-large-preview-visible', () => {
+  const openWithLargePreviewVisible = useMemoizedFn(() => {
     if (!largePreviewVisible) return
     hideLargePreview()
     onOpenWithMode()
   })
-  useEmitterOn(emitter, 'toggle-watch-later', () => void watchlaterContext.handleToggleWatchlater())
-  useEmitterOn(emitter, 'trigger-dislike', () => void onTriggerDislike())
-  useEmitterOn(emitter, 'start-preview-animation', onStartPreviewAnimation)
-  useEmitterOn(emitter, 'hotkey-preview-animation', onHotkeyPreviewAnimation)
+  useImperativeHandle(ref, () => {
+    return {
+      open: onOpenWithMode,
+      openInPopup: onOpenInPopup,
+      openWithLargePreviewVisible,
+      toggleWatchLater: handleToggleWatchlater,
+      triggerDislike: onTriggerDislike,
+      startPreviewAnimation: () => onStartPreviewAnimation(false),
+      hotkeyPreviewAnimation: onHotkeyPreviewAnimation,
+    }
+  }, [
+    onOpenWithMode,
+    onOpenInPopup,
+    openWithLargePreviewVisible,
+    handleToggleWatchlater,
+    onTriggerDislike,
+    onStartPreviewAnimation,
+    onHotkeyPreviewAnimation,
+  ])
 
   /**
    * context menu
@@ -480,7 +500,7 @@ const VideoCardInner = memo(function VideoCardInner({
   })
   const onContextMenuOpenChange = useMemoizedFn((open: boolean) => {
     if (!open) return
-    emitter.emit('context-menu-open')
+    contextMenuOpenEvent.emit()
   })
 
   /**

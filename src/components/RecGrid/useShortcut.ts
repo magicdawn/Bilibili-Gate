@@ -5,7 +5,7 @@ import { APP_CLS_CARD, APP_CLS_CARD_ACTIVE, appWarn } from '$common'
 import { EGridDisplayMode } from '$enums'
 import { settings } from '$modules/settings'
 import { videoGrid } from './video-grid.module.scss'
-import type { VideoCardEmitter } from '$components/VideoCard/index.shared'
+import type { VideoCardHandle } from '$components/VideoCard'
 
 interface IOptions {
   shortcutEnabled: boolean
@@ -22,7 +22,7 @@ interface IOptions {
   changeScrollY?: (options: { offset?: number; absolute?: number }) => void
 
   /** video-card */
-  videoCardEmitters: Array<VideoCardEmitter>
+  videoCardRefs: Array<RefObject<VideoCardHandle | null>>
 
   activeLargePreviewItemIndex: number | undefined
 }
@@ -35,7 +35,7 @@ export function useShortcut({
   gridRef,
   getScrollerRect,
   changeScrollY,
-  videoCardEmitters,
+  videoCardRefs,
   activeLargePreviewItemIndex,
 }: IOptions) {
   const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined)
@@ -133,9 +133,9 @@ export function useShortcut({
     if (!shortcutEnabled) return
     setActiveIndex(undefined)
   }
-  const getActiveEmitter = () => {
+  const getActiveCardHandle = () => {
     if (!shortcutEnabled || typeof activeIndex !== 'number') return
-    return videoCardEmitters[activeIndex]
+    return videoCardRefs[activeIndex].current
   }
 
   const hotkeyOptions = {
@@ -172,11 +172,11 @@ export function useShortcut({
         callback: (e) => {
           if (typeof activeIndex === 'number') {
             e.preventDefault()
-            return videoCardEmitters[activeIndex]?.emit('open')
+            return videoCardRefs[activeIndex].current?.open()
           }
           if (typeof activeLargePreviewItemIndex === 'number') {
             e.preventDefault()
-            return videoCardEmitters[activeLargePreviewItemIndex]?.emit('open-with-large-preview-visible')
+            return videoCardRefs[activeLargePreviewItemIndex].current?.openWithLargePreviewVisible()
           }
         },
         options: {
@@ -186,7 +186,7 @@ export function useShortcut({
       },
       {
         hotkey: 'X',
-        callback: () => getActiveEmitter()?.emit('open-in-popup'),
+        callback: () => getActiveCardHandle()?.openInPopup(),
         options: {
           enabled: shortcutEnabled && typeof activeIndex === 'number',
         },
@@ -201,12 +201,12 @@ export function useShortcut({
   // more actions
   useHotkeys(
     [
-      { hotkey: 'Backspace', callback: () => getActiveEmitter()?.emit('trigger-dislike') },
+      { hotkey: 'Backspace', callback: () => getActiveCardHandle()?.triggerDislike() },
       // 稍候再看, s 与 BILIBILI-Envoled 快捷键冲突
-      { hotkey: 'S', callback: () => getActiveEmitter()?.emit('toggle-watch-later') },
-      { hotkey: 'W', callback: () => getActiveEmitter()?.emit('toggle-watch-later') },
-      { hotkey: '.', callback: () => getActiveEmitter()?.emit('hotkey-preview-animation') },
-      { hotkey: 'P', callback: () => getActiveEmitter()?.emit('hotkey-preview-animation') },
+      { hotkey: 'S', callback: () => getActiveCardHandle()?.toggleWatchLater },
+      { hotkey: 'W', callback: () => getActiveCardHandle()?.toggleWatchLater },
+      { hotkey: '.', callback: () => getActiveCardHandle()?.hotkeyPreviewAnimation },
+      { hotkey: 'P', callback: () => getActiveCardHandle()?.hotkeyPreviewAnimation },
     ],
     {
       ...hotkeyOptions,

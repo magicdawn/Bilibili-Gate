@@ -170,7 +170,7 @@ export function usePreviewRelated({
     animationController.togglePaused()
   })
 
-  const onStartPreviewAnimation = useMemoizedFn((startByHover) => {
+  const onStartPreviewAnimation = useMemoizedFn((startByHover: boolean) => {
     startByHoverBox.set(startByHover)
     setMouseMoved(false)
     animationController.reset()

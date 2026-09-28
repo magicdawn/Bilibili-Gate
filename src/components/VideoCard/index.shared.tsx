@@ -1,5 +1,4 @@
 import { css } from '@emotion/react'
-import Emittery from 'emittery'
 import { APP_SHORT_PREFIX } from '$common'
 import { antMessage } from '$modules/antd'
 import { IconForOpenExternalLink, IconForPlayer } from '$modules/icon'
@@ -101,29 +100,6 @@ export const VideoLinkOpenModeConfig: Record<EVideoLinkOpenMode, VideoLinkOpenMo
     ),
   },
 }
-
-/**
- * VideoCard owned
- */
-export type VideoCardEvents = {
-  // for cancel card
-  'cancel-dislike': undefined
-
-  // for normal card
-  'open': undefined
-  'open-in-popup': undefined
-  'open-with-large-preview-visible': undefined
-  'toggle-watch-later': undefined
-  'trigger-dislike': undefined
-  'start-preview-animation': undefined
-  'hotkey-preview-animation': undefined
-  'context-menu-open': undefined
-}
-export type VideoCardEmitter = Emittery<VideoCardEvents>
-export function createVideoCardEmitter() {
-  return new Emittery<VideoCardEvents>()
-}
-export const defaultVideoCardEmitter = createVideoCardEmitter()
 
 export const displayAsListCss = {
   card: css`
