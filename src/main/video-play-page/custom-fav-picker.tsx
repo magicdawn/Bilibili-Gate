@@ -1,6 +1,8 @@
 import { bv2av } from '@mgdn/bvid'
 import { matchesKeyboardEvent } from '@tanstack/react-hotkeys'
+import { once } from 'es-toolkit'
 import { handleModifyFavItemToFolders, startModifyFavItemToTargetFolders } from '$components/ModalFavManager'
+import { globalEmitter } from '$main/shared'
 import { antMessage } from '$modules/antd'
 import { UserFavApi } from '$modules/rec-services/fav/api'
 import { settings } from '$modules/settings'
@@ -70,10 +72,38 @@ async function addToFav(sourceFavFolderIds?: number[] | undefined) {
       if (!success) return
 
       const nextFavedState = !!targetFolder.length
-      const el = document.querySelector<HTMLDivElement>('.video-fav.video-toolbar-left-item')
-      el?.classList.toggle('on', nextFavedState)
+      setVideoToolbarFavIconState(nextFavedState)
+
+      // https://github.com/magicdawn/Bilibili-Gate/issues/266
+      // 例子:
+      //  视频1, 使用自定义收藏夹, 添加收藏, faved icon 所属 Vue component 还是 unfaved, 但 DOM 上通过 `setVideoToolbarFavIconState` 添加了 on
+      //  同页面切换到同合集其他视频, 内部数据还是 unfaved, 不会更新, 这就导致了错误的状态
+      const prevFaved = !!sourceFavFolderIds?.length
+      if (prevFaved !== nextFavedState) {
+        setupNavigationListener()
+      }
 
       return true
     },
   })
 }
+
+function setVideoToolbarFavIconState(faved: boolean) {
+  const el = document.querySelector<HTMLDivElement>('.video-fav.video-toolbar-left-item')
+  el?.classList.toggle('on', faved)
+}
+
+const setupNavigationListener = once(() => {
+  globalEmitter.on('navigate-success', async () => {
+    const bvid = getCurrentPageBvid()
+    if (!bvid) return
+    const avid = bv2av(bvid)
+
+    const result = await UserFavApi.getVideoFavState(avid)
+    const faved = !!result?.favFolderIds.length
+
+    const curBvid = getCurrentPageBvid()
+    if (curBvid !== bvid) return // switch away already
+    setVideoToolbarFavIconState(faved)
+  })
+})
