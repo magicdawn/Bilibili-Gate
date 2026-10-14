@@ -12,10 +12,7 @@
   },
   "js/ts.tsdk.path": "node_modules/typescript/lib",
   "js/ts.tsserver.experimental.enableProjectDiagnostics": true,
-  "[javascript][javascriptreact][typescript][typescriptreact][json][jsonc][markdown][scss]": {
-    "defaultFormatter": "oxc.oxc-vscode"
-  },
-  "[typescriptreact]": {
+  "[javascript][javascriptreact][typescript][typescriptreact][json][jsonc][yaml][markdown][css][less][scss]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
   }
 }
