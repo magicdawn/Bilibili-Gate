@@ -1,4 +1,5 @@
 import { proxy } from 'valtio'
+import { effect } from 'valtio-reactive'
 import { useSnapshot } from 'valtio/react'
 import { proxySet } from 'valtio/utils'
 import { settings } from '$modules/settings'
@@ -34,4 +35,20 @@ export function useMultiSelecting() {
 export function useMultiSelectState(uniqId: string | undefined) {
   const { multiSelecting, selectedIdSet } = useSnapshot(multiSelectStore)
   return multiSelecting && !!uniqId && selectedIdSet.has(uniqId)
+}
+
+effect(() => {
+  const { multiSelecting } = multiSelectStore
+  multiSelecting
+    ? window.addEventListener('beforeunload', handleBeforeUnload)
+    : window.removeEventListener('beforeunload', handleBeforeUnload)
+})
+
+function handleBeforeUnload(e: BeforeUnloadEvent) {
+  const { multiSelecting, selectedIdSet } = multiSelectStore
+  if (multiSelecting && selectedIdSet.size > 0) {
+    e.preventDefault()
+    e.returnValue = ''
+    return ''
+  }
 }

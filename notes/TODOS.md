@@ -33,3 +33,4 @@
 - [x] space-upload 已观看的进度
 - [x] dynamic-feed: 单独查看时, 添加 video only mode, 跟屏蔽还是不一样, 实现为 `contentFilter`
 - [x] dynamic-feed: 时长限制, use DurationInput
+- [x] multiselect leave promote

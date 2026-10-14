@@ -4,21 +4,20 @@
   "tasks": {
     "build:scss": {
       "inputs": ["src/**/*.scss"],
-      "outputs": ["src/**/*.scss.d.ts"]
+      "outputs": ["src/**/*.scss.d.ts"],
     },
     "_typecheck": {
       "dependsOn": ["build:scss"],
-      "inputs": ["tsconfig.json", "tsconfig.*.json", "src/**/*.{ts,tsx}", "*.ts"]
+      "inputs": ["tsconfig.json", "tsconfig.*.json", "src/**/*.{ts,tsx}", "*.ts"],
     },
     "_lint": {
       "inputs": [
         "src/**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue,astro,svelte}",
         "tsconfig.json",
         "tsconfig.*.json",
-        ".oxlintrc.json"
-      ]
+        ".oxlintrc.json",
+      ],
     },
-
     "build:vite": {
       "dependsOn": ["build:scss"],
       "env": ["RELEASE", "RELEASE_NIGHTLY", "MINIFY", "GHD_DESCRIBE", "CI", "KEEP_DIST"],
@@ -28,9 +27,9 @@
         "tsconfig.*.json",
         "vite.config.ts",
         "uno.config.ts",
-        "package.json"
+        "package.json",
       ],
-      "outputs": ["dist/*.user.js"]
+      "outputs": ["dist/*.user.js"],
     },
     "build:vite-raw": {
       "dependsOn": ["build:scss"],
@@ -41,9 +40,9 @@
         "tsconfig.*.json",
         "vite.config.ts",
         "uno.config.ts",
-        "package.json"
+        "package.json",
       ],
-      "outputs": ["dist/bilibili-gate.user.js"]
-    }
-  }
+      "outputs": ["dist/bilibili-gate.user.js"],
+    },
+  },
 }

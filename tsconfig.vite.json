@@ -10,7 +10,7 @@
     "skipLibCheck": true,
     "allowImportingTsExtensions": true,
     "noFallthroughCasesInSwitch": true,
-    "noEmit": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "noEmit": true
   }
 }

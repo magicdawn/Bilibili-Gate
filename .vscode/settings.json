@@ -11,5 +11,11 @@
     "typeOrder": "last"
   },
   "js/ts.tsdk.path": "node_modules/typescript/lib",
-  "js/ts.tsserver.experimental.enableProjectDiagnostics": true
+  "js/ts.tsserver.experimental.enableProjectDiagnostics": true,
+  "[javascript][javascriptreact][typescript][typescriptreact][json][jsonc][markdown][scss]": {
+    "defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  }
 }
