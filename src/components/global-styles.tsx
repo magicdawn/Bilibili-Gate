@@ -92,6 +92,13 @@ export function HomePageGlobalStyle() {
           .palette-button-adcard {
             display: none !important;
           }
+
+          /* https://github.com/magicdawn/Bilibili-Gate/issues/267 */
+          /* has no effect for overlay scrollbars: e.g macOS */
+          :root {
+            scrollbar-width: thin;
+            scrollbar-gutter: stable;
+          }
         `,
 
         useCustomGrid &&

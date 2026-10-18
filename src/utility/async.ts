@@ -1,10 +1,12 @@
 import pMemoize, { type AnyAsyncFunction } from 'p-memoize'
 
-export function reusePendingPromise<T extends AnyAsyncFunction, CacheKeyType>(
-  fn: T,
-  generateKey?: (...args: Parameters<NoInfer<T>>) => CacheKeyType,
+export function reusePendingPromise<FunctionToMemoize extends AnyAsyncFunction, CacheKeyType>(
+  fn: FunctionToMemoize,
+  generateKey?: (
+    ...args: Parameters<NoInfer<FunctionToMemoize>>
+  ) => CacheKeyType extends PromiseLike<unknown> ? never : CacheKeyType,
 ) {
-  generateKey ??= (...args) => JSON.stringify(args) as CacheKeyType
+  generateKey ??= (...args) => JSON.stringify(args) as CacheKeyType extends PromiseLike<unknown> ? never : CacheKeyType
   return pMemoize(fn, {
     cache: false,
     cacheKey(args) {
