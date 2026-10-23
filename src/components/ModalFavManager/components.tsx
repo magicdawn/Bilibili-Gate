@@ -270,6 +270,7 @@ export function ModalFavManager({
             1. 使用 <HotkeyDisplay k='R' className='mx-2px' /> 刷新收藏夹 <br />
             2. 使用 <HotkeyDisplay k='Escape' className='mx-2px' /> 取消操作, 关闭窗口 <br />
             3. 使用 拼音 / 拼音首字母 过滤收藏夹标题 <br />
+            4. 重命名收藏夹: 收藏夹 - 右键菜单 - 重命名
           </HelpInfo>
 
           <Popover trigger={'click'} title={<ConfigPopoverContent />}>
