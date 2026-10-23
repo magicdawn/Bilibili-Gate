@@ -1,14 +1,19 @@
 import { useMemoizedFn } from 'ahooks'
+import { Dropdown } from 'antd'
 import clsx from 'clsx'
-import { memo, useMemo } from 'react'
+import { memo, useMemo, type ReactNode } from 'react'
+import { clsZVideoCardContextMenu } from '$components/fragments'
 import { handleCancelDislike } from '$components/ModalDislike/api'
 import { normalizeDislikeReason, type DislikeReason } from '$components/ModalDislike/types'
-import { antMessage } from '$modules/antd'
+import { clsGateVideoCardContextMenuRoot } from '$components/shared.module.scss'
+import { antMessage, defineAntMenus } from '$modules/antd'
 import { UserBlacklistService } from '$modules/bilibili/me/relations/blacklist'
 import { parseUpRepresent } from '$modules/filter/parse'
-import { IconForBlacklist, IconForReset } from '$modules/icon'
+import { openNewTab } from '$modules/gm'
+import { IconForBlacklist, IconForOpenExternalLink, IconForReset } from '$modules/icon'
 import { settings, updateSettingsInnerArray } from '$modules/settings'
 import { videoCardBorderRadiusValue } from '../../css-vars'
+import { clsContextMenuIcon } from '../context-menus'
 import { skeletonActive as clsSkeletonActive } from './skeleton.module.scss'
 import { VideoCardBottom } from './VideoCardBottom'
 import type { RecItemType } from '$define'
@@ -49,7 +54,7 @@ const blockedCardClassNames = {
   actionButton: 'flex cursor-pointer items-center rounded-lg bg-transparent p-15px text-1.2em color-inherit',
 } as const
 
-export const DislikedCard = memo(function DislikedCard({
+export const DislikedCard = memo(function DislikedCardInner({
   item,
   cardData,
   dislikedReason,
@@ -64,7 +69,7 @@ export const DislikedCard = memo(function DislikedCard({
 
   const { text, helpText } = useMemo(() => normalizeDislikeReason(dislikedReason), [dislikedReason])
 
-  return (
+  return wrapWithDropdown(
     <div className={blockedCardClassNames.wrapper}>
       <div className={blockedCardClassNames.cover}>
         <div className={blockedCardClassNames.coverInner}>
@@ -74,32 +79,11 @@ export const DislikedCard = memo(function DislikedCard({
         </div>
       </div>
       <__BottomRevertAction item={item} cardData={cardData} onClick={onCancelDislike} />
-    </div>
+    </div>,
+    item,
+    cardData,
   )
 })
-
-function __BottomRevertAction({
-  item,
-  cardData,
-  onClick,
-}: {
-  item: RecItemType
-  cardData: IVideoCardData
-  onClick: () => void
-}) {
-  return (
-    <div className={blockedCardClassNames.action}>
-      {/* 需要它撑起高度 */}
-      <VideoCardBottom item={item} cardData={cardData} className='invisible' followed={false} />
-      <div className={blockedCardClassNames.actionInner}>
-        <button className={blockedCardClassNames.actionButton} onClick={onClick}>
-          <IconForReset className='mr-4px mt--2px' />
-          撤销
-        </button>
-      </div>
-    </div>
-  )
-}
 
 export const BlockedCard = memo(function BlockedCardInner({
   item,
@@ -128,7 +112,7 @@ export const BlockedCard = memo(function BlockedCardInner({
     antMessage.success(`已移出过滤列表: ${authorName}`)
   })
 
-  return (
+  return wrapWithDropdown(
     <div className={blockedCardClassNames.wrapper}>
       <div className={blockedCardClassNames.cover}>
         <div className={blockedCardClassNames.coverInner}>
@@ -138,6 +122,58 @@ export const BlockedCard = memo(function BlockedCardInner({
         </div>
       </div>
       <__BottomRevertAction item={item} cardData={cardData} onClick={onCancel} />
-    </div>
+    </div>,
+    item,
+    cardData,
   )
 })
+
+function __BottomRevertAction({
+  item,
+  cardData,
+  onClick,
+}: {
+  item: RecItemType
+  cardData: IVideoCardData
+  onClick: () => void
+}) {
+  return (
+    <div className={blockedCardClassNames.action}>
+      {/* 需要它撑起高度 */}
+      <VideoCardBottom item={item} cardData={cardData} className='invisible' followed={false} />
+      <div className={blockedCardClassNames.actionInner}>
+        <button className={blockedCardClassNames.actionButton} onClick={onClick}>
+          <IconForReset className='mr-4px mt--2px' />
+          撤销
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function wrapWithDropdown(children: ReactNode, item: RecItemType, cardData: IVideoCardData) {
+  const menuItems = defineAntMenus([
+    {
+      // 可以打开视频, 然后移除稍后再看等操作, 无需撤销 block state
+      key: 'blocked-card:open',
+      label: '打开',
+      icon: <IconForOpenExternalLink className={clsContextMenuIcon} />,
+      onClick() {
+        const { href } = cardData
+        openNewTab(href)
+      },
+    },
+  ])
+  return (
+    <Dropdown
+      trigger={['contextMenu']}
+      rootClassName={clsx(clsZVideoCardContextMenu, clsGateVideoCardContextMenuRoot)}
+      menu={{
+        items: menuItems,
+        className: 'w-max', // 需要设置宽度, 否则闪屏
+      }}
+    >
+      {children}
+    </Dropdown>
+  )
+}

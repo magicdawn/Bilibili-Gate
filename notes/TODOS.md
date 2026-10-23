@@ -1,5 +1,8 @@
 # Todos
 
+- ModalFavManager: create new folder, rename folder
+- ModalFavManager: 引入拼音库, 替换 pinyin match, 收藏夹首字母
+
 # Ideas
 
 - [ ] space-upload / dynamic-feed: quick search following up
@@ -8,7 +11,7 @@
 - [ ] space-upload: show up info in [document.title, tabbarView]
 - [ ] 合集: show up info in [document.title, ?]
 - [ ] 合集: 按标题过滤. 搜索 if API 允许.
-- [ ] multi-select: disable refresh btn click / r refresh when multi-selecting has many selected. possible prevent Browser reload.
+- [ ] multi-select: disable refresh btn click / r refresh when multi-selecting has many selected
 - [ ] multi-select: parse selected state from clipboard
 - [ ] multi-select: float toolbar 现在往 tabbar 上堆, 空间不够, 更好的方式是 float toolbar.
 - [ ] 直播预览
@@ -34,3 +37,4 @@
 - [x] dynamic-feed: 单独查看时, 添加 video only mode, 跟屏蔽还是不一样, 实现为 `contentFilter`
 - [x] dynamic-feed: 时长限制, use DurationInput
 - [x] multiselect leave promote
+- [x] blocked card: 右键菜单可以打开视频, 可以在视频页删除稍后再看，收藏状态。不必临时撤销 block
