@@ -1,11 +1,11 @@
 /* eslint-disable require-await */
 import { useHotkey } from '@tanstack/react-hotkeys'
 import { useMemoizedFn, useRequest, useUpdateEffect } from 'ahooks'
-import { Button, Checkbox, Empty, Input, Popover, Slider, Spin } from 'antd'
+import { Button, Checkbox, Dropdown, Empty, Input, Popover, Slider, Spin } from 'antd'
 import clsx from 'clsx'
 import { assert, isEqual, uniqBy } from 'es-toolkit'
 import PinyinMatch from 'pinyin-match'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { match } from 'ts-pattern'
 import { useSnapshot } from 'valtio'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
@@ -13,17 +13,20 @@ import { HelpInfo } from '$components/_base/HelpInfo'
 import { antSpinIndicator } from '$components/fragments'
 import { explainForFlag } from '$components/ModalSettings/index.shared'
 import { BILI_BRAND_PINK_THEME } from '$components/ModalSettings/theme.shared'
-import { antMessage } from '$modules/antd'
+import { clsContextMenuIcon } from '$components/VideoCard/context-menus'
+import { antMessage, defineAntMenus } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
 import { HotkeyDisplay } from '$modules/hotkey'
 import {
   IconAnimatedChecked,
   IconForConfig,
+  IconForEdit,
   IconForFav,
   IconForFaved,
   IconForOpenExternalLink,
   IconForReset,
 } from '$modules/icon'
+import { FavFolderRenamePopover } from '$modules/rec-services/fav/service/fav-folder'
 import { favStore, updateFavFolderList } from '$modules/rec-services/fav/store'
 import { useSettingsSnapshot } from '$modules/settings'
 import { getUid } from '$utility/cookie'
@@ -335,51 +338,30 @@ export function ModalFavManager({
               foldersForRender.map((f) => {
                 const isSourceFolder = mode === 'modify' && modifyInitialSelectedIdsSet.has(f.id)
                 const active = selectedFolderIdsSet.has(f.id)
+                const handleClick = () => {
+                  if (usingSingleSelect) {
+                    if (allowEmptyResult && active) {
+                      // toggle
+                      setSelectedFolderIdsSet(new Set())
+                    } else {
+                      setSelectedFolderIdsSet(new Set([f.id]))
+                    }
+                  } else {
+                    // toggle value inside `selectedFolderIdsSet`
+                    setSelectedFolderIdsSet((set) => {
+                      set.has(f.id) ? set.delete(f.id) : set.add(f.id)
+                      return new Set(set)
+                    })
+                  }
+                }
                 return (
-                  <button
+                  <FavFolderItem
                     key={f.id}
-                    data-id={f.id}
-                    className={clsx(
-                      { active },
-                      'relative min-h-40px flex cursor-pointer items-center b-2px b-gate-border rounded-20px b-solid bg-transparent px-4px line-height-[1.2] hover:bg-gate-bg-lv1',
-                      active && 'b-gate-primary color-white bg-gate-primary! hover:bg-gate-primary-lv1!',
-                    )}
-                    onClick={() => {
-                      if (usingSingleSelect) {
-                        if (allowEmptyResult && active) {
-                          // toggle
-                          setSelectedFolderIdsSet(new Set())
-                        } else {
-                          setSelectedFolderIdsSet(new Set([f.id]))
-                        }
-                      } else {
-                        // toggle value inside `selectedFolderIdsSet`
-                        setSelectedFolderIdsSet((set) => {
-                          set.has(f.id) ? set.delete(f.id) : set.add(f.id)
-                          return new Set(set)
-                        })
-                      }
-                    }}
-                  >
-                    {/* source folder marker */}
-                    {isSourceFolder && (
-                      <AntdTooltip title='源收藏夹' placement='left'>
-                        <span
-                          className={clsx(
-                            'absolute left-2 top-50% size-2.5 flex-center translate-y--50% rounded-full',
-                            srcFavFolderBgClassName,
-                          )}
-                        />
-                      </AntdTooltip>
-                    )}
-                    {/* note: small font-size for limited space */}
-                    <span className='flex-1 px-4px text-14px'>
-                      {f.title} ({f.media_count})
-                    </span>
-                    <span className='mr-2px size-20px flex-none'>
-                      {active && <IconAnimatedChecked className='size-full color-white' useAnimation />}
-                    </span>
-                  </button>
+                    f={f}
+                    active={active}
+                    isSourceFolder={isSourceFolder}
+                    onClick={handleClick}
+                  />
                 )
               })
             ) : (
@@ -418,4 +400,97 @@ export function ModalFavManager({
 function useSrcFavFolderBgClassName() {
   const { theme } = useSettingsSnapshot()
   return theme === BILI_BRAND_PINK_THEME.id ? 'bg-$brand_blue' : 'bg-$brand_pink'
+}
+
+function FavFolderItem({
+  f,
+  active,
+  onClick,
+  isSourceFolder,
+}: {
+  f: FavFolder
+  active: boolean
+  onClick?: () => void
+  isSourceFolder?: boolean
+}) {
+  const srcFavFolderBgClassName = useSrcFavFolderBgClassName()
+
+  const [renamePopoverOpen, setRenamePopoverOpen] = useState(false)
+  const wrapWithRenamePopover = (c: ReactNode) => {
+    return (
+      <Popover
+        open={renamePopoverOpen}
+        onOpenChange={setRenamePopoverOpen}
+        trigger={[]}
+        content={
+          <FavFolderRenamePopover
+            folderId={f.id}
+            currentFolderTitle={f.title}
+            onClosePopover={() => setRenamePopoverOpen(false)}
+          />
+        }
+      >
+        {c}
+      </Popover>
+    )
+  }
+
+  const wrapWithContextMenu = (c: ReactNode) => {
+    return (
+      <Dropdown
+        trigger={['contextMenu']}
+        menu={{
+          className: 'w-max',
+          items: defineAntMenus([
+            {
+              key: 'rename',
+              icon: <IconForEdit className={clsContextMenuIcon} />,
+              label: '重命名收藏夹',
+              onClick: ({ domEvent: e }) => {
+                // prevent close ModalFavManager
+                e.preventDefault()
+                e.stopPropagation()
+                setRenamePopoverOpen(true)
+              },
+            },
+          ]),
+        }}
+      >
+        {c}
+      </Dropdown>
+    )
+  }
+
+  const btn = (
+    <button
+      data-id={f.id}
+      className={clsx(
+        { active },
+        'relative min-h-40px flex cursor-pointer items-center b-2px b-gate-border rounded-20px b-solid bg-transparent px-4px line-height-[1.2] hover:bg-gate-bg-lv1',
+        active && 'b-gate-primary color-white bg-gate-primary! hover:bg-gate-primary-lv1!',
+      )}
+      onClick={onClick}
+    >
+      {/* source folder marker */}
+      {isSourceFolder && (
+        <AntdTooltip title='源收藏夹' placement='left'>
+          <span
+            className={clsx(
+              'absolute left-2 top-50% size-2.5 flex-center translate-y--50% rounded-full',
+              srcFavFolderBgClassName,
+            )}
+          />
+        </AntdTooltip>
+      )}
+      {/* note: small font-size for limited space */}
+      <span className='flex-1 px-4px text-14px'>
+        {f.title} ({f.media_count})
+      </span>
+      <span className='mr-2px size-20px flex-none'>
+        {active && <IconAnimatedChecked className='size-full color-white' useAnimation />}
+      </span>
+    </button>
+  )
+
+  return wrapWithRenamePopover(wrapWithContextMenu(btn))
 }
