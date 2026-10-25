@@ -1,12 +1,8 @@
 # Todos
 
-- ModalFavManager: create new folder, rename folder
-- ModalFavManager: 引入拼音库, 替换 pinyin match, 收藏夹首字母
-
 # Ideas
 
 - [ ] space-upload / dynamic-feed: quick search following up
-- [ ] ModalFavManager: 显示拼音首字母. 可能引入的库比较大...
 - [ ] 动态 / space-upload, 共创标记
 - [ ] space-upload: show up info in [document.title, tabbarView]
 - [ ] 合集: show up info in [document.title, ?]
@@ -15,6 +11,7 @@
 - [ ] multi-select: parse selected state from clipboard
 - [ ] multi-select: float toolbar 现在往 tabbar 上堆, 空间不够, 更好的方式是 float toolbar.
 - [ ] 直播预览
+- [ ] ModalFavManager: 引入拼音库, 替换 pinyin match, 收藏夹首字母
 
 # Completed
 
@@ -38,3 +35,4 @@
 - [x] dynamic-feed: 时长限制, use DurationInput
 - [x] multiselect leave promote
 - [x] blocked card: 右键菜单可以打开视频, 可以在视频页删除稍后再看，收藏状态。不必临时撤销 block
+- [x] ModalFavManager: create new folder, rename folder
