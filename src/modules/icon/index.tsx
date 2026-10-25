@@ -47,6 +47,7 @@ export const IconForEdit = IconParkOutlineWrite
 export const IconForComment = IconTablerMessageCircle // dynamic-feed 评论
 export const IconForForward = IconTablerArrowForwardUp // dynamic-feed 转发
 export const IconForReload = IconTablerReload
+export const IconForPlus = IconTablerPlus
 
 // #region orders ↑↓
 export const IconForTimeAsc = IconMdiSortClockDescending

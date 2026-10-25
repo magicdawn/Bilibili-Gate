@@ -7,12 +7,13 @@
 
 import { Panic, Result } from 'better-result'
 import { difference } from 'es-toolkit'
-import { getLoginStatus } from '$modules/login-status'
+import { getLoginStatus, validateLoginedMid } from '$modules/login-status'
 import { request, WebApiError } from '$request'
 import { getCsrfToken, getUid } from '$utility/cookie'
 import { formatFavFolderUrl } from '../fav-url'
 import { isFavFolderDefault, isFavFolderPrivate } from '../fav-util'
 import { favStore, updateFavFolderList } from '../store'
+import type { NewFavFolderResponseJson } from '$components/ModalFavManager/types/new-fav-folder.api'
 import type { FavFolderListAllJson } from '../types/folders/list-all-folders'
 
 /* #region base */
@@ -177,5 +178,43 @@ export function renameFavFolder(folderId: number, newTitle: string) {
     const resp = yield* await request.safePost('/x/v3/fav/folder/edit', form)
     const json = yield* WebApiError.validateAxiosResponse(resp, '重命名收藏夹失败')
     return Result.ok()
+  })
+}
+
+export type NewFavFolderPayload = {
+  title: string
+  intro?: string
+  privacy?: boolean
+  cover?: string
+}
+
+export function createNewFavFolder(payload: NewFavFolderPayload) {
+  return Result.gen(async function* () {
+    yield* validateLoginedMid()
+
+    const form = new URLSearchParams({
+      title: payload.title,
+      intro: payload.intro || '',
+      privacy: (payload.privacy ?? true) ? '1' : '0', // 默认私有收藏夹
+      cover: payload.cover || '',
+      csrf: getCsrfToken(),
+    })
+    const resp = yield* await request.safePost<NewFavFolderResponseJson>('/x/v3/fav/folder/add', form, {
+      params: {
+        // !TODO: custom locale ?
+        'x-bili-locale-json': JSON.stringify({
+          c_locale: { language: 'zh', script: 'Hans' },
+          always_translate: false,
+        }),
+        'x-bili-device-req-json': JSON.stringify({
+          platform: 'web',
+          device: 'pc',
+          spmid: '0.0',
+          mobi_app: 'web_cn',
+        }),
+      },
+    })
+    const json = yield* WebApiError.validateAxiosResponse(resp)
+    return Result.ok(json.data)
   })
 }

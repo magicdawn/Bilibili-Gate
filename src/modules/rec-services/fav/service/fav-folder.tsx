@@ -1,18 +1,16 @@
-import { useMemoizedFn, useRequest } from 'ahooks'
-import { Button, Input, Popover } from 'antd'
+import { Button, Popover } from 'antd'
 import { assert, shuffle } from 'es-toolkit'
 import ms from 'ms'
 import { useState } from 'react'
 import { snapshot, useSnapshot } from 'valtio'
 import { REQUEST_FAIL_MSG } from '$common'
+import { RenameFavFolderPopover } from '$components/ModalFavManager/fav-folder-popovers'
 import { useLinkTarget } from '$components/VideoCard/use/useOpenRelated'
 import { EApiType } from '$enums'
-import { antMessage } from '$modules/antd'
 import { IconForEdit, IconForOpenExternalLink, IconForPlayer } from '$modules/icon'
 import { isWebApiSuccess, request } from '$request'
 import { getIdbCache, wrapWithIdbCache } from '$utility/idb'
 import toast from '$utility/toast'
-import { renameFavFolder } from '../api'
 import { FavItemsOrder, handleItemsOrder } from '../fav-enum'
 import { formatFavFolderUrl, formatFavPlaylistUrl } from '../fav-url'
 import { isFavFolderPrivate } from '../fav-util'
@@ -26,59 +24,6 @@ import type { IFavInnerService } from '../index'
 import type { FavItemExtend } from '../types'
 import type { FavFolder } from '../types/folders/list-all-folders'
 import type { FavFolderDetailInfo, ResourceListJson } from '../types/folders/list-folder-items'
-
-export function FavFolderRenamePopover({
-  folderId,
-  currentFolderTitle,
-  onClosePopover,
-}: {
-  folderId: number
-  currentFolderTitle: string
-  onClosePopover: () => void
-}) {
-  const $req = useRequest((newTitle: string) => renameFavFolder(folderId, newTitle), { manual: true })
-
-  const [folderTitle, setFolderTitle] = useState<string>(currentFolderTitle)
-  const handleSubmit = useMemoizedFn(async () => {
-    const newTitle = folderTitle.trim()
-    if (!newTitle) return antMessage.error('收藏夹名称不能为空!')
-    if (newTitle === currentFolderTitle) return antMessage.warning('无变更!')
-
-    const result = await $req.runAsync(newTitle)
-    if (result.isErr()) {
-      const msg = typeof result.error === 'string' ? result.error : result.error.message
-      return antMessage.error(msg)
-    }
-
-    onClosePopover()
-    // refresh UI state
-    const folder = favStore.folders.find((f) => f.id === folderId)
-    if (folder) folder.title = folderTitle
-  })
-
-  return (
-    <div className='flex flex-col gap-y-2'>
-      <div>重命名收藏夹</div>
-      <Input
-        placeholder='收藏夹名称'
-        value={folderTitle}
-        onChange={(e) => setFolderTitle(e.target.value)}
-        onPressEnter={handleSubmit}
-      />
-      <div className='flex justify-end gap-x-2'>
-        <Button onClick={onClosePopover}>取消</Button>
-        <Button
-          type='primary'
-          loading={$req.loading}
-          onClick={handleSubmit}
-          disabled={!folderTitle || folderTitle === currentFolderTitle}
-        >
-          确定
-        </Button>
-      </div>
-    </div>
-  )
-}
 
 export function FavFolderSeparator({ service }: { service: FavFolderBasicService }) {
   const [renamePopoverOpen, setRenamePopoverOpen] = useState(false)
@@ -112,7 +57,7 @@ export function FavFolderSeparator({ service }: { service: FavFolderBasicService
             onOpenChange={setRenamePopoverOpen}
             trigger='click'
             content={
-              <FavFolderRenamePopover
+              <RenameFavFolderPopover
                 folderId={folderId}
                 currentFolderTitle={folderTitle}
                 onClosePopover={() => setRenamePopoverOpen(false)}

@@ -1,11 +1,11 @@
 /* eslint-disable require-await */
 import { useHotkey } from '@tanstack/react-hotkeys'
-import { useMemoizedFn, useRequest, useUpdateEffect } from 'ahooks'
+import { useClickAway, useMemoizedFn, useRequest, useUnmount, useUpdateEffect } from 'ahooks'
 import { Button, Checkbox, Dropdown, Empty, Input, Popover, Slider, Spin } from 'antd'
 import clsx from 'clsx'
 import { assert, isEqual, uniqBy } from 'es-toolkit'
 import PinyinMatch from 'pinyin-match'
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ComponentRef, type ReactNode } from 'react'
 import { match } from 'ts-pattern'
 import { useSnapshot } from 'valtio'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
@@ -24,14 +24,15 @@ import {
   IconForFav,
   IconForFaved,
   IconForOpenExternalLink,
+  IconForPlus,
   IconForReset,
 } from '$modules/icon'
-import { FavFolderRenamePopover } from '$modules/rec-services/fav/service/fav-folder'
 import { favStore, updateFavFolderList } from '$modules/rec-services/fav/store'
 import { useSettingsSnapshot } from '$modules/settings'
 import { getUid } from '$utility/cookie'
 import { proxyWithLocalStorage } from '$utility/valtio'
 import { FavFolderOrderSwitcher, isValidFavFolderOrder, sortFavFolders, type FavFolderOrder } from './fav-folder-order'
+import { NewFavFolderPopover, RenameFavFolderPopover } from './fav-folder-popovers'
 import type { Promisable } from 'type-fest'
 import type { FavFolder } from '$modules/rec-services/fav/types/folders/list-all-folders'
 
@@ -224,7 +225,7 @@ export function ModalFavManager({
   }, [modifyInitialSelectedIdsSet])
   /* #endregion */
 
-  const srcFavFolderBgClassName = useSrcFavFolderBgClassName()
+  const [newFavFolderPopoverOpen, setNewFavFolderPopoverOpen] = useState(false)
 
   const okButtonDisabled = useMemo(() => {
     // do not allow empty, but empty
@@ -376,9 +377,37 @@ export function ModalFavManager({
 
       <div className='mt-2 flex items-center justify-between'>
         <div className='flex-v-center gap-x-10px'>
+          <Popover
+            trigger='click'
+            open={newFavFolderPopoverOpen}
+            onOpenChange={setNewFavFolderPopoverOpen}
+            content={
+              <NewFavFolderPopover
+                onClosePopover={() => setNewFavFolderPopoverOpen(false)}
+                onCreateNewSuccess={async (newFolderId, newFolderTitle) => {
+                  antMessage.success(`已创建收藏夹: ${newFolderTitle}`)
+                  await $updateFoldersReq.runAsync(true) // refresh folders
+                  // select newly created folder
+                  if (usingSingleSelect) {
+                    setSelectedFolderIdsSet(new Set([newFolderId]))
+                  } else {
+                    setSelectedFolderIdsSet((set) => {
+                      set.add(newFolderId)
+                      return new Set(set)
+                    })
+                  }
+                }}
+              />
+            }
+          >
+            <Button size='small' className='gap-x-1'>
+              <IconForPlus className='size-1em' />
+              添加收藏夹
+            </Button>
+          </Popover>
           <a href={`https://space.bilibili.com/${getUid()}/favlist`} target='_blank' className='flex-v-center gap-x-1'>
             <IconForOpenExternalLink className='size-1.1em' />
-            去个人空间新建收藏夹
+            去个人空间管理收藏夹
           </a>
         </div>
 
@@ -414,9 +443,13 @@ function FavFolderItem({
   onClick?: () => void
   isSourceFolder?: boolean
 }) {
-  const srcFavFolderBgClassName = useSrcFavFolderBgClassName()
-
   const [renamePopoverOpen, setRenamePopoverOpen] = useState(false)
+
+  // handle popover close
+  const renamePopoverRef = useRef<ComponentRef<'div'>>(null)
+  useClickAway(() => setRenamePopoverOpen(false), renamePopoverRef)
+  useUnmount(() => setRenamePopoverOpen(false))
+
   const wrapWithRenamePopover = (c: ReactNode) => {
     return (
       <Popover
@@ -424,7 +457,8 @@ function FavFolderItem({
         onOpenChange={setRenamePopoverOpen}
         trigger={[]}
         content={
-          <FavFolderRenamePopover
+          <RenameFavFolderPopover
+            ref={renamePopoverRef}
             folderId={f.id}
             currentFolderTitle={f.title}
             onClosePopover={() => setRenamePopoverOpen(false)}
@@ -462,6 +496,7 @@ function FavFolderItem({
     )
   }
 
+  const srcFavFolderBgClassName = useSrcFavFolderBgClassName()
   const btn = (
     <button
       data-id={f.id}
