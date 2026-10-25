@@ -402,7 +402,7 @@ export function ModalFavManager({
           >
             <Button size='small' className='gap-x-1'>
               <IconForPlus className='size-1em' />
-              添加收藏夹
+              新建收藏夹
             </Button>
           </Popover>
           <a href={`https://space.bilibili.com/${getUid()}/favlist`} target='_blank' className='flex-v-center gap-x-1'>
