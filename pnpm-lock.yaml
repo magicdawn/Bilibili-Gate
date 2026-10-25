@@ -268,9 +268,6 @@ importers:
       ring-buffer-ts:
         specifier: ^1.2.0
         version: 1.2.0
-      sass-embedded:
-        specifier: ^1.106.1
-        version: 1.106.1
       spark-md5:
         specifier: ^3.0.2
         version: 3.0.2
@@ -294,11 +291,11 @@ importers:
         version: 0.3.0(valtio@2.3.2(@types/react@19.3.0)(react@19.3.1))
     devDependencies:
       '@babel/core':
-        specifier: ^8.0.7
-        version: 8.0.7
+        specifier: ^8.0.9
+        version: 8.0.9
       '@babel/plugin-syntax-explicit-resource-management':
         specifier: ^7.29.7
-        version: 7.29.7(@babel/core@8.0.7)
+        version: 7.29.7(@babel/core@8.0.9)
       '@commitlint/cli':
         specifier: ^21.2.4
         version: 21.2.4(@typescript/typescript6@6.0.2)
@@ -322,7 +319,7 @@ importers:
         version: 1.6.18(@typescript-eslint/eslint-plugin@8.70.0(@typescript-eslint/parser@8.70.0(@typescript/typescript6@6.0.2)(eslint@10.13.0(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1))(@typescript/typescript6@6.0.2)(eslint@10.13.0(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1))(@typescript-eslint/parser@8.70.0(@typescript/typescript6@6.0.2)(eslint@10.13.0(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1))(@typescript-eslint/typescript-estree@8.71.2(@typescript/typescript6@6.0.2)(supports-color@8.1.1))(@typescript-eslint/utils@8.71.2(@typescript/typescript6@6.0.2)(eslint@10.13.0(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1))(@typescript/typescript6@6.0.2)(@unocss/eslint-plugin@66.11.0(@typescript/typescript6@6.0.2)(eslint@10.13.0(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1))(eslint@10.13.0(jiti@2.7.0)(supports-color@8.1.1))(prettier@3.9.10)(supports-color@8.1.1)
       '@rolldown/plugin-babel':
         specifier: ^0.2.4
-        version: 0.2.4(@babel/core@8.0.7)(@babel/runtime@8.0.0)(rolldown@1.2.15)(vite@8.3.5(@types/node@26.6.5)(esbuild@0.27.7)(jiti@2.7.0)(sass-embedded@1.106.1)(sass@1.106.1)(yaml@2.9.1))
+        version: 0.2.4(@babel/core@8.0.9)(@babel/runtime@8.0.0)(rolldown@1.2.15)(vite@8.3.5(@types/node@26.6.5)(esbuild@0.27.7)(jiti@2.7.0)(sass-embedded@1.106.1)(sass@1.106.1)(yaml@2.9.1))
       '@rolldown/plugin-emotion':
         specifier: ^0.2.0
         version: 0.2.0(rolldown@1.2.15)(vite@8.3.5(@types/node@26.6.5)(esbuild@0.27.7)(jiti@2.7.0)(sass-embedded@1.106.1)(sass@1.106.1)(yaml@2.9.1))
@@ -362,9 +359,6 @@ importers:
       '@types/ua-parser-js':
         specifier: ^0.7.39
         version: 0.7.39
-      '@typescript/native':
-        specifier: npm:typescript@^7.0.2
-        version: typescript@7.0.2
       '@unocss/eslint-plugin':
         specifier: ^66.11.0
         version: 66.11.0(@typescript/typescript6@6.0.2)(eslint@10.13.0(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1)
@@ -379,7 +373,7 @@ importers:
         version: 0.3.4
       '@vitejs/plugin-react':
         specifier: ^6.1.2
-        version: 6.1.2(@rolldown/plugin-babel@0.2.4(@babel/core@8.0.7)(@babel/runtime@8.0.0)(rolldown@1.2.15)(vite@8.3.5(@types/node@26.6.5)(esbuild@0.27.7)(jiti@2.7.0)(sass-embedded@1.106.1)(sass@1.106.1)(yaml@2.9.1)))(vite@8.3.5(@types/node@26.6.5)(esbuild@0.27.7)(jiti@2.7.0)(sass-embedded@1.106.1)(sass@1.106.1)(yaml@2.9.1))
+        version: 6.1.2(@rolldown/plugin-babel@0.2.4(@babel/core@8.0.9)(@babel/runtime@8.0.0)(rolldown@1.2.15)(vite@8.3.5(@types/node@26.6.5)(esbuild@0.27.7)(jiti@2.7.0)(sass-embedded@1.106.1)(sass@1.106.1)(yaml@2.9.1)))(vite@8.3.5(@types/node@26.6.5)(esbuild@0.27.7)(jiti@2.7.0)(sass-embedded@1.106.1)(sass@1.106.1)(yaml@2.9.1))
       '@vitest/ui':
         specifier: ^5.0.5
         version: 5.0.5(vitest@5.0.5)
@@ -413,6 +407,9 @@ importers:
       sass:
         specifier: ^1.106.1
         version: 1.106.1
+      sass-embedded:
+        specifier: ^1.106.1
+        version: 1.106.1
       turbo:
         specifier: ^2.11.10
         version: 2.11.10
@@ -425,6 +422,9 @@ importers:
       typescript:
         specifier: npm:@typescript/typescript6@^6.0.2
         version: '@typescript/typescript6@6.0.2'
+      typescript-native:
+        specifier: npm:typescript@^7.0.2
+        version: typescript@7.0.2
       unocss:
         specifier: ^66.11.0
         version: 66.11.0(@oxc-project/types@0.153.0)(cac@7.1.0)(rolldown@1.2.15)(rollup@4.60.3)(srvx@1.0.5)(vite@8.3.5(@types/node@26.6.5)(esbuild@0.27.7)(jiti@2.7.0)(sass-embedded@1.106.1)(sass@1.106.1)(yaml@2.9.1))
@@ -516,8 +516,8 @@ packages:
     resolution: {integrity: sha512-RgHBCvtjbOK2gXSNBNIkNoEc9qoVEtau3hj8gEqKQuL3HZAibKarWFEI3Lfm6EYKkLalOh8eSrj9b+ch9H/VBA==}
     engines: {node: '>=6.9.0'}
 
-  '@babel/core@8.0.7':
-    resolution: {integrity: sha512-ZIsZWBG6Y1oa+8fkQVp0xeCdjCHBkXFCCIWrmg9SvejVvfcVQgKKRmGrBDWfM7rilhvnRoEuaqa5dkK7KB3pHA==}
+  '@babel/core@8.0.9':
+    resolution: {integrity: sha512-wXtyKlpR/pXf/u0vmib+OBakQaIzLglLcRoKpWxCHW/whqq7YfQYPD0IAAl9H/evi40MyLIjYYdvb6N+9DI2yA==}
     engines: {node: ^22.18.0 || >=24.11.0}
 
   '@babel/generator@7.29.7':
@@ -562,8 +562,8 @@ packages:
     resolution: {integrity: sha512-Pb5ijPrZ89GDH8223L4UP8i6QApWxs04RbPQJTeWDV0/keR2E36MeKnyr6LYmUUvqRRI+Iv87SuF1W6ErINzYw==}
     engines: {node: '>=6.9.0'}
 
-  '@babel/helper-string-parser@8.0.6':
-    resolution: {integrity: sha512-+6HYEBnsDRZHJtUTAEfMQd0zMDqdFHS7C+5vAsEZqBUr3vEMWOWlHJ0Jz1gS8jJIlCvLsuA6ivmeoqzH936YcA==}
+  '@babel/helper-string-parser@8.0.8':
+    resolution: {integrity: sha512-fVM+gSuKbdv9cpmyRNh5EvsDHUZCdxQH3FdnFKSkNYHpbsn95bbrxm+ES3MVeQjcqwi2O5ur/DjLfmTQaO60ng==}
     engines: {node: ^22.18.0 || >=24.11.0}
 
   '@babel/helper-validator-identifier@7.29.7':
@@ -586,8 +586,8 @@ packages:
     resolution: {integrity: sha512-1k2lAGRMfHTcwuNYcCNUmaUffmQv8KWMfh2iJUUeRlwlwH4FdNG7mfPI10NPfLHJFThE4Tyr4mv7kTNZOiPuBg==}
     engines: {node: '>=6.9.0'}
 
-  '@babel/helpers@8.0.7':
-    resolution: {integrity: sha512-5dMj5kFwS2AY7Dt4PZp4px3c5ThMbbEa7tZfuHTncCGSFYq8uoA1ufDE1IS/lYpQedE+3+GQ3cPZUiplIu195w==}
+  '@babel/helpers@8.0.8':
+    resolution: {integrity: sha512-FBmhiDWs625wHg03OKiLQDeT6LOc2lWBbW97Yqs2iI1tZcucjpmYnO29NHsQ83XxKvredcvUymW/AAn2UtnakA==}
     engines: {node: ^22.18.0 || >=24.11.0}
 
   '@babel/parser@7.29.7':
@@ -595,8 +595,8 @@ packages:
     engines: {node: '>=6.0.0'}
     hasBin: true
 
-  '@babel/parser@8.0.7':
-    resolution: {integrity: sha512-UkDwEbPO1px2JQSrdh4qIgaH1JgG7GO/pFeJkpxhDxIETkT/QvGpnigXIw75ViHYPtIgKITmVUJqLjiO+JuWjA==}
+  '@babel/parser@8.0.8':
+    resolution: {integrity: sha512-Gq65JogAr0S2p0BzvfSJboyuiRnxDQApyOqHkKmkrvm+VlLK4gC3pKsiOKEdnhFBemrFbSnOu90mZZWDpiJnmQ==}
     engines: {node: ^22.18.0 || >=24.11.0}
     hasBin: true
 
@@ -633,8 +633,8 @@ packages:
     resolution: {integrity: sha512-4zBIxpPzowiZpusoFkyGVwakdRJUyuH5PxQ/PrqghfdFWWasvnCdPfQXHrenDai+gyLARulZjZowCOj6fjT4pA==}
     engines: {node: '>=6.9.0'}
 
-  '@babel/types@8.0.6':
-    resolution: {integrity: sha512-c+xgSWboV2pdwXP67BUWDVRHi2BO5Q3KwxyFVs7taVTY+fsK47/L51ZXQoV9rozHJDNHvJ4v4WEsI/IlxV2l2A==}
+  '@babel/types@8.0.8':
+    resolution: {integrity: sha512-iXSSZAKQWmaeAwGtFw10v9fg5hUiUs0L+w+Z2K11kym3pDNK+SF0VcAQPsEFvWcTSZ7LMgClMXDBvTbH0IlICg==}
     engines: {node: ^22.18.0 || >=24.11.0}
 
   '@bufbuild/protobuf@2.10.2':
@@ -6043,16 +6043,16 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@babel/core@8.0.7':
+  '@babel/core@8.0.9':
     dependencies:
       '@babel/code-frame': 8.0.6
       '@babel/generator': 8.0.6
       '@babel/helper-compilation-targets': 8.0.7
-      '@babel/helpers': 8.0.7
-      '@babel/parser': 8.0.7
+      '@babel/helpers': 8.0.8
+      '@babel/parser': 8.0.8
       '@babel/template': 8.0.0
       '@babel/traverse': 8.0.7
-      '@babel/types': 8.0.6
+      '@babel/types': 8.0.8
       '@types/gensync': 1.0.5
       convert-source-map: 2.0.0
       empathic: 2.0.1
@@ -6072,8 +6072,8 @@ snapshots:
 
   '@babel/generator@8.0.6':
     dependencies:
-      '@babel/parser': 8.0.7
-      '@babel/types': 8.0.6
+      '@babel/parser': 8.0.8
+      '@babel/types': 8.0.8
       '@jridgewell/gen-mapping': 0.4.0-beta.0
       '@jridgewell/trace-mapping': 0.3.31
       '@types/jsesc': 2.5.1
@@ -6119,7 +6119,7 @@ snapshots:
 
   '@babel/helper-string-parser@7.29.7': {}
 
-  '@babel/helper-string-parser@8.0.6': {}
+  '@babel/helper-string-parser@8.0.8': {}
 
   '@babel/helper-validator-identifier@7.29.7': {}
 
@@ -6134,22 +6134,22 @@ snapshots:
       '@babel/template': 7.29.7
       '@babel/types': 7.29.7
 
-  '@babel/helpers@8.0.7':
+  '@babel/helpers@8.0.8':
     dependencies:
       '@babel/template': 8.0.0
-      '@babel/types': 8.0.6
+      '@babel/types': 8.0.8
 
   '@babel/parser@7.29.7':
     dependencies:
       '@babel/types': 7.29.7
 
-  '@babel/parser@8.0.7':
+  '@babel/parser@8.0.8':
     dependencies:
-      '@babel/types': 8.0.6
+      '@babel/types': 8.0.8
 
-  '@babel/plugin-syntax-explicit-resource-management@7.29.7(@babel/core@8.0.7)':
+  '@babel/plugin-syntax-explicit-resource-management@7.29.7(@babel/core@8.0.9)':
     dependencies:
-      '@babel/core': 8.0.7
+      '@babel/core': 8.0.9
       '@babel/helper-plugin-utils': 7.29.7
 
   '@babel/runtime@7.29.2': {}
@@ -6165,8 +6165,8 @@ snapshots:
   '@babel/template@8.0.0':
     dependencies:
       '@babel/code-frame': 8.0.6
-      '@babel/parser': 8.0.7
-      '@babel/types': 8.0.6
+      '@babel/parser': 8.0.8
+      '@babel/types': 8.0.8
 
   '@babel/traverse@7.29.7(supports-color@8.1.1)':
     dependencies:
@@ -6185,9 +6185,9 @@ snapshots:
       '@babel/code-frame': 8.0.6
       '@babel/generator': 8.0.6
       '@babel/helper-globals': 8.0.6
-      '@babel/parser': 8.0.7
+      '@babel/parser': 8.0.8
       '@babel/template': 8.0.0
-      '@babel/types': 8.0.6
+      '@babel/types': 8.0.8
       obug: 3.0.0
 
   '@babel/types@7.29.7':
@@ -6195,9 +6195,9 @@ snapshots:
       '@babel/helper-string-parser': 7.29.7
       '@babel/helper-validator-identifier': 7.29.7
 
-  '@babel/types@8.0.6':
+  '@babel/types@8.0.8':
     dependencies:
-      '@babel/helper-string-parser': 8.0.6
+      '@babel/helper-string-parser': 8.0.8
       '@babel/helper-validator-identifier': 8.0.6
 
   '@bufbuild/protobuf@2.10.2': {}
@@ -7541,9 +7541,9 @@ snapshots:
   '@rolldown/binding-win32-x64-msvc@1.2.15':
     optional: true
 
-  '@rolldown/plugin-babel@0.2.4(@babel/core@8.0.7)(@babel/runtime@8.0.0)(rolldown@1.2.15)(vite@8.3.5(@types/node@26.6.5)(esbuild@0.27.7)(jiti@2.7.0)(sass-embedded@1.106.1)(sass@1.106.1)(yaml@2.9.1))':
+  '@rolldown/plugin-babel@0.2.4(@babel/core@8.0.9)(@babel/runtime@8.0.0)(rolldown@1.2.15)(vite@8.3.5(@types/node@26.6.5)(esbuild@0.27.7)(jiti@2.7.0)(sass-embedded@1.106.1)(sass@1.106.1)(yaml@2.9.1))':
     dependencies:
-      '@babel/core': 8.0.7
+      '@babel/core': 8.0.9
       picomatch: 4.0.7
       rolldown: 1.2.15
     optionalDependencies:
@@ -8327,12 +8327,12 @@ snapshots:
       - ocache
       - srvx
 
-  '@vitejs/plugin-react@6.1.2(@rolldown/plugin-babel@0.2.4(@babel/core@8.0.7)(@babel/runtime@8.0.0)(rolldown@1.2.15)(vite@8.3.5(@types/node@26.6.5)(esbuild@0.27.7)(jiti@2.7.0)(sass-embedded@1.106.1)(sass@1.106.1)(yaml@2.9.1)))(vite@8.3.5(@types/node@26.6.5)(esbuild@0.27.7)(jiti@2.7.0)(sass-embedded@1.106.1)(sass@1.106.1)(yaml@2.9.1))':
+  '@vitejs/plugin-react@6.1.2(@rolldown/plugin-babel@0.2.4(@babel/core@8.0.9)(@babel/runtime@8.0.0)(rolldown@1.2.15)(vite@8.3.5(@types/node@26.6.5)(esbuild@0.27.7)(jiti@2.7.0)(sass-embedded@1.106.1)(sass@1.106.1)(yaml@2.9.1)))(vite@8.3.5(@types/node@26.6.5)(esbuild@0.27.7)(jiti@2.7.0)(sass-embedded@1.106.1)(sass@1.106.1)(yaml@2.9.1))':
     dependencies:
       '@rolldown/pluginutils': 1.0.1
       vite: 8.3.5(@types/node@26.6.5)(esbuild@0.27.7)(jiti@2.7.0)(sass-embedded@1.106.1)(sass@1.106.1)(yaml@2.9.1)
     optionalDependencies:
-      '@rolldown/plugin-babel': 0.2.4(@babel/core@8.0.7)(@babel/runtime@8.0.0)(rolldown@1.2.15)(vite@8.3.5(@types/node@26.6.5)(esbuild@0.27.7)(jiti@2.7.0)(sass-embedded@1.106.1)(sass@1.106.1)(yaml@2.9.1))
+      '@rolldown/plugin-babel': 0.2.4(@babel/core@8.0.9)(@babel/runtime@8.0.0)(rolldown@1.2.15)(vite@8.3.5(@types/node@26.6.5)(esbuild@0.27.7)(jiti@2.7.0)(sass-embedded@1.106.1)(sass@1.106.1)(yaml@2.9.1))
 
   '@vitest/mocker@5.0.5(vite@8.3.5(@types/node@26.6.5)(esbuild@0.27.7)(jiti@2.7.0)(sass-embedded@1.106.1)(sass@1.106.1)(yaml@2.9.1))':
     dependencies:

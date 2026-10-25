@@ -10,7 +10,8 @@
   "js/ts.preferences.organizeImports": {
     "typeOrder": "last"
   },
-  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "js/ts.experimental.useTsgo": true,
+  "js/ts.tsdk.path": "node_modules/typescript-native/lib",
   "js/ts.tsserver.experimental.enableProjectDiagnostics": true,
   "[javascript][javascriptreact][typescript][typescriptreact][json][jsonc][yaml][markdown][css][less][scss]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
