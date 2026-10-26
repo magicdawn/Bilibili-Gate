@@ -48,7 +48,7 @@ export function AppRoot({
   // antd 默认 bgColorBase: #000, popover bg 为 colorBgElavated, 与 body-bg #17181a 近似, 导致看不清
   //  - 将 #17181a 作为 colorBgBase 会导致所有 bg 偏亮 `AppColors.darkBg`
   //  - 故使用 #000 的手动偏移值 `#0b0b0b`
-  const colorBgBaseAsHex: string | undefined = useMemo(() => (dark ? '#0c0c0c' : undefined), [dark])
+  const colorBgBaseAsHex: string | undefined = dark ? '#0c0c0c' : undefined
 
   const wrap = compose(
     // emotion cache
