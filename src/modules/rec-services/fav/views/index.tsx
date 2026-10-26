@@ -74,8 +74,7 @@ function useScopeMenus(parentView: 'sidebarView' | 'tabbarView', extraOnMenuItem
           icon,
           label,
           async onClick() {
-            favStore.selectedFavFolderId = f.id
-            favStore.selectedFavCollectionId = undefined
+            favStore.selectFavFolder(f.id)
             extraOnMenuItemClick?.()
             await delay(100)
             onRefresh()
@@ -128,8 +127,7 @@ function useScopeMenus(parentView: 'sidebarView' | 'tabbarView', extraOnMenuItem
                   label,
                   title: `${f.title} (${f.media_count})`,
                   async onClick() {
-                    favStore.selectedFavFolderId = undefined
-                    favStore.selectedFavCollectionId = f.id
+                    favStore.selectFavCollection(f.id)
                     extraOnMenuItemClick?.()
                     await delay(100)
                     onRefresh()

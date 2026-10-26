@@ -21,6 +21,7 @@ import { formatFavCollectionSelfSpaceUrl, formatFavFolderUrl } from '$modules/re
 import { clearFavFolderAllItemsCache } from '$modules/rec-services/fav/service/fav-folder'
 import { FavQueryKey, favStore } from '$modules/rec-services/fav/store'
 import toast from '$utility/toast'
+import { assertNever } from '$utility/type'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
 import { clsContextMenuIcon } from '../context-menus'
 import { getLinkTarget } from './useOpenRelated'
@@ -144,7 +145,7 @@ export function getFavTabFavRelatedMenus({
   cardData,
   tab,
   multiSelecting,
-  multiSelectingAppendix,
+  multiSelectingSuffix,
   onRemoveCurrent,
   recSharedEmitter,
 }: {
@@ -153,67 +154,34 @@ export function getFavTabFavRelatedMenus({
   cardData: IVideoCardData
   tab: ETab
   multiSelecting: boolean | undefined
-  multiSelectingAppendix: string
+  multiSelectingSuffix: string
   onRemoveCurrent: ((item: RecItemType, data: IVideoCardData, silent?: boolean) => void | Promise<void>) | undefined
   recSharedEmitter: RecSharedEmitter
 }) {
   if (!checkIsFav(item)) return []
 
   const { avid } = cardData
-  const folderNames = ctx.folderNames ?? []
-  const folderUrls = ctx.folderUrls ?? []
   const folderIds = ctx.folderIds ?? []
 
   // 收藏夹
   if (item.from === 'fav-folder') {
-    const batchMenus = multiSelecting
-      ? [
-          {
-            key: 'fav:batch-move-fav',
-            label: `移动到其他收藏夹${multiSelectingAppendix}`,
-            icon: <IconForFaved className={clsContextMenuIcon} />,
-            async onClick() {
-              if (!multiSelectStore.multiSelecting) return
-
-              const selectedFavItems = getMultiSelectedItems()
-                .filter((x) => checkIsFav(x) && x.from === 'fav-folder')
-                .toReversed() // gui first item as queue last, keep first in target folder
-              const folderIds = new Set(selectedFavItems.map((i) => i.folder.id))
-              if (!folderIds.size) return toast('至少选择一项视频')
-              if (folderIds.size > 1) return toast('多选移动: 只能批量移动同一源收藏夹下的视频')
-
-              const srcFavFolderId = selectedFavItems[0].folder.id
-              const resources = selectedFavItems.map((x) => `${x.id}:${x.type}`)
-              const uniqIds = selectedFavItems.map((x) => x.uniqId)
-              const titles = selectedFavItems.map((x) => x.title)
-
-              await startModifyFavItemToTargetFolders({
-                srcFolderIds: [item.folder.id],
-                modifyOkAction: async (targetFolders) => {
-                  const targetFolder = targetFolders?.[0]
-                  assert(targetFolder && targetFolder.id, 'targetFolder should not be empty')
-                  const targetFolderId = targetFolder.id
-                  const targetFolderTitle = targetFolder.title
-
-                  const result = await UserFavApi.moveFavs(resources, srcFavFolderId, targetFolderId)
-                  if (result.isErr()) {
-                    antMessage.error(result.error.message)
-                    return false
-                  }
-
-                  clearFavFolderAllItemsCache(item.folder.id)
-                  clearFavFolderAllItemsCache(targetFolderId)
-                  recSharedEmitter.emit('remove-cards', [uniqIds, titles, { silent: true }])
-                  antMessage.success(`已移动 ${uniqIds.length} 个视频到「${targetFolderTitle}」收藏夹`)
-                  return true
-                },
-                modifyAllowEmpty: false,
-                singleSelect: true,
-              })
-            },
-          },
-        ]
-      : []
+    const handleSingleMove = async () => {
+      const srcFolderIds = folderIds
+      await startModifyFavItemToTargetFolders({
+        srcFolderIds,
+        modifyAllowEmpty: false,
+        modifyOkAction: async (targetFolders) => {
+          const { targetFolderIds } = mapModalFavManagerResult(targetFolders)
+          assert(targetFolderIds.length, 'targetFolderIds should not be empty')
+          const success = await handleModifyFavItemToFolders(avid!, srcFolderIds, targetFolders)
+          if (success && !targetFolderIds.includes(item.folder.id)) {
+            // 我的目的地没有你~
+            onRemoveCurrent?.(item, cardData, true)
+          }
+          return success
+        },
+      })
+    }
 
     return defineAntMenus([
       {
@@ -240,23 +208,9 @@ export function getFavTabFavRelatedMenus({
         test: !!avid,
         key: 'modify-fav',
         icon: <IconForFaved className={clsContextMenuIcon} />,
-        label: '移动到其他收藏夹',
-        async onClick() {
-          const srcFolderIds = folderIds
-          await startModifyFavItemToTargetFolders({
-            srcFolderIds,
-            modifyAllowEmpty: false,
-            modifyOkAction: async (targetFolders) => {
-              const { targetFolderIds } = mapModalFavManagerResult(targetFolders)
-              assert(targetFolderIds.length, 'targetFolderIds should not be empty')
-              const success = await handleModifyFavItemToFolders(avid!, srcFolderIds, targetFolders)
-              if (success && !targetFolderIds.includes(item.folder.id)) {
-                // 我的目的地没有你~
-                onRemoveCurrent?.(item, cardData, true)
-              }
-              return success
-            },
-          })
+        label: `移动到其他收藏夹${multiSelectingSuffix}`,
+        onClick: () => {
+          return multiSelectStore.multiSelecting ? handleBatchMove(recSharedEmitter) : handleSingleMove()
         },
       },
       {
@@ -287,7 +241,6 @@ export function getFavTabFavRelatedMenus({
           onRemoveCurrent?.(item, cardData)
         },
       },
-      ...batchMenus,
     ])
   }
 
@@ -310,8 +263,7 @@ export function getFavTabFavRelatedMenus({
     ])
   }
 
-  // unexpected
-  return []
+  assertNever(item)
 }
 
 export function useFavActionButton({
@@ -385,4 +337,44 @@ export function useFavActionButton({
   }, [actionButtonVisible])
 
   return { favStateActionButton }
+}
+
+export { handleBatchMove as handleBatchMoveFavItems }
+async function handleBatchMove(recSharedEmitter: RecSharedEmitter) {
+  assert(multiSelectStore.multiSelecting, '状态异常: 非多选状态')
+  const selectedFavItems = getMultiSelectedItems()
+    .filter((x) => checkIsFav(x) && x.from === 'fav-folder')
+    .toReversed() // gui first item as queue last, keep first in target folder
+  const folderIds = new Set(selectedFavItems.map((i) => i.folder.id))
+  if (!folderIds.size) return toast('至少选择一项视频')
+  if (folderIds.size > 1) return toast('多选移动: 只能批量移动同一源收藏夹下的视频')
+
+  const srcFavFolderId = selectedFavItems[0].folder.id
+  const resources = selectedFavItems.map((x) => `${x.id}:${x.type}`)
+  const uniqIds = selectedFavItems.map((x) => x.uniqId)
+  const titles = selectedFavItems.map((x) => x.title)
+
+  await startModifyFavItemToTargetFolders({
+    srcFolderIds: [srcFavFolderId],
+    modifyOkAction: async (targetFolders) => {
+      const targetFolder = targetFolders?.[0]
+      assert(targetFolder && targetFolder.id, 'targetFolder should not be empty')
+      const targetFolderId = targetFolder.id
+      const targetFolderTitle = targetFolder.title
+
+      const result = await UserFavApi.moveFavs(resources, srcFavFolderId, targetFolderId)
+      if (result.isErr()) {
+        antMessage.error(result.error.message)
+        return false
+      }
+
+      clearFavFolderAllItemsCache(srcFavFolderId)
+      clearFavFolderAllItemsCache(targetFolderId)
+      recSharedEmitter.emit('remove-cards', [uniqIds, titles, { silent: true }])
+      antMessage.success(`已移动 ${uniqIds.length} 个视频到「${targetFolderTitle}」收藏夹`)
+      return true
+    },
+    modifyAllowEmpty: false,
+    singleSelect: true,
+  })
 }

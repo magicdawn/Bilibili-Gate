@@ -5,16 +5,21 @@ import { useState } from 'react'
 import { snapshot, useSnapshot } from 'valtio'
 import { REQUEST_FAIL_MSG } from '$common'
 import { RenameFavFolderPopover } from '$components/ModalFavManager/fav-folder-popovers'
+import { NewFavFolderButton } from '$components/ModalFavManager/fragments'
+import { useOnRefresh, useRecSelfContext } from '$components/Recommends/rec.shared'
+import { handleBatchMoveFavItems } from '$components/VideoCard/use/useFavRelated'
 import { useLinkTarget } from '$components/VideoCard/use/useOpenRelated'
 import { EApiType } from '$enums'
-import { IconForEdit, IconForOpenExternalLink, IconForPlayer } from '$modules/icon'
+import { IconForEdit, IconForMove, IconForOpenExternalLink, IconForPlayer } from '$modules/icon'
+import { MultiSelectButton } from '$modules/multi-select'
+import { useMultiSelecting } from '$modules/multi-select/store'
 import { isWebApiSuccess, request } from '$request'
 import { getIdbCache, wrapWithIdbCache } from '$utility/idb'
 import toast from '$utility/toast'
 import { FavItemsOrder, handleItemsOrder } from '../fav-enum'
 import { formatFavFolderUrl, formatFavPlaylistUrl } from '../fav-url'
 import { isFavFolderPrivate } from '../fav-util'
-import { favStore, updateFavFolderMediaCount, updateFavList } from '../store'
+import { favStore, updateFavFolderList, updateFavFolderMediaCount, updateFavList } from '../store'
 import { IconForPrivateFolder, IconForPublicFolder } from '../views'
 import { FavItemsOrderSwitcher } from '../views/fav-items-order'
 import { FAV_PAGE_SIZE } from './_base'
@@ -26,9 +31,11 @@ import type { FavFolder } from '../types/folders/list-all-folders'
 import type { FavFolderDetailInfo, ResourceListJson } from '../types/folders/list-folder-items'
 
 export function FavFolderSeparator({ service }: { service: FavFolderBasicService }) {
-  const [renamePopoverOpen, setRenamePopoverOpen] = useState(false)
   const { viewingSomeFolder } = useSnapshot(favStore)
+  const multiSelecting = useMultiSelecting()
+  const [renamePopoverOpen, setRenamePopoverOpen] = useState(false)
   const target = useLinkTarget()
+  const { recSharedEmitter } = useRecSelfContext()
 
   const { id: folderId, attr: folderAttr, title: folderTitleFromService } = service.entry
   const folderTitle = useSnapshot(favStore.folders).find((f) => f.id === folderId)?.title ?? folderTitleFromService
@@ -52,23 +59,36 @@ export function FavFolderSeparator({ service }: { service: FavFolderBasicService
         </Button>
 
         {viewingSomeFolder && (
-          <Popover
-            open={renamePopoverOpen}
-            onOpenChange={setRenamePopoverOpen}
-            trigger='click'
-            content={
-              <RenameFavFolderPopover
-                folderId={folderId}
-                currentFolderTitle={folderTitle}
-                onClosePopover={() => setRenamePopoverOpen(false)}
-              />
-            }
-          >
-            <Button className='gap-x-1'>
-              <IconForEdit className={clsIcon} />
-              重命名
-            </Button>
-          </Popover>
+          <>
+            <Popover
+              open={renamePopoverOpen}
+              onOpenChange={setRenamePopoverOpen}
+              trigger='click'
+              content={
+                <RenameFavFolderPopover
+                  folderId={folderId}
+                  currentFolderTitle={folderTitle}
+                  onClosePopover={() => setRenamePopoverOpen(false)}
+                />
+              }
+            >
+              <Button className='gap-x-1'>
+                <IconForEdit className={clsIcon} />
+                重命名
+              </Button>
+            </Popover>
+
+            <MultiSelectButton iconOnly={false} />
+
+            {multiSelecting && (
+              <>
+                <Button className='gap-x-1' onClick={() => handleBatchMoveFavItems(recSharedEmitter)}>
+                  <IconForMove className='size-14px' />
+                  移动
+                </Button>
+              </>
+            )}
+          </>
         )}
       </div>
     </div>
@@ -94,6 +114,8 @@ export async function clearFavFolderAllItemsCache(folderId: number) {
 }
 
 export class FavFolderService implements IFavInnerService {
+  extraTabbarView = <FavFolderExtraTabbarView />
+
   needLoadAll: boolean
   constructor(
     public folderId: number,
@@ -222,10 +244,25 @@ export class FavFolderService implements IFavInnerService {
       updateFavFolderMediaCount(this.folderId, this.innerService.info.media_count)
     }
   }
+}
 
-  get extraTabbarView() {
-    return <FavItemsOrderSwitcher />
-  }
+function FavFolderExtraTabbarView() {
+  const onRefresh = useOnRefresh()
+  return (
+    <>
+      <FavItemsOrderSwitcher />
+      <NewFavFolderButton
+        buttonProps={{ size: 'medium' }}
+        iconClassname='relative top-0.5px'
+        onCreateNewSuccess={async (newFolderId) => {
+          await updateFavFolderList(true)
+          // 切到空收藏夹?
+          // favStore.selectFavFolder(newFolderId)
+          // onRefresh()
+        }}
+      />
+    </>
+  )
 }
 
 export class FavFolderBasicService {

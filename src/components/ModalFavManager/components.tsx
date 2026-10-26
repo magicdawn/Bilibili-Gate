@@ -24,7 +24,6 @@ import {
   IconForFav,
   IconForFaved,
   IconForOpenExternalLink,
-  IconForPlus,
   IconForReset,
 } from '$modules/icon'
 import { favStore, updateFavFolderList } from '$modules/rec-services/fav/store'
@@ -32,7 +31,8 @@ import { useSettingsSnapshot } from '$modules/settings'
 import { getUid } from '$utility/cookie'
 import { proxyWithLocalStorage } from '$utility/valtio'
 import { FavFolderOrderSwitcher, isValidFavFolderOrder, sortFavFolders, type FavFolderOrder } from './fav-folder-order'
-import { NewFavFolderPopover, RenameFavFolderPopover } from './fav-folder-popovers'
+import { RenameFavFolderPopover } from './fav-folder-popovers'
+import { NewFavFolderButton } from './fragments'
 import type { Promisable } from 'type-fest'
 import type { FavFolder } from '$modules/rec-services/fav/types/folders/list-all-folders'
 
@@ -377,34 +377,22 @@ export function ModalFavManager({
 
       <div className='mt-2 flex items-center justify-between'>
         <div className='flex-v-center gap-x-10px'>
-          <Popover
-            trigger='click'
-            open={newFavFolderPopoverOpen}
-            onOpenChange={setNewFavFolderPopoverOpen}
-            content={
-              <NewFavFolderPopover
-                onClosePopover={() => setNewFavFolderPopoverOpen(false)}
-                onCreateNewSuccess={async (newFolderId, newFolderTitle) => {
-                  antMessage.success(`已创建收藏夹: ${newFolderTitle}`)
-                  await $updateFoldersReq.runAsync(true) // refresh folders
-                  // select newly created folder
-                  if (usingSingleSelect) {
-                    setSelectedFolderIdsSet(new Set([newFolderId]))
-                  } else {
-                    setSelectedFolderIdsSet((set) => {
-                      set.add(newFolderId)
-                      return new Set(set)
-                    })
-                  }
-                }}
-              />
-            }
-          >
-            <Button size='small' className='gap-x-1'>
-              <IconForPlus className='size-1em' />
-              新建收藏夹
-            </Button>
-          </Popover>
+          <NewFavFolderButton
+            onCreateNewSuccess={async (newFolderId, newFolderTitle) => {
+              // refresh folders
+              await $updateFoldersReq.runAsync(true)
+              // select newly created folder
+              if (usingSingleSelect) {
+                setSelectedFolderIdsSet(new Set([newFolderId]))
+              } else {
+                setSelectedFolderIdsSet((set) => {
+                  set.add(newFolderId)
+                  return new Set(set)
+                })
+              }
+            }}
+          />
+
           <a href={`https://space.bilibili.com/${getUid()}/favlist`} target='_blank' className='flex-v-center gap-x-1'>
             <IconForOpenExternalLink className='size-1.1em' />
             去个人空间管理收藏夹

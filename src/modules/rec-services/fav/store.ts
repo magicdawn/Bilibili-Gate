@@ -106,6 +106,16 @@ export const favStore = proxy({
     return '全部'
   },
 
+  // select actions
+  selectFavFolder(id: number) {
+    favStore.selectedFavCollectionId = undefined
+    favStore.selectedFavFolderId = id
+  },
+  selectFavCollection(id: number) {
+    favStore.selectedFavFolderId = undefined
+    favStore.selectedFavCollectionId = id
+  },
+
   // 保存的顺序
   savedOrderMap: (await proxyMapWithGmStorage<string, FavItemsOrder>('fav-saved-order')).map,
 

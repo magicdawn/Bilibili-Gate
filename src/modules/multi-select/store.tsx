@@ -28,8 +28,7 @@ export function toggleMultiSelecting(clearSelectionOnExit = true) {
 }
 
 export function useMultiSelecting() {
-  const { multiSelecting } = useSnapshot(multiSelectStore)
-  return multiSelecting
+  return useSnapshot(multiSelectStore).multiSelecting
 }
 
 export function useMultiSelectState(uniqId: string | undefined) {

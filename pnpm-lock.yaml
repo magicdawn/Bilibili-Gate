@@ -191,8 +191,8 @@ importers:
         specifier: ^0.4.0
         version: 0.4.0
       '@tanstack/react-hotkeys':
-        specifier: ^0.16.0
-        version: 0.16.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        specifier: ^0.17.0
+        version: 0.17.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@trim21/gm-fetch':
         specifier: ^0.3.0
         version: 0.3.0
@@ -2524,12 +2524,12 @@ packages:
       eslint-plugin-astro:
         optional: true
 
-  '@tanstack/hotkeys@0.17.0':
-    resolution: {integrity: sha512-HhgfF+Wqz3ofCQaDHXSkItRbLXmigoHsxJsQGbGc3Kgu/gunwcFLqVubfoUmdRK/YN7fuZYN2vEOk3oMGxSWTg==}
+  '@tanstack/hotkeys@0.18.0':
+    resolution: {integrity: sha512-QQjRgnpz0xrTbhKiuia+ACGzO4PsxEsTVH2ls01fM2LJ8uISrWVq/9ILB3bd4eFdWzj9I6K7qZM6swoDDiKcRQ==}
     engines: {node: '>=20'}
 
-  '@tanstack/react-hotkeys@0.16.0':
-    resolution: {integrity: sha512-mP1ZFjBdqllK5xrUU2BGi2ZAryrVmgCAsWSEVJWq1w+qkxRNZ+c5h+J7+99sTwhVa2dLIgnJwE2PzITSopUZnA==}
+  '@tanstack/react-hotkeys@0.17.0':
+    resolution: {integrity: sha512-uuWyA+2cNe4hGPFVbsP36pwguuW7eR1PfAaw+ClygOHxo9I2A3vRGGRB1PfxwH/FEtgsJC+hV3AHvgvEeiz0pg==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=16.8'
@@ -7759,13 +7759,13 @@ snapshots:
       - ts-declaration-location
       - typescript
 
-  '@tanstack/hotkeys@0.17.0':
+  '@tanstack/hotkeys@0.18.0':
     dependencies:
       '@tanstack/store': 0.11.2
 
-  '@tanstack/react-hotkeys@0.16.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+  '@tanstack/react-hotkeys@0.17.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
-      '@tanstack/hotkeys': 0.17.0
+      '@tanstack/hotkeys': 0.18.0
       '@tanstack/react-store': 0.11.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)

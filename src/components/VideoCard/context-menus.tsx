@@ -316,12 +316,12 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
   return useMemo(() => {
     const { watchlaterAdded, hasWatchlaterEntry, handleToggleWatchlater, handleAddWatchlater } = watchlaterContext
     const divider: AntMenuItem = { type: 'divider' }
-    const multiSelectingAppendix = multiSelecting ? ' (多选)' : ''
+    const multiSelectingSuffix = multiSelecting ? ' (多选)' : ''
 
     const copyMenus = defineAntMenus([
       {
         key: 'copy-link',
-        label: `复制视频链接${multiSelectingAppendix}`,
+        label: `复制视频链接${multiSelectingSuffix}`,
         icon: <IconForCopy className={clsContextMenuIcon} />,
         onClick() {
           if (multiSelectStore.multiSelecting) {
@@ -334,7 +334,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
       {
         test: !!bvid,
         key: 'copy-bvid',
-        label: `复制 BVID${multiSelectingAppendix}`,
+        label: `复制 BVID${multiSelectingSuffix}`,
         icon: <IconForCopy className={clsContextMenuIcon} />,
         onClick() {
           if (multiSelectStore.multiSelecting) {
@@ -347,7 +347,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
       {
         test: !!bvid && settings.__internalEnableCopyBvidInfo,
         key: 'copy-bvid-info',
-        label: `复制 BVID 信息${multiSelectingAppendix}`,
+        label: `复制 BVID 信息${multiSelectingSuffix}`,
         icon: <IconForCopy className={clsContextMenuIcon} />,
         onClick() {
           if (multiSelectStore.multiSelecting) {
@@ -514,7 +514,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
       cardData,
       tab,
       multiSelecting,
-      multiSelectingAppendix,
+      multiSelectingSuffix,
       onRemoveCurrent,
       recSharedEmitter,
     })
