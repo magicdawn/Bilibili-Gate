@@ -7,18 +7,13 @@ import { $headerWidth, $usingEvolevdHeader, useBackToTopRight } from '$header'
 import { useIsDarkMode } from '$modules/dark-mode'
 import { useSettingsSnapshot } from '$modules/settings'
 import { modalGlobalStyle } from './_base/BaseModal'
-import { appBgLv1Value, appBgValue } from './css-vars'
+import { appBgLv1Value, appBgLv2Value, appBgValue } from './css-vars'
 import { useColorPrimaryHex } from './ModalSettings/theme.shared'
-
-export function getBgSrcVaribale(dark: boolean, useWhiteBackground: boolean) {
-  return dark ? '--bg1' : useWhiteBackground ? '--bg1' : '--bg2'
-}
 
 /**
  * BaseGlobalStyle: [define-color-primary, bg, text, link]
  * HomePageGlobalStyle: setup for overwrite homepage
  */
-
 export function BaseGlobalStyle() {
   const colorPrimary = useColorPrimaryHex()
   const dark = useIsDarkMode()
@@ -29,26 +24,22 @@ export function BaseGlobalStyle() {
     },
   } = useSettingsSnapshot()
 
-  const config = useMemo(() => {
-    return {
-      bgSrc: getBgSrcVaribale(dark, useWhiteBackground),
-      bgFallback: dark ? '#17181a' : useWhiteBackground ? '#fff' : '#f6f7f8',
-      text: dark ? '#fff' : '#333',
-    }
-  }, [dark, useWhiteBackground])
+  const bgImpl = useMemo(() => AppColors.bg(dark, useWhiteBackground).impl, [dark, useWhiteBackground])
+  const textColorImpl = useMemo(() => AppColors.textColor(dark).impl, [dark])
 
   return (
     <Global
       styles={[
         antLinkColorGlobalStyle,
         modalGlobalStyle,
+        // define `--bibili-gate-*` variable
         _css`
-            :root {
-              ${appPrimaryColorId}: ${colorPrimary};
-              ${appBgId}: var(${config.bgSrc}, ${config.bgFallback});
-              ${appTextColorId}: var(--text1, ${config.text});
-            }
-          `,
+          :root {
+            ${appPrimaryColorId}: ${colorPrimary};
+            ${appBgId}: ${bgImpl};
+            ${appTextColorId}: ${textColorImpl};
+          }
+        `,
       ]}
     />
   )
@@ -147,9 +138,16 @@ export function HomePageGlobalStyle() {
         !dark &&
           !useWhiteBackground &&
           css`
+            .bili-header.bili-header--large,
+            .bili-header.bili-header--large .bili-header__channel {
+              background-color: ${appBgValue};
+            }
             .bili-header .bili-header__channel .channel-entry-more__link,
             .bili-header .bili-header__channel .channel-link {
-              background-color: ${appBgLv1Value};
+              background-color: ${appBgLv1Value} !important;
+              &:hover {
+                background-color: ${appBgLv2Value} !important;
+              }
             }
           `,
 
@@ -201,4 +199,28 @@ export function HomePageGlobalStyle() {
       ]}
     />
   )
+}
+
+type ColorDefinition = {
+  /** the implementation/value of the color */
+  impl: string
+  /** the source css variable */
+  fromVariable: string
+  /** fallback: usually hex representation */
+  fallback: string
+}
+
+export const AppColors = {
+  bg(dark: boolean, useWhiteBackground: boolean): ColorDefinition {
+    const fromVariable = dark ? '--bg1' : useWhiteBackground ? '--bg1' : '--bg2'
+    const fallback = dark ? '#17181a' : useWhiteBackground ? '#fff' : '#f6f7f8'
+    const impl = `var(${fromVariable}, ${fallback})`
+    return { impl, fromVariable, fallback }
+  },
+  textColor(dark: boolean): ColorDefinition {
+    const fromVariable = '--text1'
+    const fallback = dark ? '#fff' : '#333'
+    const impl = `var(${fromVariable}, ${fallback})`
+    return { impl, fromVariable, fallback }
+  },
 }

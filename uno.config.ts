@@ -47,6 +47,7 @@ export default defineConfig({
       gate: {
         primary: {
           DEFAULT: 'var(--bilibili-gate--primary-color)',
+          contrast: 'contrast-color(var(--bilibili-gate--primary-color))',
           lv: {
             1: 'var(--bilibili-gate--primary-color--lv1)',
             2: 'var(--bilibili-gate--primary-color--lv2)',

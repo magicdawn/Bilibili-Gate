@@ -16,6 +16,7 @@ export const appPrimaryColorValue = cssVar(cssVars.appPrimaryColorId)
 export const appBorderColorValue = cssVar(cssVars.appBorderColorId)
 export const appTextColorValue = cssVar(cssVars.appTextColorId)
 
+/** will map to --bg1 or --bg2, depends on `dark mode` and settings useWhiteBg */
 export const appBgValue = cssVar(cssVars.appBgId)
 export const appBgLv1Value = cssVar(cssVars.appBgLv1Id)
 export const appBgLv2Value = cssVar(cssVars.appBgLv2Id)

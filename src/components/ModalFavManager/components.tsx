@@ -7,6 +7,7 @@ import { assert, isEqual, uniqBy } from 'es-toolkit'
 import PinyinMatch from 'pinyin-match'
 import { useEffect, useMemo, useRef, useState, type ComponentRef, type ReactNode } from 'react'
 import { match } from 'ts-pattern'
+import { useUnoMerge } from 'unocss-merge/react'
 import { useSnapshot } from 'valtio'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { HelpInfo } from '$components/_base/HelpInfo'
@@ -488,9 +489,9 @@ function FavFolderItem({
   const btn = (
     <button
       data-id={f.id}
-      className={clsx(
+      className={useUnoMerge(
         { active },
-        'relative min-h-40px flex cursor-pointer items-center b-2px b-gate-border rounded-20px b-solid bg-transparent px-4px line-height-[1.2] hover:bg-gate-bg-lv1',
+        'relative min-h-40px flex cursor-pointer items-center b-2px b-gate-border rounded-20px b-solid bg-transparent px-4px color-gate-text line-height-[1.2] hover:bg-gate-bg-lv1',
         active && 'b-gate-primary color-white bg-gate-primary! hover:bg-gate-primary-lv1!',
       )}
       onClick={onClick}
