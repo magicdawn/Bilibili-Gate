@@ -5,14 +5,12 @@ import { ConfigProvider, theme } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
 import { assert } from 'es-toolkit'
 import { useMemo, type ReactNode } from 'react'
-import { useSnapshot } from 'valtio'
 import { APP_CLS_ROOT } from '$common'
 import { appUsingFont } from '$common/css-vars-export.module.scss'
 import { AntdStaticFunctionsSetup } from '$modules/antd'
 import { useIsDarkMode } from '$modules/dark-mode'
-import { settings } from '$modules/settings'
 import { clsZAntdPopupBase, parseZ } from './fragments'
-import { AppColors, BaseGlobalStyle, HomePageGlobalStyle } from './global-styles'
+import { BaseGlobalStyle, HomePageGlobalStyle } from './global-styles'
 import { useColorPrimaryHex } from './ModalSettings/theme.shared'
 
 function compose(...fns: Array<((c: ReactNode) => ReactNode) | false>) {
@@ -43,10 +41,14 @@ export function AppRoot({
     }
   }, [cssInsertContainer, cssInsertContainerEmotionKey])
 
-  const colorPrimary = useColorPrimaryHex()
   const dark = useIsDarkMode()
-  const { useWhiteBackground } = useSnapshot(settings.style.pureRecommend)
-  const colorBgBaseAsHex = useMemo(() => AppColors.bg(dark, useWhiteBackground).fallback, [dark, useWhiteBackground])
+  const colorPrimary = useColorPrimaryHex()
+
+  // antd Popover 边界不清, dark-mode bg: #17181a
+  // antd 默认 bgColorBase: #000, popover bg 为 colorBgElavated, 与 body-bg #17181a 近似, 导致看不清
+  //  - 将 #17181a 作为 colorBgBase 会导致所有 bg 偏亮 `AppColors.darkBg`
+  //  - 故使用 #000 的手动偏移值 `#0b0b0b`
+  const colorBgBaseAsHex: string | undefined = useMemo(() => (dark ? '#0c0c0c' : undefined), [dark])
 
   const wrap = compose(
     // emotion cache

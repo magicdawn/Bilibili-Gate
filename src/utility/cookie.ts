@@ -1,7 +1,7 @@
-import { memoize } from 'es-toolkit'
+import memoizeOne from 'memoize-one'
 import toast from './toast'
 
-export const parseCookieStr = memoize((documentCookieStr: string): Record<string, string> => {
+export const parseCookieStr = memoizeOne((documentCookieStr: string): Record<string, string> => {
   const cookies: Record<string, string> = {}
   documentCookieStr
     .split(';')

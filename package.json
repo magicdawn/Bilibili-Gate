@@ -48,6 +48,7 @@
     "fast-sort-lens": "^1.0.2",
     "framer-motion": "^12.43.0",
     "localforage": "^1.10.0",
+    "memoize-one": "^6.0.0",
     "ms": "^2.1.3",
     "obug": "^3.0.0",
     "p-memoize": "^9.0.0",

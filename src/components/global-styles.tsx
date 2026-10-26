@@ -24,8 +24,8 @@ export function BaseGlobalStyle() {
     },
   } = useSettingsSnapshot()
 
-  const bgImpl = useMemo(() => AppColors.bg(dark, useWhiteBackground).impl, [dark, useWhiteBackground])
-  const textColorImpl = useMemo(() => AppColors.textColor(dark).impl, [dark])
+  const bgImpl = useMemo(() => AppColors.getBg(dark, useWhiteBackground).impl, [dark, useWhiteBackground])
+  const textColorImpl = useMemo(() => AppColors.getTextColor(dark).impl, [dark])
 
   return (
     <Global
@@ -211,13 +211,18 @@ type ColorDefinition = {
 }
 
 export const AppColors = {
-  bg(dark: boolean, useWhiteBackground: boolean): ColorDefinition {
+  lightBg: '#fff' as const,
+  lightV1Bg: '#f6f7f8' as const,
+  darkBg: '#17181a' as const,
+
+  getBg(dark: boolean, useWhiteBackground: boolean): ColorDefinition {
     const fromVariable = dark ? '--bg1' : useWhiteBackground ? '--bg1' : '--bg2'
-    const fallback = dark ? '#17181a' : useWhiteBackground ? '#fff' : '#f6f7f8'
+    const fallback = dark ? AppColors.darkBg : useWhiteBackground ? AppColors.lightBg : AppColors.lightV1Bg
     const impl = `var(${fromVariable}, ${fallback})`
     return { impl, fromVariable, fallback }
   },
-  textColor(dark: boolean): ColorDefinition {
+
+  getTextColor(dark: boolean): ColorDefinition {
     const fromVariable = '--text1'
     const fallback = dark ? '#fff' : '#333'
     const impl = `var(${fromVariable}, ${fallback})`
