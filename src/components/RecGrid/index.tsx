@@ -25,7 +25,7 @@ import { useInView } from 'react-intersection-observer'
 import { proxy, ref, useSnapshot } from 'valtio'
 import { APP_CLS_GRID, appError, baseDebug } from '$common'
 import { useEmitterOn } from '$common/hooks/useEmitter'
-import { useRecSelfContext, type RefreshFn } from '$components/Recommends/rec.shared'
+import { useRecSelfContext, type RefreshFn, type RefreshType } from '$components/Recommends/rec.shared'
 import { clsGateVideoGridDivider } from '$components/shared.module.scss'
 import { VideoCard, type VideoCardHandle } from '$components/VideoCard'
 import { getActiveCardBorderCss, useCardBorderCss } from '$components/VideoCard/card-border-css'
@@ -42,7 +42,7 @@ import { isSafari } from '$ua'
 import { ErrorDetail } from './error-detail'
 import { useSetupGridState } from './rec-grid-state'
 import { setGlobalGridItems } from './unsafe-window-export'
-import { useRefresh } from './useRefresh'
+import { useRefresh, type PrePostAction } from './useRefresh'
 import { useShortcut } from './useShortcut'
 import * as gridClassNames from './video-grid.module.scss'
 import type { ArgsProps } from 'antd/es/notification'
@@ -168,12 +168,12 @@ export const RecGrid = memo(function RecGrid({
   })
   useMount(updateViewFromService)
 
-  const preAction = useMemoizedFn(() => {
+  const preAction = useMemoizedFn<PrePostAction>((refreshType?: RefreshType) => {
     clearActiveIndex()
     updateViewFromService()
-    onScrollToTop?.()
+    if (refreshType !== 'reuse') onScrollToTop?.()
   })
-  const postAction = useMemoizedFn(() => {
+  const postAction = useMemoizedFn<PrePostAction>(() => {
     clearActiveIndex()
     updateViewFromService()
     self.loadedPage = 1

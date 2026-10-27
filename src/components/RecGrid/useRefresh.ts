@@ -66,6 +66,8 @@ function checkIsSameTabButConditionsChanged(tab: ETab, serviceRegistry: Partial<
 
 export const MAX_REC_SERVICE_HISTORY_COUNT = 5
 
+export type PrePostAction = (refreshType: RefreshType, signal: AbortSignal) => void | Promise<void>
+
 export function useRefresh({
   tab,
   debug,
@@ -78,8 +80,8 @@ export function useRefresh({
   tab: ETab
   debug: Debugger
   fetcher: (opts: FetcherOptions) => Promise<RecItemTypeOrSeparator[]>
-  preAction?: (signal: AbortSignal) => void | Promise<void>
-  postAction?: (signal: AbortSignal) => void | Promise<void>
+  preAction?: PrePostAction
+  postAction?: PrePostAction
   updateViewFromService?: () => void
   self: RecGridSelf
 }) {
@@ -123,7 +125,7 @@ export function useRefresh({
 
     recSelf.setStore({ refreshing: true, refreshingTab: tab })
     self.setStore({ refreshError: undefined, hasMore: true, items: [], refreshKey: Date.now() })
-    await preAction?.(signal)
+    await preAction?.(refreshType, signal)
     if (signal.aborted) return
 
     function _onAny() {
@@ -237,7 +239,7 @@ export function useRefresh({
 
     if (signal.aborted) return
     onSuccess()
-    await postAction?.(signal)
+    await postAction?.(refreshType, signal)
     const cost = performance.now() - start
     debug('refresh(): tab=%s [success] cost %s ms', tab, cost.toFixed(0))
   })
