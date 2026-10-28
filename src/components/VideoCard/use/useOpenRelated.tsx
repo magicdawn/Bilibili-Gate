@@ -8,6 +8,7 @@ import { getVideoPageList } from '$modules/bilibili/video/video-detail'
 import { openNewTab, RUNNING_IN_USERSCRIPTS } from '$modules/gm'
 import { isNormalRankItem } from '$modules/rec-services/hot/rank/rank-tab'
 import { settings, useSettingsSnapshot } from '$modules/settings'
+import toast from '$utility/toast'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
 import {
   EForceAutoPlay,
@@ -83,6 +84,12 @@ export function useOpenRelated({
         }
       }
     })
+
+    // bilibili:// 等 App 专属深链在浏览器里无法打开, 直接导航会把整页变成 "无法理解该网址"
+    if (!/^https?:\/\//i.test(newHref)) {
+      toast('该条目只能在 B 站 App 中打开')
+      return
+    }
 
     const handleCommon = () => {
       const backgroud = mode === Mode.Background || !!(e?.metaKey || e?.ctrlKey)

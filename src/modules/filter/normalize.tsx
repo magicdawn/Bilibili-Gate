@@ -187,7 +187,8 @@ function apiIpadAppAdapter(item: AppRecItemExtend): IVideoCardData {
   }
 
   const avid = item.param
-  const bvid = item.bvid || item.videoDetail?.bvid || av2bv(Number(item.param))
+  const bvidFromApi = item.bvid || item.videoDetail?.bvid
+  const bvid = bvidFromApi || av2bv(Number(item.param))
   const cid = item.videoDetail?.cid || item.player_args?.cid
 
   const href = (() => {
@@ -214,6 +215,14 @@ function apiIpadAppAdapter(item: AppRecItemExtend): IVideoCardData {
       const id = /^bilibili:\/\/article\/(\d+)$/.exec(item.uri)?.[1]
       if (id) return `/read/cv${id}`
       return item.uri
+    }
+
+    // story 等 App 专属深链 (bilibili://story/<id>?cid=xxx), 浏览器无法打开,
+    // 优先用 args.aid 转成网页视频页
+    if (item.uri.startsWith('bilibili://')) {
+      const aid = Number(item.args?.aid)
+      if (Number.isFinite(aid) && aid > 0) return `/video/av${aid}/`
+      if (bvidFromApi) return `/video/${bvidFromApi}/`
     }
 
     return item.uri
