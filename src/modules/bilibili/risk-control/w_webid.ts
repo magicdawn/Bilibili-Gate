@@ -26,7 +26,7 @@ async function fetch_w_webId() {
   if (!mid) return
 
   const spacePageUrl = formatSpaceUrl(mid)
-  const res = await request.get(spacePageUrl, {
+  const res = await request.get<any>(spacePageUrl, {
     responseType: 'text',
     withCredentials: true,
   })

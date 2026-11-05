@@ -19,14 +19,11 @@ export class PopularGeneralRecService implements IService {
   async loadMore() {
     if (!this.hasMore) return
 
-    const res = await request.get('/x/web-interface/popular', {
-      params: {
-        ps: 20,
-        pn: this.page,
-      },
+    const res = await request.get<PopularGeneralJson>('/x/web-interface/popular', {
+      params: { ps: 20, pn: this.page },
       withCredentials: !this.anonymous,
     })
-    const json = res.data as PopularGeneralJson
+    const json = res.data
     if (!isWebApiSuccess(json)) {
       return (toast(json.message || REQUEST_FAIL_MSG), undefined)
     }

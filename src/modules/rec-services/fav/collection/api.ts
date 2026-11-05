@@ -7,7 +7,7 @@ import type { FavCollectionDetailJson } from '../types/collections/collection-de
 import type { FavCollection, ListAllCollectionJson } from '../types/collections/list-all-collections'
 
 async function fetchFavCollections(page: number) {
-  const res = await request.get('/x/v3/fav/folder/collected/list', {
+  const res = await request.get<ListAllCollectionJson>('/x/v3/fav/folder/collected/list', {
     params: {
       up_mid: getUid(),
       platform: 'web',
@@ -15,7 +15,7 @@ async function fetchFavCollections(page: number) {
       pn: page,
     },
   })
-  const json = res.data as ListAllCollectionJson
+  const json = res.data
   return json.data
 }
 export async function fetchAllFavCollections() {
@@ -39,8 +39,10 @@ export async function fetchAllFavCollections() {
 }
 
 export async function fetchCollectionDetail(collectionId: string | number, page: number) {
-  const res = await request.get('/x/space/fav/season/list', { params: { season_id: collectionId, ps: 20, pn: page } })
-  const json = res.data as FavCollectionDetailJson
+  const res = await request.get<FavCollectionDetailJson>('/x/space/fav/season/list', {
+    params: { season_id: collectionId, ps: 20, pn: page },
+  })
+  const json = res.data
   return json.data
 }
 

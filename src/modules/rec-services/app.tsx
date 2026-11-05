@@ -236,7 +236,7 @@ class AppRecInnerService implements IService {
 
   private async getRecommend(abortSignal: AbortSignal) {
     // NOTE: 这个 API 受参数控制, 大变形哦~
-    const res = await gmrequest.get('/x/v2/feed/index', {
+    const res = await gmrequest.get<ipad.AppRecommendJson>('/x/v2/feed/index', {
       signal: abortSignal,
       timeout: 20_000,
       responseType: 'json',
@@ -253,7 +253,7 @@ class AppRecInnerService implements IService {
         idx: Math.floor(Date.now() / 1000) + 100 * idxOffset++,
       },
     })
-    const json = res.data as ipad.AppRecommendJson
+    const json = res.data
 
     // request fail
     if (!json.data) {

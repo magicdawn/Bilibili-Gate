@@ -46,7 +46,7 @@ export const watchlaterDel = watchlaterFactory('del')
  * 可以查询视频: 关注/点赞/投币/收藏 状态
  */
 export async function getRelated(bvid: string) {
-  const res = await request.get('/x/web-interface/archive/relation', {
+  const res = await request.get<any>('/x/web-interface/archive/relation', {
     params: { bvid },
   })
 }

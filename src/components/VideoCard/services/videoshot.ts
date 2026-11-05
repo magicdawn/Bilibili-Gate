@@ -28,11 +28,11 @@ function isVideoshotJsonCacheable(json: PvideoJson) {
 // 视频预览
 async function __fetchVideoshotJson(bvid: string) {
   // 2023-09-08 pvideo 出现 404, 切换为 videoshot
-  // const res = await request.get('/pvideo', { params: { aid } })
-  const res = await request.get('/x/player/videoshot', {
+  // const res = await request.get<PvideoJson>('/pvideo', { params: { aid } })
+  const res = await request.get<PvideoJson>('/x/player/videoshot', {
     params: { bvid, index: '1' },
   })
-  const json = res.data as PvideoJson
+  const json = res.data
 
   if (!isWebApiSuccess(json)) {
     appWarn('videoshot error for %s: %o', bvid, json)

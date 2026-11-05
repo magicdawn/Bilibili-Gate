@@ -6,10 +6,10 @@ import { get_w_webId } from '../risk-control/w_webid'
 import type { SpaceAccInfoJson } from './space-acc-info-types'
 
 async function __fetchSpaceAccInfo(mid: string | number) {
-  const res = await request.get('/x/space/wbi/acc/info', {
+  const res = await request.get<SpaceAccInfoJson>('/x/space/wbi/acc/info', {
     params: { mid, w_webid: (await get_w_webId()) || '' },
   })
-  const json = res.data as SpaceAccInfoJson
+  const json = res.data
   if (!isWebApiSuccess(json)) {
     appWarn('space acc info error for %s: %o', mid, json)
     return

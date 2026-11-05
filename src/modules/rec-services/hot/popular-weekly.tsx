@@ -24,8 +24,8 @@ async function getEpisodeList() {
   const useCache = episodes.length && cacheKey && cacheKey === genCacheKey()
   if (useCache) return episodes
 
-  const res = await request.get('/x/web-interface/popular/series/list')
-  const json = res.data as PopularWeeklyListJson
+  const res = await request.get<PopularWeeklyListJson>('/x/web-interface/popular/series/list')
+  const json = res.data
   const list = json.data.list
 
   episodes = list
@@ -129,10 +129,10 @@ const cache: Record<number, PopularWeeklyItemExtend[]> = {}
 
 async function fetchWeeklyItems(episodeNum: number) {
   if (!cache[episodeNum]?.length) {
-    const res = await request.get('/x/web-interface/popular/series/one', {
+    const res = await request.get<PopularWeeklyJson>('/x/web-interface/popular/series/one', {
       params: { number: episodeNum },
     })
-    const json = res.data as PopularWeeklyJson
+    const json = res.data
     const items = (json.data.list || []).map((item) => {
       return {
         ...item,

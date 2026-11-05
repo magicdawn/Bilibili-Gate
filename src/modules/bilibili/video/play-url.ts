@@ -64,8 +64,8 @@ export async function getVideoPlayUrl(
     throw new Error('Invalid videoId provided, must be avid | bvid')
   }
 
-  const res = await request.get('/x/player/wbi/playurl', { params })
-  const json = res.data as VideoPlayUrlJson
+  const res = await request.get<VideoPlayUrlJson>('/x/player/wbi/playurl', { params })
+  const json = res.data
 
   function reOrderUrls(urls: string[]) {
     return fastOrderBy(urls, [(u) => getUrlPriority(u, usePreferredCdn)], ['desc'])

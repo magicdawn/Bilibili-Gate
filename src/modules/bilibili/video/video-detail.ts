@@ -12,8 +12,8 @@ import type { VideoDetailJson } from './types/video-detail'
  *  - 查询 pubdate, 用于获取 IpadAppRecommendItem, 已关注时的发布时间. (pagelist API 获取的 ctime 不准确)
  */
 async function __fetchVideoDetail(bvid: string) {
-  const res = await request.get('/x/web-interface/view', { params: { bvid } })
-  const json = res.data as VideoDetailJson
+  const res = await request.get<VideoDetailJson>('/x/web-interface/view', { params: { bvid } })
+  const json = res.data
   const data = json.data
   return data
 }
@@ -32,8 +32,8 @@ export const getVideoDetail = wrapWithIdbCache({
  *  - 查询 dimension, 用于 LargePreview, PipWindow 等
  */
 async function __fetchVideoPageList(bvid: string) {
-  const res = await request.get('/x/player/pagelist', { params: { bvid } })
-  const json = res.data as VideoPageListJson
+  const res = await request.get<VideoPageListJson>('/x/player/pagelist', { params: { bvid } })
+  const json = res.data
   return json?.data || []
 }
 export const getVideoPageList = wrapWithIdbCache({

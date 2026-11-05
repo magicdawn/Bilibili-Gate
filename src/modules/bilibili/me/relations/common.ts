@@ -26,7 +26,7 @@ export async function modifyRelations(upMid: string, act: number) {
     csrf,
   })
 
-  const res = await request.post('/x/relation/modify', params)
+  const res = await request.post<any>('/x/relation/modify', params)
   const json = res.data
   const success = isWebApiSuccess(json)
 

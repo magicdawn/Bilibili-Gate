@@ -1,9 +1,9 @@
 import { useUnoMerge } from 'unocss-merge/react'
 
 // z-index
-export function parseZ(className: `z-${string}`) {
+export function parseZ(className: `z-${number}`) {
   if (!/^z-\d+$/.test(className)) return undefined
-  return Number.parseInt(className.slice(2))
+  return parseInt(className.slice(2))
 }
 
 export const clsZRecHeader = 'z-1001' // Evolved custom-header z-index:10001; .bili-header__bar z-index:1002;

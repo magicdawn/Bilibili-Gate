@@ -42,7 +42,7 @@ export class RankRecService implements IService {
     if (!this.loaded) {
       await updateRankTabs()
       const { url, apiType } = getRankTabRequestConfig(this.rankTab)
-      const res = await request.get(url, { signal: abortSignal })
+      const res = await request.get<any>(url, { signal: abortSignal })
       const json = res.data
       this.loaded = true
 

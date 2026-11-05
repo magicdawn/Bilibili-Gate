@@ -8,15 +8,18 @@ import type { ItemsSeparator, LiveItemExtend } from '$define'
 import type { ListFollowingLiveJson } from './types/list-live'
 
 export async function getLiveList(page: number) {
-  const res = await request.get('https://api.live.bilibili.com/xlive/web-ucenter/user/following', {
-    params: {
-      page,
-      page_size: LiveRecService.PAGE_SIZE,
-      ignoreRecord: 1,
-      hit_ab: true,
+  const res = await request.get<ListFollowingLiveJson>(
+    'https://api.live.bilibili.com/xlive/web-ucenter/user/following',
+    {
+      params: {
+        page,
+        page_size: LiveRecService.PAGE_SIZE,
+        ignoreRecord: 1,
+        hit_ab: true,
+      },
     },
-  })
-  const json = res.data as ListFollowingLiveJson
+  )
+  const json = res.data
   return json
 }
 

@@ -11,10 +11,10 @@ import type { DynamicPortalJson, DynamicPortalUp } from './portal-types'
  * 2026-03: `up_list_more` 参数会影响 up_list 结构
  */
 export async function getRecentUpdateUpList() {
-  const res = await request.get('/x/polymer/web-dynamic/v1/portal', {
+  const res = await request.get<DynamicPortalJson>('/x/polymer/web-dynamic/v1/portal', {
     params: { up_list_more: 0 },
   })
-  const json = res.data as DynamicPortalJson
+  const json = res.data
   const rawUpList = (json?.data?.up_list || []) as
     | DynamicPortalUp[]
     | { has_more: boolean; items: DynamicPortalUp[]; offset: string }

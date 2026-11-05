@@ -122,12 +122,12 @@ export class PcRecService extends BaseTabService<PcRecItemExtend> {
       homepage_ver: 1,
     }
 
-    const res = await request.get(url, {
+    const res = await request.get<PcRecommendJson>(url, {
       params,
       signal: abortSignal,
       withCredentials: !this.config.anonymousFetch,
     })
-    const json = res.data as PcRecommendJson
+    const json = res.data
 
     if (
       !isWebApiSuccess(json) /** code: -62011, data: null, message: "暂时没有更多内容了", ttl: 1 */ &&

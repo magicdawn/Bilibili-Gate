@@ -12,7 +12,7 @@ const newSignedForm = (params: Record<string, any>) => {
 }
 
 export async function getQrCodeInfo() {
-  const res = await request.post(
+  const res = await request.post<AuthCodeJson>(
     'https://passport.bilibili.com/x/passport-tv-login/qrcode/auth_code',
     newSignedForm({
       appkey: TVKeyInfo.appkey,
@@ -22,8 +22,7 @@ export async function getQrCodeInfo() {
     // sign: 'e134154ed6add881d28fbdf68653cd9c',
   )
 
-  const json = res.data as AuthCodeJson
-
+  const json = res.data
   if (!isWebApiSuccess(json)) {
     toast(json?.message || '获取 auth_code 失败')
     return
@@ -41,7 +40,7 @@ export type PollResult = {
 }
 
 export async function poll(auth_code: string): Promise<PollResult> {
-  const res = await request.post(
+  const res = await request.post<PollJson>(
     'https://passport.bilibili.com/x/passport-tv-login/qrcode/poll',
     newSignedForm({
       appkey: TVKeyInfo.appkey,
@@ -51,7 +50,7 @@ export async function poll(auth_code: string): Promise<PollResult> {
     }),
   )
 
-  const json = res.data as PollJson
+  const json = res.data
   const msgMap: Record<string, string> = {
     '0': '成功',
     '-3': 'API校验密匙错误',
@@ -90,7 +89,7 @@ export async function poll(auth_code: string): Promise<PollResult> {
 }
 
 export async function qrcodeConfirm(auth_code: string) {
-  const res = await request.post(
+  const res = await request.post<any>(
     'https://passport.bilibili.com/x/passport-tv-login/h5/qrcode/confirm',
     new URLSearchParams({
       auth_code,

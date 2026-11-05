@@ -89,14 +89,14 @@ export async function moveFavs(resources: string | string[], src: string | numbe
  */
 export async function getVideoFavState(avid: number | string) {
   if (!getLoginStatus()) return
-  const res = await request.get('/x/v3/fav/folder/created/list-all', {
+  const res = await request.get<FavFolderListAllJson>('/x/v3/fav/folder/created/list-all', {
     params: {
       up_mid: getUid(),
       type: 2,
       rid: avid,
     },
   })
-  const json = res.data as FavFolderListAllJson
+  const json = res.data
   const favFolders = json.data.list.filter((folder) => folder.fav_state > 0)
 
   const favFolderNames = favFolders.map((f) => f.title)
@@ -128,10 +128,10 @@ export async function addFav(avid: string | number, inputFolderIds?: number | nu
 }
 
 export async function fetchAllFavFolders() {
-  const res = await request.get('/x/v3/fav/folder/created/list-all', {
+  const res = await request.get<FavFolderListAllJson>('/x/v3/fav/folder/created/list-all', {
     params: { up_mid: getUid() },
   })
-  const json = res.data as FavFolderListAllJson
+  const json = res.data
   const folders = json.data.list
   return folders
 }

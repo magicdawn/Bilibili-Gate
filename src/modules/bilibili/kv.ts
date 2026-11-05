@@ -10,8 +10,8 @@ import type { KvResponseData, KvResponseJson } from './kv.api'
 
 async function fetchKvData({ appKey, nscode, versionId }: { appKey: string; nscode: number; versionId: string }) {
   const params = { appKey, nscode, versionId }
-  const res = await request.get('/x/kv-frontend/namespace/data', { params })
-  const json = res.data as KvResponseJson
+  const res = await request.get<KvResponseJson>('/x/kv-frontend/namespace/data', { params })
+  const json = res.data
   return json
 }
 

@@ -17,8 +17,8 @@ export async function getAllFollowGroups({ removeEmpty = true }: { removeEmpty?:
     web_location: '0.0',
     w_webid: (await get_w_webId()) || '',
   })
-  const res = await request.get('/x/relation/tags', { params })
-  const json = res.data as FollowGroupsJson
+  const res = await request.get<FollowGroupsJson>('/x/relation/tags', { params })
+  const json = res.data
   const groups = json.data || []
   if (removeEmpty) {
     return groups.filter((x) => !!x.count)
@@ -30,10 +30,10 @@ export async function getFollowGroupMids(tagid: number | string) {
   const ps = 20
 
   const singleRequest = async (page: number) => {
-    const res = await request.get('/x/relation/tag', {
+    const res = await request.get<FollowGroupContentJson>('/x/relation/tag', {
       params: { mid: getUid(), tagid, pn: page, ps },
     })
-    const json = res.data as FollowGroupContentJson
+    const json = res.data
     return json.data || []
   }
 

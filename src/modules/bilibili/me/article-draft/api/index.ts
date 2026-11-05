@@ -10,20 +10,20 @@ import type { DraftViewJson, Paragraph } from './draft-view.api'
 
 export const ArticleDraft = {
   async search(keyword: string) {
-    const res = await request.get('/x/article/creative/draft/list', {
+    const res = await request.get<DraftListJson>('/x/article/creative/draft/list', {
       params: { keyword, ps: 10, pn: 1 },
     })
-    const json = res.data as DraftListJson
+    const json = res.data
     const drafts = json.artlist?.drafts || []
     return drafts
   },
 
   async view(articleId: number): Promise<object | undefined> {
     const json = (
-      await request.get('/x/article/creative/draft/view', {
+      await request.get<DraftViewJson>('/x/article/creative/draft/view', {
         params: { aid: articleId },
       })
-    ).data as DraftViewJson
+    ).data
 
     const paragraphs = json?.data?.opus?.content?.paragraphs || []
     let p: Paragraph | undefined

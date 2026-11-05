@@ -289,7 +289,7 @@ export class FavFolderBasicService {
       [FavItemsOrder.PubTimeDesc]: 'pubtime',
     }[this.itemsOrder]
 
-    const res = await request.get('/x/v3/fav/resource/list', {
+    const res = await request.get<ResourceListJson>('/x/v3/fav/resource/list', {
       params: {
         media_id: this.entry.id,
         pn: this.page + 1, // start from 1
@@ -302,7 +302,7 @@ export class FavFolderBasicService {
       },
     })
 
-    const json = res.data as ResourceListJson
+    const json = res.data
     if (!isWebApiSuccess(json)) {
       toast(json.message || REQUEST_FAIL_MSG)
       return
