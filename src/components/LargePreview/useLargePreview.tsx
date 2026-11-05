@@ -272,7 +272,7 @@ export function useLargePreviewRelated({
               tooltip={
                 <>
                   关闭
-                  <HotkeyDisplay k='Esc' className='ml-1' />
+                  <HotkeyDisplay k='Escape' className='ml-1' />
                 </>
               }
               onClick={(e) => {

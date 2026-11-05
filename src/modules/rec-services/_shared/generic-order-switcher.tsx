@@ -1,12 +1,15 @@
 import { useMemoizedFn } from 'ahooks'
 import { Button, Dropdown, type DropdownProps } from 'antd'
 import clsx from 'clsx'
+import { toMerged } from 'es-toolkit'
 import { useMemo, useState, type ComponentRef, type MouseEvent, type ReactNode, type RefObject } from 'react'
 import { buttonOpenCss, usePopoverBorderStyle } from '$common/emotion-css'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { clsAntdButton, PrimaryBgContentDivider } from '$components/fragments'
 import { defineAntMenus } from '$modules/antd'
 import { soloShiftKey } from '$modules/hotkey'
+import type { DropdownSemanticType } from 'antd/es/dropdown/dropdown'
+import type { Merge } from 'type-fest'
 
 export type GenericOrderSwitcherProps<T extends string | number> = {
   value: T
@@ -14,7 +17,8 @@ export type GenericOrderSwitcherProps<T extends string | number> = {
   disabled?: boolean
   list: (T | 'divider')[]
   listDisplayConfig: Record<T, { icon?: ReactNode; label?: ReactNode }>
-  dropdownProps?: Partial<DropdownProps>
+  // classNames & styles: limit to object only, functions not supported
+  dropdownProps?: Partial<Merge<DropdownProps, DropdownSemanticType>>
   extraHelpInfo?: ReactNode
   $ref?: RefObject<ComponentRef<'span'> | null>
 }
@@ -56,7 +60,27 @@ export const GenericOrderSwitcher = function <T extends string | number>({
   }, [list, listDisplayConfig, onChange])
 
   const [open, setOpen] = useState(false)
+
   const dropdownBorderStyle = usePopoverBorderStyle()
+  const dropdownMergedStyles: DropdownSemanticType = useMemo(() => {
+    return {
+      classNames: {
+        root: 'text-13px',
+        item: 'justify-start',
+        itemContent: 'flex-shrink-0',
+        ...dropdownProps?.classNames,
+      },
+
+      // nested: 不能简单 assign
+      styles: toMerged(
+        {
+          menu: dropdownBorderStyle,
+        },
+        dropdownProps?.styles ?? {},
+      ),
+    }
+  }, [dropdownProps?.className, dropdownProps?.styles, dropdownBorderStyle])
+
   return (
     <span className='inline-flex items-center' ref={$ref}>
       <Dropdown
@@ -66,15 +90,10 @@ export const GenericOrderSwitcher = function <T extends string | number>({
         menu={{
           items: dropdownMenuItems,
           selectedKeys: [value.toString()],
-          styles: { root: dropdownBorderStyle },
         }}
         placement='bottomRight'
-        classNames={{
-          root: 'text-13px',
-          item: 'justify-start',
-          itemContent: 'flex-shrink-0',
-        }}
         {...dropdownProps}
+        {...dropdownMergedStyles}
       >
         <Button
           className={clsx(clsAntdButton, 'px-3')}

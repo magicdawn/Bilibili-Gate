@@ -1,4 +1,4 @@
-import { formatForDisplay, type RegisterableHotkey } from '@tanstack/react-hotkeys'
+import { formatForDisplay, type DisplayHotkey } from '@tanstack/react-hotkeys'
 import { useMemo, type ComponentProps } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
 
@@ -9,7 +9,7 @@ export function HotkeyDisplay({
   k,
   className,
   ...restProps
-}: Omit<ComponentProps<'kbd'>, 'children'> & { k: RegisterableHotkey | (string & {}) }) {
+}: Omit<ComponentProps<'kbd'>, 'children'> & { k: DisplayHotkey }) {
   const content = useMemo(() => formatForDisplay(k), [k])
   return (
     <kbd {...restProps} className={useUnoMerge(kbdClassName, className)}>
