@@ -70,14 +70,8 @@ export const GenericOrderSwitcher = function <T extends string | number>({
         itemContent: 'flex-shrink-0',
         ...dropdownProps?.classNames,
       },
-
       // nested: 不能简单 assign
-      styles: toMerged(
-        {
-          menu: dropdownBorderStyle,
-        },
-        dropdownProps?.styles ?? {},
-      ),
+      styles: toMerged({ menu: dropdownBorderStyle }, dropdownProps?.styles ?? {}),
     }
   }, [dropdownProps?.className, dropdownProps?.styles, dropdownBorderStyle])
 
@@ -87,17 +81,14 @@ export const GenericOrderSwitcher = function <T extends string | number>({
         open={open}
         onOpenChange={setOpen}
         disabled={disabled}
-        menu={{
-          items: dropdownMenuItems,
-          selectedKeys: [value.toString()],
-        }}
         placement='bottomRight'
+        menu={{ items: dropdownMenuItems, selectedKeys: [value.toString()] }}
         {...dropdownProps}
         {...dropdownMergedStyles}
       >
         <Button
           className={clsx(clsAntdButton, 'px-3')}
-          css={[open && buttonOpenCss]}
+          css={open && buttonOpenCss}
           disabled={disabled}
           onClick={onToggle}
         >
