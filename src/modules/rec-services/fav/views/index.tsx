@@ -67,7 +67,11 @@ function useScopeMenus(parentView: 'sidebarView' | 'tabbarView', extraOnMenuItem
         const isDefault = isFavFolderDefault(f.attr)
         const isPrivate = isFavFolderPrivate(f.attr)
         const key: FavStore['selectedKey'] = `fav-folder:${f.id}`
-        const icon = isPrivate ? <IconForPrivateFolder /> : <IconForPublicFolder />
+        const icon = isPrivate ? (
+          <IconForPrivateFolder title='私密收藏夹' />
+        ) : (
+          <IconForPublicFolder title='公开收藏夹' />
+        )
         const label = `${f.title} (${f.media_count})`
         return {
           key,
