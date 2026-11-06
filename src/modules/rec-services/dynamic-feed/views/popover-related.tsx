@@ -202,8 +202,8 @@ function PopoverContent({
         <div className={classes.sectionTilte}>
           动态类型
           <HelpInfo>
-            「{DynamicFeedBadgeText.Upload}」UP个人空间投稿Tab可见
-            <br />「{DynamicFeedBadgeText.Dynamic}」时长通常较短，UP个人空间投稿Tab不可见
+            「{DynamicFeedBadgeText.Upload}」UP个人空间投稿 Tab 可见
+            <br />「{DynamicFeedBadgeText.Dynamic}」时长通常较短，UP个人空间投稿 Tab 不可见
             <br />「{TEXT_CHARGE_ONLY}」在此脚本中算作「投稿视频」的子类
           </HelpInfo>
         </div>
