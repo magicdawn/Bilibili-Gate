@@ -16,3 +16,10 @@ export function isFavFolderDefault(attr: number) {
 export function isFavFolderPrivate(attr: number) {
   return attr.toString(2).at(-1) === '1'
 }
+
+export function decodeFavFolderAttr(attr: number) {
+  return {
+    isDefault: isFavFolderDefault(attr),
+    isPrivate: isFavFolderPrivate(attr),
+  }
+}

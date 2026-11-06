@@ -22,7 +22,7 @@ import { sortListByName } from '$utility/sort'
 import { proxyWithLocalStorage } from '$utility/valtio'
 import { usePopupContainer } from '../../_base'
 import { dropdownMenuStyle } from '../../_shared'
-import { isFavFolderDefault, isFavFolderPrivate } from '../fav-util'
+import { decodeFavFolderAttr, isFavFolderPrivate } from '../fav-util'
 import { favStore, updateFavList, type FavStore } from '../store'
 import type { TransferDirection } from 'antd/es/transfer'
 import type { FavAllService } from '../service/fav-all'
@@ -64,8 +64,7 @@ function useScopeMenus(parentView: 'sidebarView' | 'tabbarView', extraOnMenuItem
         _folders = sortFavFolders(folders, sidebarFavFolderOrder)
       }
       const subMenus: AntMenuItem[] = _folders.map((f) => {
-        const isDefault = isFavFolderDefault(f.attr)
-        const isPrivate = isFavFolderPrivate(f.attr)
+        const { isPrivate } = decodeFavFolderAttr(f.attr)
         const key: FavStore['selectedKey'] = `fav-folder:${f.id}`
         const icon = isPrivate ? (
           <IconForPrivateFolder title='私密收藏夹' />
