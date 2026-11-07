@@ -16,7 +16,7 @@ export function isValidFavFolderOrder(order: string): order is FavFolderOrder {
 }
 
 function mapFavFolderTitleForSort(title: string) {
-  title = title.replace(/^[\s\p{RGI_Emoji}]+/v, '') // rm leading space & emoji
+  title = title.replace(/^[\s\p{RGI_Emoji}\p{Variation_Selector}]+/v, '') // rm leading space & emoji
   title = mapNameForSort(title)
   return title
 }

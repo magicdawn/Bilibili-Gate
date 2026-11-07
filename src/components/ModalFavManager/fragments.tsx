@@ -1,20 +1,24 @@
 import { Button, Popover, type ButtonProps } from 'antd'
-import { useState, type ComponentProps } from 'react'
+import { useState, type ComponentProps, type Dispatch, type SetStateAction } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
 import { antMessage } from '$modules/antd'
 import { IconForPlus } from '$modules/icon'
 import { NewFavFolderPopover } from './fav-folder-popovers'
 
 export function NewFavFolderButton({
+  popoverOpenState,
   buttonProps,
   iconClassname,
   onCreateNewSuccess,
 }: {
+  popoverOpenState?: [boolean, Dispatch<SetStateAction<boolean>>]
   buttonProps?: Partial<ButtonProps>
   iconClassname?: string
   onCreateNewSuccess?: ComponentProps<typeof NewFavFolderPopover>['onCreateNewSuccess']
 }) {
-  const [open, setOpen] = useState(false)
+  const localOpenState = useState(false)
+  const [open, setOpen] = popoverOpenState ?? localOpenState
+
   return (
     <Popover
       trigger='click'

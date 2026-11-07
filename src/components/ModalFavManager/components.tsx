@@ -1,6 +1,6 @@
 /* eslint-disable require-await */
 import { useHotkey } from '@tanstack/react-hotkeys'
-import { useClickAway, useMemoizedFn, useRequest, useUnmount, useUpdateEffect } from 'ahooks'
+import { useClickAway, useMemoizedFn, useRequest, useSet, useUnmount, useUpdateEffect } from 'ahooks'
 import { Button, Checkbox, Dropdown, Empty, Input, Popover, Slider, Spin } from 'antd'
 import clsx from 'clsx'
 import { assert, isEqual, uniqBy } from 'es-toolkit'
@@ -226,7 +226,7 @@ export function ModalFavManager({
   }, [modifyInitialSelectedIdsSet])
   /* #endregion */
 
-  const [newFavFolderPopoverOpen, setNewFavFolderPopoverOpen] = useState(false)
+  const newFavFolderPopoverOpenState = useState(false)
 
   const okButtonDisabled = useMemo(() => {
     // do not allow empty, but empty
@@ -252,12 +252,15 @@ export function ModalFavManager({
       .exhaustive()
   }, [mode, modifyInitialSelectedIdsSet])
 
+  const [renamePopoverOpenedSet, renamePopoverOpenedSetActions] = useSet<number>()
+  const anyPopoverOpen = !!(newFavFolderPopoverOpenState[0] || renamePopoverOpenedSet.size)
+
   return (
     <BaseModal
       show={show}
       onHide={onHide}
-      hideWhenMaskOnClick={true}
-      hideWhenEsc={true}
+      hideWhenMaskOnClick={!anyPopoverOpen}
+      hideWhenEsc={!anyPopoverOpen}
       width={`${modalWidth}vw`}
       clsModal='rounded-15px'
     >
@@ -357,6 +360,13 @@ export function ModalFavManager({
                     })
                   }
                 }
+                const handlePopoverOpenChange = (open: boolean) => {
+                  if (open) {
+                    renamePopoverOpenedSetActions.add(f.id)
+                  } else {
+                    renamePopoverOpenedSetActions.remove(f.id)
+                  }
+                }
                 return (
                   <FavFolderItem
                     key={f.id}
@@ -364,6 +374,7 @@ export function ModalFavManager({
                     active={active}
                     isSourceFolder={isSourceFolder}
                     onClick={handleClick}
+                    onPopoverOpenChange={handlePopoverOpenChange}
                   />
                 )
               })
@@ -379,7 +390,8 @@ export function ModalFavManager({
       <div className='mt-2 flex items-center justify-between'>
         <div className='flex-v-center gap-x-10px'>
           <NewFavFolderButton
-            onCreateNewSuccess={async (newFolderId, newFolderTitle) => {
+            popoverOpenState={newFavFolderPopoverOpenState}
+            onCreateNewSuccess={async (newFolderId) => {
               // refresh folders
               await $updateFoldersReq.runAsync(true)
               // select newly created folder
@@ -424,20 +436,27 @@ function useSrcFavFolderBgClassName() {
 function FavFolderItem({
   f,
   active,
-  onClick,
   isSourceFolder,
+  onClick,
+  onPopoverOpenChange,
 }: {
   f: FavFolder
   active: boolean
-  onClick?: () => void
   isSourceFolder?: boolean
+  onClick?: () => void
+  onPopoverOpenChange?: (open: boolean) => void
 }) {
   const [renamePopoverOpen, setRenamePopoverOpen] = useState(false)
 
+  // sync `open` to parent component
+  const _onPopoverOpenChange = useMemoizedFn(() => onPopoverOpenChange?.(renamePopoverOpen))
+  useEffect(() => void _onPopoverOpenChange(), [renamePopoverOpen])
+
   // handle popover close
   const renamePopoverRef = useRef<ComponentRef<'div'>>(null)
-  useClickAway(() => setRenamePopoverOpen(false), renamePopoverRef)
   useUnmount(() => setRenamePopoverOpen(false))
+  useHotkey('Escape', () => setRenamePopoverOpen(false), { conflictBehavior: 'allow' })
+  useClickAway(() => setRenamePopoverOpen(false), renamePopoverRef)
 
   const wrapWithRenamePopover = (c: ReactNode) => {
     return (
