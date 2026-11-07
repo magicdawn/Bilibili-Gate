@@ -62,9 +62,11 @@ export function RenameFavFolderPopover({
 }
 
 export function NewFavFolderPopover({
+  ref,
   onClosePopover,
   onCreateNewSuccess,
 }: {
+  ref?: Ref<ComponentRef<'div'>>
   onClosePopover: () => void
   onCreateNewSuccess?: (
     newFolderId: number,
@@ -95,7 +97,7 @@ export function NewFavFolderPopover({
   })
 
   return (
-    <div className='flex flex-col gap-y-2'>
+    <div className='flex flex-col gap-y-2' ref={ref}>
       <div>新建收藏夹</div>
       <Input
         placeholder='收藏夹名称'

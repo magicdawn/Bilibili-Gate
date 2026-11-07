@@ -1,3 +1,5 @@
+import { useHotkey } from '@tanstack/react-hotkeys'
+import { useUnmount } from 'ahooks'
 import { Button, Popover, type ButtonProps } from 'antd'
 import { useState, type ComponentProps, type Dispatch, type SetStateAction } from 'react'
 import { useUnoMerge } from 'unocss-merge/react'
@@ -18,6 +20,10 @@ export function NewFavFolderButton({
 }) {
   const localOpenState = useState(false)
   const [open, setOpen] = popoverOpenState ?? localOpenState
+
+  // handle close: trigger='click' 会自动处理 click away
+  useUnmount(() => setOpen(false))
+  useHotkey('Escape', () => setOpen(false), { conflictBehavior: 'allow' })
 
   return (
     <Popover
