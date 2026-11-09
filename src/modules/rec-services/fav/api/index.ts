@@ -10,7 +10,7 @@ import { difference } from 'es-toolkit'
 import { getLoginStatus, validateLoginedMid } from '$modules/login-status'
 import { request, WebApiError } from '$request'
 import { getCsrfToken, getUid } from '$utility/cookie'
-import { formatFavFolderUrl } from '../fav-url'
+import { formatFavFolderSelfSpaceUrl } from '../fav-url'
 import { isFavFolderDefault, isFavFolderPrivate } from '../fav-util'
 import { favStore, updateFavFolderList } from '../store'
 import type { NewFavFolderResponseJson } from '$components/ModalFavManager/types/new-fav-folder.api'
@@ -100,7 +100,7 @@ export async function getVideoFavState(avid: number | string) {
   const favFolders = json.data.list.filter((folder) => folder.fav_state > 0)
 
   const favFolderNames = favFolders.map((f) => f.title)
-  const favFolderUrls = favFolders.map((f) => formatFavFolderUrl(f.id))
+  const favFolderUrls = favFolders.map((f) => formatFavFolderSelfSpaceUrl(f.id))
   const favFolderIds = favFolders.map((f) => f.id)
 
   return { favFolders, favFolderNames, favFolderUrls, favFolderIds }

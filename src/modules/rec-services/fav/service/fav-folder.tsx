@@ -17,7 +17,7 @@ import { isWebApiSuccess, request } from '$request'
 import { getIdbCache, wrapWithIdbCache } from '$utility/idb'
 import toast from '$utility/toast'
 import { FavItemsOrder, handleItemsOrder } from '../fav-enum'
-import { formatFavFolderUrl, formatFavPlaylistUrl } from '../fav-url'
+import { formatFavFolderPlaylistUrl, formatFavFolderSelfSpaceUrl } from '../fav-url'
 import { isFavFolderPrivate } from '../fav-util'
 import { favStore, updateFavFolderList, updateFavFolderMediaCount, updateFavList } from '../store'
 import { IconForPrivateFolder, IconForPublicFolder } from '../views'
@@ -48,12 +48,12 @@ export function FavFolderSeparator({ service }: { service: FavFolderBasicService
         收藏夹 · {folderTitle}
       </div>
       <div className='flex-v-center gap-x-10px'>
-        <Button href={formatFavPlaylistUrl(folderId)} target={target}>
+        <Button href={formatFavFolderPlaylistUrl(folderId)} target={target}>
           <IconForPlayer className={clsIcon} />
           播放全部
         </Button>
 
-        <Button href={formatFavFolderUrl(folderId, folderAttr)} target={target}>
+        <Button href={formatFavFolderSelfSpaceUrl(folderId, folderAttr)} target={target}>
           <IconForOpenExternalLink className={clsIcon} />
           去「我的空间」查看
         </Button>

@@ -17,6 +17,7 @@ import { BILI_BRAND_PINK_THEME } from '$components/ModalSettings/theme.shared'
 import { clsContextMenuIcon } from '$components/VideoCard/context-menus'
 import { antMessage, defineAntMenus } from '$modules/antd'
 import { AntdTooltip } from '$modules/antd/custom'
+import { openNewTab } from '$modules/gm'
 import { HotkeyDisplay } from '$modules/hotkey'
 import {
   IconAnimatedChecked,
@@ -27,6 +28,7 @@ import {
   IconForOpenExternalLink,
   IconForReset,
 } from '$modules/icon'
+import { formatFavFolderGateUrl } from '$modules/rec-services/fav/fav-url'
 import { favStore, updateFavFolderList } from '$modules/rec-services/fav/store'
 import { useSettingsSnapshot } from '$modules/settings'
 import { getUid } from '$utility/cookie'
@@ -485,6 +487,17 @@ function FavFolderItem({
         menu={{
           className: 'w-max',
           items: defineAntMenus([
+            {
+              key: 'view-folder-content',
+              icon: <IconForOpenExternalLink className={clsContextMenuIcon} />,
+              label: '查看收藏夹',
+              onClick: ({ domEvent: e }) => {
+                // prevent close ModalFavManager
+                e.preventDefault()
+                e.stopPropagation()
+                openNewTab(formatFavFolderGateUrl(f.id))
+              },
+            },
             {
               key: 'rename',
               icon: <IconForEdit className={clsContextMenuIcon} />,

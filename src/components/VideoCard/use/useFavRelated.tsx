@@ -17,7 +17,7 @@ import { IconForDelete, IconForFav, IconForFaved, IconForLoading, IconForOpenExt
 import { getLoginStatus } from '$modules/login-status'
 import { multiSelectStore } from '$modules/multi-select/store'
 import { defaultFavFolderTitle, UserFavApi } from '$modules/rec-services/fav/api'
-import { formatFavCollectionSelfSpaceUrl, formatFavFolderUrl } from '$modules/rec-services/fav/fav-url'
+import { formatFavCollectionSelfSpaceUrl, formatFavFolderSelfSpaceUrl } from '$modules/rec-services/fav/fav-url'
 import { clearFavFolderAllItemsCache } from '$modules/rec-services/fav/service/fav-folder'
 import { FavQueryKey, favStore } from '$modules/rec-services/fav/store'
 import toast from '$utility/toast'
@@ -190,7 +190,7 @@ export function getFavTabFavRelatedMenus({
         icon: <IconForOpenExternalLink className={clsContextMenuIcon} />,
         onClick() {
           const { id } = item.folder
-          const url = formatFavFolderUrl(id)
+          const url = formatFavFolderSelfSpaceUrl(id)
           window.open(url, getLinkTarget())
         },
       },
