@@ -92,7 +92,7 @@ export async function handleModifyFavItemToFolders(
   if (!targetFolders?.length) {
     message = '已取消收藏'
   } else {
-    const prefix = sourceFolderIds?.length ? '已移动收藏到' : '已加入收藏'
+    const prefix = sourceFolderIds?.length ? '已移动收藏到' : '已收藏到'
     message = `${prefix}${joinFavFolderTitles(targetFolders)}`
   }
   antMessage.success(message)
