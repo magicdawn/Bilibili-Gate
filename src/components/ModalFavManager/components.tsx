@@ -383,9 +383,11 @@ export function ModalFavManager({
                 )
               })
             ) : (
-              <Empty className='grid-col-span-full' image={Empty.PRESENTED_IMAGE_SIMPLE} description='未找到收藏夹'>
-                无过滤结果, 请检查过滤词 !
-              </Empty>
+              <Empty
+                className='grid-col-span-full'
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description='过滤结果为空，请检查过滤词！'
+              />
             )}
           </div>
         </Spin>
