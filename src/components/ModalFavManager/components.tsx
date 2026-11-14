@@ -32,6 +32,7 @@ import { formatFavFolderGateUrl } from '$modules/rec-services/fav/fav-url'
 import { favStore, updateFavFolderList } from '$modules/rec-services/fav/store'
 import { useSettingsSnapshot } from '$modules/settings'
 import { getUid } from '$utility/cookie'
+import { assertNever } from '$utility/type'
 import { proxyWithLocalStorage } from '$utility/valtio'
 import { FavFolderOrderSwitcher, isValidFavFolderOrder, sortFavFolders, type FavFolderOrder } from './fav-folder-order'
 import { RenameFavFolderPopover } from './fav-folder-popovers'
@@ -238,14 +239,6 @@ export function ModalFavManager({
     return false
   }, [allowEmptyResult, selectedFolderIdsSet, mode, modifyInitialSelectedIdsSet])
 
-  const modalTitle = useMemo(() => {
-    return match(mode)
-      .returnType<string>()
-      .with('pick', () => '选择目标收藏夹')
-      .with('modify', () => (allowEmptyResult ? '移动或取消收藏' : '移动到其他收藏夹'))
-      .exhaustive()
-  }, [mode, allowEmptyResult])
-
   const faved = useMemo(() => {
     return match(mode)
       .returnType<boolean>()
@@ -253,6 +246,15 @@ export function ModalFavManager({
       .with('modify', () => !!modifyInitialSelectedIdsSet.size)
       .exhaustive()
   }, [mode, modifyInitialSelectedIdsSet])
+
+  const modalTitle = useMemo(() => {
+    const TITLE_ADD_FAV = '选择目标收藏夹'
+    if (mode === 'pick') return TITLE_ADD_FAV
+    if (mode === 'modify') {
+      return faved ? (allowEmptyResult ? '移动或取消收藏' : '移动到其他收藏夹') : TITLE_ADD_FAV
+    }
+    assertNever(mode)
+  }, [mode, faved, allowEmptyResult])
 
   const [renamePopoverOpenedSet, renamePopoverOpenedSetActions] = useSet<number>()
   const anyPopoverOpen = !!(newFavFolderPopoverOpenState[0] || renamePopoverOpenedSet.size)
