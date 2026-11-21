@@ -1,14 +1,13 @@
 /* eslint-disable require-await */
 
 import { useHotkey, type NumberKey } from '@tanstack/react-hotkeys'
-import { useCreation, useLockFn, useMemoizedFn, useRequest } from 'ahooks'
+import { useLockFn, useMemoizedFn, useRequest } from 'ahooks'
 import { Button, Spin } from 'antd'
 import { clsx } from 'clsx'
 import Emittery from 'emittery'
 import { assert } from 'es-toolkit'
 import { useLayoutEffect, useRef, useState, type MouseEvent } from 'react'
 import { useSnapshot } from 'valtio'
-import { useEmitterOn } from '$common/hooks/useEmitter'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { HelpInfo } from '$components/_base/HelpInfo'
 import { antSpinIndicator } from '$components/fragments'
@@ -65,11 +64,6 @@ export function ModalDislike({ show, reasons, onHide, okAction }: typeof default
       assertNever(platform)
     }
   }, [reasons])
-
-  const numberKeyEmitter = useCreation(() => new Emittery<{ click: number }>(), [])
-  useEmitterOn(numberKeyEmitter, 'click', ({ data: num }) => {
-    //
-  })
 
   const increaseIndex = useMemoizedFn((by: number) => {
     const len = reasons.length
