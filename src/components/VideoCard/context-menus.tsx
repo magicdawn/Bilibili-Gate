@@ -507,7 +507,7 @@ export function useContextMenus({
     ])
 
     const favTabMenus = getFavTabFavRelatedMenus({
-      ctx: favHandle,
+      favHandle,
       item,
       cardData,
       tab,

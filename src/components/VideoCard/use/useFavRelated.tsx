@@ -68,14 +68,14 @@ function getQuickFavConfig(api: EApiType) {
 }
 
 // 收藏视频
-export function getFavContextMenus(ctx: FavHandle, item: RecItemType, avid: string | undefined) {
+export function getFavContextMenus(favHandle: FavHandle, item: RecItemType, avid: string | undefined) {
   if (!avid) return
   const { enable, enableDetailMenu } = getQuickFavConfig(item.api)
   if (!enable) return
 
-  const folderNames = ctx.folderNames ?? []
-  const folderUrls = ctx.folderUrls ?? []
-  const folderIds = ctx.folderIds ?? []
+  const folderNames = favHandle.folderNames ?? []
+  const folderUrls = favHandle.folderUrls ?? []
+  const folderIds = favHandle.folderIds ?? []
 
   const favedMenus = defineAntMenus([
     {
@@ -140,7 +140,7 @@ export function getFavContextMenus(ctx: FavHandle, item: RecItemType, avid: stri
 
 // 收藏 Tab 的收藏菜单
 export function getFavTabFavRelatedMenus({
-  ctx,
+  favHandle,
   item,
   cardData,
   tab,
@@ -149,7 +149,7 @@ export function getFavTabFavRelatedMenus({
   onRemoveCurrent,
   recSharedEmitter,
 }: {
-  ctx: FavHandle
+  favHandle: FavHandle
   item: RecItemType
   cardData: IVideoCardData
   tab: ETab
@@ -161,7 +161,7 @@ export function getFavTabFavRelatedMenus({
   if (!checkIsFav(item)) return []
 
   const { avid } = cardData
-  const folderIds = ctx.folderIds ?? []
+  const folderIds = favHandle.folderIds ?? []
 
   // 收藏夹
   if (item.from === 'fav-folder') {
