@@ -68,7 +68,7 @@ import { clsZWatchedProgressBar, copyContent, displayAsListCss } from './index.s
 import { fetchImagePreviewData, isImagePreviewDataValid, type ImagePreviewData } from './services'
 import { StatItemDisplay } from './stat-item'
 import { useDislikeRelated } from './use/useDislikeRelated'
-import { useFavActionButton, useInitFavContext } from './use/useFavRelated'
+import { useFavActionButton, useInitFavHandle } from './use/useFavRelated'
 import { useInitFollowedStatusContext } from './use/useFollowRelated'
 import { useRemoveHistoryRelated } from './use/useHistoryRelated'
 import { useMultiSelectRelated } from './use/useMultiSelect'
@@ -364,14 +364,14 @@ const VideoCardInner = memo(function VideoCardInner({
   const actionButtonVisible = active || isHovering
 
   // 稍候再看
-  const { watchlaterButtonEl, context: watchlaterContext } = useWatchlaterRelated({
+  const { watchlaterButtonEl, watchlaterHandle } = useWatchlaterRelated({
     item,
     cardData,
     onRemoveCurrent,
     actionButtonVisible,
     watchlaterAdded,
   })
-  const { handleToggleWatchlater } = watchlaterContext
+  const { handleToggleWatchlater } = watchlaterHandle
 
   // 不喜欢
   const { dislikeButtonEl, hasDislikeEntry, onTriggerDislike } = useDislikeRelated({
@@ -401,7 +401,7 @@ const VideoCardInner = memo(function VideoCardInner({
   const contextMenuOpenEvent = useEventEmitter()
 
   // fav
-  const favContext = useInitFavContext(item, avid, contextMenuOpenEvent)
+  const favHandle = useInitFavHandle(item, avid, contextMenuOpenEvent)
 
   // followed
   const followedStatusContext = useInitFollowedStatusContext(item, cardData, contextMenuOpenEvent)
@@ -479,8 +479,8 @@ const VideoCardInner = memo(function VideoCardInner({
     cardData,
     tab,
     isNormalVideo,
-    watchlaterContext,
-    favContext,
+    watchlaterHandle,
+    favHandle,
     followed,
     hasDislikeEntry,
     onTriggerDislike,
@@ -558,7 +558,7 @@ const VideoCardInner = memo(function VideoCardInner({
   const { favStateActionButton } = useFavActionButton({
     item,
     cardData,
-    ctx: favContext,
+    favHandle,
     actionButtonVisible,
   })
 

@@ -28,9 +28,9 @@ import { getLinkTarget } from './useOpenRelated'
 import type { EventEmitter } from 'ahooks/lib/useEventEmitter'
 import type { RecSharedEmitter } from '$components/Recommends/rec.shared'
 
-export type FavContext = ReturnType<typeof useInitFavContext>
+export type FavHandle = ReturnType<typeof useInitFavHandle>
 
-export function useInitFavContext(
+export function useInitFavHandle(
   item: RecItemType,
   avid: string | undefined,
   contextMenuOpenEvent: EventEmitter<void>,
@@ -68,7 +68,7 @@ function getQuickFavConfig(api: EApiType) {
 }
 
 // 收藏视频
-export function getFavContextMenus(ctx: FavContext, item: RecItemType, avid: string | undefined) {
+export function getFavContextMenus(ctx: FavHandle, item: RecItemType, avid: string | undefined) {
   if (!avid) return
   const { enable, enableDetailMenu } = getQuickFavConfig(item.api)
   if (!enable) return
@@ -149,7 +149,7 @@ export function getFavTabFavRelatedMenus({
   onRemoveCurrent,
   recSharedEmitter,
 }: {
-  ctx: FavContext
+  ctx: FavHandle
   item: RecItemType
   cardData: IVideoCardData
   tab: ETab
@@ -267,19 +267,19 @@ export function getFavTabFavRelatedMenus({
 }
 
 export function useFavActionButton({
-  ctx,
+  favHandle,
   item,
   cardData,
   actionButtonVisible,
 }: {
-  ctx: FavContext
+  favHandle: FavHandle
   item: RecItemType
   cardData: IVideoCardData
   actionButtonVisible: boolean
 }) {
   const { avid, goto } = cardData
   const enabled = checkIsWatchlater(item) && checkIsNormalVideo(goto) && !!avid
-  const { folderIds, folderNames, updateFavFolderNames } = ctx
+  const { folderIds, folderNames, updateFavFolderNames } = favHandle
 
   const $updateFavStateReq = useRequest(() => updateFavFolderNames(), { manual: true, loadingDelay: 500 })
 

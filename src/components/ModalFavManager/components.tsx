@@ -256,7 +256,7 @@ export function ModalFavManager({
     assertNever(mode)
   }, [mode, faved, allowEmptyResult])
 
-  const [renamePopoverOpenedSet, renamePopoverOpenedSetActions] = useSet<number>()
+  const [renamePopoverOpenedSet, renamePopoverOpenedSetHandle] = useSet<number>()
   const anyPopoverOpen = !!(newFavFolderPopoverOpenState[0] || renamePopoverOpenedSet.size)
 
   return (
@@ -366,9 +366,9 @@ export function ModalFavManager({
                 }
                 const handlePopoverOpenChange = (open: boolean) => {
                   if (open) {
-                    renamePopoverOpenedSetActions.add(f.id)
+                    renamePopoverOpenedSetHandle.add(f.id)
                   } else {
-                    renamePopoverOpenedSetActions.remove(f.id)
+                    renamePopoverOpenedSetHandle.remove(f.id)
                   }
                 }
                 return (

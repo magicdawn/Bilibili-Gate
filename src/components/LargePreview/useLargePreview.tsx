@@ -404,12 +404,10 @@ export function useLargePreviewRelated({
     { target },
   )
 
-  const largePreviewHandle: LargePreviewHandle = {
-    shouldUseCurrentTime,
-    getCurrentTime,
-    visible,
-    hide,
-  }
+  const largePreviewHandle: LargePreviewHandle = useMemo(
+    () => ({ shouldUseCurrentTime, getCurrentTime, visible, hide }),
+    [shouldUseCurrentTime, getCurrentTime, visible, hide],
+  )
 
   return {
     largePreviewActionButtonEl,

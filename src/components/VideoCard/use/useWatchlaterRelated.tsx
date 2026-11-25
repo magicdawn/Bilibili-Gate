@@ -12,7 +12,7 @@ import { watchlaterAdd, watchlaterDel } from '../services'
 import type { IVideoCardData } from '$modules/filter/normalize'
 import type { VideoCardInnerProps } from '..'
 
-export type WatchlaterRelatedContext = ReturnType<typeof useWatchlaterRelated>['context']
+export type WatchlaterHandle = ReturnType<typeof useWatchlaterRelated>['watchlaterHandle']
 
 export type WatchlaterAction = 'add' | 'del' | 'toggle'
 
@@ -146,7 +146,7 @@ export function useWatchlaterRelated({
     />
   )
 
-  const context = useMemo(() => {
+  const watchlaterHandle = useMemo(() => {
     return {
       watchlaterAdded,
       hasWatchlaterEntry,
@@ -156,5 +156,5 @@ export function useWatchlaterRelated({
     }
   }, [watchlaterAdded, hasWatchlaterEntry, handleToggleWatchlater, handleAddWatchlater, handleDelWatchlater])
 
-  return { context, watchlaterButtonEl }
+  return { watchlaterButtonEl, watchlaterHandle }
 }

@@ -54,9 +54,9 @@ import { WatchlaterItemsOrder } from '$modules/rec-services/watchlater/watchlate
 import { settings, updateSettingsInnerArray, useSettingsSnapshot } from '$modules/settings'
 import toast from '$utility/toast'
 import { copyContent } from './index.shared'
-import { getFavContextMenus, getFavTabFavRelatedMenus, type FavContext } from './use/useFavRelated'
+import { getFavContextMenus, getFavTabFavRelatedMenus, type FavHandle } from './use/useFavRelated'
 import type { IVideoCardData } from '$modules/filter/normalize'
-import type { WatchlaterRelatedContext } from './use/useWatchlaterRelated'
+import type { WatchlaterHandle } from './use/useWatchlaterRelated'
 
 export const clsContextMenuIcon = 'size-16px' // icon 可能看起来不一样大, 但文字对不齐的体验更差, 所以还是优先文字对齐
 
@@ -67,8 +67,8 @@ type UseContextMenuOptions = {
   isNormalVideo: boolean
   multiSelecting?: boolean
 
-  watchlaterContext: WatchlaterRelatedContext
-  favContext: FavContext
+  watchlaterHandle: WatchlaterHandle
+  favHandle: FavHandle
   followed: boolean
   hasDislikeEntry: boolean
   onTriggerDislike: () => unknown
@@ -78,34 +78,32 @@ type UseContextMenuOptions = {
   conditionalOpenMenus: AntMenuItem[]
 }
 
-export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
-  const {
-    item,
-    cardData,
-    tab,
-    isNormalVideo,
+export function useContextMenus({
+  item,
+  cardData,
+  tab,
+  isNormalVideo,
 
-    // contexts
-    favContext,
-    watchlaterContext,
-    followed,
+  // handles
+  favHandle,
+  watchlaterHandle,
+  followed,
 
-    hasDislikeEntry,
-    onTriggerDislike,
-    onRemoveCurrent,
+  hasDislikeEntry,
+  onTriggerDislike,
+  onRemoveCurrent,
 
-    consistentOpenMenus,
-    conditionalOpenMenus,
+  consistentOpenMenus,
+  conditionalOpenMenus,
 
-    multiSelecting,
-  } = options
+  multiSelecting,
+}: UseContextMenuOptions): AntMenuItem[] {
   const {
     avid,
     bvid,
     cover,
     href,
     recommendReason,
-
     // author
     authorName,
     authorMid,
@@ -314,7 +312,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
   const viewingGroupCount = viewingGroup?.count
 
   return useMemo(() => {
-    const { watchlaterAdded, hasWatchlaterEntry, handleToggleWatchlater, handleAddWatchlater } = watchlaterContext
+    const { watchlaterAdded, hasWatchlaterEntry, handleToggleWatchlater, handleAddWatchlater } = watchlaterHandle
     const divider: AntMenuItem = { type: 'divider' }
     const multiSelectingSuffix = multiSelecting ? ' (多选)' : ''
 
@@ -457,7 +455,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
         },
       },
       // 稍后再看 Tab 的收藏相关
-      ...(getFavContextMenus(favContext, item, avid) ?? []),
+      ...(getFavContextMenus(favHandle, item, avid) ?? []),
     ])
 
     // I don't like this video
@@ -509,7 +507,7 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
     ])
 
     const favTabMenus = getFavTabFavRelatedMenus({
-      ctx: favContext,
+      ctx: favHandle,
       item,
       cardData,
       tab,
@@ -563,8 +561,8 @@ export function useContextMenus(options: UseContextMenuOptions): AntMenuItem[] {
     cardData,
     tab,
     // contexts
-    watchlaterContext,
-    favContext,
+    watchlaterHandle,
+    favHandle,
     // entries
     hasDislikeEntry,
     hasUnfollowEntry,
