@@ -1,4 +1,5 @@
 import type { Interpolation, Theme } from '@emotion/react'
+import type { Dispatch, SetStateAction } from 'react'
 
 export type CssProp = Interpolation<Theme>
 
@@ -14,3 +15,5 @@ export type Nil = null | undefined
 export function assertNever(x: never): never {
   throw new Error(`Unexpected object: ${x}`)
 }
+
+export type ReactUsedState<S> = [S, Dispatch<SetStateAction<S>>]

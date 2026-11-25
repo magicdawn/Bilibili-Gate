@@ -381,14 +381,7 @@ const VideoCardInner = memo(function VideoCardInner({
   })
 
   // 浮动预览
-  const {
-    largePreviewActionButtonEl,
-    largePreviewEl,
-    shouldUseLargePreviewCurrentTime,
-    getLargePreviewCurrentTime,
-    largePreviewVisible,
-    hideLargePreview,
-  } = useLargePreviewRelated({
+  const { largePreviewActionButtonEl, largePreviewEl, largePreviewHandle } = useLargePreviewRelated({
     shouldFetchPreviewData,
     actionButtonVisible,
     hasLargePreviewActionButton: videoCardActions.showLargePreview,
@@ -428,9 +421,7 @@ const VideoCardInner = memo(function VideoCardInner({
     cardData,
     actionButtonVisible,
     hasOpenInPopupActionButton: videoCardActions.openInPipWindow,
-    getLargePreviewCurrentTime,
-    hideLargePreview,
-    shouldUseLargePreviewCurrentTime,
+    largePreviewHandle,
   })
 
   // 多选
@@ -456,8 +447,8 @@ const VideoCardInner = memo(function VideoCardInner({
    * expose actions
    */
   const openWithLargePreviewVisible = useMemoizedFn(() => {
-    if (!largePreviewVisible) return
-    hideLargePreview()
+    if (!largePreviewHandle.visible) return
+    largePreviewHandle.hide()
     onOpenWithMode()
   })
   useImperativeHandle(ref, () => {

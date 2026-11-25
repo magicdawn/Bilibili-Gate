@@ -3,7 +3,7 @@ import { css, Global } from '@emotion/react'
 import { useHover } from 'ahooks'
 import { App, ConfigProvider, Dropdown } from 'antd'
 import clsx from 'clsx'
-import { useMemo, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { APP_CLS_ROOT, APP_NAMESPACE, createReactRoot } from '$common'
 import { useLessFrequentFn } from '$common/hooks/useLessFrequentFn'
 import { AppRoot, SetupForPage } from '$components/AppRoot'
@@ -12,6 +12,7 @@ import { openNewTab } from '$modules/gm'
 import { settings } from '$modules/settings'
 import { VideoCardActionButton } from '../child-components/VideoCardActions'
 import { EQueryKey } from '../index.shared'
+import type { ReactUsedState } from '$utility/type'
 
 export function renderInPipWindow(newHref: string, pipWindow: Window) {
   const cssInsertContainer = pipWindow.document.head
@@ -50,7 +51,7 @@ export function renderInPipWindow(newHref: string, pipWindow: Window) {
 
 export function PipWindowContent({ newHref, pipWindow }: { pipWindow: Window; newHref: string }) {
   const hovering = useHover(pipWindow.document.documentElement)
-  const [locked, setLocked] = useState(() => settings.pipWindow.defaultLocked)
+  const lockedState = useState(() => settings.pipWindow.defaultLocked)
 
   return (
     <>
@@ -73,7 +74,7 @@ export function PipWindowContent({ newHref, pipWindow }: { pipWindow: Window; ne
 
       <iframe src={newHref} className='block h-100vh w-full border-none' />
 
-      <LockOverlay locked={locked} setLocked={setLocked} pipWindow={pipWindow} />
+      <LockOverlay lockedState={lockedState} pipWindow={pipWindow} />
 
       <div
         className={clsx(
@@ -82,7 +83,7 @@ export function PipWindowContent({ newHref, pipWindow }: { pipWindow: Window; ne
         )}
       >
         <CloseThenOpenButton pipWindow={pipWindow} newHref={newHref} />
-        <LockButton locked={locked} setLocked={setLocked} />
+        <LockButton lockedState={lockedState} />
       </div>
     </>
   )
@@ -91,12 +92,10 @@ export function PipWindowContent({ newHref, pipWindow }: { pipWindow: Window; ne
 const actionButtonExtraClassName = 'size-30px [&_svg]:size-16px'
 
 function LockOverlay({
-  locked,
-  setLocked,
+  lockedState: [locked, setLocked],
   pipWindow,
 }: {
-  locked: boolean
-  setLocked: Dispatch<SetStateAction<boolean>>
+  lockedState: ReactUsedState<boolean>
   pipWindow: Window
 }) {
   const { message } = App.useApp()
@@ -173,7 +172,7 @@ function CloseButton({ pipWindow }: { pipWindow: Window }) {
   )
 }
 
-function LockButton({ locked, setLocked }: { locked: boolean; setLocked: Dispatch<SetStateAction<boolean>> }) {
+function LockButton({ lockedState: [locked, setLocked] }: { lockedState: ReactUsedState<boolean> }) {
   const [currentState, targetState] = locked ? ['锁定', '解锁'] : ['解锁', '锁定']
   return (
     <VideoCardActionButton

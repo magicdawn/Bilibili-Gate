@@ -19,6 +19,7 @@ import {
   VideoLinkOpenModeKey,
 } from '../index.shared'
 import { renderInPipWindow } from './_pip-window'
+import type { LargePreviewHandle } from '$components/LargePreview/useLargePreview'
 import type { RecItemType } from '$define'
 import type { AntMenuItem } from '$modules/antd'
 import type { VideoPage } from '$modules/bilibili/video/types/page-list'
@@ -36,18 +37,14 @@ export function useOpenRelated({
   cardData,
   actionButtonVisible,
   hasOpenInPopupActionButton,
-  getLargePreviewCurrentTime,
-  hideLargePreview,
-  shouldUseLargePreviewCurrentTime,
+  largePreviewHandle,
 }: {
   href: string
   item: RecItemType
   cardData: IVideoCardData
   actionButtonVisible: boolean
   hasOpenInPopupActionButton: boolean
-  getLargePreviewCurrentTime: () => number | undefined
-  hideLargePreview: () => void
-  shouldUseLargePreviewCurrentTime: () => boolean
+  largePreviewHandle: LargePreviewHandle
 }) {
   const { videoLinkOpenMode } = useSettingsSnapshot()
 
@@ -75,10 +72,10 @@ export function useOpenRelated({
         }
       }
 
-      if (shouldUseLargePreviewCurrentTime()) {
-        const largePreviewT = getLargePreviewCurrentTime()
+      if (largePreviewHandle.shouldUseCurrentTime()) {
+        const largePreviewT = largePreviewHandle.getCurrentTime()
         if (largePreviewT) {
-          hideLargePreview()
+          largePreviewHandle.hide()
           u.searchParams.set('t', largePreviewT.toString())
         }
       }

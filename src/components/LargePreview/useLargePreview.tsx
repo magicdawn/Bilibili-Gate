@@ -199,12 +199,12 @@ export function useLargePreviewRelated({
     }
   })
 
-  const getLargePreviewCurrentTime = useMemoizedFn(() => {
+  const getCurrentTime = useMemoizedFn(() => {
     if (!currentTimeRef.current) return
     return Math.floor(currentTimeRef.current)
   })
 
-  const shouldUseLargePreviewCurrentTime = useMemoizedFn(() => {
+  const shouldUseCurrentTime = useMemoizedFn(() => {
     if (visible) return true
     if (isRecentlyHidden()) return true
     return false
@@ -214,7 +214,7 @@ export function useLargePreviewRelated({
     if (!bvid) return
 
     const u = new URL(`https://${BiliDomain.Main}/video/${bvid}`)
-    const t = getLargePreviewCurrentTime()
+    const t = getCurrentTime()
     if (t) u.searchParams.set('t', t.toString())
     openNewTab(u.href)
 
@@ -404,12 +404,23 @@ export function useLargePreviewRelated({
     { target },
   )
 
+  const largePreviewHandle: LargePreviewHandle = {
+    shouldUseCurrentTime,
+    getCurrentTime,
+    visible,
+    hide,
+  }
+
   return {
     largePreviewActionButtonEl,
     largePreviewEl,
-    getLargePreviewCurrentTime,
-    shouldUseLargePreviewCurrentTime,
-    largePreviewVisible: visible,
-    hideLargePreview: hide,
+    largePreviewHandle,
   }
+}
+
+export type LargePreviewHandle = {
+  shouldUseCurrentTime: () => boolean
+  getCurrentTime: () => number | undefined
+  visible: boolean
+  hide: () => void
 }
