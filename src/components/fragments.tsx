@@ -11,7 +11,8 @@ export const clsZGateFloatEntry = 'z-10004'
 export const clsZBaseModal = 'z-10005'
 export const clsZAntdPopupBase = 'z-11000'
 export const clsZVideoCardLargePreview = 'z-11200'
-export const clsZVideoCardContextMenu = 'z-11300'
+export const clsZModalFavManager = 'z-11300'
+export const clsZVideoCardContextMenu = 'z-11400'
 export const clsZToast = 'z-90000'
 
 export const antSpinIndicator = (

@@ -10,3 +10,7 @@ minimumReleaseAge: 1440
 
 minimumReleaseAgeExclude:
   - '@magicdawn/eslint-config@1.6.15'
+
+permissions:
+  '@tanstack/react-hotkeys':
+    skills: false

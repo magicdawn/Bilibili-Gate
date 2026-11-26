@@ -11,7 +11,7 @@ import { useUnoMerge } from 'unocss-merge/react'
 import { useSnapshot } from 'valtio'
 import { BaseModal, BaseModalClassNames, ModalClose } from '$components/_base/BaseModal'
 import { HelpInfo } from '$components/_base/HelpInfo'
-import { antSpinIndicator } from '$components/fragments'
+import { antSpinIndicator, clsZModalFavManager } from '$components/fragments'
 import { explainForFlag } from '$components/ModalSettings/index.shared'
 import { BILI_BRAND_PINK_THEME } from '$components/ModalSettings/theme.shared'
 import { clsContextMenuIcon } from '$components/VideoCard/context-menus'
@@ -266,6 +266,7 @@ export function ModalFavManager({
       hideWhenMaskOnClick={!anyPopoverOpen}
       hideWhenEsc={!anyPopoverOpen}
       width={`${modalWidth}vw`}
+      clsModalMask={clsZModalFavManager}
       clsModal='rounded-15px'
     >
       <div className={BaseModalClassNames.modalHeader}>
